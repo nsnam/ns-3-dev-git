@@ -2220,6 +2220,10 @@ void
 WifiPhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu /* = nullptr */)
 {
     NS_LOG_FUNCTION(this);
+    if (!IsStateIdle() && !IsStateCcaBusy())
+    {
+        return;
+    }
     GetLatestPhyEntity()->SwitchMaybeToCcaBusy(ppdu);
 }
 
