@@ -13,8 +13,6 @@
 #include "ns3/uinteger.h"
 #include "ns3/wifi-phy.h"
 
-#define Min(a, b) ((a < b) ? a : b)
-
 namespace ns3
 {
 

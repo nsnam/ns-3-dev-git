@@ -30,8 +30,6 @@
 #include <iomanip>
 #include <limits>
 
-#define Min(a, b) ((a < b) ? a : b)
-
 namespace ns3
 {
 

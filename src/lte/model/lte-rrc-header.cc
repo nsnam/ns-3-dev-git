@@ -29,7 +29,6 @@
 #define MAX_CELL_REPORT 8
 
 #define MAX_SCELL_REPORT 5
-#define MAX_SCELL_CONF 5
 
 namespace ns3
 {

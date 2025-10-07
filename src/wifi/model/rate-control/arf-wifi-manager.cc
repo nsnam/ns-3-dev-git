@@ -11,8 +11,6 @@
 #include "ns3/log.h"
 #include "ns3/wifi-tx-vector.h"
 
-#define Min(a, b) ((a < b) ? a : b)
-
 namespace ns3
 {
 

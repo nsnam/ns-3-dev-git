@@ -49,7 +49,6 @@ NS_LOG_COMPONENT_DEFINE("Ns2MobilityHelper");
 #define NS2_Z_COORD "Z_"
 #define NS2_SETDEST "setdest"
 #define NS2_SET "set"
-#define NS2_NODEID "$node_("
 #define NS2_NS_SCH "$ns_"
 
 /**

@@ -88,12 +88,6 @@
 /// Maximum number of messages per packet.
 #define OLSR_MAX_MSGS 64
 
-/// Maximum number of hellos per message (4 possible link types * 3 possible nb types).
-#define OLSR_MAX_HELLOS 12
-
-/// Maximum number of addresses advertised on a message.
-#define OLSR_MAX_ADDRS 64
-
 namespace ns3
 {
 
