@@ -88,7 +88,7 @@ def add_argument_to_subparsers(
     # Instead of copying and pasting repeated arguments for each parser, we add them here
     for subparser in parsers:
         subparser_name = subparser.prog.replace("ns3", "").strip()
-        destination = ("%s_%s" % (subparser_name, dest)) if subparser_name else dest
+        destination = (f"{subparser_name}_{dest}") if subparser_name else dest
         subparser.add_argument(
             *arguments, help=help_msg, action=action, default=default_value, dest=destination
         )
@@ -96,13 +96,19 @@ def add_argument_to_subparsers(
 
 def parse_args(argv):
     py39args = {"exit_on_error": False}
+    py314args = {"color": False}
     if sys.version_info < (3, 9):
         py39args = {}
+    if sys.version_info < (3, 14):
+        py314args = {}
     parser = argparse.ArgumentParser(
-        description="ns-3 wrapper for the CMake build system", add_help=False, **py39args
+        description="ns-3 wrapper for the CMake build system",
+        add_help=False,
+        **py39args,
+        **py314args,
     )
 
-    sub_parser = parser.add_subparsers()
+    sub_parser = parser.add_subparsers(dest="subparser")
 
     parser.add_argument(
         "-h",
@@ -126,9 +132,7 @@ def parse_args(argv):
         metavar="compile_or_die",
     )
     parser_help = sub_parser.add_parser("help", help="Print a summary of available commands")
-    parser_help.add_argument(
-        "help", help="Print a summary of available commands", action="store_true", default=False
-    )
+
     # parser.add_argument('--docset',
     #               help=(
     #                   'Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier.'
@@ -145,7 +149,7 @@ def parse_args(argv):
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser_build.add_argument(
-        "build",
+        "target",
         help=(
             "Build the entire project or the specified target and its dependencies.\n"
             "To get the list of targets, use:\n"
@@ -153,14 +157,11 @@ def parse_args(argv):
         ),
         action="store",
         nargs="*",
-        default=None,
-        metavar="target",
     )
 
     parser_configure = sub_parser.add_parser(
         "configure", help='Try "./ns3 configure --help" for more configuration options'
     )
-    parser_configure.add_argument("configure", action="store_true", default=False)
     parser_configure.add_argument(
         "-d",
         "--build-profile",
@@ -321,18 +322,14 @@ def parse_args(argv):
     )
 
     parser_clean = sub_parser.add_parser("clean", help="Removes files created by ns3")
-    parser_clean.add_argument("clean", action="store_true", default=False)
 
     parser_distclean = sub_parser.add_parser(
         "distclean", help="Removes files created by ns3, tests and documentation"
     )
-    parser_distclean.add_argument("distclean", action="store_true", default=False)
 
     parser_install = sub_parser.add_parser("install", help="Install ns-3")
-    parser_install.add_argument("install", action="store_true", default=False)
 
     parser_uninstall = sub_parser.add_parser("uninstall", help="Uninstall ns-3")
-    parser_uninstall.add_argument("uninstall", action="store_true", default=False)
 
     parser_run = sub_parser.add_parser(
         "run",
@@ -340,7 +337,7 @@ def parse_args(argv):
         formatter_class=argparse.RawTextHelpFormatter,
     )
     parser_run.add_argument(
-        "run",
+        "target",
         help=(
             "Build and run the target executable.\n"
             "If --no-build is present, the build step is skipped.\n"
@@ -353,7 +350,6 @@ def parse_args(argv):
         ),
         default="",
         nargs="?",
-        metavar="target",
     )
     parser_run.add_argument(
         "--no-build", help="Skip build step.", action="store_true", default=False
@@ -426,20 +422,14 @@ def parse_args(argv):
     )
 
     parser_shell = sub_parser.add_parser(
-        "shell", help='Try "./ns3 shell --help" for more shell options'
-    )
-    parser_shell.add_argument(
-        "shell",
-        help="Export necessary environment variables and open a shell",
-        action="store_true",
-        default=False,
+        "shell", help="Export necessary environment variables and open a shell"
     )
 
     parser_docs = sub_parser.add_parser(
         "docs", help='Try "./ns3 docs --help" for more documentation options'
     )
     parser_docs.add_argument(
-        "docs",
+        "target",
         help="Build project documentation",
         choices=[
             "contributing",
@@ -545,8 +535,31 @@ def parse_args(argv):
         print("\n".join(textwrap.wrap(error_message, width=TERMINAL_WIDTH)))
         exit(1)
 
+    # Since Python 3.14, we cannot store_true positional arguments.
+    # To keep same behavior, we emulate what we had: one flag set to false for every subparser
+    # not set to anything. And build is an empty string.
+    def set_subparser_flags(parser, args):
+        sub_parser_actions = list(
+            filter(lambda x: isinstance(x, argparse._SubParsersAction), parser._actions)
+        )
+        sub_parsers = list(sub_parser_actions[0].choices.keys())
+        if args.subparser in sub_parsers:
+            sub_parsers.remove(args.subparser)
+
+        for parser in sub_parsers:
+            setattr(args, parser, "" if parser in ["build", "run", "show"] else False)
+
+        if args.subparser not in [None, "build", "run", "show"]:
+            setattr(args, args.subparser, True)
+
+        if args.subparser in ["build", "run", "docs"]:
+            setattr(args, args.subparser, args.target)
+        return args
+
+    args = set_subparser_flags(parser, args)
+
     # If run doesn't have a target, print the help message of the run parser
-    if "run" in args and args.run == "":
+    if args.subparser == "run" and args.run == "":
         parser_run.print_help()
         exit(-1)
 
