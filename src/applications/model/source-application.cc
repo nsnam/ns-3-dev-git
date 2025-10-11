@@ -163,20 +163,22 @@ SourceApplication::StopApplication()
     NS_LOG_FUNCTION(this);
     DoStopApplication();
     CancelEvents();
-    CloseConnection();
+    CloseSocket();
 }
 
-void
-SourceApplication::CloseConnection()
+bool
+SourceApplication::CloseSocket()
 {
     m_connected = false;
     if (m_socket)
     {
-        m_socket->Close();
+        const auto ret = m_socket->Close();
         m_socket->SetConnectCallback(MakeNullCallback<void, Ptr<Socket>>(),
                                      MakeNullCallback<void, Ptr<Socket>>());
         m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
+        return (ret == 0);
     }
+    return true;
 }
 
 void

@@ -73,9 +73,10 @@ class SourceApplication : public Application
     void DoDispose() override;
 
     /**
-     * @brief Close the connection
+     * @brief Close the socket
+     * @return true if the socket was closed, false if there was no socket to close
      */
-    void CloseConnection();
+    bool CloseSocket();
 
     /// Traced Callback: transmitted packets.
     TracedCallback<Ptr<const Packet>> m_txTrace;

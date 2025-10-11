@@ -193,7 +193,7 @@ MobileGaming::SendPacket()
     {
         m_currentStage = TrafficModelStage::INITIAL;
         CancelEvents();
-        CloseConnection();
+        CloseSocket();
     }
     else
     {

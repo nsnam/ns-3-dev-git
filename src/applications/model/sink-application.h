@@ -63,9 +63,10 @@ class SinkApplication : public Application
     void DoDispose() override;
 
     /**
-     * @brief Close all the connections
+     * @brief Close all the sockets
+     * @return true if all sockets closed successfully, false otherwise
      */
-    void CloseAllConnections();
+    bool CloseAllSockets();
 
     /// Callbacks for tracing the packet Rx events
     ns3::TracedCallback<Ptr<const Packet>> m_rxTraceWithoutAddress;
@@ -110,10 +111,11 @@ class SinkApplication : public Application
     uint32_t GetPort() const;
 
     /**
-     * @brief Close the connection
+     * @brief Close the socket
      * @param socket the socket to close
+     * @return true if the socket closed successfully, false otherwise
      */
-    void CloseConnection(Ptr<Socket> socket);
+    bool CloseSocket(Ptr<Socket> socket);
 
     /**
      * @brief Application specific startup code for child subclasses

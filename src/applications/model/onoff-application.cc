@@ -218,7 +218,7 @@ OnOffApplication::ScheduleNextTx()
     {
         // All done, cancel any pending events and close connection
         CancelEvents();
-        CloseConnection();
+        CloseSocket();
     }
 }
 

@@ -201,7 +201,7 @@ ThreeGppHttpClient::DoDispose()
     if (!Simulator::IsFinished())
     {
         CancelEvents();
-        CloseConnection();
+        CloseSocket();
     }
 
     SourceApplication::DoDispose(); // Chain up.
