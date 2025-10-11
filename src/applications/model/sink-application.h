@@ -73,7 +73,7 @@ class SinkApplication : public Application
     /// Traced Callback: received packets, source address.
     TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
 
-    Ptr<Socket> m_socket;  //!< Socket
+    Ptr<Socket> m_socket;  //!< Socket (IPv4 or IPv6, depending on local address)
     Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
 
     TypeId m_tid; //!< Protocol TypeId
