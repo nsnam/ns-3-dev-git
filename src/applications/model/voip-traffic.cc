@@ -42,7 +42,7 @@ VoipTraffic::GetTypeId()
                 "The type of protocol to use. This should be a subclass of ns3::SocketFactory",
                 TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                 TypeIdValue(TypeId::LookupByName("ns3::PacketSocketFactory")),
-                MakeTypeIdAccessor(&VoipTraffic::m_tid),
+                MakeTypeIdAccessor(&VoipTraffic::m_protocolTid),
                 MakeTypeIdChecker())
             .AddAttribute(
                 "ActivePacketPayloadSize",

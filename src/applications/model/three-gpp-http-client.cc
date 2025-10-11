@@ -34,7 +34,7 @@ ThreeGppHttpClient::ThreeGppHttpClient()
       m_httpVariables{CreateObject<ThreeGppHttpVariables>()}
 {
     NS_LOG_FUNCTION(this);
-    m_tid = TypeId::LookupByName("ns3::TcpSocketFactory");
+    m_protocolTid = TypeId::LookupByName("ns3::TcpSocketFactory");
 }
 
 // static

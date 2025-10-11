@@ -46,7 +46,7 @@ VirtualDesktop::GetTypeId()
                 "Protocol",
                 "The type of protocol to use. This should be a subclass of ns3::SocketFactory",
                 TypeIdValue(TypeId::LookupByName("ns3::TcpSocketFactory")),
-                MakeTypeIdAccessor(&VirtualDesktop::m_tid),
+                MakeTypeIdAccessor(&VirtualDesktop::m_protocolTid),
                 MakeTypeIdChecker())
             .AddAttribute(
                 "InitialPacketArrival",

@@ -52,7 +52,7 @@ BulkSendApplication::GetTypeId()
             .AddAttribute("Protocol",
                           "The type of protocol to use.",
                           TypeIdValue(TcpSocketFactory::GetTypeId()),
-                          MakeTypeIdAccessor(&BulkSendApplication::m_tid),
+                          MakeTypeIdAccessor(&BulkSendApplication::m_protocolTid),
                           MakeTypeIdChecker())
             .AddAttribute("EnableSeqTsSizeHeader",
                           "Add SeqTsSizeHeader to each packet",

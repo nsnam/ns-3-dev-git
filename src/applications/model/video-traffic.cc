@@ -87,7 +87,7 @@ VideoTraffic::GetTypeId()
                 "The type of protocol to use. This should be a subclass of ns3::SocketFactory",
                 TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT, // prevent setting after construction
                 TypeIdValue(UdpSocketFactory::GetTypeId()),
-                MakeTypeIdAccessor(&VideoTraffic::m_tid),
+                MakeTypeIdAccessor(&VideoTraffic::m_protocolTid),
                 MakeTypeIdChecker())
             .AddAttribute("CustomVideoBitRate",
                           "The video bit rate (if TrafficModelClassIdentifier is Custom).",
@@ -191,7 +191,7 @@ VideoTraffic::DoStartApplication(bool firstTime)
 
     if (firstTime)
     {
-        if (m_tid == TcpSocketFactory::GetTypeId())
+        if (m_protocolTid == TcpSocketFactory::GetTypeId())
         {
             UintegerValue uintegerValue;
             m_socket->GetAttribute("SegmentSize", uintegerValue);

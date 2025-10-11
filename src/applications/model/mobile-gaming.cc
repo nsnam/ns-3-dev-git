@@ -44,7 +44,7 @@ MobileGaming::GetTypeId()
                 "Protocol",
                 "The type of protocol to use. This should be a subclass of ns3::SocketFactory",
                 TypeIdValue(UdpSocketFactory::GetTypeId()),
-                MakeTypeIdAccessor(&MobileGaming::m_tid),
+                MakeTypeIdAccessor(&MobileGaming::m_protocolTid),
                 MakeTypeIdChecker())
             .AddAttribute(
                 "InitialPacketSize",

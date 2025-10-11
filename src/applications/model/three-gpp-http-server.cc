@@ -40,7 +40,7 @@ ThreeGppHttpServer::ThreeGppHttpServer()
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_INFO(this << " MTU size for this server application is " << m_mtuSize << " bytes.");
-    m_tid = TypeId::LookupByName("ns3::TcpSocketFactory");
+    m_protocolTid = TypeId::LookupByName("ns3::TcpSocketFactory");
 }
 
 // static

@@ -95,7 +95,7 @@ class SourceApplication : public Application
 
     Ptr<Socket> m_socket; //!< Socket
 
-    TypeId m_tid; //!< Protocol TypeId
+    TypeId m_protocolTid; //!< Protocol TypeId value
 
     Address m_peer;  //!< Peer address
     Address m_local; //!< Local address to bind to

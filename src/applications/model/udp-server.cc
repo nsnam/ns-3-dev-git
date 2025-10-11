@@ -56,7 +56,7 @@ UdpServer::UdpServer()
     : SinkApplication(DEFAULT_PORT)
 {
     NS_LOG_FUNCTION(this);
-    m_tid = TypeId::LookupByName("ns3::UdpSocketFactory");
+    m_protocolTid = TypeId::LookupByName("ns3::UdpSocketFactory");
 }
 
 UdpServer::~UdpServer()

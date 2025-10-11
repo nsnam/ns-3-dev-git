@@ -77,7 +77,7 @@ OnOffApplication::GetTypeId()
                           "The type of protocol to use. This should be "
                           "a subclass of ns3::SocketFactory",
                           TypeIdValue(UdpSocketFactory::GetTypeId()),
-                          MakeTypeIdAccessor(&OnOffApplication::m_tid),
+                          MakeTypeIdAccessor(&OnOffApplication::m_protocolTid),
                           // This should check for SocketFactory as a parent
                           MakeTypeIdChecker())
             .AddAttribute("EnableSeqTsSizeHeader",

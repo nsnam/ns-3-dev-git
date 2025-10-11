@@ -123,7 +123,7 @@ SourceApplication::StartApplication()
                             "Incompatible peer and local address IP version");
         }
 
-        m_socket = Socket::CreateSocket(GetNode(), m_tid);
+        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
         m_socket->SetConnectCallback(MakeCallback(&SourceApplication::ConnectionSucceeded, this),
                                      MakeCallback(&SourceApplication::ConnectionFailed, this));
 

@@ -42,7 +42,7 @@ PacketSink::GetTypeId()
             .AddAttribute("Protocol",
                           "The type id of the protocol to use for the rx socket.",
                           TypeIdValue(UdpSocketFactory::GetTypeId()),
-                          MakeTypeIdAccessor(&PacketSink::m_tid),
+                          MakeTypeIdAccessor(&PacketSink::m_protocolTid),
                           MakeTypeIdChecker())
             .AddAttribute("EnableSeqTsSizeHeader",
                           "Enable optional header tracing of SeqTsSizeHeader",
