@@ -62,6 +62,7 @@ Python 3.10 to 3.14.
 - (wifi) The TXOP Limit cannot be exceeded to transmit a DL MU PPDU
 - (wifi) TXOP limit can also be exceeded when sending a BlockAckReq
 - (wifi) A BlockAckReq shall not be transmitted on a link if its TID is not mapped to the link
+- (wifi) When a link is disabled as per the negotiated TID-to-Link Mapping, no frame shall be sent on it
 
 ## Release 3.48
 

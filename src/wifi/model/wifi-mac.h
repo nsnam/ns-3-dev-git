@@ -892,6 +892,15 @@ class WifiMac : public Object
                          uint8_t tid,
                          uint8_t linkId) const;
 
+    /**
+     * Get the set of links that have been disabled for the given MLD, i.e., no TID is mapped onto
+     * such links both in the DL direction and the UL direction.
+     *
+     * @param mldAddr the MLD MAC address of the given MLD
+     * @return the set of links that have been disabled for the given MLD
+     */
+    std::set<linkId_t> GetDisabledLinks(Mac48Address mldAddr);
+
     /// Information reported by ICF drop trace
     struct IcfDropInfo
     {

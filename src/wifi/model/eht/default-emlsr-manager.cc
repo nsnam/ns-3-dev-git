@@ -67,16 +67,38 @@ DefaultEmlsrManager::GetLinkToSendEmlOmn()
     NS_LOG_FUNCTION(this);
     auto linkId = GetStaMac()->GetLinkForPhy(m_mainPhyId);
     NS_ASSERT_MSG(linkId, "Link on which the main PHY is operating not found");
-    return *linkId;
+
+    // do not return a disabled link
+    const auto bssid = GetEhtFem(*linkId)->GetBssid();
+    const auto apMldAddr = GetStaMac()->GetMldAddress(bssid);
+    NS_ASSERT_MSG(apMldAddr, "AP MLD address not found");
+
+    auto disabledLinks = GetStaMac()->GetDisabledLinks(*apMldAddr);
+
+    if (!disabledLinks.contains(*linkId))
+    {
+        return *linkId;
+    }
+
+    auto setupLinks = GetStaMac()->GetSetupLinkIds();
+
+    for (const auto id : setupLinks)
+    {
+        if (!disabledLinks.contains(id))
+        {
+            return id;
+        }
+    }
+
+    NS_ABORT_MSG("All setup links are disabled!");
+    return SINGLE_LINK_OP_ID;
 }
 
 std::optional<uint8_t>
 DefaultEmlsrManager::ResendNotification(Ptr<const WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this);
-    auto linkId = GetStaMac()->GetLinkForPhy(m_mainPhyId);
-    NS_ASSERT_MSG(linkId, "Link on which the main PHY is operating not found");
-    return *linkId;
+    return GetLinkToSendEmlOmn();
 }
 
 void

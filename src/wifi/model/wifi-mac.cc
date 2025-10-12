@@ -1588,6 +1588,76 @@ WifiMac::ApplyTidLinkMapping(const Mac48Address& mldAddr, WifiDirection dir)
                                      notMappedLinks);
         }
     }
+
+    auto disabledLinks = GetDisabledLinks(mldAddr);
+
+    for (const auto id : disabledLinks)
+    {
+        for (const auto& [aci, ac] : wifiAcList)
+        {
+            auto linkAddr = GetLink(id).stationManager->GetAffiliatedStaAddress(mldAddr);
+            NS_ASSERT_MSG(linkAddr.has_value(),
+                          "No link address for MLD " << mldAddr << " on link " << +id);
+
+            m_scheduler->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
+                                     aci,
+                                     {WIFI_MGT_QUEUE, WIFI_CTL_QUEUE},
+                                     linkAddr.value(),
+                                     GetFrameExchangeManager(id)->GetAddress(),
+                                     {ac.GetLowTid(), ac.GetHighTid()},
+                                     {id});
+        }
+    }
+}
+
+std::set<linkId_t>
+WifiMac::GetDisabledLinks(Mac48Address mldAddr)
+{
+    NS_LOG_FUNCTION(this << mldAddr);
+
+    const auto dlIt = m_dlTidLinkMappings.find(mldAddr);
+    const auto ulIt = m_ulTidLinkMappings.find(mldAddr);
+
+    if (dlIt == m_dlTidLinkMappings.cend() || ulIt == m_ulTidLinkMappings.cend())
+    {
+        // no mapping has been ever negotiated with the given MLD in at least a direction, thus
+        // the default mapping is used for such direction(s)
+        return {};
+    }
+
+    std::set<linkId_t> disabledLinks;
+
+    // process the links setup with the given MLD
+    for (const auto& [id, link] : m_links)
+    {
+        if (!link->stationManager->GetMldAddress(mldAddr))
+        {
+            continue;
+        }
+
+        // find a TID mapped on this link in the DL direction
+        if (dlIt->second.empty() /* default link mapping */ ||
+            std::any_of(dlIt->second.cbegin(), dlIt->second.cend(), [=](auto&& tidLinkSet) {
+                return tidLinkSet.second.contains(id);
+            }))
+        {
+            continue;
+        }
+
+        // find a TID mapped on this link in the UL direction
+        if (ulIt->second.empty() /* default link mapping */ ||
+            std::any_of(ulIt->second.cbegin(), ulIt->second.cend(), [=](auto&& tidLinkSet) {
+                return tidLinkSet.second.contains(id);
+            }))
+        {
+            continue;
+        }
+
+        // this link is disabled
+        disabledLinks.emplace(id);
+    }
+
+    return disabledLinks;
 }
 
 void
