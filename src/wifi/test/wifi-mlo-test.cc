@@ -10,7 +10,7 @@
 
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
-#include "ns3/ht-frame-exchange-manager.h"
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/mgt-headers.h"
@@ -31,6 +31,7 @@
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-protection.h"
+#include "ns3/wifi-static-setup-helper.h"
 
 #include <algorithm>
 #include <array>
@@ -41,6 +42,32 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiMloTest");
+
+namespace
+{
+/**
+ * @param scenario the CtrlAndMgmtFramesWithTtlmTest scenario to test
+ * @returns a string identifying the scenario to test
+ */
+std::string
+GetScenarioStr(CtrlAndMgmtFramesWithTtlmTest::Scenario scenario)
+{
+    using enum CtrlAndMgmtFramesWithTtlmTest::Scenario;
+    switch (scenario)
+    {
+    case TTLM_LINK_TID_NOT_MAPPED_DL:
+        return "TTLM_LINK_TID_NOT_MAPPED_DL";
+    case TTLM_LINK_TID_NOT_MAPPED_UL:
+        return "TTLM_LINK_TID_NOT_MAPPED_UL";
+    case TTLM_LINK_DISABLED:
+        return "TTLM_LINK_DISABLED";
+    default:
+        NS_ABORT_MSG("Unexpected value " << static_cast<uint16_t>(scenario));
+        return "";
+    }
+}
+
+} // namespace
 
 GetRnrLinkInfoTest::GetRnrLinkInfoTest()
     : TestCase("Check the implementation of WifiAssocManager::GetNextAffiliatedAp()")
@@ -3400,6 +3427,196 @@ BarAfterDroppedMpduTest::DoRun()
     Simulator::Destroy();
 }
 
+CtrlAndMgmtFramesWithTtlmTest::CtrlAndMgmtFramesWithTtlmTest(Scenario scenario)
+    : MultiLinkOperationsTestBase("Check transmission of control and management frames when a "
+                                  "TID-to-Link Mapping is setup, scenario " +
+                                      GetScenarioStr(scenario),
+                                  1,
+                                  BaseParams{{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                                             {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                                             {},
+                                             WifiAssocType::ML_SETUP}),
+      m_scenario(scenario)
+{
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::DoSetup()
+{
+    MultiLinkOperationsTestBase::DoSetup();
+
+    auto staEhtConfig = m_staMacs[0]->GetEhtConfiguration();
+    staEhtConfig->m_tidLinkMappingSupport = WifiTidToLinkMappingNegSupport::ANY_LINK_SET;
+
+    switch (m_scenario)
+    {
+    case TTLM_LINK_TID_NOT_MAPPED_DL:
+        // TIDs 0, 6 and 7 mapped to link 0 only, other TIDs mapped to both links
+        staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue("0,6,7 0; 1,2,3,4,5 0,1"));
+        break;
+    case TTLM_LINK_TID_NOT_MAPPED_UL:
+        // TIDs 0, 6 and 7 mapped to link 0 only, other TIDs mapped to both links
+        staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue("0,6,7 0; 1,2,3,4,5 0,1"));
+        break;
+    case TTLM_LINK_DISABLED:
+        // all TIDs mapped to link 0, link 1 is disabled
+        staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue("0,1,2,3,4,5,6,7 0"));
+        staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue("0,1,2,3,4,5,6,7 0"));
+        break;
+    default:
+        NS_ABORT_MSG("Unknown scenario: " << static_cast<uint16_t>(m_scenario));
+    }
+
+    // static setup
+    m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
+    m_apMac->TraceDisconnectWithoutContext(
+        "AssociatedSta",
+        MakeCallback(&CtrlAndMgmtFramesWithTtlmTest::SetSsid, this));
+
+    WifiStaticSetupHelper::SetStaticAssociation(m_apMac->GetDevice(), m_staMacs[0]->GetDevice());
+    WifiStaticSetupHelper::SetStaticBlockAck(m_apMac->GetDevice(),
+                                             NetDeviceContainer(m_staMacs[0]->GetDevice()),
+                                             {0});
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::Transmit(Ptr<WifiMac> mac,
+                                        uint8_t phyId,
+                                        WifiConstPsduMap psduMap,
+                                        WifiTxVector txVector,
+                                        double txPowerW)
+{
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+
+    NS_TEST_ASSERT_MSG_EQ(m_events.empty(),
+                          false,
+                          "Received " << hdr.GetTypeString() << ", no more frames expected");
+
+    // check that the expected frame is being transmitted
+    NS_TEST_EXPECT_MSG_EQ(WifiMacHeader(m_events.front().hdrType).GetTypeString(),
+                          std::string(hdr.GetTypeString()),
+                          "Unexpected MAC header type for frame #" << ++m_processedEvents);
+    // perform actions/checks, if any
+    if (m_events.front().func)
+    {
+        m_events.front().func(psdu, txVector, linkId.value());
+    }
+
+    m_events.pop_front();
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::InsertEvents()
+{
+    PacketSocketAddress sockAddr;
+    sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+    sockAddr.SetPhysicalAddress(m_staMacs[0]->GetAddress());
+    sockAddr.SetProtocol(1);
+
+    if (m_scenario == TTLM_LINK_TID_NOT_MAPPED_UL)
+    {
+        // in this scenario, DL data frames can be sent on both link 0 and 1; for the purpose of
+        // this test, we want the DL data frame to be sent on link 0, thus we block transmission
+        // of DL data frames on link 1 for whatever reason
+        m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::WAITING_ADDBA_RESP,
+                                                     AC_BE,
+                                                     {WIFI_QOSDATA_QUEUE},
+                                                     m_staMacs[0]->GetAddress(),
+                                                     m_apMac->GetAddress(),
+                                                     {0},
+                                                     {1});
+    }
+
+    // install client application generating 2 packets of 1000 bytes on the AP MLD
+    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(sockAddr, m_nPackets, 1000));
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected RA for the data frame sent by the AP MLD");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(), m_nPackets, "Expected to transmit an A-MPDU");
+            NS_TEST_EXPECT_MSG_EQ(+linkId, 0, "QoS data frame sent on unexpected link");
+
+            // enqueue a BAR
+            auto acBe = m_apMac->GetQosTxop(AC_BE);
+            auto [reqHdr, hdr] = acBe->PrepareBlockAckRequest(m_staMacs[0]->GetAddress(), 0);
+            acBe->GetBaManager()->ScheduleBar(reqHdr, hdr);
+
+            // enqueue a management frame to be sent on link 1
+            auto ehtFem = StaticCast<EhtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(1));
+            ehtFem->SendEmlOmn(m_staMacs[0]->GetFrameExchangeManager(1)->GetAddress(), MgtEmlOmn{});
+
+            Simulator::ScheduleNow([=, this] {
+                // request channel access on link 1 (channel access is granted on link 0), but the
+                // BAR cannot be sent on link 1
+                acBe->StartAccessAfterEvent(1,
+                                            Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                            Txop::CHECK_MEDIUM_BUSY);
+                // check that a BAR is queued in the AC BE queue
+                auto mpdu = acBe->GetWifiMacQueue()->PeekByQueueId(
+                    MakeWifiUnicastQueueId(WIFI_CTL_QUEUE, m_staMacs[0]->GetAddress()));
+                NS_TEST_ASSERT_MSG_NE(mpdu, nullptr, "Expected a control frame in the AC BE queue");
+                NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().IsBlockAckReq(),
+                                      true,
+                                      "Expected a BAR in the AC BE queue");
+                // check that the BAR cannot be transmitted on link 1
+                auto htFem =
+                    StaticCast<HtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(1));
+                NS_TEST_EXPECT_MSG_EQ(htFem->GetBar(AC_BE),
+                                      nullptr,
+                                      "Expected no BAR can be transmitted on link 1");
+            });
+        });
+
+    if (m_scenario != TTLM_LINK_DISABLED)
+    {
+        // the management frame is sent on link 1, which is blocked for data frames and BARs
+        m_events.emplace_back(
+            WIFI_MAC_MGT_ACTION,
+            [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+                NS_TEST_EXPECT_MSG_EQ(+linkId, 1, "Management frame sent on unexpected link");
+            });
+
+        m_events.emplace_back(WIFI_MAC_CTL_ACK);
+        m_events.emplace_back(WIFI_MAC_CTL_END);
+    }
+
+    // the BAR cannot be sent on link 1, hence it is transmitted on link 0 after the ongoing
+    // frame exchange
+    m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKREQ,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId, 0, "BlockAckReq frame sent on unexpected link");
+        });
+
+    m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::DoRun()
+{
+    Simulator::ScheduleNow(&CtrlAndMgmtFramesWithTtlmTest::InsertEvents, this);
+
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
 WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     : TestSuite("wifi-mlo", Type::UNIT)
 {
@@ -3670,6 +3887,16 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     AddTestCase(new StartSeqNoUpdateAfterAddBaTimeoutTest(), TestCase::Duration::QUICK);
     AddTestCase(new BarAfterDroppedMpduTest(WifiAssocType::ML_SETUP), TestCase::Duration::QUICK);
     AddTestCase(new BarAfterDroppedMpduTest(WifiAssocType::LEGACY), TestCase::Duration::QUICK);
+
+    AddTestCase(new CtrlAndMgmtFramesWithTtlmTest(
+                    CtrlAndMgmtFramesWithTtlmTest::TTLM_LINK_TID_NOT_MAPPED_DL),
+                TestCase::Duration::QUICK);
+    AddTestCase(new CtrlAndMgmtFramesWithTtlmTest(
+                    CtrlAndMgmtFramesWithTtlmTest::TTLM_LINK_TID_NOT_MAPPED_UL),
+                TestCase::Duration::QUICK);
+    AddTestCase(
+        new CtrlAndMgmtFramesWithTtlmTest(CtrlAndMgmtFramesWithTtlmTest::TTLM_LINK_DISABLED),
+        TestCase::Duration::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite

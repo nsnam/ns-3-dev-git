@@ -908,6 +908,83 @@ class BarAfterDroppedMpduTest : public MultiLinkOperationsTestBase
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Test transmission of control and management frames when a TID-to-Link Mapping is setup
+ *
+ * In this test, a 2-link non-AP MLD associates with a 2-link AP MLD using ML setup. Three different
+ * TID-to-Link Mappings are considered:
+ * - link 1 is not used for DL transmissions for TID 0, 6 and 7
+ * - link 1 is not used for UL transmissions for TID 0, 6 and 7
+ * - link 1 is disabled (i.e., no TID is mapped onto it)
+ * While the AP MLD transmits a DL data frame for TID 0 on link 0, a BlockAckReq (which may be sent
+ * on any link) is enqueued. It is checked that the BlockAckReq is queued, it cannot be transmitted
+ * on link 1 and it is transmitted on link 0 after the DL data frame exchange is completed. While
+ * the AP MLD transmits the DL data frame for TID 0 on link 0, an individually addressed management
+ * frame to be sent on link 1 is also queued (AC VO is used). It is checked that the management
+ * frame is never transmitted, if link 1 is disabled, or it is promptly transmitted on link 1,
+ * otherwise.
+ */
+class CtrlAndMgmtFramesWithTtlmTest : public MultiLinkOperationsTestBase
+{
+  public:
+    /// Enumeration of the tested scenarios
+    enum Scenario : uint8_t
+    {
+        TTLM_LINK_TID_NOT_MAPPED_DL = 0,
+        TTLM_LINK_TID_NOT_MAPPED_UL,
+        TTLM_LINK_DISABLED
+    };
+
+    /**
+     * Constructor.
+     *
+     * @param scenario the tested scenario
+     */
+    CtrlAndMgmtFramesWithTtlmTest(Scenario scenario);
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /// Actions and checks to perform upon the transmission of each frame
+    struct Events
+    {
+        /**
+         * Constructor.
+         *
+         * @param type the frame MAC header type
+         * @param f function to perform actions and checks
+         */
+        Events(WifiMacType type,
+               std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, linkId_t)>&& f = {})
+            : hdrType(type),
+              func(f)
+        {
+        }
+
+        WifiMacType hdrType; ///< MAC header type of frame being transmitted
+        std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>
+            func; ///< function to perform actions and checks
+    };
+
+    /// Insert elements in the list of expected events (transmitted frames)
+    void InsertEvents();
+
+  private:
+    Scenario m_scenario;              //!< the tested scenario
+    const std::size_t m_nPackets{2};  //!< number of generated packets
+    std::list<Events> m_events;       //!< list of events for a test run
+    std::size_t m_processedEvents{0}; //!< number of processed events
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief wifi 11be MLD Test Suite
  */
 class WifiMultiLinkOperationsTestSuite : public TestSuite
