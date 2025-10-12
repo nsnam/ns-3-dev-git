@@ -155,8 +155,19 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @return the next BAR or Trigger Frame to be sent, if any
      */
     Ptr<WifiMpdu> GetBar(AcIndex ac,
-                         std::optional<uint8_t> optTid = std::nullopt,
+                         std::optional<tid_t> optTid = std::nullopt,
                          std::optional<Mac48Address> optAddress = std::nullopt);
+
+    /**
+     * Check if a BlockAckReq to the given recipient for the given TID can be transmitted on this
+     * link.
+     *
+     * @param recipient the (MLD or link) address of the given recipient
+     * @param tid the given TID
+     * @return whether a BlockAckReq to the given recipient for the given TID can be transmitted on
+     *         this link
+     */
+    virtual bool CanTransmitBarTo(Mac48Address recipient, tid_t tid) const;
 
     /**
      * Get a PSDU containing the given MPDU

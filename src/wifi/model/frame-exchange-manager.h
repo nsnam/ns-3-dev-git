@@ -35,6 +35,7 @@
 namespace ns3
 {
 
+class AdhocWifiMac;
 class ApWifiMac;
 class StaWifiMac;
 
@@ -556,15 +557,16 @@ class FrameExchangeManager : public Object
      */
     virtual void NotifyChannelReleased();
 
-    Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
-    WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
-    EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
-    EventId m_sendCtsEvent;                           //!< the event to send a CTS after an (MU-)RTS
-    Ptr<WifiMac> m_mac;                               //!< the MAC layer on this station
-    Ptr<ApWifiMac> m_apMac;                           //!< AP MAC layer pointer (null if not an AP)
-    Ptr<StaWifiMac> m_staMac;                         //!< STA MAC layer pointer (null if not a STA)
-    Ptr<MacTxMiddle> m_txMiddle;                      //!< the MAC TX Middle on this station
-    Ptr<MacRxMiddle> m_rxMiddle;                      //!< the MAC RX Middle on this station
+    Ptr<Txop> m_dcf;              //!< the DCF/EDCAF that gained channel access
+    WifiTxTimer m_txTimer;        //!< the timer set upon frame transmission
+    EventId m_navResetEvent;      //!< the event to reset the NAV after an RTS
+    EventId m_sendCtsEvent;       //!< the event to send a CTS after an (MU-)RTS
+    Ptr<WifiMac> m_mac;           //!< the MAC layer on this station
+    Ptr<ApWifiMac> m_apMac;       //!< AP MAC layer pointer (null if not an AP)
+    Ptr<StaWifiMac> m_staMac;     //!< STA MAC layer pointer (null if not a STA)
+    Ptr<AdhocWifiMac> m_adhocMac; //!< ADHOC MAC layer pointer (null if not ADHOC)
+    Ptr<MacTxMiddle> m_txMiddle;  //!< the MAC TX Middle on this station
+    Ptr<MacRxMiddle> m_rxMiddle;  //!< the MAC RX Middle on this station
     Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
     Ptr<WifiPhy> m_phy;                               //!< the PHY layer on this station
     Mac48Address m_self;                              //!< the MAC address of this device

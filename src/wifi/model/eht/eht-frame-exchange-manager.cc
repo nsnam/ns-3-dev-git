@@ -177,6 +177,33 @@ EhtFrameExchangeManager::UsingOtherEmlsrLink() const
 }
 
 bool
+EhtFrameExchangeManager::CanTransmitBarTo(Mac48Address recipient, tid_t tid) const
+{
+    auto recipientMld = m_mac->GetMldAddress(recipient);
+
+    if (!recipientMld.has_value())
+    {
+        return HeFrameExchangeManager::CanTransmitBarTo(recipient, tid);
+    }
+
+    // we don't check if the TID is mapped on this link if this is an adhoc STA
+    if (m_adhocMac)
+    {
+        return HeFrameExchangeManager::CanTransmitBarTo(recipient, tid);
+    }
+
+    // Sec. 35.3.7.2.1 of 802.11be D7.0
+    // If a link is enabled for a non-AP MLD, then:
+    // - Individually addressed Management frames, QoS Null frames, and Control frames may be sent
+    //   on any enabled links between the corresponding non-AP MLD and AP MLD both in DL and UL,
+    //   except that a BlockAckReq frame requesting status for TID(s) that are not mapped to a link
+    //   shall not be transmitted on the link by the corresponding non-AP STA affiliated with the
+    //   non-AP MLD and by the corresponding AP affiliated with the AP MLD.
+    return m_mac->TidMappedOnLink(*recipientMld, WifiDirection::DOWNLINK, tid, m_linkId) &&
+           m_mac->TidMappedOnLink(*recipientMld, WifiDirection::UPLINK, tid, m_linkId);
+}
+
+bool
 EhtFrameExchangeManager::StartFrameExchange()
 {
     NS_LOG_FUNCTION(this);

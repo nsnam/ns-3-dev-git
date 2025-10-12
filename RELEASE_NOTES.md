@@ -61,6 +61,7 @@ Python 3.10 to 3.14.
 - (wifi) The building blocks to enable layer-2 roaming are now added, allowing the construction of a roaming manager (no such a manager is provided yet).
 - (wifi) The TXOP Limit cannot be exceeded to transmit a DL MU PPDU
 - (wifi) TXOP limit can also be exceeded when sending a BlockAckReq
+- (wifi) A BlockAckReq shall not be transmitted on a link if its TID is not mapped to the link
 
 ## Release 3.48
 

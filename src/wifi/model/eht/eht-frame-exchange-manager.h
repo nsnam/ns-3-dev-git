@@ -79,6 +79,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     void SetLinkId(uint8_t linkId) override;
     Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const override;
+    bool CanTransmitBarTo(Mac48Address recipient, tid_t tid) const override;
 
     /**
      * Send an EML Operating Mode Notification frame to the given station.

@@ -568,9 +568,15 @@ HtFrameExchangeManager::StartFrameExchange()
     return QosFrameExchangeManager::StartFrameExchange();
 }
 
+bool
+HtFrameExchangeManager::CanTransmitBarTo(Mac48Address recipient, tid_t tid) const
+{
+    return true;
+}
+
 Ptr<WifiMpdu>
 HtFrameExchangeManager::GetBar(AcIndex ac,
-                               std::optional<uint8_t> optTid,
+                               std::optional<tid_t> optTid,
                                std::optional<Mac48Address> optAddress)
 {
     NS_LOG_FUNCTION(this << +ac << optTid.has_value() << optAddress.has_value());
@@ -595,8 +601,17 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         {
             CtrlBAckRequestHeader reqHdr;
             bar->GetPacket()->PeekHeader(reqHdr);
-            auto tid = reqHdr.GetTidInfo();
-            Mac48Address recipient = bar->GetHeader().GetAddr1();
+            const auto tid = reqHdr.GetTidInfo();
+            const auto recipient = bar->GetHeader().GetAddr1();
+
+            if (!CanTransmitBarTo(recipient, tid))
+            {
+                NS_LOG_DEBUG("BAR " << *bar << " cannot be transmitted to " << recipient << " TID "
+                                    << +tid << " on link " << +m_linkId);
+                prevBar = bar;
+                continue;
+            }
+
             auto recipientMld = m_mac->GetMldAddress(recipient);
 
             // the scheduler should not return a BlockAckReq that cannot be sent on this link:
