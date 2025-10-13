@@ -1540,7 +1540,11 @@ def run_step(args, target_to_run, target_args):
             if target_to_run in ["mpiexec", "mpirun"] and os.getenv("MPI_CI"):
                 if shutil.which("ompi_info"):
                     try:
-                        subprocess.check_call([target_to_run, "--allow-run-as-root", "dir"])
+                        subprocess.check_call(
+                            [target_to_run, "--allow-run-as-root", "cmake", "--version"],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL,
+                        )
                         target_args = ["--allow-run-as-root"] + target_args
                     except subprocess.CalledProcessError:
                         pass
