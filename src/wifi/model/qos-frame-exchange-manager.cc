@@ -259,10 +259,10 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 
     // we get here if TXOP limit is null
     m_initialFrame = true;
+    m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
 
     if (StartFrameExchange(m_edca, Time::Min(), true))
     {
-        m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
         return true;
     }
 
