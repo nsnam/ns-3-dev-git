@@ -277,11 +277,9 @@ DsoMultiUserScheduler::GetTxVectorForDlMu(std::function<bool(const MasterInfo&)>
     auto staIt = firstCandidate;
     m_candidates.clear();
 
-    // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
-    // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
-    // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016).
-    // For the moment, we are considering just one MPDU per receiver.
-    const auto actualAvailableTime = (m_initialFrame ? Time::Min() : m_availableTime);
+    // The TXOP holder may exceed the TXOP limit only if it does not transmit more than one Data
+    // or Management frame in the TXOP, only if it does not transmit a DL MU-MIMO PPDU in the TXOP
+    // (Sec. 10.23.2.9 of 802.11-2024)
 
     WifiTxParameters txParams;
     while (staIt != m_staListDl[primaryAc].end() &&
@@ -322,7 +320,7 @@ DsoMultiUserScheduler::GetTxVectorForDlMu(std::function<bool(const MasterInfo&)>
                         {ru, suTxVector.GetMode().GetMcsValue(), suTxVector.GetNss()});
                     txParams.m_txVector = txVector;
 
-                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, txParams, actualAvailableTime))
+                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, txParams, m_availableTime))
                     {
                         NS_LOG_DEBUG("Adding the peeked frame violates the time constraints");
                         txVector = txVectorCopy;

@@ -159,8 +159,9 @@ EmlsrDlTxopTest::DoSetup()
         m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
     }
 
+    // the TXOP Limit must be large enough to transmit an MPDU to two clients in a DL MU PPDU
     m_apMac->GetQosTxop(AC_BE)->SetTxopLimits(
-        {MicroSeconds(3200), MicroSeconds(3200), MicroSeconds(3200)});
+        {MicroSeconds(3680), MicroSeconds(3680), MicroSeconds(3680)});
 
     if (m_nEmlsrStations + m_nNonEmlsrStations > 1)
     {
@@ -219,8 +220,10 @@ EmlsrDlTxopTest::StartTraffic()
         });
 
         Simulator::Schedule(m_fe2to3delay + MilliSeconds(5 * (m_nEmlsrStations + 1)), [=, this]() {
+            // the packet size should be large enough to avoid that all the generated MPDUs can be
+            // aggregated in an A-MPDU whose transmission fits in a single TXOP
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, id, 8 / m_nEmlsrStations, 650));
+                GetApplication(DOWNLINK, id, 8 / m_nEmlsrStations, 1200));
         });
     }
 }

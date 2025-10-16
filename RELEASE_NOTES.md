@@ -51,6 +51,7 @@ The required Doxygen version for documentation generation is now version 1.13.
 - (wifi) Extend Thompson Sampling rate manager to support EHT rates
 - (wifi) Extend Thompson Sampling rate manager to support UHR rates
 - (wifi) Immediate channel access should not be postponed by a backoff slot if channel access is requested at a slot boundary
+- (wifi) The TXOP Limit cannot be exceeded to transmit a DL MU PPDU
 
 ## Release 3.44
 
