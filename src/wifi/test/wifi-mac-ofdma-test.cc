@@ -230,11 +230,16 @@ TestMultiUserScheduler::SelectTxFormat()
                 continue;
             }
 
+            NS_ASSERT(m_edca);
+            auto txopStartTime = m_edca->GetTxopStartTime(m_linkId);
+            NS_ASSERT_MSG(txopStartTime.has_value(), "A TXOP must be ongoing");
+            auto initialFrame = (txopStartTime.value() == Simulator::Now());
+
             Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop(tid)->GetNextMpdu(SINGLE_LINK_OP_ID,
                                                                        peeked,
                                                                        m_txParams,
                                                                        m_availableTime,
-                                                                       m_initialFrame);
+                                                                       initialFrame);
             if (!mpdu)
             {
                 NS_LOG_DEBUG("Not enough time to send frames to all the stations");
