@@ -17,6 +17,9 @@ and references prefixed by '!' refer to a
 ns-3.46.1 is a small update to ns-3.46 to fix build issues discovered after release.
 There should be no model behavior or API changes compared with ns-3.46.
 
+This release is available from:
+<https://www.nsnam.org/release/ns-3.46.1.tar.bz2>
+
 ### Supported platforms
 
 This release is intended to work on systems with the following minimal
