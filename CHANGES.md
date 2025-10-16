@@ -12,15 +12,12 @@ Note that users who upgrade the simulator across versions, or who work directly 
 
 This file is a best-effort approach to solving this issue; we will do our best but can guarantee that there will be things that fall through the cracks, unfortunately. If you, as a user, can suggest improvements to this file based on your experience, please contribute a patch or drop us a note on ns-developers mailing list.
 
-## Changes from ns-3.46 to ns-3-dev
+## Changes from ns-3.46 to ns-3.46.1
 
-### New API
-
-### Changes to existing API
-
-### Changes to build system
-
-### Changed behavior
+The ns-3.46.1 contains some small build system fixes discovered after the ns-3.46 release, and two
+new module documentation chapters (see [RELEASE_NOTES.md](RELEASE_NOTES.md)). There are no API
+changes, changes to how the build system works, or changed behavior of the models, compared with
+the ns-3.46 release.
 
 ## Changes from ns-3.45 to ns-3.46
 

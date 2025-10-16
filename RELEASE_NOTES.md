@@ -12,7 +12,10 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
-## Release 3-dev
+## Release 3.46.1
+
+ns-3.46.1 is a small update to ns-3.46 to fix build issues discovered after release.
+There should be no model behavior or API changes compared with ns-3.46.
 
 ### Supported platforms
 
@@ -36,7 +39,13 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### New user-visible features
 
+- (doc) New module documentation for mobility and propagation modules
+
 ### Bugs fixed
+
+- (build) The ns3 script was not compatible with Python 3.14
+- (build) A missing header include in test.cc was breaking the g++-12 build
+- (build) Fixed OpenMPI-based build on Alpine Linux
 
 ## Release 3.46
 
