@@ -59,7 +59,12 @@ DsoMultiUserScheduler::SelectTxFormat()
         return *format;
     }
 
-    if (m_initialFrame && m_dsoTxop)
+    NS_ASSERT(m_edca);
+    auto txopStartTime = m_edca->GetTxopStartTime(m_linkId);
+    NS_ASSERT_MSG(txopStartTime.has_value(), "A TXOP must be ongoing");
+    auto initialFrame = (txopStartTime.value() == Simulator::Now());
+
+    if (initialFrame && m_dsoTxop)
     {
         m_dsoTxop = false;
         m_dsoRuAllocation.clear();
@@ -71,7 +76,7 @@ DsoMultiUserScheduler::SelectTxFormat()
         return SU_TX;
     }
 
-    if (m_initialFrame && m_allowedWidth >= MHz_t{80})
+    if (initialFrame && m_allowedWidth >= MHz_t{80})
     {
         // try sending a BSRP Trigger Frame as a DSO ICF
         const auto direction = (!m_enableUlOfdma || GetLastTxFormat(m_linkId) != DL_MU_TX)
@@ -93,7 +98,7 @@ DsoMultiUserScheduler::SelectTxFormat()
     // try sending a regular BSRP Trigger Frame
     if (!m_dsoTxop && m_enableUlOfdma && m_enableBsrp &&
         (GetLastTxFormat(m_linkId) == DL_MU_TX ||
-         ((m_initialFrame || m_trigger.GetType() != TriggerFrameType::BSRP_TRIGGER) && !mpdu)))
+         ((initialFrame || m_trigger.GetType() != TriggerFrameType::BSRP_TRIGGER) && !mpdu)))
     {
         TxFormat txFormat = TrySendingBsrpTf();
 

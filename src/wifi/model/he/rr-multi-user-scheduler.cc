@@ -145,9 +145,14 @@ RrMultiUserScheduler::SelectTxFormat()
         return SU_TX;
     }
 
+    NS_ASSERT(m_edca);
+    auto txopStartTime = m_edca->GetTxopStartTime(m_linkId);
+    NS_ASSERT_MSG(txopStartTime.has_value(), "A TXOP must be ongoing");
+    auto initialFrame = (txopStartTime.value() == Simulator::Now());
+
     if (m_enableUlOfdma && m_enableBsrp &&
         (GetLastTxFormat(m_linkId) == DL_MU_TX ||
-         ((m_initialFrame || m_trigger.GetType() != TriggerFrameType::BSRP_TRIGGER) && !mpdu)))
+         ((initialFrame || m_trigger.GetType() != TriggerFrameType::BSRP_TRIGGER) && !mpdu)))
     {
         TxFormat txFormat = TrySendingBsrpTf();
 
