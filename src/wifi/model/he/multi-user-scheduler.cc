@@ -241,15 +241,13 @@ MultiUserScheduler::AccessReqTimeout(uint8_t linkId)
 MultiUserScheduler::TxFormat
 MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
                                         Time availableTime,
-                                        bool initialFrame,
                                         MHz_t allowedWidth,
                                         uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame << allowedWidth << linkId);
+    NS_LOG_FUNCTION(this << edca << availableTime << allowedWidth << linkId);
 
     m_edca = edca;
     m_availableTime = availableTime;
-    m_initialFrame = initialFrame;
     m_allowedWidth = allowedWidth;
     m_linkId = linkId;
 

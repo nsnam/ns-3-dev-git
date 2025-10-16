@@ -77,16 +77,12 @@ class MultiUserScheduler : public Object
      * @param edca the EDCAF which has been granted the opportunity to transmit
      * @param availableTime the amount of time allowed for the frame exchange. Pass
      *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
      * @param allowedWidth the allowed width for the next transmission
      * @param linkId the ID of the link over which channel access was gained
      * @return the format of the next transmission
      */
     TxFormat NotifyAccessGranted(Ptr<QosTxop> edca,
                                  Time availableTime,
-                                 bool initialFrame,
                                  MHz_t allowedWidth,
                                  uint8_t linkId);
 
@@ -261,7 +257,6 @@ class MultiUserScheduler : public Object
     Ptr<ApWifiMac> m_apMac;       //!< the AP wifi MAC
     Ptr<QosTxop> m_edca;          //!< the AC that gained channel access
     Time m_availableTime;         //!< the time available for frame exchange
-    bool m_initialFrame;          //!< true if a TXOP is being started
     MHz_t m_allowedWidth;         //!< the allowed width for the current transmission
     uint8_t m_linkId;             //!< the ID of the link over which channel access has been granted
     Time m_defaultTbPpduDuration; //!< the default duration of TB PPDUs solicited by Basic TFs
