@@ -12,7 +12,7 @@
  * Specifically, most changes (which are also highlighted throughout the code)
  * impact the main method, and comprise:
  * - the configuration of ad-hoc propagation and channel condition models;
- * - the use of GeocentricConstantPositionMobilityModel for the nodes mobility.
+ * - the use of GeocentricConstantPositionMobilityModel for the nodes' mobility.
  * The pre-configured parameters are the one provided by 3GPP in TR 38.821,
  * more specifically scenario 10 in down-link mode.
  * Two static nodes, one on the ground and one in orbit, communicate with each other.
@@ -21,17 +21,12 @@
  */
 
 #include "ns3/antenna-model.h"
-#include "ns3/channel-condition-model.h"
-#include "ns3/constant-position-mobility-model.h"
 #include "ns3/core-module.h"
 #include "ns3/geocentric-constant-position-mobility-model.h"
 #include "ns3/isotropic-antenna-model.h"
 #include "ns3/mobility-model.h"
-#include "ns3/net-device.h"
 #include "ns3/node-container.h"
 #include "ns3/node.h"
-#include "ns3/parabolic-antenna-model.h"
-#include "ns3/simple-net-device.h"
 #include "ns3/spectrum-signal-parameters.h"
 #include "ns3/three-gpp-channel-model.h"
 #include "ns3/three-gpp-propagation-loss-model.h"
@@ -195,21 +190,15 @@ struct ComputeSnrParams
 
 /**
  * Perform the beamforming using the DFT beamforming method
- * @param thisDevice the device performing the beamforming
- * @param thisAntenna the antenna object associated to thisDevice
- * @param otherDevice the device towards which point the beam
+ * @param txMob the mobility model of the node performing the beamforming
+ * @param thisAntenna the antenna object associated to txMob
+ * @param rxMob the mobility model of the node towards which will point the beam
  */
 static void
-DoBeamforming(Ptr<NetDevice> thisDevice,
-              Ptr<PhasedArrayModel> thisAntenna,
-              Ptr<NetDevice> otherDevice)
+DoBeamforming(Ptr<MobilityModel> rxMob, Ptr<PhasedArrayModel> thisAntenna, Ptr<MobilityModel> txMob)
 {
-    // retrieve the position of the two devices
-    Vector aPos = thisDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
-    Vector bPos = otherDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
-
     // compute the azimuth and the elevation angles
-    Angles completeAngle(bPos, aPos);
+    Angles completeAngle(txMob->GetPosition(), rxMob->GetPosition());
     double hAngleRadian = completeAngle.GetAzimuth();
     double vAngleRadian = completeAngle.GetInclination(); // the elevation angle
 
@@ -405,16 +394,6 @@ main(int argc, char* argv[])
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // Start changes with respect to three-gpp-channel-example, here a mobility model
     // tailored to NTN scenarios is used (GeocentricConstantPositionMobilityModel)
     // create the tx and rx mobility models, set the positions
@@ -467,8 +446,8 @@ main(int argc, char* argv[])
     // End changes with respect to three-gpp-channel-example
 
     // set the beamforming vectors
-    DoBeamforming(rxDev, rxAntenna, txDev);
-    DoBeamforming(txDev, txAntenna, rxDev);
+    DoBeamforming(rxMob, rxAntenna, txMob);
+    DoBeamforming(txMob, txAntenna, rxMob);
 
     // Open the output results file
     resultsFile.open("ntn-snr-trace.txt", std::ios::out);

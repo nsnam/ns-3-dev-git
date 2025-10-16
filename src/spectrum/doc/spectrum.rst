@@ -659,41 +659,47 @@ please have a look at the documentation of the classes
 
 **Note:**
 
-  * Currently, no error model is provided; a link-to-system campaign may be
-    needed to incorporate it in existing modules.
-
-  * The model does not include any spatial consistency update procedure
-    (see [TR38901]_, Sec. 7.6.1). The implementation of this feature is left
-    as future work.
+  * Since ns-3.47, the model includes an update technique aligned with the
+    3GPP TR 38.901 spatial-consistency procedure (see [TR38901]_, Sec. 7.6.3),
+    based on Procedure A (Sec. 7.6.3.2). The channel-parameter evolution follows
+    the Procedure A update equations to preserve correlation across consecutive
+    channel evaluations, while the criteria for *when* to apply an update are adapted
+    for ns-3’s discrete-event operation (i.e., updates are triggered when the
+    channel is evaluated and the configured ``UpdatePeriod`` has elapsed; if the
+    maximum distance the BS and/or UT traveled between evaluations exceeds
+    the 1 m step-size constraint, the model falls back to re-generating channel
+    parameters and thus the channel matrix). Drop-based spatial consistency across
+    multiple initial locations (Sec. 7.6.3.1) and Procedure B are not implemented.
 
   * Issue regarding the blockage model: according to 3GPP TR 38.901 v15.0.0
     (2018-06) section 7.6.4.1, the blocking region for self-blocking is provided
-    in LCS.
-
-    However, here, clusterAOA and clusterZOA are in GCS and blocking check is
+    in LCS. However, here, clusterAOA and clusterZOA are in GCS and blocking check is
     performed for self-blocking similar to non-self blocking, that is in GCS.
     One would expect the angles to be transposed to LCS before checking
     self-blockage.
+
+  * No error model is provided in this module; a link-to-system campaign may be
+    needed to incorporate it in existing modules.
 
 
 ThreeGppSpectrumPropagationLossModel
 ####################################
 
 The class ``ThreeGppSpectrumPropagationLossModel`` implements the
-PhasedArraySpectrumPropagationLossModel interface and enables the modeling of frequency
+``PhasedArraySpectrumPropagationLossModel`` interface and enables the modeling of frequency
 dependent propagation phenomena while taking into account the specific pair of the
 phased antenna array at the transmitter and the receiver. The main method is
-DoCalcRxPowerSpectralDensity, which takes as input the SpectrumSignalParameters
+``DoCalcRxPowerSpectralDensity``, which takes as input the SpectrumSignalParameters
 structure, which contains, among others, the power spectral density (PSD) of the
 transmitted signal, and the precoding matrix of the transmitter which is needed
 for MIMO computations. Other input parameters are the mobility models of the
 transmitting and receiving node, and the phased antenna array of the
 transmitting and receiving node.
-DoCalcRxPowerSpectralDensity computes the PSD of the received signal
+``DoCalcRxPowerSpectralDensity`` computes the PSD of the received signal
 (used in case of single stream transmission), and the frequency domain 3D
 channel matrix between receive and transmit antenna ports (needed for MIMO
 computations when multiple streams are transmitted).
-Finally, it returns the SpectrumSignalParameters which contains the
+Finally, it returns the ``SpectrumSignalParameters`` which contains the
 received PSD and the frequency domain 3D spectrum channel matrix.
 
 Procedure used to compute the PSD of the received signal and the frequency domain 3D
@@ -702,7 +708,7 @@ spectrum channel matrix:
 1. Retrieve the beamforming vectors
 To account for the beamforming, ``ThreeGppSpectrumPropagationLossModel`` has to
 retrieve the beamforming vectors of the transmitting and receiving antennas.
-The method DoCalcRxPowerSpectralDensity uses the antenna objects
+The method ``DoCalcRxPowerSpectralDensity`` uses the antenna objects
 that are passed as parameters for both the transmitting and receiving devices,
 and calls the method GetBeamformingVector to retrieve the beamforming vectors
 of these antenna objects.
@@ -710,17 +716,17 @@ of these antenna objects.
 2. Retrieve the channel matrix and the channel params
 The ``ThreeGppSpectrumPropagationLossModel`` relies on the ``ThreeGppChannelModel`` class
 to obtain the channel matrix and channel parameters.
-In particular, it makes use of the method GetChannel,
-which returns a ChannelMatrix object containing the channel
+In particular, it makes use of the method ``GetChannel``,
+which returns a ``ChannelMatrix`` object containing the channel
 matrix, the generation time, the node pair, and the phased antenna array pair among
 which is created this channel matrix.
-Additionally, it makes use of the method GetParams which
-returns a ChannelParams object containing the channel parameters.
+Additionally, it makes use of the method ``GetParams`` which
+returns a ``ChannelParams`` object containing the channel parameters.
 Notice that the channel information is split into these two structures
 (ChannelMatrix and ChannelParams) to support multiple collocated phased antenna arrays at
-TX/RX node. ChannelParams (also its specialization ThreeGppChannelParams structure)
+TX/RX node. ``ChannelParams`` (also its specialization ``ThreeGppChannelParams`` structure)
 contains parameters which are common for all the channels among
-the same RX/TX node pair, while ChannelMatrix contains the channel matrix for the specific pair
+the same RX/TX node pair, while ``ChannelMatrix`` contains the channel matrix for the specific pair
 of the phased antenna arrays of TX/RX nodes.
 For example, if the TX and the RX node have multiple collocated antenna arrays,
 then there will be multiple channel matrices among this pair of nodes for different pairs
@@ -735,7 +741,7 @@ The ``ThreeGppChannelModel`` instance is automatically
 created in the ``ThreeGppSpectrumPropagationLossModel`` constructor and it can
 be configured by using the method SetChannelModelAttribute.
 
-Notice that in MultiModelSpectrumChannel it is checked whether the TX/RX
+Notice that in ``MultiModelSpectrumChannel`` it is checked whether the TX/RX
 SpectrumPhy instances belong to different TX/RX nodes.
 This is needed to avoid pathloss models calculations among
 the phased antenna arrays of the same node, because there are no models yet
@@ -743,8 +749,8 @@ in ns-3 that support the calculation of this kind of interference.
 
 4. Compute the long term component
 The method GetLongTerm returns the long term component obtained by multiplying
-the channel matrix and the beamforming vectors. The function CalculateLongTermComponent
-calculates the long term component per RX and TX port pair. Finally, GetLongTerm
+the channel matrix and the beamforming vectors. The function ``CalculateLongTermComponent``
+calculates the long term component per RX and TX port pair. Finally, ``GetLongTerm``
 returns a 3D long term channel matrix whose dimensions are the number of the
 receive antenna ports, the number transmit antenna ports, and
 the number of clusters. When multiple ports are being configured note that
@@ -759,7 +765,7 @@ reciprocity assumption, for each node pair a single long term component is saved
 
 5. Apply the small scale fading, calculate the channel gain, generate the
 frequency domain 3D spectrum channel matrix, and finally compute the received PSD
-The method CalcBeamformingGain computes the channel gain in each sub-band and
+The method ``CalcBeamformingGain`` computes the channel gain in each sub-band and
 applies it to the PSD of the transmitted signal to obtain the received PSD.
 To compute the sub-band gain, it accounts for the Doppler phenomenon and the
 time dispersion effect on each cluster.
@@ -772,7 +778,7 @@ This is done by deviating the Doppler frequency by a random value, whose
 distribution depends on the parameter :math:`v_{scatt}`.
 The value of :math:`v_{scatt}` can be configured using the attribute "vScatt"
 (by default it is set to 0, so that the scattering effect is not considered).
-Function GenSpectrumChannelMatrix generates the received PSD for each pair of
+Function ``GenSpectrumChannelMatrix`` generates the received PSD for each pair of
 the transmit and receive antenna ports. It creates a frequency domain 3D spectrum
 channel matrix whose dimensions are the number of receive antenna ports,
 the number of transmit antenna ports, and the number of resource blocks.
@@ -785,11 +791,13 @@ where H is the frequency domain spectrum channel matrix and P is the precoding m
 ThreeGppChannelModel
 ####################
 
-The class ``ThreeGppChannelModel`` implements the channel matrix generation procedure
-described in Sec. of [TR38901]_.
-The main method is GetChannel, which takes as input the mobility models of
+The class ``ThreeGppChannelModel`` implements the channel matrix generation procedure described in
+3GPP TR 38.901 [TR38901]_ and an update technique aligned with 3GPP TR 38.901 spatial-consistency
+feature (Procedure A), with ns-3-specific update triggering criteria suited to discrete-event simulation.
+
+The main method is ``GetChannel``, which takes as input the mobility models of
 the transmitter and receiver nodes, the associated antenna objects,
-and returns a ChannelMatrix object containing:
+and returns a ``ChannelMatrix`` object containing:
 
 * the channel matrix of size UxSxN, where U is the number of receiving antenna elements, S is the number of transmitting antenna elements and N is the number of clusters
 
@@ -803,15 +811,257 @@ and returns a ChannelMatrix object containing:
 
 * other channel parameters
 
-The ChannelMatrix objects are saved in the map m_channelMap and updated when the coherence time
-expires, or in case the LOS/NLOS channel condition changes.
-The coherence time can be configured through
-the attribute "UpdatePeriod", and should be chosen by taking into account all the
-factors that affects the channel variability, such as mobility, frequency,
-propagation scenario, etc. By default, it is set to 0, which means that the
-channel is recomputed only when the LOS/NLOS condition changes.
-It is possible to configure the propagation scenario and the operating frequency
-of interest through the attributes "Scenario" and "Frequency", respectively.
+The ``ChannelMatrix`` objects are cached per link in the map ``m_channelMatrixMap``.
+A **new channel realization** (i.e., a new ``ChannelMatrix`` generated from newly
+generated channel parameters) is created when:
+
+* the **channel condition** for the link changes (e.g., LOS/NLOS and/or O2I
+  transitions), as reported by the configured channel-condition model; or
+* the **antenna-array configuration** changes (e.g., number of antenna
+  elements/ports), since this changes the required matrix dimensions.
+* spatial-consistency updates are enabled (``UpdatePeriod`` is nonzero) and
+  an update attempt observes a maximum endpoint displacement > 1 m (exceeding the
+  Procedure A step-size constraint), the model re-generates channel parameters
+  (and thus the channel matrix).
+
+If spatial-consistency updates are enabled and the 1 m step-size constraint is
+satisfied, the cached channel parameters are **updated** (Procedure A), and the
+``ChannelMatrix`` is recomputed from the updated parameters (without drawing a
+new independent realization).
+
+The channel condition is provided by the configured channel-condition model, which
+may be time-varying (e.g., stochastic blockage) and may be evaluated/updated
+according to its own internal logic (potentially with its own periodicity),
+independent of the small-scale fading evolution modeled in the
+``ThreeGppChannelModel``. The channel condition may change regardless of whether
+the nodes are static or mobile.
+
+Antenna-parameter changes are expected to be rare; one example is NR initial
+access/attachment, where a simplified receiver configuration may be assumed
+during attachment and then restored to the user-configured antenna array,
+triggering a matrix regeneration.
+
+The ``ChannelMatrix`` itself does **not** depend on beamforming. Beamforming
+vectors (and the precoding matrix) are applied later in
+``ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity`` when
+computing the long-term component and the received PSD (see the procedure in
+``ThreeGppSpectrumPropagationLossModel`` above). Beamforming weights may change
+at each reception/transmission without forcing regeneration of the cached
+``ChannelMatrix``.
+
+The propagation scenario and the operating frequency can be configured through
+the ``Scenario`` and ``Frequency`` attributes, respectively.
+Spatial-consistency evolution aligned with **3GPP TR 38.901 Procedure A update
+equations** is enabled when the ``UpdatePeriod`` attribute is set to a
+**non-zero** value (see below).
+
+**Spatial consistency procedure:** The spatial consistency update technique is aligned
+with 3GPP TR 38.901 Sec. 7.6.3.2 (**Procedure A**). Procedure A aims to preserve
+spatial correlation of cluster-specific random terms across consecutive channel
+evaluations as nodes move (e.g., cluster delays from Fig. 7.5-1, Step 5; the
+per-cluster shadowing term used in the cluster-power computation; and the random
+offsets/signs used for AOD/AOA/ZOD/ZOA generation in Step 7).
+
+In ns-3, the **channel-parameter evolution** follows the Procedure A update equations,
+while the **update-triggering criteria** are adapted to a discrete-event simulation
+environment. In TR 38.901, Procedure A is described for updates at about 1 m
+granularity, without prescribing a discrete evaluation schedule, and there is no
+specified time or distance at which a new channel realization is drawn;
+in ns-3, updates are attempted when the channel is evaluated and the configured
+``UpdatePeriod`` has elapsed, and the model enforces the 1 m step-size constraint
+(falling back to re-generation of channel parameters when it is exceeded).
+
+With Procedure A, large-scale parameters evolve as a first-order, spatially
+correlated stochastic process. Continuity is obtained by evolving a cached channel
+state over time/distance; no position-indexed channel field is defined. As a
+consequence, the channel is trajectory-dependent, and revisiting the same location
+does not necessarily reproduce the exact same channel realization. This behavior is
+consistent with the stochastic modeling approach defined in TR 38.901 [TR38901]_.
+Users requiring strict position-based repeatability (including under LOS/NLOS state
+changes driven by the channel-condition model) would have to implement a map/field-based
+approach (e.g., spatially correlated LSP maps in WINNER-derived frameworks such as
+QuaDRiGa) [WIN2D112]_ [QUADRIGA]_ or an explicitly position-seeded regeneration policy.
+
+Drop-based spatial consistency across multiple initial locations (TR 38.901 Sec. 7.6.3.1)
+and Procedure B (TR 38.901 Sec. 7.6.3.2) are not implemented in this model.
+
+The initial channel realization for a link is generated using the standard 3GPP
+cluster/ray generation procedure (Fig. 7.5-1). Spatial consistency is then introduced
+through subsequent Procedure A updates of the same link. During each update attempt,
+Procedure A updates the channel parameters in a cluster-wise manner. First, cluster
+delays are updated according to Eq. 7.6-9 in [TR38901]_. Second, cluster powers are
+updated using the updated cluster delays; during this step, the per-cluster shadowing
+term is evolved (not re-generated) based on the correlation distance of the configured
+scenario. Third, cluster departure and arrival angles are updated using the UT/BS motion
+information, as defined in Eqs. 7.6-10b and 7.6-10c and the subsequent angle-update
+equations in Eqs. 7.6-11 to 7.6-14.
+
+In ns-3, the update period is defined by ``UpdatePeriod`` and is analogous to
+:math:`t_{\Delta}` in TR 38.901 Sec. 7.6.3.2. When the channel is evaluated and
+``UpdatePeriod`` has elapsed since the last parameter generation/update,
+the model proceeds as follows:
+
+* If the maximum endpoint displacement since the last parameter generation/update is
+  **within 1 m**, the model applies **Procedure A updates** to obtain a
+  spatially consistent channel evolution.
+* If the maximum endpoint displacement is **greater than 1 m**, the model **re-generates**
+  the channel parameters (and thus the channel matrix) instead of applying
+  Procedure A for that update step.
+
+The small update distance is consistent with the intent of Procedure A to evolve
+small-scale channel parameters smoothly as the terminal moves; larger displacements
+between evaluations are handled by re-generation rather than attempting to
+extrapolate multiple intermediate updates.
+
+**Note on the 1 m update distance vs. correlation distances:** The 1 m rule is a
+step-size constraint for applying Procedure A updates (i.e., the model updates
+the channel in small spatial increments). It does not imply that the channel is
+only correlated over 1 m. The scenario correlation distances provided in TR 38.901
+Table 7.6.3.1-2 parameterize the *rate* at which cluster-level random variables
+(e.g., per-cluster shadowing) decorrelate with displacement across successive
+updates, via an exponential correlation function (TR 38.901, Eq. 7.4-5) of the form
+:math:`R(\Delta x) = \exp(-\Delta x / d_{cor})`. Consequently, when Procedure A is
+applied repeatedly over many small steps, variables can remain correlated over
+tens of meters when :math:`d_{cor}` is large, even though each individual update
+step is limited to 1 m.
+
+**Design note (displacement > 1 m and update triggering):** TR 38.901 recommends
+choosing :math:`t_{\Delta}` such that the displacement between successive updates
+remains within 1 m (often expressed as :math:`v \cdot t_{\Delta} < 1\,\text{m}`).
+In link-/physical-level channel simulators, the channel is commonly evolved at a
+fixed update distance/period along a user trajectory (e.g., NYUSIM) [NYUSIM]_.
+In a system-level simulator, however, forcing periodic channel updates even when
+the link is not used (no traffic, no transmissions) may be computationally
+expensive in large-scale simulations.
+
+Since ns-3 is a discrete-event simulator, channel evaluations may occur at
+irregular times (e.g., sparse or bursty traffic), and an update attempt may
+observe a displacement larger than 1 m. In that situation, several behaviors are
+possible: (i) keep the previous channel state without updating, (ii) re-generate
+a new realization, (iii) approximate the motion by splitting the interval into
+smaller steps and applying multiple updates, or (iv) force periodic channel
+updates independent of traffic (i.e., drive the evolution from a dedicated timer
+and update internal state even when the channel is not queried).
+
+Option (i) avoids discontinuities but may keep the channel unchanged over large
+displacements. Option (ii) is conservative and simple, but introduces a new
+realization when the update-distance constraint is exceeded. Option (iii) would
+require assumptions about the intermediate trajectory (only start/end positions
+are known) and increases computational cost. Option (iv) may also be
+computationally expensive in large-scale simulations, since it updates channels
+even when the channel is not evaluated.
+
+ns-3 chooses option (ii) as a fallback: if the displacement exceeds 1 m at an
+update instant, the channel parameters are re-generated.
+
+**How to choose ``UpdatePeriod``.** To obtain Procedure A updates (rather than
+frequent re-generation), ``UpdatePeriod`` should be selected so that the expected
+maximum endpoint displacement stays below 1 m between updates, i.e.,
+
+:math:`\text{UpdatePeriod} \lesssim 1\,\text{m} / v_{\mathrm{end,max}}`.
+
+Example: if the maximum expected endpoint speed is 5 m/s, choosing
+``UpdatePeriod`` <= 0.2 s keeps the maximum endpoint displacement below 1 m.
+
+**Important:** ``UpdatePeriod`` sets **a minimum interval** between successive
+channel updates; the channel state is updated only when the channel is evaluated,
+so the effective update instants are traffic-driven (e.g., receptions/transmissions
+or other events that require channel evaluation). For mobile scenarios,
+users should ensure that the channel is evaluated at least as often as ``UpdatePeriod``
+(e.g., by periodic transmissions/receptions, control signaling, or application traffic).
+Otherwise, spatial-consistency updates may be skipped and the model may fall back to
+re-generation after larger displacements.
+
+If the channel is not evaluated for longer than ``UpdatePeriod``, then the next
+evaluation triggers an update attempt based on the current displacement since
+the last generation/update (Procedure A if within 1 m, otherwise re-generation).
+
+The following rule-of-thumb values illustrate a recommended upper bound for
+``UpdatePeriod`` to keep the maximum endpoint displacement within 1 m. Users should also
+ensure that the channel is evaluated at least that often (e.g., via periodic
+signaling or traffic), otherwise updates may be skipped.
+
++--------------+-------------+------------------------+---------------------------------------------+
+| Speed (km/h) | Speed (m/s) | Max ``UpdatePeriod``   | Recommended channel-evaluation / signaling  |
+|              |             | (ms)                   | period (ms)                                 |
++==============+=============+========================+=============================================+
+| 3            | 0.833       | 1200                   | <= 1200                                     |
++--------------+-------------+------------------------+---------------------------------------------+
+| 30           | 8.33        | 120                    | <= 120                                      |
++--------------+-------------+------------------------+---------------------------------------------+
+| 60           | 16.67       | 60                     | <= 60                                       |
++--------------+-------------+------------------------+---------------------------------------------+
+
+For links where both endpoints move (e.g., V2V), two different “displacements” are
+relevant:
+
+* The **maximum endpoint displacement** (max motion of either endpoint since the last
+  generation/update) is used to enforce the **1 m step-size constraint** for
+  applying Procedure A.
+* The **relative (geometry) displacement** (change in the Tx--Rx relative position
+  vector) is used as the displacement input for **correlation updates of
+  cluster-level random terms** (e.g., the per-cluster shadowing term used in the
+  cluster power update).
+
+For Procedure A, several cluster-level random terms are evolved as functions of
+displacement between consecutive updates, using exponential spatial correlation
+models (e.g., [TR38901]_, Eq. 7.4-5). In TR 38.901 the procedure is described
+from the perspective of a moving terminal; when both endpoints move (e.g., V2V),
+ns-3 generalizes the triggering constraint by using the maximum displacement of
+either endpoint since the last generation/update (maximum endpoint displacement),
+while still using the change of the Tx--Rx relative position vector (relative/geometry
+displacement) as the displacement input for correlation updates of cluster-level
+random terms (e.g., the per-cluster shadowing term used in the cluster power
+update).
+
+Thus, vehicles traveling in the same direction at similar speeds may have a small
+relative (geometry) displacement (slow geometry evolution), even though the
+maximum endpoint displacement can be large and may force a smaller ``UpdatePeriod``
+to avoid exceeding the 1 m step-size constraint.
+
+Note that **relative (geometry) displacement close to zero does not necessarily
+mean that no update occurs**. Procedure A includes update components that are
+driven by **endpoint motion over** :math:`t_{\Delta}` (in ns-3, ``UpdatePeriod``
+is the analogue of :math:`t_{\Delta}`), in addition to components that use
+displacement-dependent spatial correlation. For example, the per-cluster delay
+evolution uses endpoint velocity terms over :math:`t_{\Delta}` (see [TR38901]_,
+Eq. 7.6-9). Cluster-angle updates also use the endpoint motion through the
+rotation/velocity terms (see [TR38901]_, Eqs. 7.6-10b and 7.6-10c) and the
+subsequent angle-update equations (Eqs. 7.6-11 to 7.6-14). Therefore, even in
+scenarios where the Tx--Rx geometry changes slowly (e.g., near-parallel motion),
+ns-3 may still perform a Procedure A update when ``UpdatePeriod`` expires
+(subject to the 1 m step-size constraint), and **motion-/time-dependent
+components** (e.g., angle evolution and related Doppler/phase terms) may still
+evolve. In contrast, updates that explicitly take the relative/geometry
+displacement as input (e.g., per-cluster shadowing correlation via the
+exponential model in [TR38901]_, Eq. 7.4-5) will exhibit little or no change when
+the relative/geometry displacement is near zero.
+
+Example (V2V, same direction): v1 = 120 km/h, v2 = 100 km/h, so the relevant
+speed for the 1 m step-size constraint is the maximum endpoint speed,
+:math:`v_{\mathrm{end,max}} = \max(v_1, v_2) = 120` km/h = 33.3 m/s. To keep the
+maximum endpoint displacement below 1 m between updates, choose
+``UpdatePeriod`` <= 30 ms and ensure the channel is evaluated (e.g., via periodic
+signaling/traffic) with a period <= 30 ms.
+
+**Channel consistency applicability:** The correlation distances used by the
+Procedure A updates depend on the configured scenario. For terrestrial cellular
+scenarios such as UMa, UMi, RMa, and Indoor, the spatial correlation distances
+used for per-cluster shadowing updates are specified in 3GPP TR 38.901 (see
+Table 7.6.3.1-2, "Correlation distance for spatial consistency") and are
+reflected in the corresponding 3GPP parameter tables of the ``ThreeGppChannelModel``.
+
+For other scenarios, such as V2V and NTN, the relevant 3GPP technical reports
+(e.g., TR 37.885 for V2X and TR 38.811 for NTN) describe channel models and
+mobility assumptions but do not provide standardized tables for cluster
+correlation distances comparable to those in TR 38.901. Consequently, while the
+spatial consistency procedure can be used when these scenarios are configured,
+users should be aware that appropriate correlation-distance values must be
+selected and configured in the ``ThreeGppChannelModel`` parameter tables based
+on the intended deployment and propagation environment. In the absence of
+standardized 3GPP values, the current implementation uses a short correlation
+distance (1 m) for per-cluster shadowing, resulting in weak spatial correlation
+unless configured otherwise.
 
 **Blockage model:** 3GPP TR 38.901 also provides an optional
 feature that can be used to model the blockage effect due to the
@@ -824,7 +1074,7 @@ methods for the computation of the additional attenuation, i.e.,
 stochastic (Model A) and geometric (Model B). In this work, we
 used the implementation provided by [Zhang]_, which
 uses the stochastic method. In particular, the model is implemented by the
-method CalcAttenuationOfBlockage, which computes the additional attenuation.
+method ``CalcAttenuationOfBlockage``, which computes the additional attenuation.
 The blockage feature can be disable through the attribute "Blockage". Also, the
 attributes "NumNonselfBlocking", "PortraitMode" and "BlockerSpeed" can be used
 to configure the model.
@@ -850,11 +1100,34 @@ The test suite ``ThreeGppChannelTestSuite`` includes five test cases:
        the beamforming vectors,
     3. Checks if the long term is updated when changing the channel matrix
 
-* ThreeGppCalcLongTermMultiPortTest, which tests that the channel matrices are
+* ``ThreeGppCalcLongTermMultiPortTest``, which tests that the channel matrices are
   correctly generated when multiple transmit and receive antenna ports are used.
 
-* ThreeGppMimoPolarizationTest, which tests that the channel matrices are
+* ``ThreeGppMimoPolarizationTest``, which tests that the channel matrices are
   correctly generated when dual-polarized antennas are being used.
+
+* ``ThreeGppChannelConsistencyTest`` is designed to verify that consecutive
+  channel realizations remain spatially consistent while the user is moving,
+  which is the scenario addressed by the implemented channel consistency
+  Procedure A (3GPP TR 38.901, Sec. 7.6.3).
+
+  The test considers both LOS and NLOS conditions, thereby exercising the
+  different channel update mechanisms defined for each case,
+  in particular the cluster delay update (Eq. 7.6-9) and the cluster departure
+  and arrival angle updates (Eqs. 7.6-10b and 7.6-10c). Multiple test cases
+  are defined for different carrier frequencies and user speeds. For each test case,
+  the channel coherence time is computed and the channel update period
+  (configured through the UpdatePeriod attribute) is set accordingly.
+
+  The test verifies that spatially consistent channel updates produce
+  significantly smoother channel evolution (approximately five times smaller
+  variations) compared to generating independent channel realizations under
+  the same LOS/NLOS conditions. To evaluate channel consistency, several metrics are tracked, including
+  per-cluster parameters such as cluster delay, cluster power, and
+  cluster angles (AOA and ZOA), as well as a global channel metric, the
+  Frobenius norm of the channel matrix. For the per-cluster analysis,
+  the third cluster, as defined in Table 7.8.5 for channel consistency
+  calibration, is selected.
 
 **Note:** TR 38.901 includes a calibration procedure that can be used to validate
 the model, but it requires some additional features which are not currently
@@ -880,6 +1153,18 @@ References
 
 .. [TR38901] 3GPP. 2018. TR 38.901. Study on channel for frequencies from 0.5 to
    100 GHz. V.15.0.0. (2018-06).
+
+.. [NYUSIM] Shihao Ju and Theodore S. Rappaport. "Simulating Motion - Incorporating Spatial
+   Consistency into the NYUSIM Channel Model." NYU WIRELESS.
+
+.. [WIN2D112] IST-4-027756 WINNER II, Deliverable D1.1.2, "WINNER II channel models:
+   Part I - Channel models", 2007. Available at:
+   https://signserv.signal.uu.se/Publications/WINNER/WIN2D112.pdf
+
+.. [QUADRIGA] S. Jaeckel, L. Raschkowski, K. Börner, and L. Thiele, "QuaDRiGa:
+   Quasi Deterministic Radio Channel Generator - User Manual and Documentation",
+   Fraunhofer HHI. Available at:
+   https://quadriga-channel-model.de/wp-content/uploads/2015/02/quadriga_documentation_v1.2.3.pdf
 
 .. [Zhang] Menglei Zhang, Michele Polese, Marco Mezzavilla, Sundeep Rangan,
    Michele Zorzi. "ns-3 Implementation of the 3GPP MIMO Channel Model for

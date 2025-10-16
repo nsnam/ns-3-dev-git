@@ -3,13 +3,14 @@
  * University of Padova
  * Copyright (c) 2015, NYU WIRELESS, Tandon School of Engineering,
  * New York University
+ * Copyright (c) 2026, CTTC, Centre Tecnologic de Telecomunicacions de Catalunya
  *
  * SPDX-License-Identifier: GPL-2.0-only
  *
  */
-
 #include "three-gpp-channel-model.h"
 
+#include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/geocentric-constant-position-mobility-model.h"
 #include "ns3/integer.h"
@@ -29,17 +30,32 @@
 
 namespace ns3
 {
-
 NS_LOG_COMPONENT_DEFINE("ThreeGppChannelModel");
 
 NS_OBJECT_ENSURE_REGISTERED(ThreeGppChannelModel);
 
 /// Conversion factor: degrees to radians
-static constexpr double DEG2RAD = M_PI / 180.0;
+constexpr double DEG2RAD = M_PI / 180.0;
+/**
+ * Maximum 2D displacement (in meters) allowed for a single channel-consistency update step.
+ *
+ * This value reflects the TR 38.901 guidance to limit the update displacement to within 1 m.
+ * If the effective endpoint displacement exceeds this threshold, ns-3 regenerates the channel
+ * parameters (fallback) rather than attempting a consistency update over a larger step.
+ */
+constexpr double kMaxConsistencyStepMeters = 1.0;
+
+/**
+ * Small threshold (in meters) used to treat very small displacements as zero.
+ *
+ * This avoids triggering channel-consistency updates due to numerical noise when the effective
+ * endpoint displacement is negligible.
+ */
+static constexpr double kNoDisplacementEpsMeters = 1e-6;
 
 /// The ray offset angles within a cluster, given for rms angle spread normalized to 1.
 /// (Table 7.5-3)
-static constexpr std::array<double, 20> offSetAlpha = {
+static constexpr std::array offSetAlpha = {
     0.0447, -0.0447, 0.1413, -0.1413, 0.2492, -0.2492, 0.3715, -0.3715, 0.5129, -0.5129,
     0.6797, -0.6797, 0.8844, -0.8844, 1.1481, -1.1481, 1.5195, -1.5195, 2.1551, -2.1551,
 };
@@ -1060,35 +1076,42 @@ static const std::map<std::string, std::map<int, std::array<float, 22>>> NTNRura
      }},
 };
 
-// According to table 7.5-6, only cluster number equals to 8, 10, 11, 12, 19 and 20 is valid.
-// (38.901) Not sure why the other cases are in Table 7.5-2. Added case 2 and 3 for the NTN
-// according to table 6.7.2-1aa (28.811)
-static const std::unordered_map<int, double> cNlosTablePhi = {{2, 0.501},
-                                                              {3, 0.680},
-                                                              {4, 0.779},
-                                                              {5, 0.860},
-                                                              {8, 1.018},
-                                                              {10, 1.090},
-                                                              {11, 1.123},
-                                                              {12, 1.146},
-                                                              {14, 1.190},
-                                                              {15, 1.221},
-                                                              {16, 1.226},
-                                                              {19, 1.273},
-                                                              {20, 1.289}};
-
-// Table 7.5-4 (38.901)
-// Added case 2, 3 and 4 for the NTN according to table 6.7.2-1ab (28.811)
-static const std::unordered_map<int, double> cNlosTableTheta = {{2, 0.430},
-                                                                {3, 0.594},
-                                                                {4, 0.697},
-                                                                {8, 0.889},
-                                                                {10, 0.957},
-                                                                {11, 1.031},
-                                                                {12, 1.104},
-                                                                {15, 1.1088},
-                                                                {19, 1.184},
-                                                                {20, 1.178}};
+/**
+ * According to table 7.5-6, only cluster number equal to 8, 10, 11, 12, 19 and 20 is valid.
+ * (38.901) Not sure why the other cases are in Table 7.5-2. Added case 2 and 3 for the NTN
+ * according to table 6.7.2-1aa (28.811)
+ */
+static const std::unordered_map<int, double> cNlosTablePhi = {
+    {2, 0.501},
+    {3, 0.680},
+    {4, 0.779},
+    {5, 0.860},
+    {8, 1.018},
+    {10, 1.090},
+    {11, 1.123},
+    {12, 1.146},
+    {14, 1.190},
+    {15, 1.221},
+    {16, 1.226},
+    {19, 1.273},
+    {20, 1.289},
+};
+/**
+ * Table 7.5-4 (38.901)
+ * Added case 2, 3 and 4 for the NTN according to table 6.7.2-1ab (28.811)
+ */
+static const std::unordered_map<int, double> cNlosTableTheta = {
+    {2, 0.430},
+    {3, 0.594},
+    {4, 0.697},
+    {8, 0.889},
+    {10, 0.957},
+    {11, 1.031},
+    {12, 1.104},
+    {15, 1.1088},
+    {19, 1.184},
+    {20, 1.178},
+};
 
 ThreeGppChannelModel::ThreeGppChannelModel()
 {
@@ -1148,11 +1171,16 @@ ThreeGppChannelModel::GetTypeId()
                           MakePointerAccessor(&ThreeGppChannelModel::SetChannelConditionModel,
                                               &ThreeGppChannelModel::GetChannelConditionModel),
                           MakePointerChecker<ChannelConditionModel>())
-            .AddAttribute("UpdatePeriod",
-                          "Specify the channel coherence time",
-                          TimeValue(MilliSeconds(0)),
-                          MakeTimeAccessor(&ThreeGppChannelModel::m_updatePeriod),
-                          MakeTimeChecker())
+            .AddAttribute(
+                "UpdatePeriod",
+                "Spatial-consistency update period. When non-zero, ns-3 attempts to evolve cached "
+                "channel parameters using update equations aligned with 3GPP TR 38.901 "
+                "Procedure A (Sec. 7.6.3.2) whenever the channel is evaluated and the period has "
+                "elapsed. If the 1 m step-size constraint is violated at an update attempt, the "
+                "model re-generates channel parameters (new realization).",
+                TimeValue(MilliSeconds(0)),
+                MakeTimeAccessor(&ThreeGppChannelModel::m_updatePeriod),
+                MakeTimeChecker())
             // attributes for the blockage model
             .AddAttribute("Blockage",
                           "Enable blockage model A (sec 7.6.4.1)",
@@ -1181,13 +1209,7 @@ ThreeGppChannelModel::GetTypeId()
                           "delayed (reflected) paths",
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&ThreeGppChannelModel::m_vScatt),
-                          MakeDoubleChecker<double>(0.0))
-            // attributes for the spatial consistency model
-            .AddAttribute("Consistency",
-                          "Enable the spatial consistency update, procedure A (7.6.3.2)",
-                          BooleanValue(false),
-                          MakeBooleanAccessor(&ThreeGppChannelModel::m_spatial_consistency),
-                          MakeBooleanChecker());
+                          MakeDoubleChecker<double>(0.0));
     return tid;
 }
 
@@ -1206,7 +1228,7 @@ ThreeGppChannelModel::GetChannelConditionModel() const
 }
 
 void
-ThreeGppChannelModel::SetFrequency(double f)
+ThreeGppChannelModel::SetFrequency(const double f)
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT_MSG(f >= 500.0e6 && f <= 100.0e9,
@@ -1244,8 +1266,8 @@ ThreeGppChannelModel::GetScenario() const
 }
 
 Ptr<const ThreeGppChannelModel::ParamsTable>
-ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
-                                       const Ptr<const MobilityModel> bMob,
+ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
+                                       Ptr<const MobilityModel> bMob,
                                        Ptr<const ChannelCondition> channelCondition) const
 {
     NS_LOG_FUNCTION(this);
@@ -1299,6 +1321,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 12;
             table3gpp->m_sigXpr = 4;
             table3gpp->m_perClusterShadowingStd = 3;
+            table3gpp->m_perClusterRayDcorDistance = 50;
+            table3gpp->m_blockerDcorDistance = 10;
 
             for (uint8_t row = 0; row < 7; row++)
             {
@@ -1334,6 +1358,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 7;
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 3;
+            table3gpp->m_perClusterRayDcorDistance = 60;
+            table3gpp->m_blockerDcorDistance = 10;
 
             for (uint8_t row = 0; row < 6; row++)
             {
@@ -1369,6 +1395,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 7;
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 3;
+            table3gpp->m_perClusterRayDcorDistance = 15;
+            table3gpp->m_blockerDcorDistance = 5;
 
             for (uint8_t row = 0; row < 6; row++)
             {
@@ -1407,6 +1435,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 8;
             table3gpp->m_sigXpr = 4;
             table3gpp->m_perClusterShadowingStd = 3;
+            table3gpp->m_perClusterRayDcorDistance = 40;
+            table3gpp->m_blockerDcorDistance = 10;
 
             for (uint8_t row = 0; row < 7; row++)
             {
@@ -1452,6 +1482,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_uXpr = 7;
                 table3gpp->m_sigXpr = 3;
                 table3gpp->m_perClusterShadowingStd = 3;
+                table3gpp->m_perClusterRayDcorDistance = 50;
+                table3gpp->m_blockerDcorDistance = 10;
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -1486,6 +1518,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_uXpr = 9;
                 table3gpp->m_sigXpr = 5;
                 table3gpp->m_perClusterShadowingStd = 4;
+                table3gpp->m_perClusterRayDcorDistance = 15;
+                table3gpp->m_blockerDcorDistance = 5;
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -1525,6 +1559,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 9;
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 3;
+            table3gpp->m_perClusterRayDcorDistance = 12;
+            table3gpp->m_blockerDcorDistance = 10;
 
             for (uint8_t row = 0; row < 7; row++)
             {
@@ -1564,6 +1600,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_uXpr = 8;
                 table3gpp->m_sigXpr = 3;
                 table3gpp->m_perClusterShadowingStd = 3;
+                table3gpp->m_perClusterRayDcorDistance = 15;
+                table3gpp->m_blockerDcorDistance = 10;
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -1598,6 +1636,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
                 table3gpp->m_uXpr = 9;
                 table3gpp->m_sigXpr = 5;
                 table3gpp->m_perClusterShadowingStd = 4;
+                table3gpp->m_perClusterRayDcorDistance = 15;
+                table3gpp->m_blockerDcorDistance = 5;
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -1637,6 +1677,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 11;
             table3gpp->m_sigXpr = 4;
             table3gpp->m_perClusterShadowingStd = 6;
+            table3gpp->m_perClusterRayDcorDistance = 10;
+            table3gpp->m_blockerDcorDistance = 5;
 
             for (uint8_t row = 0; row < 7; row++)
             {
@@ -1671,6 +1713,8 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             table3gpp->m_uXpr = 10;
             table3gpp->m_sigXpr = 4;
             table3gpp->m_perClusterShadowingStd = 3;
+            table3gpp->m_perClusterRayDcorDistance = 10;
+            table3gpp->m_blockerDcorDistance = 5;
 
             for (uint8_t row = 0; row < 6; row++)
             {
@@ -1907,7 +1951,7 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
     }
     else if (m_scenario.substr(0, 3) == "NTN")
     {
-        std::string freqBand = (fcGHz < 13) ? "S" : "Ka";
+        std::string freqBand = fcGHz < 13 ? "S" : "Ka";
 
         double elevAngle = 0;
         bool isSatellite = false; // flag to indicate if one of the two nodes is a satellite
@@ -1952,65 +1996,50 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
         }
 
         // Round the elevation angle into a two-digits integer between 10 and 90.
-        int elevAngleQuantized = (elevAngle < 10) ? 10 : round(elevAngle / 10) * 10;
+        int elevAngleQuantized = elevAngle < 10 ? 10 : round(elevAngle / 10) * 10;
 
         if (m_scenario == "NTN-DenseUrban")
         {
             if (channelCondition->IsLos())
             {
-                table3gpp->m_uLgDS =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                table3gpp->m_uLgDS = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
                 table3gpp->m_sigLgDS =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
 
                 // table3gpp->m_uLgASD=-1.79769e+308;  //FOR SATELLITES
-                table3gpp->m_uLgASD =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                table3gpp->m_uLgASD = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
                 // table3gpp->m_sigLgASD=0; //FOR SATELLITES
                 table3gpp->m_sigLgASD =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
 
-                table3gpp->m_uLgASA =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                table3gpp->m_uLgASA = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
                 table3gpp->m_sigLgASA =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
 
                 // table3gpp->m_uLgZSD=-1.79769e+308;  //FOR SATELLITES
-                table3gpp->m_uLgZSD =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                table3gpp->m_uLgZSD = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
                 // table3gpp->m_sigLgZSD= 0; //FOR SATELLITES
                 table3gpp->m_sigLgZSD =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
 
-                table3gpp->m_uK =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] *
-                    1e-9;
-                table3gpp->m_cASD =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNDenseUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                table3gpp->m_uK = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNDenseUrbanLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
                 {
@@ -2023,47 +2052,35 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             else if (channelCondition->IsNlos())
             {
                 NS_LOG_UNCOND("Dense Urban NLOS");
-                table3gpp->m_uLgDS =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
+                table3gpp->m_uLgDS = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
                 table3gpp->m_sigLgDS =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_rTau =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
+                table3gpp->m_sigLgASD =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
+                table3gpp->m_sigLgASA =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
+                table3gpp->m_sigLgZSA =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
+                table3gpp->m_sigLgZSD =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_rTau = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
                 table3gpp->m_cDS =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] *
-                    1e-9;
-                table3gpp->m_cASD =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNDenseUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -2078,50 +2095,31 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
         {
             if (channelCondition->IsLos())
             {
-                table3gpp->m_uLgDS =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_uK =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_uLgDS = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
+                table3gpp->m_sigLgDS = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
+                table3gpp->m_sigLgASD = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
+                table3gpp->m_sigLgASA = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
+                table3gpp->m_sigLgZSA = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
+                table3gpp->m_sigLgZSD = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_uK = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
                 table3gpp->m_numOfCluster =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
-                table3gpp->m_cASD =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNUrbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNUrbanLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
                 {
@@ -2133,50 +2131,31 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             }
             else if (channelCondition->IsNlos())
             {
-                table3gpp->m_uLgDS =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_uK =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_uLgDS = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
+                table3gpp->m_sigLgDS = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
+                table3gpp->m_sigLgASD = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
+                table3gpp->m_sigLgASA = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
+                table3gpp->m_sigLgZSA = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
+                table3gpp->m_sigLgZSD = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_uK = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
                 table3gpp->m_numOfCluster =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
-                table3gpp->m_cASD =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNUrbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -2192,50 +2171,35 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
         {
             if (channelCondition->IsLos())
             {
-                table3gpp->m_uLgDS =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                table3gpp->m_uLgDS = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
+                table3gpp->m_sigLgDS = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
                 table3gpp->m_sigLgASD =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
                 table3gpp->m_sigLgASA =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_uK =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = NTNSuburbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNSuburbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
-                table3gpp->m_cASD =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNSuburbanLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_uK = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNSuburbanLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
                 {
@@ -2247,51 +2211,35 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             }
             else if (channelCondition->IsNlos())
             {
-                table3gpp->m_uLgDS =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
+                table3gpp->m_uLgDS = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
+                table3gpp->m_sigLgDS = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
                 table3gpp->m_sigLgASD =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
                 table3gpp->m_sigLgASA =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
                 table3gpp->m_sigLgZSA =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
                 table3gpp->m_sigLgZSD =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_uK =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
-                table3gpp->m_numOfCluster = NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] *
-                    1e-9;
-                table3gpp->m_cASD =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNSuburbanNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_uK = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
+                table3gpp->m_numOfCluster =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 6; row++)
                 {
@@ -2306,50 +2254,31 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
         {
             if (channelCondition->IsLos())
             {
-                table3gpp->m_uLgDS =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_uK =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_uLgDS = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
+                table3gpp->m_sigLgDS = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
+                table3gpp->m_sigLgASD = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
+                table3gpp->m_sigLgASA = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
+                table3gpp->m_sigLgZSA = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
+                table3gpp->m_sigLgZSD = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_uK = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
                 table3gpp->m_numOfCluster =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNRuralLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
-                table3gpp->m_cASD =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNRuralLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNRuralLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 for (uint8_t row = 0; row < 7; row++)
                 {
@@ -2361,50 +2290,31 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
             }
             else if (channelCondition->IsNlos())
             {
-                table3gpp->m_uLgDS =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgDS];
-                table3gpp->m_sigLgDS =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgDS];
-                table3gpp->m_uLgASD =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASD];
-                table3gpp->m_sigLgASD =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASD];
-                table3gpp->m_uLgASA =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgASA];
-                table3gpp->m_sigLgASA =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgASA];
-                table3gpp->m_uLgZSA =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSA];
-                table3gpp->m_sigLgZSA =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSA];
-                table3gpp->m_uLgZSD =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uLgZSD];
-                table3gpp->m_sigLgZSD =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigLgZSD];
-                table3gpp->m_uK =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uK];
-                table3gpp->m_sigK =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigK];
-                table3gpp->m_rTau =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::rTau];
-                table3gpp->m_uXpr =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::uXpr];
-                table3gpp->m_sigXpr =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::sigXpr];
+                table3gpp->m_uLgDS = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uLgDS];
+                table3gpp->m_sigLgDS = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigLgDS];
+                table3gpp->m_uLgASD = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uLgASD];
+                table3gpp->m_sigLgASD = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASD];
+                table3gpp->m_uLgASA = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uLgASA];
+                table3gpp->m_sigLgASA = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigLgASA];
+                table3gpp->m_uLgZSA = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSA];
+                table3gpp->m_sigLgZSA = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSA];
+                table3gpp->m_uLgZSD = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uLgZSD];
+                table3gpp->m_sigLgZSD = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigLgZSD];
+                table3gpp->m_uK = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uK];
+                table3gpp->m_sigK = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigK];
+                table3gpp->m_rTau = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[rTau];
+                table3gpp->m_uXpr = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[uXpr];
+                table3gpp->m_sigXpr = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[sigXpr];
                 table3gpp->m_numOfCluster =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::numOfCluster];
-                table3gpp->m_raysPerCluster = NTNRuralNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::raysPerCluster];
-                table3gpp->m_cDS =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cDS] * 1e-9;
-                table3gpp->m_cASD =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASD];
-                table3gpp->m_cASA =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cASA];
-                table3gpp->m_cZSA =
-                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[Table3gppParams::cZSA];
-                table3gpp->m_perClusterShadowingStd = NTNRuralNLOS.at(freqBand).at(
-                    elevAngleQuantized)[Table3gppParams::perClusterShadowingStd];
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[numOfCluster];
+                table3gpp->m_raysPerCluster =
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[raysPerCluster];
+                table3gpp->m_cDS = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[cDS] * 1e-9;
+                table3gpp->m_cASD = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[cASD];
+                table3gpp->m_cASA = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[cASA];
+                table3gpp->m_cZSA = NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[cZSA];
+                table3gpp->m_perClusterShadowingStd =
+                    NTNRuralNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
                 if (freqBand == "S")
                 {
@@ -2450,19 +2360,38 @@ ThreeGppChannelModel::GetThreeGppTable(const Ptr<const MobilityModel> aMob,
 
 bool
 ThreeGppChannelModel::NewChannelParamsNeeded(uint64_t channelParamsKey,
-                                             Ptr<const ChannelCondition> condition) const
+                                             Ptr<const ChannelCondition> condition,
+                                             Ptr<const MobilityModel> aMob,
+                                             Ptr<const MobilityModel> bMob) const
 {
     NS_LOG_FUNCTION(this);
 
-    auto it = m_channelParamsMap.find(channelParamsKey);
-    if (it == m_channelParamsMap.end())
+    if (const auto it = m_channelParamsMap.find(channelParamsKey); it == m_channelParamsMap.end())
     {
+        NS_LOG_DEBUG("New channel parameters will be created for the first time for this link:"
+                     << channelParamsKey);
         return true;
     }
     else
     {
+        if (!m_updatePeriod.IsZero())
+        {
+            const double endpointDisplacement =
+                ComputeEndpointDisplacement2d(aMob,
+                                              bMob,
+                                              it->second->m_lastPositionFirst,
+                                              it->second->m_lastPositionSecond);
+
+            if (endpointDisplacement > kMaxConsistencyStepMeters)
+            {
+                NS_LOG_DEBUG("New channel parameters needed because endpoint displacement > 1 m");
+                return true;
+            }
+        }
+
         if (!condition->IsEqual(it->second->m_losCondition, it->second->m_o2iCondition))
         {
+            NS_LOG_DEBUG("New channel parameters needed because LOS or O2I condition changed");
             return true;
         }
     }
@@ -2470,43 +2399,78 @@ ThreeGppChannelModel::NewChannelParamsNeeded(uint64_t channelParamsKey,
 }
 
 bool
-ThreeGppChannelModel::NewChannelMatrixNeeded(uint64_t channelMatrixKey,
+ThreeGppChannelModel::NewChannelMatrixNeeded(const uint64_t channelMatrixKey,
                                              Ptr<const ThreeGppChannelParams> channelParams,
                                              Ptr<const PhasedArrayModel> aAntenna,
-                                             Ptr<const PhasedArrayModel> bAntenna)
+                                             Ptr<const PhasedArrayModel> bAntenna) const
 {
-    auto itMatrix = m_channelMatrixMap.find(channelMatrixKey);
-    if (itMatrix == m_channelMatrixMap.end())
+    NS_LOG_FUNCTION(this);
+    if (const auto itMatrix = m_channelMatrixMap.find(channelMatrixKey);
+        itMatrix == m_channelMatrixMap.end())
     {
         NS_LOG_DEBUG("Generate a new channel matrix. Matrix not found.");
+        // This function call is needed because of the API of PhasedArrayModel/UniformPlannarArray,
+        // which assumes that this function is called when the channel is created
+        const bool channelNeedsToBeCreated = aAntenna->IsChannelOutOfDate(bAntenna);
+        NS_ASSERT_MSG(channelNeedsToBeCreated,
+                      "This assert is to ensure that this code stays aligned with "
+                      "PhasedArrayModel/UniformPlannarArray "
+                      "API, which expects that this function is being called on the initial "
+                      "channel matrix creation.");
         return true;
     }
     else
     {
+        const Time paramsT = channelParams->m_generatedTime;
+        const Time matrixT = itMatrix->second->m_generatedTime;
+        const bool paramsNewer = paramsT > matrixT;
+        const bool antennaChanged = AntennaSetupChanged(aAntenna, bAntenna, itMatrix->second);
+
         // channel parameters changed
-        if ((channelParams->m_generatedTime > itMatrix->second->m_generatedTime) ||
-            AntennaSetupChanged(aAntenna, bAntenna, itMatrix->second))
+        if (paramsNewer || antennaChanged)
         {
-            NS_LOG_DEBUG("Generate a new channel matrix. Channel parameters changed or antenna "
-                         "setup changed.");
+            NS_LOG_DEBUG("Generate a new channel matrix: paramsNewer="
+                         << paramsNewer << " antennaChanged=" << antennaChanged << " paramsT="
+                         << paramsT.As(Time::NS) << " matrixT=" << matrixT.As(Time::NS));
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 }
 
 bool
-ThreeGppChannelModel::SpatialConsistencyUpdate(Ptr<const ThreeGppChannelParams> channelParams)
+ThreeGppChannelModel::ChannelUpdateNeeded(Ptr<const ThreeGppChannelParams> channelParams,
+                                          Ptr<const MobilityModel> aMob,
+                                          Ptr<const MobilityModel> bMob) const
 {
-    // if the coherence time is over, the channel has to be updated
-    if (m_spatial_consistency && !m_updatePeriod.IsZero() &&
-        Simulator::Now() - channelParams->m_generatedTime > m_updatePeriod)
+    NS_LOG_FUNCTION(this);
+    // Channel updates are disabled
+    if (m_updatePeriod.IsZero())
     {
-        NS_LOG_DEBUG("Generation time " << channelParams->m_generatedTime.As(Time::NS) << " now "
-                                        << Now().As(Time::NS));
+        return false;
+    }
+
+    const double endpointDisplacement =
+        ComputeEndpointDisplacement2d(aMob,
+                                      bMob,
+                                      channelParams->m_lastPositionFirst,
+                                      channelParams->m_lastPositionSecond);
+
+    // No endpoint displacement -> no channel consistency update needed
+    if (endpointDisplacement < kNoDisplacementEpsMeters)
+    {
+        return false;
+    }
+
+    NS_ABORT_MSG_IF(endpointDisplacement > kMaxConsistencyStepMeters,
+                    "Endpoint displacement exceeded 1 m; channel parameters should have been "
+                    "regenerated before attempting a consistency update.");
+
+    // if the spatial consistency update period has elapsed, update the channel
+    if (Simulator::Now() - channelParams->m_generatedTime > m_updatePeriod)
+    {
+        NS_LOG_DEBUG("Updating channel generated at "
+                     << channelParams->m_generatedTime.As(Time::NS));
         return true;
     }
     return false;
@@ -2515,17 +2479,31 @@ ThreeGppChannelModel::SpatialConsistencyUpdate(Ptr<const ThreeGppChannelParams> 
 bool
 ThreeGppChannelModel::AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
                                           Ptr<const PhasedArrayModel> bAntenna,
-                                          Ptr<const ChannelMatrix> channelMatrix)
+                                          Ptr<const ChannelMatrix> channelMatrix) const
 {
+    NS_LOG_FUNCTION(this);
     // This allows changing the number of antenna ports during execution,
     // which is used by nr's initial association.
-    size_t sAntNumElems = aAntenna->GetNumElems();
-    size_t uAntNumElems = bAntenna->GetNumElems();
-    size_t chanNumRows = channelMatrix->m_channel.GetNumRows();
-    size_t chanNumCols = channelMatrix->m_channel.GetNumCols();
-    return (((uAntNumElems != chanNumRows) || (sAntNumElems != chanNumCols)) &&
-            ((uAntNumElems != chanNumCols) || (sAntNumElems != chanNumRows))) ||
-           aAntenna->IsChannelOutOfDate(bAntenna);
+    const size_t sAntNumElems = aAntenna->GetNumElems();
+    const size_t uAntNumElems = bAntenna->GetNumElems();
+    const size_t chanNumRows = channelMatrix->m_channel.GetNumRows();
+    const size_t chanNumCols = channelMatrix->m_channel.GetNumCols();
+    const bool dimsMatchNormal = uAntNumElems == chanNumRows && sAntNumElems == chanNumCols;
+    const bool dimsMatchSwapped = uAntNumElems == chanNumCols && sAntNumElems == chanNumRows;
+    const bool dimsMismatch = !(dimsMatchNormal || dimsMatchSwapped);
+    const bool channelOutOfDate = aAntenna->IsChannelOutOfDate(bAntenna);
+    const bool changed = dimsMismatch || channelOutOfDate;
+
+    if (changed)
+    {
+        NS_LOG_DEBUG("AntennaSetupChanged: dimsMismatch="
+                     << dimsMismatch << " channelOutOfDate=" << channelOutOfDate
+                     << " uAntNumElems=" << uAntNumElems << " sAntNumElems=" << sAntNumElems
+                     << " chanNumRows=" << chanNumRows << " chanNumCols=" << chanNumCols
+                     << " aAntennaId=" << aAntenna->GetId() << " bAntennaId=" << bAntenna->GetId());
+    }
+
+    return changed;
 }
 
 Ptr<const MatrixBasedChannelModel::ChannelMatrix>
@@ -2537,30 +2515,37 @@ ThreeGppChannelModel::GetChannel(Ptr<const MobilityModel> aMob,
     NS_LOG_FUNCTION(this);
 
     // Compute the channel params key. The key is reciprocal, i.e., key (a, b) = key (b, a)
-    uint64_t channelParamsKey =
+    const uint64_t channelParamsKey =
         GetKey(aMob->GetObject<Node>()->GetId(), bMob->GetObject<Node>()->GetId());
     // retrieve the channel condition
-    Ptr<const ChannelCondition> condition =
+    const Ptr<const ChannelCondition> condition =
         m_channelConditionModel->GetChannelCondition(aMob, bMob);
+    // Enforce canonical ordering when selecting scenario parameters.
+    Ptr<const MobilityModel> aMobOrdered = aMob;
+    Ptr<const MobilityModel> bMobOrdered = bMob;
+    if (aMob->GetObject<Node>()->GetId() > bMob->GetObject<Node>()->GetId())
+    {
+        std::swap(aMobOrdered, bMobOrdered);
+    }
     // get the 3GPP parameters
-    Ptr<const ParamsTable> table3gpp = GetThreeGppTable(aMob, bMob, condition);
+    const Ptr<const ParamsTable> table3gpp = GetThreeGppTable(aMobOrdered, bMobOrdered, condition);
 
-    if (NewChannelParamsNeeded(channelParamsKey, condition))
+    if (NewChannelParamsNeeded(channelParamsKey, condition, aMob, bMob))
     {
         NS_LOG_DEBUG(
             "Create new or regenerate the channel parameters because the condition has changed");
         m_channelParamsMap.insert_or_assign(
             channelParamsKey,
-            GenerateChannelParameters(condition, table3gpp, aMob, bMob));
+            GenerateChannelParameters(condition, table3gpp, aMobOrdered, bMobOrdered));
     }
     else
     {
-        auto it = m_channelParamsMap.find(channelParamsKey);
+        const auto it = m_channelParamsMap.find(channelParamsKey);
         NS_ASSERT(it != m_channelParamsMap.end());
-        if (SpatialConsistencyUpdate(it->second))
+        if (ChannelUpdateNeeded(it->second, aMob, bMob))
         {
             NS_LOG_DEBUG("Update the channel parameters using consistency procedure");
-            UpdateChannelParametersForConsistency(it->second, condition, aMob, bMob);
+            UpdateChannelParameters(it->second, condition, aMob, bMob);
         }
         else
         {
@@ -2569,7 +2554,7 @@ ThreeGppChannelModel::GetChannel(Ptr<const MobilityModel> aMob,
     }
 
     // Compute the channel matrix key. The key is reciprocal, i.e., key (a, b) = key (b, a)
-    uint64_t channelMatrixKey = GetKey(aAntenna->GetId(), bAntenna->GetId());
+    const uint64_t channelMatrixKey = GetKey(aAntenna->GetId(), bAntenna->GetId());
     // If the channel matrix is not present in the map or if it has to be updated
     if (NewChannelMatrixNeeded(channelMatrixKey,
                                m_channelParamsMap.find(channelParamsKey)->second,
@@ -2586,7 +2571,7 @@ ThreeGppChannelModel::GetChannel(Ptr<const MobilityModel> aMob,
                           bAntenna));
     }
 
-    NS_ASSERT(m_channelMatrixMap.find(channelMatrixKey) != m_channelMatrixMap.end());
+    NS_ASSERT(m_channelMatrixMap.contains(channelMatrixKey));
     return m_channelMatrixMap.find(channelMatrixKey)->second;
 }
 
@@ -2596,28 +2581,25 @@ ThreeGppChannelModel::GetParams(Ptr<const MobilityModel> aMob, Ptr<const Mobilit
     NS_LOG_FUNCTION(this);
 
     // Compute the channel key. The key is reciprocal, i.e., key (a, b) = key (b, a)
-    uint64_t channelParamsKey =
+    const uint64_t channelParamsKey =
         GetKey(aMob->GetObject<Node>()->GetId(), bMob->GetObject<Node>()->GetId());
 
-    if (m_channelParamsMap.find(channelParamsKey) != m_channelParamsMap.end())
+    if (m_channelParamsMap.contains(channelParamsKey))
     {
         return m_channelParamsMap.find(channelParamsKey)->second;
     }
-    else
-    {
-        NS_LOG_WARN("Channel params map not found. Returning a nullptr.");
-        return nullptr;
-    }
+    NS_LOG_WARN("Channel params map not found. Returning a nullptr.");
+    return nullptr;
 }
 
 ThreeGppChannelModel::LargeScaleParameters
-ThreeGppChannelModel::GenerateLSPs(ChannelCondition::LosConditionValue losCondition,
-                                   const Ptr<const ParamsTable> table3gpp) const
+ThreeGppChannelModel::GenerateLSPs(const ChannelCondition::LosConditionValue losCondition,
+                                   Ptr<const ParamsTable> table3gpp) const
 {
     NS_LOG_FUNCTION(this);
     DoubleVector lspIndepRandomVar;
     DoubleVector lsp;
-    uint8_t paramNum = (losCondition == ChannelCondition::LOS) ? 7 : 6;
+    const uint8_t paramNum = losCondition == ChannelCondition::LOS ? 7 : 6;
 
     // Generate paramNum independent LSPs.
     for (uint8_t iter = 0; iter < paramNum; iter++)
@@ -2666,8 +2648,8 @@ ThreeGppChannelModel::GenerateLSPs(ChannelCondition::LosConditionValue losCondit
 }
 
 void
-ThreeGppChannelModel::GenerateClusterDelays(double DS,
-                                            const Ptr<const ParamsTable> table3gpp,
+ThreeGppChannelModel::GenerateClusterDelays(const double DS,
+                                            Ptr<const ParamsTable> table3gpp,
                                             double* minTau,
                                             DoubleVector* clusterDelays) const
 {
@@ -2676,89 +2658,106 @@ ThreeGppChannelModel::GenerateClusterDelays(double DS,
     NS_ASSERT_MSG(DS > 0, "Delay spread must be positive");
     NS_ASSERT_MSG(table3gpp->m_numOfCluster > 0, "Number of clusters must be positive");
 
-    // Clear output vector and reserve space for efficiency
+    // Clear output vector and resize
     clusterDelays->clear();
-    clusterDelays->reserve(table3gpp->m_numOfCluster);
-
-    /*
-    for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
-    {
-        double randomValue = m_uniformRv->GetValue(0, 1);
-        if (randomValue == 0)
-        {
-            //randomValue = std::numeric_limits<double>::min();
-            // Use tiny positive value instead of 0
-        }
-        double tau = -1 * table3gpp->m_rTau * DS * log(randomValue); //(7.5-1)
-        clusterDelays->push_back(tau);
-    }
-
-    // Sort delays
-    std::sort(clusterDelays->begin(), clusterDelays->end()); //(7.5-2)
-
-    // Store the minimum delay
-    *minTau = clusterDelays->front();
-
-    for (auto& delay : *clusterDelays)
-    {
-        delay -= *minTau;
-    }*/
+    clusterDelays->resize(table3gpp->m_numOfCluster);
 
     for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
     {
-        double tau = -1 * table3gpp->m_rTau * DS * log(m_uniformRv->GetValue(0, 1)); //(7.5-1)
+        const double tau = -1 * table3gpp->m_rTau * DS * log(m_uniformRv->GetValue(0, 1)); //(7.5-1)
         if (*minTau > tau)
         {
             *minTau = tau;
         }
-        clusterDelays->push_back(tau);
+        (*clusterDelays)[cIndex] = tau;
     }
 
     for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
     {
         (*clusterDelays)[cIndex] -= *minTau;
     }
-    std::sort(clusterDelays->begin(), clusterDelays->end()); //(7.5-2)
+    // perform cluster delay sorting as per (7.5-2)
+    std::ranges::sort(*clusterDelays);
+}
+
+void
+ThreeGppChannelModel::GenerateClusterShadowingTerm(Ptr<const ParamsTable> table3gpp,
+                                                   DoubleVector* clusterShadowing) const
+{
+    NS_LOG_FUNCTION(this);
+    clusterShadowing->clear();
+    clusterShadowing->resize(table3gpp->m_numOfCluster);
+
+    for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
+    {
+        (*clusterShadowing)[cIndex] = m_normalRv->GetValue() * table3gpp->m_perClusterShadowingStd;
+    }
+}
+
+void
+ThreeGppChannelModel::UpdateClusterShadowingTerm(Ptr<const ParamsTable> table3gpp,
+                                                 DoubleVector* clusterShadowing,
+                                                 const double displacementLength) const
+{
+    NS_LOG_FUNCTION(this);
+    // Normalized auto correlation function 7.4-5
+    const double R = exp(-1 * displacementLength / table3gpp->m_perClusterRayDcorDistance);
+
+    for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
+    {
+        // compute a new correlated shadowing
+        (*clusterShadowing)[cIndex] =
+            R * (*clusterShadowing)[cIndex] +
+            sqrt(1 - R * R) * m_normalRv->GetValue() * table3gpp->m_perClusterShadowingStd;
+    }
 }
 
 void
 ThreeGppChannelModel::GenerateClusterPowers(const DoubleVector& clusterDelays,
                                             const double DS,
-                                            const Ptr<const ParamsTable> table3gpp,
+                                            Ptr<const ParamsTable> table3gpp,
+                                            const DoubleVector& clusterShadowing,
                                             DoubleVector* clusterPowers) const
 {
     NS_LOG_FUNCTION(this);
-
     // Clear and resize the output vector
     clusterPowers->clear();
-    clusterPowers->reserve(table3gpp->m_numOfCluster);
+    clusterPowers->resize(clusterDelays.size());
 
     double powerSum = 0;
-    for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
+    for (size_t cIndex = 0; cIndex < clusterDelays.size(); cIndex++)
     {
-        double power =
+        const double power =
             exp(-1 * clusterDelays[cIndex] * (table3gpp->m_rTau - 1) / table3gpp->m_rTau / DS) *
-            pow(10,
-                -1 * m_normalRv->GetValue() * table3gpp->m_perClusterShadowingStd / 10.0); //(7.5-5)
+            pow(10, -1 * clusterShadowing[cIndex] / 10.0); //(7.5-5)
         powerSum += power;
-        clusterPowers->push_back(power);
+        (*clusterPowers)[cIndex] = power;
     }
 
-    // Normalize cluster powers with NS_ASSERT for division by zero protection
-    NS_ASSERT_MSG(powerSum > 0, "Power sum must be greater than zero");
+    // Normalize cluster powers with NS_ASSERT for division-by-zero protection
 
-    for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
+    NS_ASSERT_MSG(powerSum > 0, "Power sum must be greater than zero. Time: " << Simulator::Now());
+
+    for (size_t cIndex = 0; cIndex < clusterPowers->size(); cIndex++)
     {
         (*clusterPowers)[cIndex] = (*clusterPowers)[cIndex] / powerSum; //(7.5-6)
     }
+
+    double totalPower = 0;
+    for (size_t cIndex = 0; cIndex < clusterPowers->size(); cIndex++)
+    {
+        totalPower += (*clusterPowers)[cIndex];
+    }
+
+    NS_ASSERT_MSG(std::round(totalPower) == 1, "Total power must be equal to 1");
 }
 
 MatrixBasedChannelModel::DoubleVector
 ThreeGppChannelModel::RemoveWeakClusters(DoubleVector* clusterPowers,
                                          DoubleVector* clusterDelays,
-                                         ChannelCondition::LosConditionValue losCondition,
-                                         const Ptr<const ParamsTable> table3gpp,
-                                         double kFactor,
+                                         const ChannelCondition::LosConditionValue losCondition,
+                                         Ptr<const ParamsTable> table3gpp,
+                                         const double kFactor,
                                          double* powerMax) const
 {
     NS_LOG_FUNCTION(this);
@@ -2768,7 +2767,7 @@ ThreeGppChannelModel::RemoveWeakClusters(DoubleVector* clusterPowers,
 
     if (losCondition == ChannelCondition::LOS)
     {
-        double kLinear = pow(10, kFactor / 10.0);
+        const double kLinear = pow(10, kFactor / 10.0);
 
         for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
         {
@@ -2805,7 +2804,7 @@ ThreeGppChannelModel::RemoveWeakClusters(DoubleVector* clusterPowers,
     double thresh = 0.0032;
     for (uint8_t cIndex = table3gpp->m_numOfCluster; cIndex > 0; cIndex--)
     {
-        if (clusterPowersForAngles[cIndex - 1] < thresh * (*powerMax))
+        if (clusterPowersForAngles[cIndex - 1] < thresh * *powerMax)
         {
             clusterPowersForAngles.erase(clusterPowersForAngles.begin() + cIndex - 1);
             clusterPowers->erase(clusterPowers->begin() + cIndex - 1);
@@ -2817,8 +2816,8 @@ ThreeGppChannelModel::RemoveWeakClusters(DoubleVector* clusterPowers,
 
 void
 ThreeGppChannelModel::AdjustClusterDelaysForLosCondition(DoubleVector* clusterDelays,
-                                                         uint8_t reducedClusterNumber,
-                                                         double kFactor) const
+                                                         const uint8_t reducedClusterNumber,
+                                                         const double kFactor) const
 {
     NS_LOG_FUNCTION(this);
     const double cTau = 0.7705 - 0.0433 * kFactor + 2e-4 * pow(kFactor, 2) +
@@ -2831,17 +2830,17 @@ ThreeGppChannelModel::AdjustClusterDelaysForLosCondition(DoubleVector* clusterDe
 }
 
 double
-ThreeGppChannelModel::CalculateCphi(ChannelCondition::LosConditionValue losCondition,
-                                    const Ptr<const ParamsTable> table3gpp,
-                                    double kFactor)
+ThreeGppChannelModel::CalculateCphi(const ChannelCondition::LosConditionValue losCondition,
+                                    Ptr<const ParamsTable> table3gpp,
+                                    const double kFactor)
 {
     try
     {
         double cPhi = cNlosTablePhi.at(table3gpp->m_numOfCluster);
         if (losCondition == ChannelCondition::LOS)
         {
-            cPhi *= (1.1035 - 0.028 * kFactor - 2e-3 * pow(kFactor, 2) +
-                     1e-4 * pow(kFactor, 3)); // (7.5-10)
+            cPhi *= 1.1035 - 0.028 * kFactor - 2e-3 * pow(kFactor, 2) +
+                    1e-4 * pow(kFactor, 3); // (7.5-10)
         }
         return cPhi;
     }
@@ -2852,17 +2851,17 @@ ThreeGppChannelModel::CalculateCphi(ChannelCondition::LosConditionValue losCondi
 }
 
 double
-ThreeGppChannelModel::CalculateCtheta(ChannelCondition::LosConditionValue losCondition,
-                                      const Ptr<const ParamsTable> table3gpp,
-                                      double kFactor)
+ThreeGppChannelModel::CalculateCtheta(const ChannelCondition::LosConditionValue losCondition,
+                                      Ptr<const ParamsTable> table3gpp,
+                                      const double kFactor)
 {
     try
     {
         double cTheta = cNlosTableTheta.at(table3gpp->m_numOfCluster);
         if (losCondition == ChannelCondition::LOS)
         {
-            cTheta *= (1.3086 + 0.0339 * kFactor - 0.0077 * pow(kFactor, 2) +
-                       2e-4 * pow(kFactor, 3)); // (7.5-15)
+            cTheta *= 1.3086 + 0.0339 * kFactor - 0.0077 * pow(kFactor, 2) +
+                      2e-4 * pow(kFactor, 3); // (7.5-15)
         }
         return cTheta;
     }
@@ -2873,44 +2872,64 @@ ThreeGppChannelModel::CalculateCtheta(ChannelCondition::LosConditionValue losCon
 }
 
 void
-ThreeGppChannelModel::GenerateClusterAngles(const Ptr<const ThreeGppChannelParams> channelParams,
-                                            const DoubleVector& clusterPowerForAngles,
-                                            double powerMax,
-                                            double cPhi,
-                                            double cTheta,
-                                            LargeScaleParameters& lsps,
-                                            const Ptr<const MobilityModel> aMob,
-                                            const Ptr<const MobilityModel> bMob,
-                                            const Ptr<const ParamsTable> table3gpp,
-                                            DoubleVector* clusterAoa,
-                                            DoubleVector* clusterAod,
-                                            DoubleVector* clusterZoa,
-                                            DoubleVector* clusterZod) const
+ThreeGppChannelModel::GenerateClusterXnNLos(const uint8_t clusterNumber,
+                                            std::vector<int>* clusterSign) const
 {
     NS_LOG_FUNCTION(this);
+    clusterSign->clear();
+    clusterSign->resize(clusterNumber);
 
-    clusterAoa->clear();
-    clusterAod->clear();
-    clusterZoa->clear();
-    clusterZod->clear();
-    clusterAoa->reserve(channelParams->m_reducedClusterNumber);
-    clusterAod->reserve(channelParams->m_reducedClusterNumber);
-    clusterZoa->reserve(channelParams->m_reducedClusterNumber);
-    clusterZod->reserve(channelParams->m_reducedClusterNumber);
+    for (uint8_t cIndex = 0; cIndex < clusterNumber; cIndex++)
+    {
+        int Xn = 1;
+        if (m_uniformRv->GetValue(0, 1) < 0.5)
+        {
+            Xn = -1;
+        }
+
+        (*clusterSign)[cIndex] = Xn;
+    }
+}
+
+void
+ThreeGppChannelModel::GenerateClusterAngles(Ptr<const ThreeGppChannelParams> channelParams,
+                                            const DoubleVector& clusterPowerForAngles,
+                                            const double powerMax,
+                                            const double cPhi,
+                                            const double cTheta,
+                                            const LargeScaleParameters& lsps,
+                                            Ptr<const MobilityModel> aMob,
+                                            Ptr<const MobilityModel> bMob,
+                                            Ptr<const ParamsTable> table3gpp,
+                                            Double2DVector* clusterAngles) const
+{
+    NS_LOG_FUNCTION(this);
+    clusterAngles->clear();
+    clusterAngles->resize(4);
+
+    DoubleVector clusterAoa;
+    DoubleVector clusterAod;
+    DoubleVector clusterZoa;
+    DoubleVector clusterZod;
+
+    clusterAoa.resize(channelParams->m_reducedClusterNumber);
+    clusterAod.resize(channelParams->m_reducedClusterNumber);
+    clusterZoa.resize(channelParams->m_reducedClusterNumber);
+    clusterZod.resize(channelParams->m_reducedClusterNumber);
 
     for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
-        double logCalc = -1 * log(clusterPowerForAngles[cIndex] / powerMax);
+        const double logCalc = -1 * log(clusterPowerForAngles[cIndex] / powerMax);
         double angle = 2 * sqrt(logCalc) / 1.4 / cPhi; //(7.5-9)
-        clusterAoa->push_back(lsps.ASA * angle);
-        clusterAod->push_back(lsps.ASD * angle);
+        clusterAoa[cIndex] = lsps.ASA * angle;
+        clusterAod[cIndex] = lsps.ASD * angle;
         angle = logCalc / cTheta; //(7.5-14)
-        clusterZoa->push_back(lsps.ZSA * angle);
-        clusterZod->push_back(lsps.ZSD * angle);
+        clusterZoa[cIndex] = lsps.ZSA * angle;
+        clusterZod[cIndex] = lsps.ZSD * angle;
     }
 
-    Angles sAngle(bMob->GetPosition(), aMob->GetPosition());
-    Angles uAngle(aMob->GetPosition(), bMob->GetPosition());
+    const Angles sAngle(bMob->GetPosition(), aMob->GetPosition());
+    const Angles uAngle(aMob->GetPosition(), bMob->GetPosition());
 
     for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
@@ -2919,64 +2938,62 @@ ThreeGppChannelModel::GenerateClusterAngles(const Ptr<const ThreeGppChannelParam
         {
             Xn = -1;
         }
-        (*clusterAoa)[cIndex] = (*clusterAoa)[cIndex] * Xn +
-                                (m_normalRv->GetValue() * lsps.ASA / 7.0) +
-                                RadiansToDegrees(uAngle.GetAzimuth()); //(7.5-11)
-        (*clusterAod)[cIndex] = (*clusterAod)[cIndex] * Xn +
-                                (m_normalRv->GetValue() * lsps.ASD / 7.0) +
-                                RadiansToDegrees(sAngle.GetAzimuth());
+
+        clusterAoa[cIndex] = clusterAoa[cIndex] * Xn + m_normalRv->GetValue() * lsps.ASA / 7.0 +
+                             RadiansToDegrees(uAngle.GetAzimuth()); //(7.5-11)
+        clusterAod[cIndex] = clusterAod[cIndex] * Xn + m_normalRv->GetValue() * lsps.ASD / 7.0 +
+                             RadiansToDegrees(sAngle.GetAzimuth());
         if (channelParams->m_o2iCondition == ChannelCondition::O2I)
         {
-            (*clusterZoa)[cIndex] =
-                (*clusterZoa)[cIndex] * Xn + (m_normalRv->GetValue() * lsps.ZSA / 7.0) + 90;
+            clusterZoa[cIndex] =
+                clusterZoa[cIndex] * Xn + m_normalRv->GetValue() * lsps.ZSA / 7.0 + 90;
             //(7.5-16)
         }
         else
         {
-            (*clusterZoa)[cIndex] = (*clusterZoa)[cIndex] * Xn +
-                                    (m_normalRv->GetValue() * lsps.ZSA / 7.0) +
-                                    RadiansToDegrees(uAngle.GetInclination()); //(7.5-16)
+            clusterZoa[cIndex] = clusterZoa[cIndex] * Xn + m_normalRv->GetValue() * lsps.ZSA / 7.0 +
+                                 RadiansToDegrees(uAngle.GetInclination()); //(7.5-16)
         }
-        (*clusterZod)[cIndex] =
-            (*clusterZod)[cIndex] * Xn + (m_normalRv->GetValue() * lsps.ZSD / 7.0) +
-            RadiansToDegrees(sAngle.GetInclination()) + table3gpp->m_offsetZOD; //(7.5-19)
+        clusterZod[cIndex] = clusterZod[cIndex] * Xn + m_normalRv->GetValue() * lsps.ZSD / 7.0 +
+                             RadiansToDegrees(sAngle.GetInclination()) +
+                             table3gpp->m_offsetZOD; //(7.5-19)
     }
 
     if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
         // The 7.5-12 can be rewrite as Theta_n,ZOA = Theta_n,ZOA - (Theta_1,ZOA - Theta_LOS,ZOA) =
         // Theta_n,ZOA - diffZOA, Similar as AOD, ZSA and ZSD.
-        double diffAoa = (*clusterAoa)[0] - RadiansToDegrees(uAngle.GetAzimuth());
-        double diffAod = (*clusterAod)[0] - RadiansToDegrees(sAngle.GetAzimuth());
-        double diffZsa = (*clusterZoa)[0] - RadiansToDegrees(uAngle.GetInclination());
-        double diffZsd = (*clusterZod)[0] - RadiansToDegrees(sAngle.GetInclination());
+        const double diffAoa = clusterAoa[0] - RadiansToDegrees(uAngle.GetAzimuth());
+        const double diffAod = clusterAod[0] - RadiansToDegrees(sAngle.GetAzimuth());
+        const double diffZsa = clusterZoa[0] - RadiansToDegrees(uAngle.GetInclination());
+        const double diffZsd = clusterZod[0] - RadiansToDegrees(sAngle.GetInclination());
 
         for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
         {
-            (*clusterAoa)[cIndex] -= diffAoa; //(7.5-12)
-            (*clusterAod)[cIndex] -= diffAod;
-            (*clusterZoa)[cIndex] -= diffZsa; //(7.5-17)
-            (*clusterZod)[cIndex] -= diffZsd;
+            clusterAoa[cIndex] -= diffAoa; //(7.5-12)
+            clusterAod[cIndex] -= diffAod;
+            clusterZoa[cIndex] -= diffZsa; //(7.5-17)
+            clusterZod[cIndex] -= diffZsd;
         }
     }
 
-    double sizeTemp = clusterZoa->size();
+    const double sizeTemp = clusterZoa.size();
     for (uint8_t ind = 0; ind < 4; ind++)
     {
         DoubleVector angleDegree;
         switch (ind)
         {
         case 0:
-            angleDegree = *clusterAoa;
+            angleDegree = clusterAoa;
             break;
         case 1:
-            angleDegree = *clusterZoa;
+            angleDegree = clusterZoa;
             break;
         case 2:
-            angleDegree = *clusterAod;
+            angleDegree = clusterAod;
             break;
         case 3:
-            angleDegree = *clusterZod;
+            angleDegree = clusterZod;
             break;
         default:
             NS_FATAL_ERROR("Programming Error");
@@ -3004,222 +3021,204 @@ ThreeGppChannelModel::GenerateClusterAngles(const Ptr<const ThreeGppChannelParam
         switch (ind)
         {
         case 0:
-            *clusterAoa = angleDegree;
+            clusterAoa = angleDegree;
             break;
         case 1:
-            *clusterZoa = angleDegree;
+            clusterZoa = angleDegree;
             break;
         case 2:
-            *clusterAod = angleDegree;
+            clusterAod = angleDegree;
             break;
         case 3:
-            *clusterZod = angleDegree;
+            clusterZod = angleDegree;
             break;
         default:
             NS_FATAL_ERROR("Programming Error");
         }
     }
+
+    (*clusterAngles)[AOA_INDEX] = clusterAoa;
+    (*clusterAngles)[AOD_INDEX] = clusterAod;
+    (*clusterAngles)[ZOA_INDEX] = clusterZoa;
+    (*clusterAngles)[ZOD_INDEX] = clusterZod;
 }
 
 void
 ThreeGppChannelModel::UpdateClusterDelay(DoubleVector* clusterDelay,
-                                         DoubleVector* prevClusterDelay,
-                                         bool* newChannel,
-                                         const Ptr<const ThreeGppChannelParams> channelParams) const
+                                         DoubleVector* delayConsistency,
+                                         Ptr<const ThreeGppChannelParams> channelParams) const
 {
     NS_LOG_FUNCTION(this);
-    // update cluster delays based on equation (7.6-9)
-    if (newChannel)
-    {
-        *prevClusterDelay = channelParams->m_delayConsistency;
-        *clusterDelay = channelParams->m_delayConsistency;
-        *newChannel = false;
-    }
-    else
-    {
-        *prevClusterDelay = channelParams->m_delay;
-        *clusterDelay = channelParams->m_delay;
-    }
 
-    for (uint8_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
+    clusterDelay->clear();
+    clusterDelay->resize(channelParams->m_reducedClusterNumber);
+
+    NS_ASSERT(channelParams->m_delayConsistency.empty() == false);
+    NS_ASSERT(Simulator::Now() != channelParams->m_generatedTime);
+
+    // update cluster delays based on equation (7.6-9)
+    for (size_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
     {
-        (*clusterDelay)[cInd] -=
-            ((sin(channelParams->m_angle.at(ZOA_INDEX).at(cInd) * M_PI / 180) *
-                  cos(channelParams->m_angle.at(AOA_INDEX).at(cInd) * M_PI / 180) *
-                  channelParams->m_rxSpeed.x +
-              sin(channelParams->m_angle.at(ZOA_INDEX).at(cInd) * M_PI / 180) *
-                  sin(channelParams->m_angle.at(AOA_INDEX).at(cInd) * M_PI / 180) *
-                  channelParams->m_rxSpeed.y) +
+        const double timeSeconds = (Simulator::Now() - channelParams->m_generatedTime).GetSeconds();
+
+        (*delayConsistency)[cInd] -=
+            (sin(channelParams->m_angle.at(ZOA_INDEX).at(cInd) * M_PI / 180) *
+                 cos(channelParams->m_angle.at(AOA_INDEX).at(cInd) * M_PI / 180) *
+                 channelParams->m_rxSpeed.x +
+             sin(channelParams->m_angle.at(ZOA_INDEX).at(cInd) * M_PI / 180) *
+                 sin(channelParams->m_angle.at(AOA_INDEX).at(cInd) * M_PI / 180) *
+                 channelParams->m_rxSpeed.y +
              (sin(channelParams->m_angle.at(ZOD_INDEX).at(cInd) * M_PI / 180) *
                   cos(channelParams->m_angle.at(AOD_INDEX).at(cInd) * M_PI / 180) *
                   channelParams->m_txSpeed.x +
               sin(channelParams->m_angle.at(ZOD_INDEX).at(cInd) * M_PI / 180) *
                   sin(channelParams->m_angle.at(AOD_INDEX).at(cInd) * M_PI / 180) *
-                  channelParams->m_txSpeed.y)) *
-            m_updatePeriod.GetSeconds() / 3e8; //(7.6-9)
+                  channelParams->m_txSpeed.y)) /
+            3e8 * timeSeconds;
     }
 
     // normalize the delays by removing the min value (7.6-10a)
-    double minTau = 100.0;
-    for (uint8_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
+    double minTau = std::numeric_limits<double>::max();
+    for (size_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
     {
-        if (minTau > (*clusterDelay)[cInd])
+        if (minTau > (*delayConsistency)[cInd])
         {
-            minTau = (*clusterDelay)[cInd];
+            minTau = (*delayConsistency)[cInd];
         }
     }
 
-    for (uint8_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
+    for (size_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
     {
-        (*clusterDelay)[cInd] -= minTau;
+        // normalize the updated cluster delay (7.6-10a), and then use these cluster delays to
+        // generate cluster powers
+        (*clusterDelay)[cInd] = (*delayConsistency)[cInd] - minTau;
     }
 }
 
-void
-ThreeGppChannelModel::UpdateClusterAngles(const Ptr<const ThreeGppChannelParams> channelParams,
-                                          DoubleVector* ioClusterAoa,
-                                          DoubleVector* ioClusterAod,
-                                          DoubleVector* ioClusterZoa,
-                                          DoubleVector* ioClusterZod,
-                                          const DoubleVector& prevClusterDelay,
-                                          bool isSameDir) const
+Vector
+ThreeGppChannelModel::ApplyVelocityRotation(const double alphaRad,
+                                            const double betaRad,
+                                            const double gammaRad,
+                                            const double etaRad,
+                                            const Vector& speed,
+                                            const int Xn) const
 {
     NS_LOG_FUNCTION(this);
-    NS_ASSERT(ioClusterAoa->size() == channelParams->m_reducedClusterNumber);
-    NS_ASSERT(ioClusterZoa->size() == channelParams->m_reducedClusterNumber);
-    NS_ASSERT(ioClusterAod->size() == channelParams->m_reducedClusterNumber);
-    NS_ASSERT(ioClusterZod->size() == channelParams->m_reducedClusterNumber);
+    // only x and y components are used, no need to calculate the z component
+    const double sinAlpha = sin(alphaRad);
+    const double cosAlpha = cos(alphaRad);
+    const double sinBeta = sin(betaRad);
+    const double cosBeta = cos(betaRad);
+    const double sinGamma = sin(gammaRad);
+    const double cosGamma = cos(gammaRad);
+    const double sinEta = sin(etaRad);
+    const double cosEta = cos(etaRad);
 
-    DoubleVector prevClusterAoa = *ioClusterAoa;
-    DoubleVector prevClusterZoa = *ioClusterZoa;
-    DoubleVector prevClusterAod = *ioClusterAod;
-    DoubleVector prevClusterZod = *ioClusterZod;
+    Vector vRotated;
 
-    DoubleVector newClusterAoa = *ioClusterAoa;
-    DoubleVector newClusterZoa = *ioClusterZoa;
-    DoubleVector newClusterAod = *ioClusterAod;
-    DoubleVector newClusterZod = *ioClusterZod;
+    vRotated.x = (cosAlpha * cosBeta * cosGamma * cosEta - sinAlpha * sinEta * Xn -
+                  cosAlpha * sinBeta * sinGamma * cosEta) *
+                     speed.x +
+                 (-1 * cosAlpha * cosBeta * cosGamma * sinEta - sinAlpha * cosEta * Xn +
+                  cosAlpha * sinBeta * sinGamma * sinEta) *
+                     speed.y;
 
-    auto rxSpeed = channelParams->m_rxSpeed;
-    auto txSpeed = channelParams->m_txSpeed;
-    bool los = (channelParams->m_losCondition == ChannelCondition::LOS);
+    vRotated.y = (sinAlpha * cosBeta * cosGamma * cosEta + cosAlpha * sinEta * Xn -
+                  sinAlpha * sinBeta * sinGamma * cosEta) *
+                     speed.x +
+                 (-1 * sinAlpha * cosBeta * cosGamma * sinEta + cosAlpha * cosEta * Xn +
+                  sinAlpha * sinBeta * sinGamma * sinEta) *
+                     speed.y;
 
-    auto numOfClusters = channelParams->m_reducedClusterNumber;
+    vRotated.z = 0;
 
-    for (uint8_t cInd = 0; cInd < numOfClusters; cInd++)
+    return vRotated;
+}
+
+void
+ThreeGppChannelModel::UpdateClusterAngles(Ptr<const ThreeGppChannelParams> channelParams,
+                                          Double2DVector* clusterAngles,
+                                          const DoubleVector& prevClusterDelay) const
+{
+    NS_LOG_FUNCTION(this);
+    NS_ASSERT(prevClusterDelay.size() == channelParams->m_reducedClusterNumber);
+    const DoubleVector prevClusterAoa = channelParams->m_angle[AOA_INDEX];
+    const DoubleVector prevClusterZoa = channelParams->m_angle[ZOA_INDEX];
+    const DoubleVector prevClusterAod = channelParams->m_angle[AOD_INDEX];
+    const DoubleVector prevClusterZod = channelParams->m_angle[ZOD_INDEX];
+    const auto rxSpeed = channelParams->m_rxSpeed;
+    const auto txSpeed = channelParams->m_txSpeed;
+    const bool los = channelParams->m_losCondition == ChannelCondition::LOS;
+
+    for (size_t cInd = 0; cInd < prevClusterDelay.size(); cInd++)
     {
         // compute cluster relative speed
         Vector vPrimeRx;
         Vector vPrimeTx;
         if (los)
         {
-            vPrimeRx = rxSpeed - txSpeed;
-            vPrimeTx = txSpeed - rxSpeed;
+            vPrimeRx = rxSpeed - txSpeed; // (7.6-10b)
+            vPrimeTx = txSpeed - rxSpeed; // (7.6-10c)
         }
         else
         {
-            int Xn = 1;
-            if (m_uniformRv->GetValue(0, 1) < 0.5)
-            {
-                Xn = -1;
-            }
-            double alphaRad = M_PI + prevClusterAod[cInd] * M_PI / 180;
-            double betaRad = M_PI / 2 - prevClusterAod[cInd] * M_PI / 180;
-            double gammaRad = M_PI / 2 - prevClusterZoa[cInd] * M_PI / 180;
-            double etaRad = -1 * prevClusterAoa[cInd] * M_PI / 180;
-
-            double sinAlpha = sin(alphaRad);
-            double cosAlpha = cos(alphaRad);
-            double sinBeta = sin(betaRad);
-            double cosBeta = cos(betaRad);
-            double sinGamma = sin(gammaRad);
-            double cosGamma = cos(gammaRad);
-            double sinEta = sin(etaRad);
-            double cosEta = cos(etaRad);
+            NS_ASSERT(channelParams->m_clusterXnNlosSign.empty() == false);
+            NS_ASSERT(channelParams->m_clusterXnNlosSign.size() ==
+                      channelParams->m_reducedClusterNumber);
+            const int Xn = channelParams->m_clusterXnNlosSign[cInd];
+            double alphaRad = M_PI + DegreesToRadians(prevClusterAod[cInd]);
+            const double betaRad = M_PI / 2 - DegreesToRadians(prevClusterZod[cInd]);
+            const double gammaRad = M_PI / 2 - DegreesToRadians(prevClusterZoa[cInd]);
+            double etaRad = -1 * DegreesToRadians(prevClusterAoa[cInd]);
 
             Vector rxSpeedPrime =
-                Vector((cosAlpha * cosBeta * cosGamma * cosEta - sinAlpha * sinEta * Xn -
-                        cosAlpha * sinBeta * sinGamma * cosEta) *
-                               rxSpeed.x +
-                           (-1 * cosAlpha * cosBeta * cosGamma * sinEta - sinAlpha * cosEta * Xn +
-                            cosAlpha * sinBeta * sinGamma * sinEta) *
-                               rxSpeed.y,
-                       (sinAlpha * cosBeta * cosGamma * cosEta + cosAlpha * sinEta * Xn -
-                        sinAlpha * sinBeta * sinGamma * sinEta) *
-                               rxSpeed.x +
-                           (-1 * sinAlpha * cosBeta * cosGamma * sinEta + cosAlpha * cosEta * Xn +
-                            sinAlpha * sinBeta * sinGamma * sinEta) *
-                               rxSpeed.y,
-                       0); // only x and y components are used, no need to calculate the z component
+                ApplyVelocityRotation(alphaRad, betaRad, gammaRad, etaRad, rxSpeed, Xn);
 
-            alphaRad = -1 * prevClusterAod[cInd] * M_PI / 180;
-            betaRad = M_PI / 2 - prevClusterAod[cInd] * M_PI / 180;
-            gammaRad = M_PI / 2 - prevClusterZoa[cInd] * M_PI / 180;
-            etaRad = M_PI + prevClusterAoa[cInd] * M_PI / 180;
-            sinAlpha = sin(alphaRad);
-            cosAlpha = cos(alphaRad);
-            sinBeta = sin(betaRad);
-            cosBeta = cos(betaRad);
-            sinGamma = sin(gammaRad);
-            cosGamma = cos(gammaRad);
-            sinEta = sin(etaRad);
-            cosEta = cos(etaRad);
+            alphaRad = -1 * DegreesToRadians(prevClusterAod[cInd]);
+            etaRad = M_PI + DegreesToRadians(prevClusterAoa[cInd]);
 
             Vector txSpeedPrime =
-                Vector((cosAlpha * cosBeta * cosGamma * cosEta - sinAlpha * sinEta * Xn -
-                        cosAlpha * sinBeta * sinGamma * cosEta) *
-                               txSpeed.x +
-                           (-1 * cosAlpha * cosBeta * cosGamma * sinEta - sinAlpha * cosEta * Xn +
-                            cosAlpha * sinBeta * sinGamma * sinEta) *
-                               txSpeed.y,
-                       (sinAlpha * cosBeta * cosGamma * cosEta + cosAlpha * sinEta * Xn -
-                        sinAlpha * sinBeta * sinGamma * sinEta) *
-                               txSpeed.x +
-                           (-1 * sinAlpha * cosBeta * cosGamma * sinEta + cosAlpha * cosEta * Xn +
-                            sinAlpha * sinBeta * sinGamma * sinEta) *
-                               txSpeed.y,
-                       0);
-
-            vPrimeRx = rxSpeedPrime - txSpeed;
-            vPrimeTx = txSpeedPrime - rxSpeed;
+                ApplyVelocityRotation(alphaRad, betaRad, gammaRad, etaRad, txSpeed, Xn);
+            vPrimeRx = rxSpeedPrime - txSpeed; // (7.6-10b)
+            vPrimeTx = txSpeedPrime - rxSpeed; // (7.6-10c)
         }
 
-        // if channel params is generated in the same direction in which we
-        // update the channel parameters
         using DPV = std::vector<std::pair<double, double>>;
-        using MBCM = MatrixBasedChannelModel;
         const auto& cachedAngleSincos = channelParams->m_cachedAngleSincos;
-        const DPV& zoa = cachedAngleSincos[isSameDir ? MBCM::ZOA_INDEX : MBCM::ZOD_INDEX];
-        const DPV& zod = cachedAngleSincos[isSameDir ? MBCM::ZOD_INDEX : MBCM::ZOA_INDEX];
-        const DPV& aoa = cachedAngleSincos[isSameDir ? MBCM::AOA_INDEX : MBCM::AOD_INDEX];
-        const DPV& aod = cachedAngleSincos[isSameDir ? MBCM::AOD_INDEX : MBCM::AOA_INDEX];
+        const DPV& zoaSinCos = cachedAngleSincos[ZOA_INDEX];
+        const DPV& zodSinCos = cachedAngleSincos[ZOD_INDEX];
+        const DPV& aoaSinCos = cachedAngleSincos[AOA_INDEX];
+        const DPV& aodSinCos = cachedAngleSincos[AOD_INDEX];
+
+        const double deltaT =
+            Simulator::Now().GetSeconds() - channelParams->m_generatedTime.GetSeconds();
 
         // update the angles according to equations (7.6-11) - (7.6-14)
-        newClusterAod[cInd] = prevClusterAod[cInd] +
-                              (-aod[cInd].first * vPrimeRx.x + aod[cInd].second * vPrimeRx.y) *
-                                  m_updatePeriod.GetSeconds() /
-                                  (3e8 * prevClusterDelay[cInd] * zod[cInd].first) * (180 / M_PI);
-        newClusterZod[cInd] =
-            prevClusterZod[cInd] + (zod[cInd].second * aod[cInd].second * vPrimeRx.x +
-                                    zod[cInd].second * -aod[cInd].first * vPrimeRx.y) *
-                                       m_updatePeriod.GetSeconds() /
-                                       (3e8 * prevClusterDelay[cInd]) * (180 / M_PI);
+        (*clusterAngles)[AOD_INDEX][cInd] =
+            prevClusterAod[cInd] +
+            RadiansToDegrees(
+                (-aodSinCos[cInd].first * vPrimeRx.x + aodSinCos[cInd].second * vPrimeRx.y) /
+                (3e8 * prevClusterDelay[cInd] * zodSinCos[cInd].first) * deltaT);
 
-        newClusterAoa[cInd] = prevClusterAoa[cInd] +
-                              (-aoa[cInd].first * vPrimeTx.x + aoa[cInd].second * vPrimeTx.y) *
-                                  m_updatePeriod.GetSeconds() /
-                                  (3e8 * prevClusterDelay[cInd] * zoa[cInd].first) * (180 / M_PI);
-        newClusterZoa[cInd] =
-            prevClusterZoa[cInd] + (zoa[cInd].second * aoa[cInd].second * vPrimeTx.x +
-                                    zoa[cInd].second * aoa[cInd].first * vPrimeTx.y) *
-                                       m_updatePeriod.GetSeconds() /
-                                       (3e8 * prevClusterDelay[cInd]) * (180 / M_PI);
+        (*clusterAngles)[ZOD_INDEX][cInd] =
+            prevClusterZod[cInd] +
+            RadiansToDegrees((zodSinCos[cInd].second * aodSinCos[cInd].second * vPrimeRx.x +
+                              zodSinCos[cInd].second * -aodSinCos[cInd].first * vPrimeRx.y) /
+                             (3e8 * prevClusterDelay[cInd]) * deltaT);
+
+        (*clusterAngles)[AOA_INDEX][cInd] =
+            prevClusterAoa[cInd] +
+            RadiansToDegrees(
+                (-aoaSinCos[cInd].first * vPrimeTx.x + aoaSinCos[cInd].second * vPrimeTx.y) /
+                (3e8 * prevClusterDelay[cInd] * zoaSinCos[cInd].first) * deltaT);
+
+        (*clusterAngles)[ZOA_INDEX][cInd] =
+            prevClusterZoa[cInd] +
+            RadiansToDegrees((zoaSinCos[cInd].second * aoaSinCos[cInd].second * vPrimeTx.x +
+                              zoaSinCos[cInd].second * aoaSinCos[cInd].first * vPrimeTx.y) /
+                             (3e8 * prevClusterDelay[cInd]) * deltaT);
     }
 
-    *ioClusterAoa = newClusterAoa;
-    *ioClusterZoa = newClusterZoa;
-    *ioClusterAod = newClusterAod;
-    *ioClusterZod = newClusterZod;
     NS_LOG_DEBUG("Cluster angles updated");
 }
 
@@ -3228,9 +3227,10 @@ ThreeGppChannelModel::ApplyAttenuationToClusterPowers(
     Double2DVector* nonSelfBlocking,
     DoubleVector* clusterPowers,
     DoubleVector* attenuation_dB,
-    const Ptr<const ThreeGppChannelParams> channelParams,
+    Ptr<const ThreeGppChannelParams> channelParams,
     const DoubleVector& clusterAoa,
-    const DoubleVector& clusterZoa) const
+    const DoubleVector& clusterZoa,
+    Ptr<const ParamsTable> table3gpp) const
 {
     NS_LOG_FUNCTION(this);
 
@@ -3240,7 +3240,8 @@ ThreeGppChannelModel::ApplyAttenuationToClusterPowers(
                                   attenuation_dB,
                                   channelParams,
                                   clusterAoa,
-                                  clusterZoa);
+                                  clusterZoa,
+                                  table3gpp);
         for (uint8_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
         {
             (*clusterPowers)[cInd] =
@@ -3254,55 +3255,62 @@ ThreeGppChannelModel::ApplyAttenuationToClusterPowers(
 }
 
 void
-ThreeGppChannelModel::RandomRaysCoupling(const Ptr<const ThreeGppChannelParams> channelParams,
-                                         const Ptr<const ParamsTable> table3gpp,
-                                         Double2DVector* rayAoaRadian,
-                                         Double2DVector* rayAodRadian,
-                                         Double2DVector* rayZoaRadian,
-                                         Double2DVector* rayZodRadian,
-                                         const DoubleVector& clusterAoa,
-                                         const DoubleVector& clusterAod,
-                                         const DoubleVector& clusterZoa,
-                                         const DoubleVector& clusterZod) const
+ThreeGppChannelModel::ComputeRayAngles(Ptr<const ThreeGppChannelParams> channelParams,
+                                       Ptr<const ParamsTable> table3gpp,
+                                       Double2DVector* rayAoaRadian,
+                                       Double2DVector* rayAodRadian,
+                                       Double2DVector* rayZoaRadian,
+                                       Double2DVector* rayZodRadian) const
 {
     NS_LOG_FUNCTION(this);
-    *rayAoaRadian = Double2DVector(
-        channelParams->m_reducedClusterNumber,
-        DoubleVector(table3gpp->m_raysPerCluster,
-                     0)); // rayAoaRadian[n][m], where n is cluster index, m is ray index
 
-    *rayAodRadian = Double2DVector(
-        channelParams->m_reducedClusterNumber,
-        DoubleVector(table3gpp->m_raysPerCluster,
-                     0)); // rayAodRadian[n][m], where n is cluster index, m is ray index
+    const DoubleVector& clusterAoa = channelParams->m_angle[AOA_INDEX];
+    const DoubleVector& clusterAod = channelParams->m_angle[AOD_INDEX];
+    const DoubleVector& clusterZoa = channelParams->m_angle[ZOA_INDEX];
+    const DoubleVector& clusterZod = channelParams->m_angle[ZOD_INDEX];
 
-    *rayZoaRadian = Double2DVector(
-        channelParams->m_reducedClusterNumber,
-        DoubleVector(table3gpp->m_raysPerCluster,
-                     0)); // rayZoaRadian[n][m], where n is cluster index, m is ray index
+    // Resize/initialize containers: [numClusters][raysPerCluster]
+    *rayAoaRadian = Double2DVector(channelParams->m_reducedClusterNumber,
+                                   DoubleVector(table3gpp->m_raysPerCluster, 0));
+    *rayAodRadian = Double2DVector(channelParams->m_reducedClusterNumber,
+                                   DoubleVector(table3gpp->m_raysPerCluster, 0));
+    *rayZoaRadian = Double2DVector(channelParams->m_reducedClusterNumber,
+                                   DoubleVector(table3gpp->m_raysPerCluster, 0));
+    *rayZodRadian = Double2DVector(channelParams->m_reducedClusterNumber,
+                                   DoubleVector(table3gpp->m_raysPerCluster, 0));
 
-    *rayZodRadian = Double2DVector(
-        channelParams->m_reducedClusterNumber,
-        DoubleVector(table3gpp->m_raysPerCluster,
-                     0)); // rayZodRadian[n][m], where n is cluster index, m is ray index
+    const double pow10_uLgZSD = std::pow(10.0, table3gpp->m_uLgZSD);
 
-    const double pow10_uLgZSD = pow(10, table3gpp->m_uLgZSD);
+    // NOTE: offSetAlpha[m] must be available in scope (same as previous implementation)
     for (uint8_t nInd = 0; nInd < channelParams->m_reducedClusterNumber; nInd++)
     {
         for (uint8_t mInd = 0; mInd < table3gpp->m_raysPerCluster; mInd++)
         {
-            double tempAoa = clusterAoa[nInd] + table3gpp->m_cASA * offSetAlpha[mInd]; //(7.5-13)
-            double tempZoa = clusterZoa[nInd] + table3gpp->m_cZSA * offSetAlpha[mInd]; //(7.5-18)
+            const double tempAoa =
+                clusterAoa[nInd] + table3gpp->m_cASA * offSetAlpha[mInd]; // (7.5-13)
+            const double tempZoa =
+                clusterZoa[nInd] + table3gpp->m_cZSA * offSetAlpha[mInd]; // (7.5-18)
             std::tie((*rayAoaRadian)[nInd][mInd], (*rayZoaRadian)[nInd][mInd]) =
                 WrapAngles(DegreesToRadians(tempAoa), DegreesToRadians(tempZoa));
 
-            double tempAod = clusterAod[nInd] + table3gpp->m_cASD * offSetAlpha[mInd];    //(7.5-13)
-            double tempZod = clusterZod[nInd] + 0.375 * pow10_uLgZSD * offSetAlpha[mInd]; //(7.5-20)
+            const double tempAod =
+                clusterAod[nInd] + table3gpp->m_cASD * offSetAlpha[mInd]; // (7.5-13)
+            const double tempZod = clusterZod[nInd] + 0.375 * pow10_uLgZSD * offSetAlpha[mInd];
+            // (7.5-20)
             std::tie((*rayAodRadian)[nInd][mInd], (*rayZodRadian)[nInd][mInd]) =
                 WrapAngles(DegreesToRadians(tempAod), DegreesToRadians(tempZod));
         }
     }
+}
 
+void
+ThreeGppChannelModel::RandomRaysCoupling(Ptr<const ThreeGppChannelParams> channelParams,
+                                         Double2DVector* rayAoaRadian,
+                                         Double2DVector* rayAodRadian,
+                                         Double2DVector* rayZoaRadian,
+                                         Double2DVector* rayZodRadian) const
+{
+    NS_LOG_FUNCTION(this);
     for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
         Shuffle((*rayAodRadian)[cIndex].begin(), (*rayAodRadian)[cIndex].end(), m_uniformRvShuffle);
@@ -3316,8 +3324,8 @@ void
 ThreeGppChannelModel::GenerateCrossPolPowerRatiosAndInitialPhases(
     Double2DVector* crossPolarizationPowerRatios,
     Double3DVector* clusterPhase,
-    uint8_t reducedClusterNumber,
-    const Ptr<const ParamsTable> table3gpp) const
+    const uint8_t reducedClusterNumber,
+    Ptr<const ParamsTable> table3gpp) const
 {
     // a vector containing the cross-polarization power ratios, as defined by 7.5-21
     // store the PHI values for all the possible combination of polarizations
@@ -3350,104 +3358,211 @@ ThreeGppChannelModel::GenerateCrossPolPowerRatiosAndInitialPhases(
 }
 
 void
-ThreeGppChannelModel::FindStrongestClusters(const Ptr<const ThreeGppChannelParams> channelParams,
-                                            const Ptr<const ParamsTable> table3gpp,
+ThreeGppChannelModel::FindStrongestClusters(Ptr<const ThreeGppChannelParams> channelParams,
+                                            Ptr<const ParamsTable> table3gpp,
                                             uint8_t* cluster1st,
                                             uint8_t* cluster2nd,
                                             DoubleVector* clusterDelay,
-                                            DoubleVector* clusterAoa,
-                                            DoubleVector* clusterAod,
-                                            DoubleVector* clusterZoa,
-                                            DoubleVector* clusterZod) const
+                                            Double2DVector* angles,
+                                            DoubleVector* alpha,
+                                            DoubleVector* dTerm,
+                                            DoubleVector* clusterPower) const
 
 {
     NS_LOG_FUNCTION(this);
+    NS_ABORT_IF(table3gpp == nullptr);
+    NS_ABORT_IF(channelParams == nullptr);
+    NS_ABORT_IF(cluster1st == nullptr || cluster2nd == nullptr);
+    NS_ABORT_IF(clusterDelay == nullptr || angles == nullptr || alpha == nullptr ||
+                dTerm == nullptr);
+    NS_ABORT_IF(angles->size() != ZOD_INDEX + 1); // expects 4 directions: AOA/AOD/ZOA/ZOD
+    NS_ABORT_IF(channelParams->m_reducedClusterNumber == 0);
+    NS_ABORT_IF(channelParams->m_clusterPower.size() != channelParams->m_reducedClusterNumber);
+    NS_ABORT_IF(alpha->size() != channelParams->m_reducedClusterNumber);
+    NS_ABORT_IF(dTerm->size() != channelParams->m_reducedClusterNumber);
+    NS_ABORT_IF(clusterDelay->size() != channelParams->m_reducedClusterNumber);
+
+    for (auto dir : {AOA_INDEX, AOD_INDEX, ZOA_INDEX, ZOD_INDEX})
+    {
+        NS_ABORT_IF((*angles)[dir].size() != channelParams->m_reducedClusterNumber);
+    }
+
     *cluster1st = 0;
     *cluster2nd = 0;
-    double maxPower = 0;
-    for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
+
+    if (channelParams->m_reducedClusterNumber > 1)
     {
-        if (maxPower < channelParams->m_clusterPowers[cIndex])
+        // Find strongest
+        double maxPower = channelParams->m_clusterPower[0];
+        for (uint8_t cIndex = 1; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
         {
-            maxPower = channelParams->m_clusterPowers[cIndex];
-            *cluster1st = cIndex;
+            if (maxPower < channelParams->m_clusterPower[cIndex])
+            {
+                maxPower = channelParams->m_clusterPower[cIndex];
+                *cluster1st = cIndex;
+            }
+        }
+        // Initialize second-strongest to "some other index"
+        *cluster2nd = (*cluster1st == 0) ? 1 : 0;
+        maxPower = channelParams->m_clusterPower[*cluster2nd];
+
+        // Find second-strongest (must be != cluster1st)
+        for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
+        {
+            if (cIndex != *cluster1st && maxPower < channelParams->m_clusterPower[cIndex])
+            {
+                maxPower = channelParams->m_clusterPower[cIndex];
+                *cluster2nd = cIndex;
+            }
         }
     }
-    maxPower = 0;
-    for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
-    {
-        if (maxPower < channelParams->m_clusterPowers[cIndex] && *cluster1st != cIndex)
-        {
-            maxPower = channelParams->m_clusterPowers[cIndex];
-            *cluster2nd = cIndex;
-        }
-    }
+    NS_ABORT_IF(channelParams->m_reducedClusterNumber > 1 && *cluster1st == *cluster2nd);
+    NS_LOG_INFO("1st strongest cluster:" << +*cluster1st
+                                         << ", 2nd strongest cluster:" << +*cluster2nd);
 
-    NS_LOG_INFO("1st strongest cluster:" << +(*cluster1st)
-                                         << ", 2nd strongest cluster:" << +(*cluster2nd));
-
-    // store the delays and the angles for the subclusters
+    // store the values for the subclusters
     if (*cluster1st == *cluster2nd)
     {
         clusterDelay->push_back((*clusterDelay)[*cluster1st] + 1.28 * table3gpp->m_cDS);
         clusterDelay->push_back((*clusterDelay)[*cluster1st] + 2.56 * table3gpp->m_cDS);
 
-        clusterAoa->push_back((*clusterAoa)[*cluster1st]);
-        clusterAoa->push_back((*clusterAoa)[*cluster1st]);
+        for (auto dir : {AOA_INDEX, AOD_INDEX, ZOA_INDEX, ZOD_INDEX})
+        {
+            auto& v = (*angles)[dir];
+            v.push_back(v[*cluster1st]);
+            v.push_back(v[*cluster1st]);
+        }
 
-        clusterZoa->push_back((*clusterZoa)[*cluster1st]);
-        clusterZoa->push_back((*clusterZoa)[*cluster1st]);
-
-        clusterAod->push_back((*clusterAod)[*cluster1st]);
-        clusterAod->push_back((*clusterAod)[*cluster1st]);
-
-        clusterZod->push_back((*clusterZod)[*cluster1st]);
-        clusterZod->push_back((*clusterZod)[*cluster1st]);
+        alpha->push_back((*alpha)[*cluster1st]);
+        alpha->push_back((*alpha)[*cluster1st]);
+        dTerm->push_back((*dTerm)[*cluster1st]);
+        dTerm->push_back((*dTerm)[*cluster1st]);
+        clusterPower->push_back((*clusterPower)[*cluster1st]);
+        clusterPower->push_back((*clusterPower)[*cluster1st]);
     }
     else
     {
-        double min;
-        double max;
-        if (*cluster1st < *cluster2nd)
-        {
-            min = *cluster1st;
-            max = *cluster2nd;
-        }
-        else
-        {
-            min = *cluster2nd;
-            max = *cluster1st;
-        }
+        const uint8_t min = std::min(*cluster1st, *cluster2nd);
+        const uint8_t max = std::max(*cluster1st, *cluster2nd);
+
         clusterDelay->push_back((*clusterDelay)[min] + 1.28 * table3gpp->m_cDS);
         clusterDelay->push_back((*clusterDelay)[min] + 2.56 * table3gpp->m_cDS);
         clusterDelay->push_back((*clusterDelay)[max] + 1.28 * table3gpp->m_cDS);
         clusterDelay->push_back((*clusterDelay)[max] + 2.56 * table3gpp->m_cDS);
 
-        clusterAoa->push_back((*clusterAoa)[min]);
-        clusterAoa->push_back((*clusterAoa)[min]);
-        clusterAoa->push_back((*clusterAoa)[max]);
-        clusterAoa->push_back((*clusterAoa)[max]);
+        for (auto dir : {AOA_INDEX, AOD_INDEX, ZOA_INDEX, ZOD_INDEX})
+        {
+            auto& v = (*angles)[dir];
+            v.push_back(v[min]);
+            v.push_back(v[min]);
+            v.push_back(v[max]);
+            v.push_back(v[max]);
+        }
 
-        clusterZoa->push_back((*clusterZoa)[min]);
-        clusterZoa->push_back((*clusterZoa)[min]);
-        clusterZoa->push_back((*clusterZoa)[max]);
-        clusterZoa->push_back((*clusterZoa)[max]);
+        alpha->push_back((*alpha)[min]);
+        alpha->push_back((*alpha)[min]);
+        alpha->push_back((*alpha)[max]);
+        alpha->push_back((*alpha)[max]);
 
-        clusterAod->push_back((*clusterAod)[min]);
-        clusterAod->push_back((*clusterAod)[min]);
-        clusterAod->push_back((*clusterAod)[max]);
-        clusterAod->push_back((*clusterAod)[max]);
+        dTerm->push_back((*dTerm)[min]);
+        dTerm->push_back((*dTerm)[min]);
+        dTerm->push_back((*dTerm)[max]);
+        dTerm->push_back((*dTerm)[max]);
 
-        clusterZod->push_back((*clusterZod)[min]);
-        clusterZod->push_back((*clusterZod)[min]);
-        clusterZod->push_back((*clusterZod)[max]);
-        clusterZod->push_back((*clusterZod)[max]);
+        clusterPower->push_back((*clusterPower)[min]);
+        clusterPower->push_back((*clusterPower)[min]);
+        clusterPower->push_back((*clusterPower)[max]);
+        clusterPower->push_back((*clusterPower)[max]);
+    }
+
+    const std::size_t expectedExtra = (*cluster1st == *cluster2nd) ? 2u : 4u;
+    const std::size_t expectedSize =
+        static_cast<std::size_t>(channelParams->m_reducedClusterNumber) + expectedExtra;
+
+    NS_ABORT_IF(clusterDelay->size() != expectedSize);
+    NS_ABORT_IF(alpha->size() != expectedSize);
+    NS_ABORT_IF(dTerm->size() != expectedSize);
+    for (auto dir : {AOA_INDEX, AOD_INDEX, ZOA_INDEX, ZOD_INDEX})
+    {
+        NS_ABORT_IF((*angles)[dir].size() != expectedSize);
+    }
+}
+
+void
+ThreeGppChannelModel::TrimToBaseClusters(
+    const uint8_t reducedClusterNumber,
+    DoubleVector* delay,
+    Double2DVector* angles,
+    std::vector<std::vector<std::pair<double, double>>>* cachedAngleSincos,
+    DoubleVector* alpha,
+    DoubleVector* dTerm,
+    DoubleVector* clusterPower) const
+{
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_IF(delay == nullptr || angles == nullptr);
+    NS_ABORT_IF(angles->size() != ZOD_INDEX + 1); // expects 4 directions: AOA/ZOA/AOD/ZOD
+
+    const auto totalClusterNumber = delay->size();
+    if (reducedClusterNumber == totalClusterNumber)
+    {
+        NS_LOG_DEBUG("Nothing to trim, the reduced cluster number is equal to the vector of "
+                     "per cluster delays");
+        return; // already trimmed
+    }
+    NS_ABORT_IF(totalClusterNumber < reducedClusterNumber);
+    const auto extraClusters = totalClusterNumber - reducedClusterNumber;
+    NS_ABORT_MSG_IF(!(extraClusters == 2 || extraClusters == 4),
+                    "The number of extra clusters to be removed can be either 2 or 4.");
+    // Trim delay
+    delay->erase(delay->end() - extraClusters, delay->end());
+
+    // Trim angles
+    for (auto dir : {AOA_INDEX, ZOA_INDEX, AOD_INDEX, ZOD_INDEX})
+    {
+        NS_ABORT_IF((*angles)[dir].size() != totalClusterNumber);
+        (*angles)[dir].erase((*angles)[dir].end() - extraClusters, (*angles)[dir].end());
+    }
+
+    // Trim cached sin/cos angles (used by Doppler)
+    if (cachedAngleSincos && !cachedAngleSincos->empty())
+    {
+        for (auto dir : {AOA_INDEX, ZOA_INDEX, AOD_INDEX, ZOD_INDEX})
+        {
+            NS_ABORT_IF((*cachedAngleSincos)[dir].size() != totalClusterNumber);
+            (*cachedAngleSincos)[dir].erase((*cachedAngleSincos)[dir].end() - extraClusters,
+                                            (*cachedAngleSincos)[dir].end());
+        }
+    }
+
+    // Trim Doppler terms
+    if (alpha && !alpha->empty())
+    {
+        NS_ABORT_IF(alpha->size() != totalClusterNumber);
+        alpha->erase(alpha->end() - extraClusters, alpha->end());
+    }
+    if (dTerm && !dTerm->empty())
+    {
+        NS_ABORT_IF(dTerm->size() != totalClusterNumber);
+        dTerm->erase(dTerm->end() - extraClusters, dTerm->end());
+    }
+
+    NS_ABORT_IF(delay->size() != reducedClusterNumber);
+    for (auto dir : {AOA_INDEX, ZOA_INDEX, AOD_INDEX, ZOD_INDEX})
+    {
+        NS_ABORT_IF((*angles)[dir].size() != reducedClusterNumber);
+    }
+
+    // Trim cluster powers
+    if (clusterPower && !clusterPower->empty())
+    {
+        NS_ABORT_IF(clusterPower->size() != totalClusterNumber);
+        clusterPower->erase(clusterPower->end() - extraClusters, clusterPower->end());
     }
 }
 
 void
 ThreeGppChannelModel::PrecomputeAnglesSinCos(
-    const Ptr<const ThreeGppChannelParams> channelParams,
+    Ptr<const ThreeGppChannelParams> channelParams,
     std::vector<std::vector<std::pair<double, double>>>* cachedAngleSinCos) const
 {
     NS_LOG_FUNCTION(this);
@@ -3465,89 +3580,175 @@ ThreeGppChannelModel::PrecomputeAnglesSinCos(
 }
 
 void
-ThreeGppChannelModel::GenerateDopplerTerms(uint8_t reducedClusterNumber,
+ThreeGppChannelModel::GenerateDopplerTerms(const uint8_t reducedClusterNumber,
                                            DoubleVector* dopplerTermAlpha,
                                            DoubleVector* dopplerTermD) const
 {
-    // Compute alpha and D as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
-    // These terms account for an additional Doppler contribution due to the
-    // presence of moving objects in the surrounding environment, such as in
-    // vehicular scenarios.
-    // This contribution is applied only to the delayed (reflected) paths and
-    // must be properly configured by setting the value of
-    // m_vScatt, which is defined as "maximum speed of the vehicle in the
-    // layout".
-    // By default, m_vScatt is set to 0, so there is no additional Doppler
-    // contribution.
+    NS_ABORT_IF(dopplerTermAlpha == nullptr || dopplerTermD == nullptr);
+    dopplerTermAlpha->assign(reducedClusterNumber, 0.0);
+    dopplerTermD->assign(reducedClusterNumber, 0.0);
 
-    // 2 or 4 is added to account for additional subrays for the 1st and 2nd clusters, if there is
-    // only one cluster then would be added 2 more subrays (see creation of Husn channel matrix)
-    uint8_t updatedClusterNumber =
-        (reducedClusterNumber == 1) ? reducedClusterNumber + 2 : reducedClusterNumber + 4;
-
-    dopplerTermAlpha->clear();
-    dopplerTermD->clear();
-    dopplerTermAlpha->reserve(updatedClusterNumber);
-    dopplerTermD->reserve(updatedClusterNumber);
-
-    for (uint8_t cIndex = 0; cIndex < updatedClusterNumber; cIndex++)
+    for (uint8_t cIndex = 1; cIndex < reducedClusterNumber; ++cIndex)
     {
-        double alpha = 0;
-        double D = 0;
-        if (cIndex != 0)
-        {
-            alpha = m_uniformRvDoppler->GetValue(-1, 1);
-            D = m_uniformRvDoppler->GetValue(-m_vScatt, m_vScatt);
-        }
-        dopplerTermAlpha->push_back(alpha);
-        dopplerTermD->push_back(D);
+        (*dopplerTermAlpha)[cIndex] = m_uniformRvDoppler->GetValue(-1, 1);
+        (*dopplerTermD)[cIndex] = m_uniformRvDoppler->GetValue(-m_vScatt, m_vScatt);
     }
 }
 
-Ptr<ThreeGppChannelModel::ThreeGppChannelParams>
-ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition> channelCondition,
-                                                const Ptr<const ParamsTable> table3gpp,
-                                                const Ptr<const MobilityModel> aMob,
-                                                const Ptr<const MobilityModel> bMob) const
+double
+ThreeGppChannelModel::ComputeEndpointDisplacement2d(Ptr<const MobilityModel> aMob,
+                                                    Ptr<const MobilityModel> bMob,
+                                                    const Vector& lastPositionFirst,
+                                                    const Vector& lastPositionSecond) const
+
+{
+    Ptr<const MobilityModel> firstMob = aMob;
+    Ptr<const MobilityModel> secondMob = bMob;
+    if (aMob->GetObject<Node>()->GetId() > bMob->GetObject<Node>()->GetId())
+    {
+        std::swap(firstMob, secondMob);
+    }
+
+    const Vector posFirst = firstMob->GetPosition();
+    const Vector posSecond = secondMob->GetPosition();
+
+    const double dispFirst =
+        std::hypot(posFirst.x - lastPositionFirst.x, posFirst.y - lastPositionFirst.y);
+    const double dispSecond =
+        std::hypot(posSecond.x - lastPositionSecond.x, posSecond.y - lastPositionSecond.y);
+
+    return std::max(dispFirst, dispSecond);
+}
+
+void
+ThreeGppChannelModel::UpdateLinkGeometry(Ptr<const MobilityModel> aMob,
+                                         Ptr<const MobilityModel> bMob,
+                                         double* distance2D,
+                                         double* distance3D,
+                                         double* endpointDisplacement2D,
+                                         double* relativeDisplacement2D,
+                                         Vector* lastPositionFirst,
+                                         Vector* lastPositionSecond,
+                                         Vector2D* lastRelativePosition2D) const
 {
     NS_LOG_FUNCTION(this);
+    NS_ASSERT(distance2D && distance3D && endpointDisplacement2D && relativeDisplacement2D &&
+              lastPositionFirst && lastPositionSecond && lastRelativePosition2D);
+
+    // Canonical ordering by node ID (min ID / max ID)
+    Ptr<const MobilityModel> firstMob = aMob;
+    Ptr<const MobilityModel> secondMob = bMob;
+    if (aMob->GetObject<Node>()->GetId() > bMob->GetObject<Node>()->GetId())
+    {
+        std::swap(firstMob, secondMob);
+    }
+
+    // Obtain the new positions
+    const Vector posFirst = firstMob->GetPosition();
+    const Vector posSecond = secondMob->GetPosition();
+
+    const double deltaX = posFirst.x - posSecond.x;
+    const double deltaY = posFirst.y - posSecond.y;
+
+    // Link 2D distance
+    *distance2D = std::hypot(deltaX, deltaY);
+
+    // Link 3D distance
+    const double deltaZ = posFirst.z - posSecond.z;
+    *distance3D = std::hypot(*distance2D, deltaZ);
+
+    // Relative (geometry) displacement: change in the canonical Tx-Rx position vector
+    const Vector2D relNow{deltaX, deltaY};
+    *relativeDisplacement2D = (relNow - *lastRelativePosition2D).GetLength();
+
+    // Endpoint displacement: max motion of the two endpoints since the last update
+    const double dispFirst =
+        std::hypot(posFirst.x - lastPositionFirst->x, posFirst.y - lastPositionFirst->y);
+    const double dispSecond =
+        std::hypot(posSecond.x - lastPositionSecond->x, posSecond.y - lastPositionSecond->y);
+    *endpointDisplacement2D = std::max(dispFirst, dispSecond);
+
+    NS_ASSERT(std::isfinite(*distance2D));
+    NS_ASSERT(std::isfinite(*distance3D));
+    NS_ASSERT(std::isfinite(*relativeDisplacement2D));
+    NS_ASSERT(std::isfinite(*endpointDisplacement2D));
+    NS_ASSERT(*distance2D >= 0.0);
+    NS_ASSERT(*distance3D >= 0.0);
+    NS_ASSERT(*relativeDisplacement2D >= 0.0);
+    NS_ASSERT(*endpointDisplacement2D >= 0.0);
+
+    // Store the new positions for next time (canonically ordered endpoints)
+    *lastPositionFirst = posFirst;
+    *lastPositionSecond = posSecond;
+    *lastRelativePosition2D = relNow;
+}
+
+Ptr<ThreeGppChannelModel::ThreeGppChannelParams>
+ThreeGppChannelModel::GenerateChannelParameters(Ptr<const ChannelCondition> channelCondition,
+                                                Ptr<const ParamsTable> table3gpp,
+                                                Ptr<const MobilityModel> aMob,
+                                                Ptr<const MobilityModel> bMob) const
+{
+    NS_LOG_FUNCTION(this);
+    // Enforce canonical ordering (by node id) for deterministic parameter generation.
+    Ptr<const MobilityModel> aMobOrdered = aMob;
+    Ptr<const MobilityModel> bMobOrdered = bMob;
+    const uint32_t idA = aMob->GetObject<Node>()->GetId();
+    const uint32_t idB = bMob->GetObject<Node>()->GetId();
+    if (idA > idB)
+    {
+        std::swap(aMobOrdered, bMobOrdered);
+    }
+
     // Create new channel parameters instance
     Ptr<ThreeGppChannelParams> channelParams = Create<ThreeGppChannelParams>();
     // Set basic parameters
     channelParams->m_generatedTime = Simulator::Now();
-    channelParams->m_newChannel = true;
-    channelParams->m_nodeIds = {aMob->GetObject<Node>()->GetId(), bMob->GetObject<Node>()->GetId()};
+    channelParams->m_nodeIds = {aMobOrdered->GetObject<Node>()->GetId(),
+                                bMobOrdered->GetObject<Node>()->GetId()};
     channelParams->m_losCondition = channelCondition->GetLosCondition();
     channelParams->m_o2iCondition = channelCondition->GetO2iCondition();
-    channelParams->m_txSpeed = bMob->GetVelocity();
-    channelParams->m_rxSpeed = aMob->GetVelocity();
+    // Angles are generated with aMob as transmitter (departure) and bMob as receiver (arrival).
+    channelParams->m_txSpeed = aMobOrdered->GetVelocity();
+    channelParams->m_rxSpeed = bMobOrdered->GetVelocity();
+    UpdateLinkGeometry(aMobOrdered,
+                       bMobOrdered,
+                       &channelParams->m_dis2D,
+                       &channelParams->m_dis3D,
+                       &channelParams->m_endpointDisplacement2D,
+                       &channelParams->m_relativeDisplacement2D,
+                       &channelParams->m_lastPositionFirst,
+                       &channelParams->m_lastPositionSecond,
+                       &channelParams->m_lastRelativePosition2D);
 
-    // Step 4: Generate large scale parameters. All LSPS are uncorrelated.
-    LargeScaleParameters lsps = GenerateLSPs(channelParams->m_losCondition, table3gpp);
+    // Step 4: Generate large-scale parameters. All LSPS are uncorrelated.
+    const LargeScaleParameters lsps = GenerateLSPs(channelParams->m_losCondition, table3gpp);
 
     channelParams->m_DS = lsps.DS;
     channelParams->m_K_factor = lsps.kFactor;
 
-    // Step 5: Generate Delays, and normalize them. Save minTau to be used for channel consistency.
+    // Step 5: Generate Delays and normalize them. Save minTau to be used for channel consistency.
     double minTau = 100.0;
     GenerateClusterDelays(lsps.DS, table3gpp, &minTau, &channelParams->m_delay);
     /* since the scaled Los delays are not to be used in cluster power generation,
      * we will generate cluster power first and resume to compute Los cluster delay later.*/
 
     // Step 6: Generate cluster powers.
+    GenerateClusterShadowingTerm(table3gpp, &channelParams->m_clusterShadowing);
     GenerateClusterPowers(channelParams->m_delay,
                           lsps.DS,
                           table3gpp,
-                          &channelParams->m_clusterPowers);
+                          channelParams->m_clusterShadowing,
+                          &channelParams->m_clusterPower);
     double powerMax = 0;
-    DoubleVector clusterPowerForAngles = RemoveWeakClusters(&channelParams->m_clusterPowers,
-                                                            &channelParams->m_delay,
-                                                            channelParams->m_losCondition,
-                                                            table3gpp,
-                                                            lsps.kFactor,
-                                                            &powerMax);
+    const DoubleVector clusterPowerForAngles = RemoveWeakClusters(&channelParams->m_clusterPower,
+                                                                  &channelParams->m_delay,
+                                                                  channelParams->m_losCondition,
+                                                                  table3gpp,
+                                                                  lsps.kFactor,
+                                                                  &powerMax);
 
-    channelParams->m_reducedClusterNumber = channelParams->m_clusterPowers.size();
+    channelParams->m_reducedClusterNumber = channelParams->m_clusterPower.size();
     // Resume step 5 to compute the delay for LoS condition.
     if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
@@ -3557,86 +3758,92 @@ ThreeGppChannelModel::GenerateChannelParameters(const Ptr<const ChannelCondition
     }
 
     // Step 7: Generate arrival and departure angles for both azimuth and elevation.
-    auto cPhi = CalculateCphi(channelParams->m_losCondition, table3gpp, lsps.kFactor);
-    auto cTheta = CalculateCtheta(channelParams->m_losCondition, table3gpp, lsps.kFactor);
-    ClusterAngles clusterAngles;
+    const auto cPhi = CalculateCphi(channelParams->m_losCondition, table3gpp, lsps.kFactor);
+    const auto cTheta = CalculateCtheta(channelParams->m_losCondition, table3gpp, lsps.kFactor);
+
     GenerateClusterAngles(channelParams,
                           clusterPowerForAngles,
                           powerMax,
                           cPhi,
                           cTheta,
                           lsps,
-                          aMob,
-                          bMob,
+                          aMobOrdered,
+                          bMobOrdered,
                           table3gpp,
-                          &clusterAngles.aoa,
-                          &clusterAngles.aod,
-                          &clusterAngles.zoa,
-                          &clusterAngles.zod);
+                          &channelParams->m_angle);
 
     // if blockage enabled, calculate, apply and store attenuation
-    ApplyAttenuationToClusterPowers(&(channelParams->m_nonSelfBlocking),
-                                    &(channelParams->m_clusterPowers),
-                                    &(channelParams->m_attenuation_dB),
+    ApplyAttenuationToClusterPowers(&channelParams->m_nonSelfBlocking,
+                                    &channelParams->m_clusterPower,
+                                    &channelParams->m_attenuation_dB,
                                     channelParams,
-                                    clusterAngles.aoa,
-                                    clusterAngles.zoa);
+                                    channelParams->m_angle[AOA_INDEX],
+                                    channelParams->m_angle[ZOA_INDEX],
+                                    table3gpp);
     // Step 8: Coupling of rays within a cluster for both azimuth and elevation
     // shuffle all the arrays to perform random coupling
-    RandomRaysCoupling(channelParams,
-                       table3gpp,
-                       &(channelParams->m_rayAoaRadian),
-                       &(channelParams->m_rayAodRadian),
-                       &(channelParams->m_rayZoaRadian),
-                       &(channelParams->m_rayZodRadian),
-                       clusterAngles.aoa,
-                       clusterAngles.aod,
-                       clusterAngles.zoa,
-                       clusterAngles.zod);
+    // Step a): update per-ray angles around cluster means (no shuffling)
+    ComputeRayAngles(channelParams,
+                     table3gpp,
+                     &channelParams->m_rayAoaRadian,
+                     &channelParams->m_rayAodRadian,
+                     &channelParams->m_rayZoaRadian,
+                     &channelParams->m_rayZodRadian);
 
-    // Step 9: Generate the cross polarization power ratios
+    // Step b): random coupling by shuffling rays within each cluster
+    RandomRaysCoupling(channelParams,
+                       &channelParams->m_rayAoaRadian,
+                       &channelParams->m_rayAodRadian,
+                       &channelParams->m_rayZoaRadian,
+                       &channelParams->m_rayZodRadian);
+
+    // Step 9: Generate the cross-polarization power ratios
     // Step 10: Draw initial phases
-    GenerateCrossPolPowerRatiosAndInitialPhases(&(channelParams->m_crossPolarizationPowerRatios),
-                                                &(channelParams->m_clusterPhase),
+    GenerateCrossPolPowerRatiosAndInitialPhases(&channelParams->m_crossPolarizationPowerRatios,
+                                                &channelParams->m_clusterPhase,
                                                 channelParams->m_reducedClusterNumber,
                                                 table3gpp);
 
-    FindStrongestClusters(channelParams,
-                          table3gpp,
-                          &(channelParams->m_cluster1st),
-                          &(channelParams->m_cluster2nd),
-                          &(channelParams->m_delay),
-                          &clusterAngles.aoa,
-                          &clusterAngles.aod,
-                          &clusterAngles.zoa,
-                          &clusterAngles.zod);
+    // Generate Doppler terms
+    GenerateDopplerTerms(channelParams->m_reducedClusterNumber,
+                         &channelParams->m_alpha,
+                         &channelParams->m_D);
 
+    // save delay consistency for the channel updates with the reduced cluster number
     channelParams->m_delayConsistency = channelParams->m_delay;
     for (uint8_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
     {
-        channelParams->m_delayConsistency[cInd] += minTau + (channelParams->m_dis3D / 3e8);
+        // 7.6.3.2, Procedure A, k=0 -> t_0
+        if (channelParams->m_losCondition != ChannelCondition::LOS)
+        {
+            channelParams->m_delayConsistency[cInd] += minTau;
+        }
+        // distance between RX antenna and TX antenna at t_0 in [m] divided by the speed of light
+        // [m/s]
+        channelParams->m_delayConsistency[cInd] += channelParams->m_dis3D / 3e8;
     }
-    channelParams->m_angle.clear();
-    channelParams->m_angle.push_back(clusterAngles.aoa);
-    channelParams->m_angle.push_back(clusterAngles.zoa);
-    channelParams->m_angle.push_back(clusterAngles.aod);
-    channelParams->m_angle.push_back(clusterAngles.zod);
+
+    FindStrongestClusters(channelParams,
+                          table3gpp,
+                          &channelParams->m_cluster1st,
+                          &channelParams->m_cluster2nd,
+                          &channelParams->m_delay,
+                          &channelParams->m_angle,
+                          &channelParams->m_alpha,
+                          &channelParams->m_D,
+                          &channelParams->m_clusterPower);
 
     // Precompute angles sincos
-    PrecomputeAnglesSinCos(channelParams, &(channelParams->m_cachedAngleSincos));
+    PrecomputeAnglesSinCos(channelParams, &channelParams->m_cachedAngleSincos);
 
-    GenerateDopplerTerms(channelParams->m_reducedClusterNumber,
-                         &(channelParams->m_alpha),
-                         &(channelParams->m_D));
     return channelParams;
 }
 
 void
-ThreeGppChannelModel::UpdateChannelParametersForConsistency(
-    Ptr<ThreeGppChannelParams> channelParams,
-    Ptr<const ChannelCondition> channelCondition,
-    Ptr<const MobilityModel> aMob,
-    Ptr<const MobilityModel> bMob) const
+ThreeGppChannelModel::UpdateChannelParameters(Ptr<ThreeGppChannelParams> channelParams,
+                                              Ptr<const ChannelCondition> channelCondition,
+                                              Ptr<const MobilityModel> aMob,
+                                              Ptr<const MobilityModel> bMob) const
 {
     NS_LOG_FUNCTION(this);
     NS_ASSERT_MSG(channelParams != nullptr, "Channel parameters cannot be null");
@@ -3644,124 +3851,113 @@ ThreeGppChannelModel::UpdateChannelParametersForConsistency(
     NS_ASSERT_MSG(aMob != nullptr, "Mobility model A cannot be null");
     NS_ASSERT_MSG(bMob != nullptr, "Mobility model B cannot be null");
 
-    channelParams->m_generatedTime = Simulator::Now(); // Update timing information
-    channelParams->m_newChannel = false;               // This is an update, not a new channel
-    double x = aMob->GetPosition().x - bMob->GetPosition().x;
-    double y = aMob->GetPosition().y - bMob->GetPosition().y;
-    double dis2D = sqrt(x * x + y * y);
-    channelParams->m_dis2D = dis2D;
-    channelParams->m_txSpeed = bMob->GetVelocity();
-    channelParams->m_rxSpeed = aMob->GetVelocity();
+    // Ensure a/b ordering matches the direction used when the params were generated.
+    // This keeps angle/speed associations consistent across reciprocal calls.
+    Ptr<const MobilityModel> aMobOrdered = aMob;
+    Ptr<const MobilityModel> bMobOrdered = bMob;
+    const auto storedIds = channelParams->m_nodeIds;
+    const auto callIds =
+        std::make_pair(aMob->GetObject<Node>()->GetId(), bMob->GetObject<Node>()->GetId());
+    const auto reversedIds = std::make_pair(callIds.second, callIds.first);
+    NS_ASSERT_MSG(storedIds == callIds || storedIds == reversedIds,
+                  "Channel params node ids do not match this link");
+    if (storedIds != callIds)
+    {
+        std::swap(aMobOrdered, bMobOrdered);
+    }
+
+    TrimToBaseClusters(channelParams->m_reducedClusterNumber,
+                       &channelParams->m_delay,
+                       &channelParams->m_angle,
+                       &channelParams->m_cachedAngleSincos,
+                       &channelParams->m_alpha,
+                       &channelParams->m_D,
+                       &channelParams->m_clusterPower);
+
+    UpdateLinkGeometry(aMobOrdered,
+                       bMobOrdered,
+                       &channelParams->m_dis2D,
+                       &channelParams->m_dis3D,
+                       &channelParams->m_endpointDisplacement2D,
+                       &channelParams->m_relativeDisplacement2D,
+                       &channelParams->m_lastPositionFirst,
+                       &channelParams->m_lastPositionSecond,
+                       &channelParams->m_lastRelativePosition2D);
+
+    channelParams->m_txSpeed = aMobOrdered->GetVelocity();
+    channelParams->m_rxSpeed = bMobOrdered->GetVelocity();
     channelParams->m_losCondition = channelCondition->GetLosCondition();
     channelParams->m_o2iCondition = channelCondition->GetO2iCondition();
 
-    // Store old phases for continuity
-    Double3DVector oldPhases = channelParams->m_clusterPhase;
-    Time oldGeneratedTime = channelParams->m_generatedTime;
+    // Update LSPs for new distance
+    // Update cluster delay (7.6-9, 7.6-10, 7.6-10aa, 7.6-10a)
+    const DoubleVector prevClusterDelay = channelParams->m_delayConsistency;
+    UpdateClusterDelay(&channelParams->m_delay, &channelParams->m_delayConsistency, channelParams);
 
     // Get the 3GPP parameter table
-    Ptr<const ParamsTable> table3gpp = GetThreeGppTable(aMob, bMob, channelCondition);
-    // Update LSPs for new distance
-    // Generate cluster del
-    DoubleVector prevClusterDelay;
-    UpdateClusterDelay(&channelParams->m_delay,
-                       &prevClusterDelay,
-                       &channelParams->m_newChannel,
-                       channelParams);
-    // Generate cluster powers
-    GenerateClusterPowers(channelParams->m_delayConsistency,
+    const Ptr<const ParamsTable> table3gpp =
+        GetThreeGppTable(aMobOrdered, bMobOrdered, channelCondition);
+
+    UpdateClusterShadowingTerm(table3gpp,
+                               &channelParams->m_clusterShadowing,
+                               channelParams->m_relativeDisplacement2D);
+    // According to 3GPP 38.901. Procedure A, cluster powers are updated as in Step 6 using the
+    // cluster delays from Equation (7.6-10a).
+
+    GenerateClusterPowers(channelParams->m_delay,
                           channelParams->m_DS,
                           table3gpp,
-                          &channelParams->m_clusterPowers);
-    // Update cluster count
-    channelParams->m_reducedClusterNumber = channelParams->m_clusterPowers.size();
-    // Adjust delays for LOS condition
-    if (channelCondition->GetLosCondition() == ChannelCondition::LosConditionValue::LOS)
+                          channelParams->m_clusterShadowing,
+                          &channelParams->m_clusterPower);
+
+    // draw random signs from cluster angles +1,-1 and save them to reuse them for the channel
+    // update
+    if (channelParams->m_losCondition != ChannelCondition::LOS &&
+        channelParams->m_clusterXnNlosSign.empty())
     {
-        AdjustClusterDelaysForLosCondition(&channelParams->m_delayConsistency,
-                                           channelParams->m_reducedClusterNumber,
-                                           channelParams->m_K_factor);
+        GenerateClusterXnNLos(channelParams->m_reducedClusterNumber,
+                              &channelParams->m_clusterXnNlosSign);
     }
 
     // Update cluster departure and arrival angles
-    DoubleVector clusterAoa;
-    DoubleVector clusterZoa;
-    DoubleVector clusterAod;
-    DoubleVector clusterZod;
-    // copy the angles from the previous channel
-    for (uint8_t cInd = 0; cInd < channelParams->m_reducedClusterNumber; cInd++)
-    {
-        clusterAoa.push_back(channelParams->m_angle.at(AOA_INDEX).at(cInd));
-        clusterZoa.push_back(channelParams->m_angle.at(ZOA_INDEX).at(cInd));
-        clusterAod.push_back(channelParams->m_angle.at(AOD_INDEX).at(cInd));
-        clusterZod.push_back(channelParams->m_angle.at(ZOD_INDEX).at(cInd));
-    }
+    const Double2DVector previousAngles = channelParams->m_angle;
+    UpdateClusterAngles(channelParams, &channelParams->m_angle, prevClusterDelay);
 
-    // check if channelParams structure is generated in direction s-to-u or u-to-s
-    bool isSameDirection =
-        (channelParams->m_nodeIds ==
-         std::make_pair(aMob->GetObject<Node>()->GetId(), bMob->GetObject<Node>()->GetId()));
+    NS_ABORT_IF(channelParams->m_clusterPower.empty());
 
-    UpdateClusterAngles(channelParams,
-                        &clusterAoa,
-                        &clusterAod,
-                        &clusterZoa,
-                        &clusterZod,
-                        prevClusterDelay,
-                        isSameDirection);
+    // if blockage enabled, calculate, apply and store attenuation
+    ApplyAttenuationToClusterPowers(&channelParams->m_nonSelfBlocking,
+                                    &channelParams->m_clusterPower,
+                                    &channelParams->m_attenuation_dB,
+                                    channelParams,
+                                    channelParams->m_angle[AOA_INDEX],
+                                    channelParams->m_angle[ZOA_INDEX],
+                                    table3gpp);
 
-    // Apply blockage attenuation
-    if (m_blockage)
-    {
-        ApplyAttenuationToClusterPowers(&channelParams->m_nonSelfBlocking,
-                                        &channelParams->m_clusterPowers,
-                                        &channelParams->m_attenuation_dB,
+    ShiftRayAnglesToUpdatedClusterMeans(table3gpp,
                                         channelParams,
-                                        clusterAoa,
-                                        clusterZoa);
-    }
-    // Generate ray coupling
-    RandomRaysCoupling(channelParams,
-                       table3gpp,
-                       &channelParams->m_rayAoaRadian,
-                       &channelParams->m_rayAodRadian,
-                       &channelParams->m_rayZoaRadian,
-                       &channelParams->m_rayZodRadian,
-                       clusterAoa,
-                       clusterAod,
-                       clusterZoa,
-                       clusterZod);
-    // Generate cross-pol power ratios and phases
-    GenerateCrossPolPowerRatiosAndInitialPhases(&channelParams->m_crossPolarizationPowerRatios,
-                                                &channelParams->m_clusterPhase,
-                                                channelParams->m_reducedClusterNumber,
-                                                table3gpp);
-    // Find the strongest clusters
+                                        previousAngles,
+                                        &channelParams->m_rayAoaRadian,
+                                        &channelParams->m_rayAodRadian,
+                                        &channelParams->m_rayZoaRadian,
+                                        &channelParams->m_rayZodRadian);
+
     FindStrongestClusters(channelParams,
                           table3gpp,
                           &channelParams->m_cluster1st,
                           &channelParams->m_cluster2nd,
-                          &channelParams->m_delayConsistency,
-                          &clusterAoa,
-                          &clusterAod,
-                          &clusterZoa,
-                          &clusterZod);
-
-    channelParams->m_angle.clear();
-    channelParams->m_angle.push_back(clusterAoa);
-    channelParams->m_angle.push_back(clusterZoa);
-    channelParams->m_angle.push_back(clusterAod);
-    channelParams->m_angle.push_back(clusterZod);
+                          &channelParams->m_delay,
+                          &channelParams->m_angle,
+                          &channelParams->m_alpha,
+                          &channelParams->m_D,
+                          &channelParams->m_clusterPower);
 
     // Precompute angle sin/cos for efficiency
     PrecomputeAnglesSinCos(channelParams, &channelParams->m_cachedAngleSincos);
 
-    // Generate Doppler terms
-    GenerateDopplerTerms(channelParams->m_reducedClusterNumber,
-                         &channelParams->m_alpha,
-                         &channelParams->m_D);
+    channelParams->m_generatedTime = Simulator::Now(); // Update timing information
 
-    NS_LOG_DEBUG("Updated channel parameters for consistency. "
+    NS_LOG_DEBUG("Updated channel parameters for consistency (Procedure A): "
                  << "Clusters: " << channelParams->m_reducedClusterNumber
                  << ", DS: " << channelParams->m_DS << ", K-factor: " << channelParams->m_K_factor);
 }
@@ -3769,14 +3965,22 @@ ThreeGppChannelModel::UpdateChannelParametersForConsistency(
 Ptr<MatrixBasedChannelModel::ChannelMatrix>
 ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelParams,
                                     Ptr<const ParamsTable> table3gpp,
-                                    const Ptr<const MobilityModel> sMob,
-                                    const Ptr<const MobilityModel> uMob,
+                                    Ptr<const MobilityModel> sMob,
+                                    Ptr<const MobilityModel> uMob,
                                     Ptr<const PhasedArrayModel> sAntenna,
                                     Ptr<const PhasedArrayModel> uAntenna) const
 {
     NS_LOG_FUNCTION(this);
 
     NS_ASSERT_MSG(m_frequency > 0.0, "Set the operating frequency first!");
+    NS_ASSERT_MSG(channelParams != nullptr, "Channel parameters cannot be null");
+    NS_ASSERT_MSG(sMob != nullptr && uMob != nullptr, "Mobility models cannot be null");
+    NS_ASSERT_MSG(sAntenna != nullptr && uAntenna != nullptr, "Antennas cannot be null");
+    const auto callIds =
+        std::make_pair(sMob->GetObject<Node>()->GetId(), uMob->GetObject<Node>()->GetId());
+    const auto reversedIds = std::make_pair(callIds.second, callIds.first);
+    NS_ASSERT_MSG(channelParams->m_nodeIds == callIds || channelParams->m_nodeIds == reversedIds,
+                  "Channel params node ids do not match this link");
 
     // create a channel matrix instance
     Ptr<ChannelMatrix> channelMatrix = Create<ChannelMatrix>();
@@ -3784,16 +3988,16 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     // save in which order is generated this matrix
     channelMatrix->m_nodeIds =
         std::make_pair(sMob->GetObject<Node>()->GetId(), uMob->GetObject<Node>()->GetId());
-    // check if channelParams structure is generated in direction s-to-u or u-to-s
-    bool isSameDirection = (channelParams->m_nodeIds == channelMatrix->m_nodeIds);
+    // check if channelParams structure is generated in a direction s-to-u or u-to-s
+    bool isSameDirection = channelParams->m_nodeIds == channelMatrix->m_nodeIds;
     channelMatrix->m_antennaPair =
         std::make_pair(sAntenna->GetId(),
                        uAntenna->GetId()); // save antenna pair, with the exact order of s and u
 
-    MatrixBasedChannelModel::Double2DVector rayAodRadian;
-    MatrixBasedChannelModel::Double2DVector rayAoaRadian;
-    MatrixBasedChannelModel::Double2DVector rayZodRadian;
-    MatrixBasedChannelModel::Double2DVector rayZoaRadian;
+    Double2DVector rayAodRadian;
+    Double2DVector rayAoaRadian;
+    Double2DVector rayZodRadian;
+    Double2DVector rayZoaRadian;
 
     // if channel params is generated in the same direction in which we
     // generate the channel matrix, angles and zenith od departure and arrival are ok,
@@ -3824,12 +4028,12 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     // the total cluster will generally be numReducedCLuster + 4.
     // However, it might be that m_cluster1st = m_cluster2nd. In this case the
     // total number of clusters will be numReducedCLuster + 2.
-    uint16_t numOverallCluster = (channelParams->m_cluster1st != channelParams->m_cluster2nd)
+    uint16_t numOverallCluster = channelParams->m_cluster1st != channelParams->m_cluster2nd
                                      ? channelParams->m_reducedClusterNumber + 4
                                      : channelParams->m_reducedClusterNumber + 2;
     Complex3DVector hUsn(uSize, sSize, numOverallCluster); // channel coefficient hUsn (u, s, n);
     NS_ASSERT(channelParams->m_reducedClusterNumber <= channelParams->m_clusterPhase.size());
-    NS_ASSERT(channelParams->m_reducedClusterNumber <= channelParams->m_clusterPowers.size());
+    NS_ASSERT(channelParams->m_reducedClusterNumber <= channelParams->m_clusterPower.size());
     NS_ASSERT(channelParams->m_reducedClusterNumber <=
               channelParams->m_crossPolarizationPowerRatios.size());
     NS_ASSERT(channelParams->m_reducedClusterNumber <= rayZoaRadian.size());
@@ -3844,15 +4048,7 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     NS_ASSERT(table3gpp->m_raysPerCluster <= rayAoaRadian[0].size());
     NS_ASSERT(table3gpp->m_raysPerCluster <= rayAodRadian[0].size());
 
-    double x = sMob->GetPosition().x - uMob->GetPosition().x;
-    double y = sMob->GetPosition().y - uMob->GetPosition().y;
-    double distance2D = sqrt(x * x + y * y);
-    // NOTE we assume hUT = min (height(a), height(b)) and
-    // hBS = max (height (a), height (b))
-    double hUt = std::min(sMob->GetPosition().z, uMob->GetPosition().z);
-    double hBs = std::max(sMob->GetPosition().z, uMob->GetPosition().z);
-    // compute the 3D distance using eq. 7.4-1
-    double distance3D = std::sqrt(distance2D * distance2D + (hBs - hUt) * (hBs - hUt));
+    double distance3D = channelParams->m_dis3D;
 
     Angles sAngle(uMob->GetPosition(), sMob->GetPosition());
     Angles uAngle(sMob->GetPosition(), uMob->GetPosition());
@@ -3917,13 +4113,13 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                                    channelParams->m_rayZodRadian[nIndex][mIndex]),
                             polSa);
                     raysPreComp[std::make_pair(polSa, polUa)](nIndex, mIndex) =
-                        std::complex<double>(cos(initialPhase[0]), sin(initialPhase[0])) *
+                        std::complex(cos(initialPhase[0]), sin(initialPhase[0])) *
                             rxFieldPatternTheta * txFieldPatternTheta +
-                        std::complex<double>(cos(initialPhase[1]), sin(initialPhase[1])) *
+                        std::complex(cos(initialPhase[1]), sin(initialPhase[1])) *
                             std::sqrt(1.0 / k) * rxFieldPatternTheta * txFieldPatternPhi +
-                        std::complex<double>(cos(initialPhase[2]), sin(initialPhase[2])) *
+                        std::complex(cos(initialPhase[2]), sin(initialPhase[2])) *
                             std::sqrt(1.0 / k) * rxFieldPatternPhi * txFieldPatternTheta +
-                        std::complex<double>(cos(initialPhase[3]), sin(initialPhase[3])) *
+                        std::complex(cos(initialPhase[3]), sin(initialPhase[3])) *
                             rxFieldPatternPhi * txFieldPatternPhi;
                 }
             }
@@ -3982,11 +4178,11 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                         rays += raysPreComp[std::make_pair(sAntenna->GetElemPol(sIndex),
                                                            uAntenna->GetElemPol(uIndex))](nIndex,
                                                                                           mIndex) *
-                                std::complex<double>(cos(rxPhaseDiff), sin(rxPhaseDiff)) *
-                                std::complex<double>(cos(txPhaseDiff), sin(txPhaseDiff));
+                                std::complex(cos(rxPhaseDiff), sin(rxPhaseDiff)) *
+                                std::complex(cos(txPhaseDiff), sin(txPhaseDiff));
                     }
                     rays *=
-                        sqrt(channelParams->m_clusterPowers[nIndex] / table3gpp->m_raysPerCluster);
+                        sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
                     hUsn(uIndex, sIndex, nIndex) = rays;
                 }
                 else //(7.5-28)
@@ -4013,8 +4209,8 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                             raysPreComp[std::make_pair(sAntenna->GetElemPol(sIndex),
                                                        uAntenna->GetElemPol(uIndex))](nIndex,
                                                                                       mIndex) *
-                            std::complex<double>(cos(rxPhaseDiff), sin(rxPhaseDiff)) *
-                            std::complex<double>(cos(txPhaseDiff), sin(txPhaseDiff));
+                            std::complex(cos(rxPhaseDiff), sin(rxPhaseDiff)) *
+                            std::complex(cos(txPhaseDiff), sin(txPhaseDiff));
 
                         switch (mIndex)
                         {
@@ -4038,11 +4234,11 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                         }
                     }
                     raysSub1 *=
-                        sqrt(channelParams->m_clusterPowers[nIndex] / table3gpp->m_raysPerCluster);
+                        sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
                     raysSub2 *=
-                        sqrt(channelParams->m_clusterPowers[nIndex] / table3gpp->m_raysPerCluster);
+                        sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
                     raysSub3 *=
-                        sqrt(channelParams->m_clusterPowers[nIndex] / table3gpp->m_raysPerCluster);
+                        sqrt(channelParams->m_clusterPower[nIndex] / table3gpp->m_raysPerCluster);
                     hUsn(uIndex, sIndex, nIndex) = raysSub1;
                     hUsn(uIndex,
                          sIndex,
@@ -4063,8 +4259,8 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
     if (channelParams->m_losCondition == ChannelCondition::LOS) //(7.5-29) && (7.5-30)
     {
         double lambda = 3.0e8 / m_frequency; // the wavelength of the carrier frequency
-        std::complex<double> phaseDiffDueToDistance(cos(-2 * M_PI * distance3D / lambda),
-                                                    sin(-2 * M_PI * distance3D / lambda));
+        std::complex phaseDiffDueToDistance(cos(-2 * M_PI * distance3D / lambda),
+                                            sin(-2 * M_PI * distance3D / lambda));
 
         const double sinUAngleIncl = sin(uAngle.GetInclination());
         const double cosUAngleIncl = cos(uAngle.GetInclination());
@@ -4100,9 +4296,8 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
 
                 ray = (rxFieldPatternTheta * txFieldPatternTheta -
                        rxFieldPatternPhi * txFieldPatternPhi) *
-                      phaseDiffDueToDistance *
-                      std::complex<double>(cos(rxPhaseDiff), sin(rxPhaseDiff)) *
-                      std::complex<double>(cos(txPhaseDiff), sin(txPhaseDiff));
+                      phaseDiffDueToDistance * std::complex(cos(rxPhaseDiff), sin(rxPhaseDiff)) *
+                      std::complex(cos(txPhaseDiff), sin(txPhaseDiff));
 
                 double kLinear = pow(10, channelParams->m_K_factor / 10.0);
                 // the LOS path should be attenuated if blockage is enabled.
@@ -4120,17 +4315,29 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
         }
     }
 
-    NS_LOG_DEBUG("Husn (sAntenna, uAntenna):" << sAntenna->GetId() << ", " << uAntenna->GetId());
-    for (size_t cIndex = 0; cIndex < hUsn.GetNumPages(); cIndex++)
+    std::ostringstream oss;
+    oss << "Husn (sAntenna, uAntenna): " << sAntenna->GetId() << ", " << uAntenna->GetId()
+        << " | vals=[";
+
+    bool first = true;
+    for (size_t cIndex = 0; cIndex < hUsn.GetNumPages(); ++cIndex)
     {
-        for (size_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); rowIdx++)
+        for (size_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); ++rowIdx)
         {
-            for (size_t colIdx = 0; colIdx < hUsn.GetNumCols(); colIdx++)
+            for (size_t colIdx = 0; colIdx < hUsn.GetNumCols(); ++colIdx)
             {
-                NS_LOG_DEBUG(" " << hUsn(rowIdx, colIdx, cIndex) << ",");
+                if (!first)
+                {
+                    oss << ", ";
+                }
+                first = false;
+                oss << hUsn(rowIdx, colIdx, cIndex);
             }
         }
     }
+    oss << "]";
+
+    NS_LOG_DEBUG(oss.str());
 
     NS_LOG_INFO("size of coefficient matrix (rows, columns, clusters) = ("
                 << hUsn.GetNumRows() << ", " << hUsn.GetNumCols() << ", " << hUsn.GetNumPages()
@@ -4161,20 +4368,55 @@ ThreeGppChannelModel::WrapAngles(double azimuthRad, double inclinationRad)
 }
 
 void
-ThreeGppChannelModel::CalcAttenuationOfBlockage(
-    Double2DVector* nonSelfBlocking,
-    MatrixBasedChannelModel::DoubleVector* powerAttenuation,
-    const Ptr<const ThreeGppChannelModel::ThreeGppChannelParams> channelParams,
-    const DoubleVector& clusterAOA,
-    const DoubleVector& clusterZOA) const
+ThreeGppChannelModel::ShiftRayAnglesToUpdatedClusterMeans(
+    Ptr<const ParamsTable> table3gpp,
+    Ptr<const ThreeGppChannelParams> channelParams,
+    const Double2DVector& prevClusterAngles,
+    Double2DVector* rayAodRadian,
+    Double2DVector* rayAoaRadian,
+    Double2DVector* rayZodRadian,
+    Double2DVector* rayZoaRadian) const
+{
+    NS_LOG_FUNCTION(this << channelParams);
+
+    for (size_t n = 0; n < channelParams->m_reducedClusterNumber; ++n)
+    {
+        // Compute per-cluster deltas (degrees) and convert to radians
+        const double dAoaRad = DegreesToRadians(prevClusterAngles[AOA_INDEX][n] -
+                                                channelParams->m_angle[AOA_INDEX][n]);
+        const double dAodRad = DegreesToRadians(prevClusterAngles[AOD_INDEX][n] -
+                                                channelParams->m_angle[AOD_INDEX][n]);
+        const double dZoaRad = DegreesToRadians(prevClusterAngles[ZOA_INDEX][n] -
+                                                channelParams->m_angle[ZOA_INDEX][n]);
+        const double dZodRad = DegreesToRadians(prevClusterAngles[ZOD_INDEX][n] -
+                                                channelParams->m_angle[ZOD_INDEX][n]);
+
+        // Apply deltas to each ray, preserving coupling and offsets
+        for (size_t m = 0; m < table3gpp->m_raysPerCluster; ++m)
+        {
+            std::tie((*rayAoaRadian)[n][m], (*rayZoaRadian)[n][m]) =
+                WrapAngles((*rayAoaRadian)[n][m] + dAoaRad, (*rayZoaRadian)[n][m] + dZoaRad);
+            std::tie((*rayAodRadian)[n][m], (*rayZodRadian)[n][m]) =
+                WrapAngles((*rayAodRadian)[n][m] + dAodRad, (*rayZodRadian)[n][m] + dZodRad);
+        }
+    }
+}
+
+void
+ThreeGppChannelModel::CalcAttenuationOfBlockage(Double2DVector* nonSelfBlocking,
+                                                DoubleVector* powerAttenuation,
+                                                Ptr<const ThreeGppChannelParams> channelParams,
+                                                const DoubleVector& clusterAOA,
+                                                const DoubleVector& clusterZOA,
+                                                Ptr<const ParamsTable> table3gpp) const
 {
     NS_LOG_FUNCTION(this);
 
-    auto clusterNum = clusterAOA.size();
+    const auto clusterNum = clusterAOA.size();
     // Initial power attenuation for all clusters to be 0 dB
     *powerAttenuation = DoubleVector(clusterNum, 0);
 
-    // step a: the number of non-self blocking blockers is stored in m_numNonSelfBlocking.
+    // step a: the number of non-self-blocking blockers is stored in m_numNonSelfBlocking.
 
     // step b:Generate the size and location of each blocker
     // generate self blocking (i.e., for blockage from the human body)
@@ -4220,34 +4462,15 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
     }
     else
     {
-        double deltaX = sqrt(pow(channelParams->m_preLocUT.x - channelParams->m_locUT.x, 2) +
-                             pow(channelParams->m_preLocUT.y - channelParams->m_locUT.y, 2));
         // if deltaX and speed are both 0, the autocorrelation is 1, skip updating
-        if (deltaX > 1e-6 || m_blockerSpeed > 1e-6)
+        if (const double deltaX = channelParams->m_endpointDisplacement2D;
+            deltaX > 1e-6 || m_blockerSpeed > 1e-6)
         {
-            double corrDis;
-            // draw value from table 7.6.4.1-4: Spatial correlation distance for different
-            // m_scenarios.
-            if (m_scenario == "InH-OfficeMixed" || m_scenario == "InH-OfficeOpen")
-            {
-                // InH, correlation distance = 5;
-                corrDis = 5;
-            }
-            else
-            {
-                if (channelParams->m_o2iCondition == ChannelCondition::O2I) // outdoor to indoor
-                {
-                    corrDis = 5;
-                }
-                else // LOS or NLOS
-                {
-                    corrDis = 10;
-                }
-            }
+            const double corrDis = table3gpp->m_blockerDcorDistance;
             double R;
-            if (m_blockerSpeed > 1e-6) // speed not equal to 0
+            if (m_blockerSpeed > 1e-6) // speed is not equal to 0
             {
-                double corrT = corrDis / m_blockerSpeed;
+                const double corrT = corrDis / m_blockerSpeed;
                 R = exp(-1 * (deltaX / corrDis +
                               (Now().GetSeconds() - channelParams->m_generatedTime.GetSeconds()) /
                                   corrT));
@@ -4270,10 +4493,10 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
 
             // The following formula was obtained from MATLAB numerical simulation.
 
-            if (R * R * (-0.069) + R * 1.074 - 0.002 <
+            if (R * R * -0.069 + R * 1.074 - 0.002 <
                 1) // transform only when the correlation of normal RV is smaller than 1
             {
-                R = R * R * (-0.069) + R * 1.074 - 0.002;
+                R = R * R * -0.069 + R * 1.074 - 0.002;
             }
             for (uint16_t blockInd = 0; blockInd < m_numNonSelfBlocking; blockInd++)
             {
@@ -4293,13 +4516,13 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
         NS_ASSERT_MSG(clusterZOA[cInd] >= 0 && clusterZOA[cInd] <= 180,
                       "the ZOA should be the range of [0,180]");
 
-        // check self blocking
+        // check self-blocking
         NS_LOG_INFO("AOA=" << clusterAOA[cInd] << " Block Region[" << phiSb - xSb / 2.0 << ","
                            << phiSb + xSb / 2.0 << "]");
         NS_LOG_INFO("ZOA=" << clusterZOA[cInd] << " Block Region[" << thetaSb - ySb / 2.0 << ","
                            << thetaSb + ySb / 2.0 << "]");
-        if (std::abs(clusterAOA[cInd] - phiSb) < (xSb / 2.0) &&
-            std::abs(clusterZOA[cInd] - thetaSb) < (ySb / 2.0))
+        if (std::abs(clusterAOA[cInd] - phiSb) < xSb / 2.0 &&
+            std::abs(clusterZOA[cInd] - thetaSb) < ySb / 2.0)
         {
             (*powerAttenuation)[cInd] += 30; // attenuate by 30 dB.
             NS_LOG_INFO("Cluster[" << +cInd
@@ -4308,12 +4531,11 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
                                    << (*powerAttenuation)[cInd] << " dB]");
         }
 
-        // check non-self blocking
+        // check non-self-blocking
         for (uint16_t blockInd = 0; blockInd < m_numNonSelfBlocking; blockInd++)
         {
-            // The normal RV is transformed to uniform RV with the desired correlation.
-            double phiK =
-                (0.5 * erfc(-1 * (*nonSelfBlocking)[blockInd][PHI_INDEX] / sqrt(2))) * 360;
+            // The normal RV is transformed to a uniform RV with the desired correlation.
+            double phiK = 0.5 * erfc(-1 * (*nonSelfBlocking)[blockInd][PHI_INDEX] / sqrt(2)) * 360;
             while (phiK > 360)
             {
                 phiK -= 360;
@@ -4324,22 +4546,21 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
                 phiK += 360;
             }
 
-            double xK = (*nonSelfBlocking)[blockInd][X_INDEX];
-            double thetaK = (*nonSelfBlocking)[blockInd][THETA_INDEX];
-            double yK = (*nonSelfBlocking)[blockInd][Y_INDEX];
+            const double xK = (*nonSelfBlocking)[blockInd][X_INDEX];
+            const double thetaK = (*nonSelfBlocking)[blockInd][THETA_INDEX];
+            const double yK = (*nonSelfBlocking)[blockInd][Y_INDEX];
 
             NS_LOG_INFO("AOA=" << clusterAOA[cInd] << " Block Region[" << phiK - xK << ","
                                << phiK + xK << "]");
             NS_LOG_INFO("ZOA=" << clusterZOA[cInd] << " Block Region[" << thetaK - yK << ","
                                << thetaK + yK << "]");
 
-            if (std::abs(clusterAOA[cInd] - phiK) < (xK) &&
-                std::abs(clusterZOA[cInd] - thetaK) < (yK))
+            if (std::abs(clusterAOA[cInd] - phiK) < xK && std::abs(clusterZOA[cInd] - thetaK) < yK)
             {
-                double A1 = clusterAOA[cInd] - (phiK + xK / 2.0);   //(7.6-24)
-                double A2 = clusterAOA[cInd] - (phiK - xK / 2.0);   //(7.6-25)
-                double Z1 = clusterZOA[cInd] - (thetaK + yK / 2.0); //(7.6-26)
-                double Z2 = clusterZOA[cInd] - (thetaK - yK / 2.0); //(7.6-27)
+                const double A1 = clusterAOA[cInd] - (phiK + xK / 2.0);   //(7.6-24)
+                const double A2 = clusterAOA[cInd] - (phiK - xK / 2.0);   //(7.6-25)
+                const double Z1 = clusterZOA[cInd] - (thetaK + yK / 2.0); //(7.6-26)
+                const double Z2 = clusterZOA[cInd] - (thetaK - yK / 2.0); //(7.6-27)
                 int signA1;
                 int signA2;
                 int signZ1;
@@ -4380,24 +4601,24 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage(
                 {
                     signZ2 = 1;
                 }
-                double lambda = 3e8 / m_frequency;
-                double fA1 = atan(signA1 * M_PI / 2.0 *
-                                  sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
-                                       (1.0 / cos(DegreesToRadians(A1)) - 1))) /
-                             M_PI; //(7.6-23)
-                double fA2 = atan(signA2 * M_PI / 2.0 *
-                                  sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
-                                       (1.0 / cos(DegreesToRadians(A2)) - 1))) /
-                             M_PI;
-                double fZ1 = atan(signZ1 * M_PI / 2.0 *
-                                  sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
-                                       (1.0 / cos(DegreesToRadians(Z1)) - 1))) /
-                             M_PI;
-                double fZ2 = atan(signZ2 * M_PI / 2.0 *
-                                  sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
-                                       (1.0 / cos(DegreesToRadians(Z2)) - 1))) /
-                             M_PI;
-                double lDb = -20 * log10(1 - (fA1 + fA2) * (fZ1 + fZ2)); //(7.6-22)
+                const double lambda = 3e8 / m_frequency;
+                const double fA1 = atan(signA1 * M_PI / 2.0 *
+                                        sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
+                                             (1.0 / cos(DegreesToRadians(A1)) - 1))) /
+                                   M_PI; //(7.6-23)
+                const double fA2 = atan(signA2 * M_PI / 2.0 *
+                                        sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
+                                             (1.0 / cos(DegreesToRadians(A2)) - 1))) /
+                                   M_PI;
+                const double fZ1 = atan(signZ1 * M_PI / 2.0 *
+                                        sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
+                                             (1.0 / cos(DegreesToRadians(Z1)) - 1))) /
+                                   M_PI;
+                const double fZ2 = atan(signZ2 * M_PI / 2.0 *
+                                        sqrt(M_PI / lambda * (*nonSelfBlocking)[blockInd][R_INDEX] *
+                                             (1.0 / cos(DegreesToRadians(Z2)) - 1))) /
+                                   M_PI;
+                const double lDb = -20 * log10(1 - (fA1 + fA2) * (fZ1 + fZ2)); //(7.6-22)
                 (*powerAttenuation)[cInd] += lDb;
                 NS_LOG_INFO("Cluster[" << +cInd << "] is blocked by no-self blocking, the loss is ["
                                        << lDb << "] dB");

@@ -52,6 +52,17 @@ fixes, use `./ns3 run "clang-tidy -fix"`.
 
 * (wifi) `CcaEdThreshold` can be changed at run-time.
 * (internet): Updated `TcpLedbat::CongestionAvoidance()` to compute `max_cwnd` as `flightsize + AllowedIncrease × MSS` by adding `m_allowedIncrease * tcb->m_segmentSize`, in accordance with RFC 6817.
+* (spectrum): Added a spatial-consistency update technique aligned with 3GPP TR 38.901 Procedure A
+  (Sec. 7.6.3.2) to the 3GPP channel model. When the `UpdatePeriod` attribute of `ThreeGppChannelModel`
+  is set to a non-zero value, the model evolves channel parameters using Procedure A update equations
+  to preserve correlation across consecutive channel evaluations, with ns-3-specific update triggering
+  suited to discrete-event simulation. In prior ns-3 releases (before ns-3.47), `UpdatePeriod` caused
+  independent (i.i.d.) re-generation of channel realizations. With the updated behavior, an update is
+  attempted when the channel is evaluated and `UpdatePeriod` has elapsed since the last parameter
+  generation/update. If the maximum endpoint displacement between evaluations is within 1 m,
+  Procedure A updates are applied; if it exceeds 1 m, channel parameters are re-generated (new realization).
+  For stationary links, the channel remains unchanged. See `spectrum.rst` for ns-3 update triggering and
+  1 m step-size handling.
 
 ## Changes from ns-3.46 to ns-3.46.1
 

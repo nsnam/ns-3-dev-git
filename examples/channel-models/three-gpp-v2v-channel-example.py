@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Load the data
-df = pd.read_csv("example-output.txt", sep=r"\s+", comment="#")
+df = pd.read_csv("three-gpp-v2v-channel-example-output.txt", sep=r"\s+", comment="#")
 df = df.iloc[::10, :]
 
 # Column indices (adjust if needed)
@@ -48,7 +48,9 @@ ax_snr.set_ylabel("SNR [dB]")
 ax_snr.grid(True)
 (snr_line,) = ax_snr.plot([], [], "k-")
 
-buildings = pd.read_csv("buildings.txt", sep=r"\s+", comment="#", header=None)
+buildings = pd.read_csv(
+    "three-gpp-v2v-channel-example-buildings.txt", sep=r"\s+", comment="#", header=None
+)
 building_patches = []
 for idx, row in buildings.iterrows():
     x0, y0, x1, y1 = row
@@ -73,7 +75,7 @@ def update(frame):
 ani = animation.FuncAnimation(fig, update, frames=len(df), interval=0.001, blit=False)
 
 # Save animation
-ani.save("map.gif", writer="pillow")
+ani.save("three-gpp-v2v-channel-example-map.gif", writer="pillow")
 
 # Save final SNR plot separately
 plt.figure()
@@ -83,4 +85,4 @@ plt.ylabel("SNR [dB]")
 plt.grid(True)
 plt.xlim(0, 40)
 plt.ylim(-20, 100)
-plt.savefig("snr.png")
+plt.savefig("three-gpp-v2v-channel-example-snr.png")

@@ -45,6 +45,14 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (internet) !2405 Added support for TCP FACK (Forward Acknowledgement).
 - (lr-wpan) !2592 Added PHY preamble and RSSI support.
 - (visualizer) Add Lr-Wpan NetDevices support to the Pyviz visualizer.
+- (spectrum) The ns-3 3GPP channel model supports a spatial-consistency update technique
+  aligned with TR 38.901 Procedure A (Sec. 7.6.3.2), enabled via the `UpdatePeriod`
+  attribute of `ThreeGppChannelModel` (see `spectrum.rst` for ns-3 update triggering and
+  1 m step-size handling). Default per-cluster shadowing correlation distances are
+  provided for terrestrial cellular scenarios (UMa/UMi/RMa/Indoor). For V2V and NTN,
+  the corresponding 3GPP reports do not provide standardized per-cluster correlation
+  distances; users should configure appropriate values in the parameter tables (the
+  default is 1 m, yielding weak correlation unless adjusted).
 
 ### Bugs fixed
 

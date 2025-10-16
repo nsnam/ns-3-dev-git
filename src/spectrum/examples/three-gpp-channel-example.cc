@@ -6,14 +6,15 @@
  */
 
 /**
+ * @file
  * This example shows how to configure the 3GPP channel model classes to
  * compute the SNR between two nodes.
  * The simulation involves two static nodes which are placed at a certain
- * distance from each other and communicates through a wireless channel at
+ * distance from each other and communicate through a wireless channel at
  * 2 GHz with a bandwidth of 18 MHz. The default propagation environment is
- * 3D-urban macro (UMa) and it can be configured changing the value of the
+ * 3D-urban macro (UMa), and it can be configured changing the value of the
  * string "scenario".
- * Each node hosts a SimpleNetDevice and has an antenna array with 4 elements.
+ * Each node hosts has an antenna array with 4 antenna elements.
  */
 
 #include "ns3/channel-condition-model.h"
@@ -21,10 +22,8 @@
 #include "ns3/core-module.h"
 #include "ns3/lte-spectrum-value-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/net-device.h"
 #include "ns3/node-container.h"
 #include "ns3/node.h"
-#include "ns3/simple-net-device.h"
 #include "ns3/spectrum-signal-parameters.h"
 #include "ns3/three-gpp-channel-model.h"
 #include "ns3/three-gpp-propagation-loss-model.h"
@@ -59,18 +58,16 @@ struct ComputeSnrParams
 
 /**
  * Perform the beamforming using the DFT beamforming method
- * @param thisDevice the device performing the beamforming
+ * @param txMob the mobility model of the node performing the beamforming
  * @param thisAntenna the antenna object associated to thisDevice
- * @param otherDevice the device towards which point the beam
+ * @param rxMob the mobility model of the node towards which will point the beam
  */
 static void
-DoBeamforming(Ptr<NetDevice> thisDevice,
-              Ptr<PhasedArrayModel> thisAntenna,
-              Ptr<NetDevice> otherDevice)
+DoBeamforming(Ptr<MobilityModel> txMob, Ptr<PhasedArrayModel> thisAntenna, Ptr<MobilityModel> rxMob)
 {
-    // retrieve the position of the two devices
-    Vector aPos = thisDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
-    Vector bPos = otherDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
+    // retrieve the position of the two nodes
+    Vector aPos = txMob->GetPosition();
+    Vector bPos = rxMob->GetPosition();
 
     // compute the azimuth and the elevation angles
     Angles completeAngle(bPos, aPos);
@@ -171,6 +168,16 @@ main(int argc, char* argv[])
     uint32_t timeRes = 10;        // time resolution in milliseconds
     std::string scenario = "UMa"; // 3GPP propagation scenario
 
+    CommandLine cmd(__FILE__);
+    cmd.AddValue("frequency", "Operating frequency in Hz", frequency);
+    cmd.AddValue("txPow", "TX power in dBm", txPow);
+    cmd.AddValue("noiseFigure", "Noise figure in dB", noiseFigure);
+    cmd.AddValue("distance", "Distance between TX and RX nodes in meters", distance);
+    cmd.AddValue("simTime", "Simulation time in milliseconds", simTime);
+    cmd.AddValue("timeRes", "Time resolution in milliseconds", timeRes);
+    cmd.AddValue("scenario", "3GPP propagation scenario", scenario);
+    cmd.Parse(argc, argv);
+
     Config::SetDefault("ns3::ThreeGppChannelModel::UpdatePeriod",
                        TimeValue(MilliSeconds(1))); // update the channel at each iteration
     Config::SetDefault("ns3::ThreeGppChannelConditionModel::UpdatePeriod",
@@ -239,16 +246,6 @@ main(int argc, char* argv[])
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models, set the positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
@@ -272,8 +269,8 @@ main(int argc, char* argv[])
                                                        UintegerValue(2));
 
     // set the beamforming vectors
-    DoBeamforming(txDev, txAntenna, rxDev);
-    DoBeamforming(rxDev, rxAntenna, txDev);
+    DoBeamforming(txMob, txAntenna, rxMob);
+    DoBeamforming(rxMob, rxAntenna, txMob);
 
     for (int i = 0; i < floor(simTime / timeRes); i++)
     {

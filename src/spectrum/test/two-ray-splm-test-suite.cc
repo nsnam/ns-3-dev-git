@@ -5,6 +5,7 @@
  */
 
 #include "ns3/abort.h"
+#include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/double.h"

@@ -3,6 +3,7 @@
  * New York University
  * Copyright (c) 2019 SIGNET Lab, Department of Information Engineering,
  * University of Padova
+ * Copyright (c) 2026, CTTC, Centre Tecnologic de Telecomunicacions de Catalunya
  *
  * SPDX-License-Identifier: GPL-2.0-only
  */
@@ -12,12 +13,8 @@
 
 #include "matrix-based-channel-model.h"
 
-#include "ns3/angles.h"
-#include "ns3/boolean.h"
 #include "ns3/channel-condition-model.h"
-#include "ns3/deprecated.h"
 
-#include <complex.h>
 #include <unordered_map>
 
 namespace ns3
@@ -26,9 +23,9 @@ namespace ns3
 class MobilityModel;
 
 /**
- * ThreeGppChannelModel is a MatrixBasedChannelModel extension implementing a
- * 3GPP TR 38.901 channel model for wireless propagation, supporting channel
- * matrices, channel conditions, and propagation scenarios.
+ * ThreeGppChannelModel extends MatrixBasedChannelModel and represents a channel
+ * model based on 3GPP specifications, including functionality for
+ * managing channel conditions, scenarios, and frequency requirements.
  */
 class ThreeGppChannelModel : public MatrixBasedChannelModel
 {
@@ -88,7 +85,7 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     std::string GetScenario() const;
 
     /**
-     * Looks for the channel matrix associated to the aMob and bMob pair in m_channelMatrixMap.
+     * Looks for the channel matrix associated with the aMob and bMob pair in m_channelMatrixMap.
      * If found, it checks if it has to be updated. If not found or if it has to
      * be updated, it generates a new uncorrelated channel matrix using the
      * method GetNewChannel and updates m_channelMap.
@@ -105,8 +102,8 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
                                         Ptr<const PhasedArrayModel> bAntenna) override;
 
     /**
-     * Looks for the channel params associated to the aMob and bMob pair in
-     * m_channelParamsMap. If not found it will return a nullptr.
+     * Looks for the channel params associated with the aMob and bMob pair in
+     * m_channelParamsMap. If not found, it will return a nullptr.
      *
      * @param aMob mobility model of the a device
      * @param bMob mobility model of the b device
@@ -123,13 +120,12 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      */
     int64_t AssignStreams(int64_t stream);
 
-  protected:
     /**
      * Wrap an (azimuth, inclination) angle pair in a valid range.
      * Specifically, inclination must be in [0, M_PI] and azimuth in [0, 2*M_PI).
-     * If the inclination angle is outside of its range, the azimuth angle is
+     * If the inclination angle is outside its range, the azimuth angle is
      * rotated by M_PI.
-     * This methods aims specifically at solving the problem of generating angles at
+     * This method aims specifically at solving the problem of generating angles at
      * the boundaries of the angle domain, specifically, generating angle distributions
      * close to inclinationRad=0 and inclinationRad=M_PI.
      *
@@ -143,75 +139,112 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * Extends the struct ChannelParams by including information that is used
      * within the ThreeGppChannelModel class
      */
-    struct ThreeGppChannelParams : public MatrixBasedChannelModel::ChannelParams
+    struct ThreeGppChannelParams : ChannelParams
     {
-        ChannelCondition::LosConditionValue
-            m_losCondition; //!< contains the information about the LOS state of the channel
-        ChannelCondition::O2iConditionValue
-            m_o2iCondition; //!< contains the information about the O2I state of the channel
-        // TODO these are not currently used, they have to be correctly set when including the
-        // spatial consistent update procedure
-        /*The following parameters are stored for spatial consistent updating. The notation is
+        /// contains the information about the LOS state of the channel
+        ChannelCondition::LosConditionValue m_losCondition;
+        /// contains the information about the O2I state of the channel
+        ChannelCondition::O2iConditionValue m_o2iCondition;
+        /*The following parameters are stored for spatially consistent updating. The notation is
         that of 3GPP technical reports, but it can apply also to other channel realizations*/
-        MatrixBasedChannelModel::Double2DVector m_nonSelfBlocking; //!< store the blockages
-        Vector m_preLocUT; //!< location of UT when generating the previous channel
-        Vector m_locUT;    //!< location of UT
-        MatrixBasedChannelModel::Double2DVector
-            m_norRvAngles; //!< stores the normal variable for random angles angle[cluster][id]
-                           //!< generated for equation (7.6-11)-(7.6-14), where id =
-                           //!< 0(aoa),1(zoa),2(aod),3(zod)
-        double m_DS;       //!< delay spread
-        double m_K_factor; //!< K factor
-        uint8_t m_reducedClusterNumber; //!< reduced cluster number;
-        MatrixBasedChannelModel::Double2DVector
-            m_rayAodRadian; //!< the vector containing AOD angles
-        MatrixBasedChannelModel::Double2DVector
-            m_rayAoaRadian; //!< the vector containing AOA angles
-        MatrixBasedChannelModel::Double2DVector
-            m_rayZodRadian; //!< the vector containing ZOD angles
-        MatrixBasedChannelModel::Double2DVector
-            m_rayZoaRadian; //!< the vector containing ZOA angles
-        MatrixBasedChannelModel::Double3DVector m_clusterPhase; //!< the initial random phases
-        MatrixBasedChannelModel::Double2DVector
-            m_crossPolarizationPowerRatios; //!< cross polarization power ratios
-        Vector m_speed;                     //!< velocity
-        double m_dis2D;                     //!< 2D distance between tx and rx
-        double m_dis3D;                     //!< 3D distance between tx and rx
-        DoubleVector m_clusterPowers;       //!< cluster powers
-        DoubleVector m_attenuation_dB;      //!< vector that stores the attenuation of the blockage
-        uint8_t m_cluster1st;               //!< index of the first strongest cluster
-        uint8_t m_cluster2nd;               //!< index of the second strongest cluster
-        Vector m_txSpeed;                   //!< TX velocity
-        Vector m_rxSpeed;                   //!< RX velocity
-        DoubleVector m_delayConsistency;    //!< cluster delay for consistency update
-        bool m_newChannel; //!< true if the channel was generated with GetNewChannel
+        /// store the blockages
+        Double2DVector m_nonSelfBlocking;
+        /** stores the normal variable for random angles angle[cluster][id]
+         * generated for equation (7.6-11)-(7.6-14), where id follows
+         * MatrixBasedChannelModel::{AOA,ZOA,AOD,ZOD}_INDEX ordering.
+         */
+        Double2DVector m_norRvAngles;
+        /// delay spread
+        double m_DS;
+        /// K factor
+        double m_K_factor;
+        /// reduced cluster number
+        uint8_t m_reducedClusterNumber;
+        /** The signs of the XN per cluster -1 or +1, per NLOS used in channel consistency procedure
+         */
+        std::vector<int> m_clusterXnNlosSign;
+        Double2DVector m_rayAodRadian;                 //!< the vector containing AOD angles
+        Double2DVector m_rayAoaRadian;                 //!< the vector containing AOA angles
+        Double2DVector m_rayZodRadian;                 //!< the vector containing ZOD angles
+        Double2DVector m_rayZoaRadian;                 //!< the vector containing ZOA angles
+        Double3DVector m_clusterPhase;                 //!< the initial random phases
+        Double2DVector m_crossPolarizationPowerRatios; //!< cross-polarization power ratios
+        double m_dis2D;                                //!< 2D distance between tx and rx
+        double m_dis3D;                                //!< 3D distance between tx and rx
+        DoubleVector m_clusterShadowing;               //!< cluster shadowing
+        DoubleVector m_clusterPower;                   //!< cluster powers
+        DoubleVector m_attenuation_dB;   //!< vector that stores the attenuation of the blockage
+        uint8_t m_cluster1st;            //!< index of the first strongest cluster
+        uint8_t m_cluster2nd;            //!< index of the second-strongest cluster
+        Vector m_txSpeed;                //!< TX velocity
+        Vector m_rxSpeed;                //!< RX velocity
+        DoubleVector m_delayConsistency; //!< cluster delay for consistency update
+        /**
+         * The effective 2D displacement used to determine whether a channel-consistency update
+         * can be applied, computed between consecutive endpoint positions.
+         *
+         * Since channel parameters are stored using a reciprocal key, endpoint-specific state is
+         * handled using a canonical ordering by node ID (min ID / max ID). The displacement is
+         * computed as the maximum of the two endpoint displacements since the last
+         * generation/update.
+         */
+        double m_endpointDisplacement2D{0.0};
+        /**
+         * 2D displacement of the canonical relative position vector between the two endpoints
+         * since the last generation/update.
+         *
+         * This corresponds to the change in the link geometry in the horizontal plane and is used
+         * by Procedure A updates that evolve cluster-level random variables as a function of
+         * displacement (e.g., per-cluster shadowing correlation).
+         */
+        double m_relativeDisplacement2D{0.0};
+        /**
+         * Position of the endpoint with the smallest node ID (canonical endpoint ordering) at the
+         * time of the last channel parameter generation/update.
+         */
+        Vector m_lastPositionFirst;
+        /**
+         * Position of the endpoint with the largest node ID (canonical endpoint ordering) at the
+         * time of the last channel parameter generation/update.
+         */
+        Vector m_lastPositionSecond;
+        /**
+         * Canonical 2D relative position vector (first -> second) stored at the time of the last
+         * channel parameter generation/update.
+         *
+         * This is used to compute m_relativeDisplacement2D as the 2D displacement of the link
+         * geometry between consecutive updates.
+         */
+        Vector2D m_lastRelativePosition2D;
     };
 
     /**
      * Data structure that stores the parameters of 3GPP TR 38.901, Table 7.5-6,
      * for a certain scenario
      */
-    struct ParamsTable : public SimpleRefCount<ParamsTable>
+    struct ParamsTable : SimpleRefCount<ParamsTable>
     {
         uint8_t m_numOfCluster = 0;   //!< Number of clusters
         uint8_t m_raysPerCluster = 0; //!< Number of rays per cluster
         double m_uLgDS = 0;           //!< Mean value of 10-base logarithm of delay spread
         double m_sigLgDS = 0; //!< Standard deviation value of 10-base logarithm of delay spread
-        double m_uLgASD =
-            0; //!< Mean value of 10-base logarithm of azimuth angle spread of departure
-        double m_sigLgASD =
-            0; //!< Standard deviation of 10-base logarithm of azimuth angle spread of departure
-        double m_uLgASA = 0; //!< Mean value of 10-base logarithm of azimuth angle spread of arrival
-        double m_sigLgASA =
-            0; //!< Standard deviation of 10-base logarithm of azimuth angle spread of arrival
-        double m_uLgZSA = 0; //!< Mean value of 10-base logarithm of zenith angle spread of arrival
-        double m_sigLgZSA =
-            0; //!< Standard deviation of 10-base logarithm of zenith angle spread of arrival
-        double m_uLgZSD =
-            0; //!< Mean value of 10-base logarithm of zenith angle spread of departure
-        double m_sigLgZSD =
-            0; //!< Standard deviation of 10-base logarithm of zenith angle spread of departure
-        double m_offsetZOD = 0;              //!< Offset of zenith angle of departure
+        //! Mean value of 10-base logarithm of azimuth angle spread of departure
+        double m_uLgASD = 0;
+        //! Standard deviation of 10-base logarithm of azimuth angle spread of departure
+        double m_sigLgASD = 0;
+        //! Mean value of 10-base logarithm of azimuth angle spread of arrival
+        double m_uLgASA = 0;
+        //! Standard deviation of 10-base logarithm of azimuth angle spread of arrival
+        double m_sigLgASA = 0;
+        //! Mean value of 10-base logarithm of zenith angle spread of arrival
+        double m_uLgZSA = 0;
+        //! Standard deviation of 10-base logarithm of zenith angle spread of arrival
+        double m_sigLgZSA = 0;
+        //! Mean value of 10-base logarithm of zenith angle spread of departure
+        double m_uLgZSD = 0;
+        //! Standard deviation of 10-base logarithm of zenith angle spread of departure
+        double m_sigLgZSD = 0;
+        double m_offsetZOD = 0;              //!< Offset of a zenith angle of departure
         double m_cDS = 0;                    //!< Cluster DS
         double m_cASD = 0;                   //!< Cluster ASD (Azimuth angle Spread of Departure)
         double m_cASA = 0;                   //!< Cluster ASA (Azimuth angle Spread of Arrival)
@@ -222,6 +255,16 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
         double m_uXpr = 0;                   //!< Mean of Cross-Polarization Ratio
         double m_sigXpr = 0;                 //!< Standard deviation of Cross-Polarization Ratio
         double m_perClusterShadowingStd = 0; //!< Per cluster shadowing standard deviation
+        //! Correlation distance for spatial consistency (7.6.3.1-2) in meters.
+        //! Default value set to 1, because V2V and NTN models documentations do not provide this
+        //! parameter value
+        double m_perClusterRayDcorDistance = 1;
+        //! The spatial correlation distance for the random variable determining the centre of the
+        //! blocker in meters; Default value set to 1, because V2V and NTN models documentations do
+        //! not provide
+        // this parameter value
+        double m_blockerDcorDistance = 1;
+
         /**
          * For LOS, LSP is following the order of [SF,K,DS,ASD,ASA,ZSD,ZSA].
          * For NLOS, LSP is following the order of [SF,DS,ASD,ASA,ZSD,ZSA].
@@ -238,21 +281,62 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @return the parameters table
      */
     virtual Ptr<const ParamsTable> GetThreeGppTable(
-        const Ptr<const MobilityModel> aMob,
-        const Ptr<const MobilityModel> bMob,
+        Ptr<const MobilityModel> aMob,
+        Ptr<const MobilityModel> bMob,
         Ptr<const ChannelCondition> channelCondition) const;
+
+  protected:
+    /**
+     * Update distance- and displacement-related values between two nodes.
+     *
+     * The function computes the current 2D and 3D distances between two mobility models.
+     *
+     * It also computes two 2D displacement measures with respect to previously stored state.
+     * Since channel parameters are stored using a reciprocal key, endpoint-specific state is
+     * handled using a canonical ordering by node ID (min ID / max ID).
+     * ``endpointDisplacement2D`` is the maximum 2D displacement of the two endpoints since the last
+     * channel parameter generation/update.
+     * ``relativeDisplacement2D`` is the 2D displacement of the canonical relative position vector
+     * between the endpoints since the last generation/update.
+     *
+     * @param aMob The mobility model of the first node (unordered).
+     * @param bMob The mobility model of the second node (unordered).
+     * @param distance2D Output parameter that stores the 2D distance between the two nodes.
+     * @param distance3D Output parameter that stores the 3D distance between the two nodes.
+     * @param endpointDisplacement2D Output parameter that stores the effective 2D displacement
+     *        (in meters).
+     * @param relativeDisplacement2D Output parameter that stores the 2D displacement (in meters)
+     *        of the canonical relative position vector between the two endpoints since the last
+     *        channel parameter generation/update.
+     * @param lastPositionFirst Position of the endpoint with the smallest node ID at the time of
+     *        the last channel parameter generation/update.
+     * @param lastPositionSecond Position of the endpoint with the largest node ID at the time of
+     *        the last channel parameter generation/update.
+     * @param lastRelativePosition2D Previously stored canonical 2D relative position vector
+     *        (first endpoint minus second endpoint) at the time of the last channel parameter
+     *        generation/update.
+     */
+    void UpdateLinkGeometry(Ptr<const MobilityModel> aMob,
+                            Ptr<const MobilityModel> bMob,
+                            double* distance2D,
+                            double* distance3D,
+                            double* endpointDisplacement2D,
+                            double* relativeDisplacement2D,
+                            Vector* lastPositionFirst,
+                            Vector* lastPositionSecond,
+                            Vector2D* lastRelativePosition2D) const;
 
     /**
      * Prepare 3gpp channel parameters among the nodes a and b.
      * The function does the following steps described in 3GPP 38.901:
      *
-     * Step 4: Generate large scale parameters. All LSPS are uncorrelated.
+     * Step 4: Generate large scale parameters. All LSPs are uncorrelated.
      * Step 5: Generate Delays.
      * Step 6: Generate cluster powers.
      * Step 7: Generate arrival and departure angles for both azimuth and elevation.
      * Step 8: Coupling of rays within a cluster for both azimuth and elevation
      * shuffle all the arrays to perform random coupling
-     * Step 9: Generate the cross polarization power ratios
+     * Step 9: Generate the cross-polarization power ratios
      * Step 10: Draw initial phases
      *
      * All relevant generated parameters are added then to ThreeGppChannelParams
@@ -265,10 +349,10 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * according 38.901 steps from 4 to 10.
      */
     Ptr<ThreeGppChannelParams> GenerateChannelParameters(
-        const Ptr<const ChannelCondition> channelCondition,
-        const Ptr<const ParamsTable> table3gpp,
-        const Ptr<const MobilityModel> aMob,
-        const Ptr<const MobilityModel> bMob) const;
+        Ptr<const ChannelCondition> channelCondition,
+        Ptr<const ParamsTable> table3gpp,
+        Ptr<const MobilityModel> aMob,
+        Ptr<const MobilityModel> bMob) const;
 
     /**
      * @brief Large-scale channel parameters (3GPP TR 38.901).
@@ -308,8 +392,8 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param table3gpp Pointer to the 3GPP parameters table (means, std-devs, sqrt correlation).
      * @return LargeScaleParameters structure containing the generated LSPs.
      */
-    LargeScaleParameters GenerateLSPs(ChannelCondition::LosConditionValue losCondition,
-                                      const Ptr<const ParamsTable> table3gpp) const;
+    LargeScaleParameters GenerateLSPs(const ChannelCondition::LosConditionValue losCondition,
+                                      Ptr<const ParamsTable> table3gpp) const;
 
     /**
      * Generate the cluster delays.
@@ -319,21 +403,57 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param clusterDelays output vector for cluster delays
      */
 
-    void GenerateClusterDelays(double DS,
-                               const Ptr<const ParamsTable> table3gpp,
+    void GenerateClusterDelays(const double DS,
+                               Ptr<const ParamsTable> table3gpp,
                                double* minTau,
                                DoubleVector* clusterDelays) const;
+
+    /**
+     * @brief Generate per-cluster shadowing terms (in dB) as specified by 3GPP TR 38.901.
+     *
+     * Draws one large-scale shadowing realization per cluster using the scenario-specific
+     * per-cluster shadowing standard deviation from the provided 3GPP table. These terms
+     * represent the intrinsic random strength of each cluster and are later used when
+     * computing and updating cluster powers.
+     *
+     * Behavior:
+     * - The output vector is resized to the number of clusters defined by the table.
+     * - Each entry is an independent zero-mean Gaussian random variable with standard
+     *   deviation equal to table3gpp->m_perClusterShadowingStd (units: dB).
+     *
+     * @param table3gpp Pointer to the 3GPP parameters table (provides number of clusters
+     *                  and per-cluster shadowing std-dev).
+     * @param clusterShadowing Output vector filled with per-cluster shadowing values (dB);
+     *                         size equals the number of clusters.
+     */
+    void GenerateClusterShadowingTerm(Ptr<const ParamsTable> table3gpp,
+                                      DoubleVector* clusterShadowing) const;
+
+    /**
+     * Update shadowing per cluster by using the normalized auto correlation function R, which is
+     * defined as an exponential function in ITU-R P.1816 and used by 38.901 in 7.4-5 equation for
+     * the correlation of shadowing.
+     * @param table3gpp The 3GPP parameters
+     * @param clusterShadowing The previous values of the per-cluster shadowing.
+     * @param displacementLength The displacement length between the nodes.
+     */
+    void UpdateClusterShadowingTerm(Ptr<const ParamsTable> table3gpp,
+                                    DoubleVector* clusterShadowing,
+                                    const double displacementLength) const;
 
     /**
      * Generate cluster powers.
      * @param clusterDelays cluster delays
      * @param DS Delay Spread
      * @param table3gpp 3GPP parameters from the table
+     * @param clusterShadowing the shadowing realization per each cluster, representing the
+     * intrinsic random strength of each cluster
      * @param clusterPowers output vector for cluster powers
      */
     void GenerateClusterPowers(const DoubleVector& clusterDelays,
                                const double DS,
-                               const Ptr<const ParamsTable> table3gpp,
+                               Ptr<const ParamsTable> table3gpp,
+                               const DoubleVector& clusterShadowing,
                                DoubleVector* clusterPowers) const;
 
     /**
@@ -344,41 +464,43 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param table3gpp 3GPP parameters from the table
      * @param kFactor K factor
      * @param powerMax output for maximum power
+     * @return Vector of per-cluster powers used for angle generation, after removing clusters
+     * more than 25 dB below the strongest cluster.
      */
-    MatrixBasedChannelModel::DoubleVector RemoveWeakClusters(
-        DoubleVector* clusterPowers,
-        DoubleVector* clusterDelays,
-        ChannelCondition::LosConditionValue losCondition,
-        const Ptr<const ParamsTable> table3gpp,
-        double kFactor,
-        double* powerMax) const;
+    DoubleVector RemoveWeakClusters(DoubleVector* clusterPowers,
+                                    DoubleVector* clusterDelays,
+                                    const ChannelCondition::LosConditionValue losCondition,
+                                    Ptr<const ParamsTable> table3gpp,
+                                    const double kFactor,
+                                    double* powerMax) const;
 
     /**
-    * @brief Adjusts cluster delays for LOS channel condition based on the K-factor.
-    *
-    * This function scales the initial NLOS cluster delays to reflect LOS conditions
-    * as described in 3GPP TR 38.901. The delays are normalized using a correction
-    * factor `cTau` that depends on the Rician K-factor, as defined in Table 7.5-3.
-    *
-    * The formula used to compute `cTau` is:
-    * \f[
-    * c_{\tau} = 0.7705 - 0.0433K + 0.0002K^2 + 0.000017K^3
-    * \f]
-    *
-    * Each cluster delay \f$\tau_i\f$ is then scaled by:
-    * \f[
-    * \tau_i^{\text{LOS}} = \frac{\tau_i^{\text{NLOS}}}{c_{\tau}}
-    * \f]
-    * (see Equation 7.5-4)
-    *
-    * @param clusterDelays Pointer to a vector of initial (NLOS) cluster delays, which will be
-    updated in place.
-    * @param reducedClusterNumber The number of clusters to be considered (can be < total clusters).
-    * @param kFactor The Rician K-factor, used to adjust the delay scaling factor `cTau`.
-    */
+     * @brief Adjusts cluster delays for LOS channel condition based on the K-factor.
+     *
+     * This function scales the initial NLOS cluster delays to reflect LOS conditions
+     * as described in 3GPP TR 38.901. The delays are normalized using a correction
+     * factor `cTau` that depends on the Rician K-factor, as defined in Table 7.5-3.
+     *
+     * The formula used to compute `cTau` is:
+     * \f[
+     * c_{\tau} = 0.7705 - 0.0433K + 0.0002K^2 + 0.000017K^3
+     * \f]
+     *
+     * Each cluster delay \f$\tau_i\f$ is then scaled by:
+     * \f[
+     * tau_i^{\text{LOS}} = \frac{\tau_i^{\text{NLOS}}}{c_{\tau}}
+     * \f]
+     * (see Equation 7.5-4)
+     *
+     * @param clusterDelays Pointer to a vector of initial (NLOS) cluster delays, which will be
+     * updated in place.
+     * @param reducedClusterNumber The number of clusters to be considered (can be < total
+     * clusters).
+     * @param kFactor The Rician K-factor, used to adjust the delay scaling factor `cTau`.
+     */
     void AdjustClusterDelaysForLosCondition(DoubleVector* clusterDelays,
-                                            uint8_t reducedClusterNumber,
-                                            double kFactor) const;
+                                            const uint8_t reducedClusterNumber,
+                                            const double kFactor) const;
 
     /**
      * @brief Calculates the cPhi parameter for azimuth angular spread modeling.
@@ -401,11 +523,12 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      *
      * @return The computed cPhi value.
      *
-     * @throw NS_FATAL_ERROR if the number of clusters is invalid or not found in the lookup table.
+     * @warning NS_FATAL_ERROR if the number of clusters is invalid or not found in the lookup
+     * table.
      */
-    static double CalculateCphi(ChannelCondition::LosConditionValue losCondition,
-                                const Ptr<const ParamsTable> table3gpp,
-                                double kFactor);
+    static double CalculateCphi(const ChannelCondition::LosConditionValue losCondition,
+                                Ptr<const ParamsTable> table3gpp,
+                                const double kFactor);
 
     /**
      * @brief Calculates the cTheta parameter for zenith angular spread modeling.
@@ -428,26 +551,26 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      *
      * @return The computed cTheta value.
      *
-     * @throw NS_FATAL_ERROR if the number of clusters is invalid or not found in the lookup table.
+     * @warning NS_FATAL_ERROR if the number of clusters is invalid or not found in the lookup
+     * table.
      */
-    static double CalculateCtheta(ChannelCondition::LosConditionValue losCondition,
-                                  const Ptr<const ParamsTable> table3gpp,
-                                  double kFactor);
+    static double CalculateCtheta(const ChannelCondition::LosConditionValue losCondition,
+                                  Ptr<const ParamsTable> table3gpp,
+                                  const double kFactor);
 
     /**
-     * @brief Per-cluster center angles for arrival/departure in azimuth and zenith.
+     * @brief Generate a random sign (+1 or -1) for each cluster for XN for NLOS computation for
+     * channel consistency updates.
+     *
+     * Fills the provided vector with one sign per cluster, where each sign is
+     * independently drawn from a fair Bernoulli distribution over {+1, -1}.
+     * The output vector is cleared and reserved to the specified size.
+     *
+     * @param clusterNumber Number of clusters to generate signs for.
+     * @param clusterSign Output pointer to the vector that will contain the signs
+     *        (size = clusterNumber), each element being either +1 or -1.
      */
-    struct ClusterAngles
-    {
-        /** Azimuth of arrival (AOA) center angles per cluster [deg]. */
-        DoubleVector aoa;
-        /** Azimuth of departure (AOD) center angles per cluster [deg]. */
-        DoubleVector aod;
-        /** Zenith of arrival (ZOA) center angles per cluster [deg]. */
-        DoubleVector zoa;
-        /** Zenith of departure (ZOD) center angles per cluster [deg]. */
-        DoubleVector zod;
-    };
+    void GenerateClusterXnNLos(const uint8_t clusterNumber, std::vector<int>* clusterSign) const;
 
     /**
      * Generate cluster angles for a 3GPP channel model based on provided parameters.
@@ -464,24 +587,18 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param aMob Pointer to the mobility model of Node A.
      * @param bMob Pointer to the mobility model of Node B.
      * @param table3gpp Pointer to the table containing 3GPP-specific parameters.
-     * @param clusterAoa Pointer to the output vector for cluster AoA values.
-     * @param clusterAod Pointer to the output vector for cluster AoD values.
-     * @param clusterZoa Pointer to the output vector for cluster ZoA values.
-     * @param clusterZod Pointer to the output vector for cluster ZoD values.
+     * @param clusterAngles Per-cluster angles [deg]; duplicated for sub-clusters.
      */
-    void GenerateClusterAngles(const Ptr<const ThreeGppChannelParams> channelParams,
+    void GenerateClusterAngles(Ptr<const ThreeGppChannelParams> channelParams,
                                const DoubleVector& clusterPowerForAngles,
                                double powerMax,
                                double cPhi,
                                double cTheta,
-                               LargeScaleParameters& lsps,
-                               const Ptr<const MobilityModel> aMob,
-                               const Ptr<const MobilityModel> bMob,
-                               const Ptr<const ParamsTable> table3gpp,
-                               DoubleVector* clusterAoa,
-                               DoubleVector* clusterAod,
-                               DoubleVector* clusterZoa,
-                               DoubleVector* clusterZod) const;
+                               const LargeScaleParameters& lsps,
+                               Ptr<const MobilityModel> aMob,
+                               Ptr<const MobilityModel> bMob,
+                               Ptr<const ParamsTable> table3gpp,
+                               Double2DVector* clusterAngles) const;
 
     /**
      * @brief Calculates the per-cluster power attenuation (in dB) due to self-blocking and
@@ -505,13 +622,9 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      *      Pointer to a 2D vector representing the existing or to-be-generated non-self-blocking
      *      regions. Each inner vector contains the parameters for a single blocker:
      *      [phi_k, x_k, theta_k, y_k, r_k], as defined in 3GPP Table 7.6.4.1-2.
-     *      If empty, this function will generate a new set based on the scenario.
      *
-     * @param [in,out] attenuation_dB A vector of attenuation values in decibels (dB),
-     *      with one value per cluster. The attenuation includes:
-     *         - 30 dB for clusters blocked by the self-blocking region.
-     *         - A variable value based on the attenuation formula in Eq. (7.6-22) for non-self
-     * blockers.
+     * @param [in,out] powerAttenuation A vector of attenuation values in decibels (dB),
+     *      with one value per cluster to be generated.
      *
      * @param [in] channelParams
      *      Pointer to the channel parameters, including UT location and generation time, used
@@ -525,9 +638,11 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      *      A vector of zenith angles of arrival (ZOA) in degrees for each cluster.
      *      Must be in the range [0°, 180°].
      *
+     * @param [in] table3gpp Table with 3GPP parameters
+     *
      * @note
      * - Follows the 3GPP TR 38.901 blockage model precisely, including the transformation
-     *   from normally-distributed to uniformly-distributed random variables with correlated
+     *   from normally-distributed to uniformly distributed random variables with correlated
      * updates.
      * - Uses scenario-specific correlation distances and blocker dimensions.
      * - Attenuation for non-self-blocking is computed using the formulas (7.6-22) to (7.6-27).
@@ -535,17 +650,53 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      *
      * @see 3GPP TR 38.901 v15.x.x or v16.x.x, Section 7.6.4.1
      */
-    void CalcAttenuationOfBlockage(
-        Double2DVector* nonSelfBlocking,
-        DoubleVector* attenuation_dB,
-        const Ptr<const ThreeGppChannelModel::ThreeGppChannelParams> channelParams,
-        const DoubleVector& clusterAOA,
-        const DoubleVector& clusterZOA) const;
+    void CalcAttenuationOfBlockage(Double2DVector* nonSelfBlocking,
+                                   DoubleVector* powerAttenuation,
+                                   Ptr<const ThreeGppChannelParams> channelParams,
+                                   const DoubleVector& clusterAOA,
+                                   const DoubleVector& clusterZOA,
+                                   Ptr<const ParamsTable> table3gpp) const;
 
+    /**
+     * Updates the cluster delays for the 3GPP channel model based on the
+     * channel parameters and consistency requirements.
+     *
+     * @param clusterDelay Pointer to the vector that stores the current cluster delays to be
+     * updated.
+     * @param delayConsistency Pointer to the vector capturing the consistency of the delays.
+     * @param channelParams Smart pointer to a constant ThreeGppChannelParams object containing
+     *                      the necessary channel parameters for update computations.
+     */
     void UpdateClusterDelay(DoubleVector* clusterDelay,
-                            DoubleVector* prevClusterDelay,
-                            bool* newChannel,
-                            const Ptr<const ThreeGppChannelParams> channelParams) const;
+                            DoubleVector* delayConsistency,
+                            Ptr<const ThreeGppChannelParams> channelParams) const;
+
+    /**
+     * @brief Rotate a 3D velocity vector by specified angles, around y-axis and z-axis.
+     * Rotation matrices being used are the ones defined in 38.901 in Equation (7.1-2).
+     * The formula being applied is the one from Procedure A, Rn,rx and Rn,ry from formula 7.6-10b
+     * and 7.6-10c:
+     *
+     *                                      [[ 1,  0,  0 ],
+     * R = Rz (alphaRad)  * Ry (betaRad) *  [ 0,  Xn, 0 ],  * Ry (gammaRad) * Rz (etaRad)
+     *                                      [ 0,  0,  1 ]]
+     *
+     * NOTE: Currently, only x and y components are calculated, the z component is not used.
+     *
+     * @param alphaRad the first angle from the rotation formula R [rad]
+     * @param betaRad the second angle from the rotation formula R [rad]
+     * @param gammaRad the third angle from the rotation formula R [rad]
+     * @param etaRad the fourth angle from the rotation formula R [rad]
+     * @param speed Input velocity vector in the original (unrotated) frame [m/s].
+     * @param Xn Direction sign indicator; use +1 to keep orientation, −1 to flip.
+     * @return The rotated (and possibly sign-flipped) velocity vector in the target frame [m/s].
+     */
+    Vector ApplyVelocityRotation(double alphaRad,
+                                 double betaRad,
+                                 double gammaRad,
+                                 double etaRad,
+                                 const Vector& speed,
+                                 const int Xn) const;
 
     /**
      * @brief Update cluster angles based on node mobility according to 3GPP TR 38.901.
@@ -562,35 +713,36 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param channelParams Pointer to the channel parameters containing node velocities,
      *                      LOS condition, and reduced cluster number. Must contain valid
      *                      m_rxSpeed, m_txSpeed, m_losCondition, and m_reducedClusterNumber.
-     * @param ioClusterAoa [in,out] Pointer to vector of cluster Angle of Arrival values
-     *                     in degrees. Updated with new AOA values after mobility.
-     * @param ioClusterAod [in,out] Pointer to vector of cluster Angle of Departure values
-     *                     in degrees. Updated with new AOD values after mobility.
-     * @param ioClusterZoa [in,out] Pointer to vector of cluster Zenith angle of Arrival
-     *                     values in degrees. Updated with new ZOA values after mobility.
-     * @param ioClusterZod [in,out] Pointer to vector of cluster Zenith angle of Departure
-     *                     values in degrees. Updated with new ZOD values after mobility.
+     * @param clusterAngles Cluster angles {AOA, ZOA, AOD, ZOD}
      * @param prevClusterDelay Vector containing the previous cluster delays in seconds.
      *                         Used in the angle update calculations. Size must equal
      *                         channelParams->m_reducedClusterNumber.
-     *
-     * @post Angle values are wrapped to appropriate ranges (0-360° for azimuth, 0-180° for zenith)
-     * @note This function uses the channel update period (m_updatePeriod) to calculate
-     *       the time-based angle changes.
-     * @note For NLOS conditions, a random sign multiplier (Xn) is generated for each
-     *       cluster using uniform random distribution.
-     * @note The function implements 3GPP spatial consistency to maintain realistic
-     *       channel behavior as nodes move in the simulation environment.
-     *
      */
+    void UpdateClusterAngles(Ptr<const ThreeGppChannelParams> channelParams,
+                             Double2DVector* clusterAngles,
+                             const DoubleVector& prevClusterDelay) const;
 
-    void UpdateClusterAngles(const Ptr<const ThreeGppChannelParams> channelParams,
-                             DoubleVector* ioClusterAoa,
-                             DoubleVector* ioClusterAod,
-                             DoubleVector* ioClusterZoa,
-                             DoubleVector* ioClusterZod,
-                             const DoubleVector& prevClusterDelay,
-                             bool isSameDir) const;
+    /**
+     * Shift per-ray angles to follow updated cluster mean angles while preserving
+     * intra-cluster offsets and existing random coupling.
+     * This is used during Spatial Consistency Procedure A updates when cluster means
+     * change, but ray coupling, XPR, and initial phases must remain the same.
+     *
+     * @param table3gpp Table of 3GPP parameters.
+     * @param channelParams Channel parameters to update (rays stored inside will be modified).
+     * @param prevClusterAngles Previous cluster angles {AOA, ZOA, AOD, ZOD}
+     * @param rayAoaRadian Ray AOA in radian to be updated.
+     * @param rayAodRadian Ray AOD in radian to be updated.
+     * @param rayZodRadian Ray ZOD in radian to be updated.
+     * @param rayZoaRadian Ray ZOA in radian to be updated.
+     */
+    void ShiftRayAnglesToUpdatedClusterMeans(Ptr<const ParamsTable> table3gpp,
+                                             Ptr<const ThreeGppChannelParams> channelParams,
+                                             const Double2DVector& prevClusterAngles,
+                                             Double2DVector* rayAodRadian,
+                                             Double2DVector* rayAoaRadian,
+                                             Double2DVector* rayZodRadian,
+                                             Double2DVector* rayZoaRadian) const;
 
     /**
      * @brief Applies blockage-based attenuation to the cluster powers according to
@@ -612,6 +764,11 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * \f]
      * where \f$ A_{\text{dB}} \f$ is the blockage attenuation for the cluster.
      *
+     *@param [in,out] nonSelfBlocking
+     *      Pointer to the 2D vector of non-self-blocking regions to be generated.
+     *      Each inner vector contains the parameters for a single blocker as defined in
+     *      3GPP Table 7.6.4.1-2.
+     *
      * @param [in,out] clusterPowers
      *      Pointer to the vector of cluster powers (linear scale), modified in-place
      *      with the applied attenuation (one per cluster).
@@ -630,6 +787,9 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param [in] clusterZoa
      *      Zenith angles of arrival (ZOA) for each cluster, in degrees.
      *
+     * @param [in] table3gpp
+     *      Table with 3GPP scenario dependent parameters
+     *
      * @note
      * - If `m_blockage` is false, no attenuation is applied, and `attenuation_dB` contains a single
      * 0.
@@ -643,89 +803,128 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     void ApplyAttenuationToClusterPowers(Double2DVector* nonSelfBlocking,
                                          DoubleVector* clusterPowers,
                                          DoubleVector* attenuation_dB,
-                                         const Ptr<const ThreeGppChannelParams> channelParams,
+                                         Ptr<const ThreeGppChannelParams> channelParams,
                                          const DoubleVector& clusterAoa,
-                                         const DoubleVector& clusterZoa) const;
+                                         const DoubleVector& clusterZoa,
+                                         Ptr<const ParamsTable> table3gpp) const;
 
     /**
-     * @brief Randomly couples rays within each cluster and computes per-ray angles in radians.
+     * @brief Compute per-ray angles (no shuffling), centered on cluster means.
      *
-     * For each cluster, generates per-ray azimuth/zenith angles of arrival and departure
-     * around the provided cluster center angles, using the 3GPP table parameters and
-     * the standard intra-cluster offsets. The resulting per-ray angles are shuffled to
-     * realize random coupling.
+     * Initializes and fills per-ray AOA/AOD/ZOA/ZOD angles in radians for each
+     * cluster according to 3GPP intra-cluster offsets. Angles are wrapped to valid
+     * ranges via WrapAngles.
      *
-     * @param channelParams Pointer to the channel parameters (number of reduced clusters, etc.).
-     * @param table3gpp Pointer to the 3GPP parameters table (rays per cluster, coupling constants).
-     * @param[out] rayAoaRadian Output per-ray azimuth-of-arrival angles [rad] as
-     *                          [numClusters][raysPerCluster].
-     * @param[out] rayAodRadian Output per-ray azimuth-of-departure angles [rad] as
-     *                          [numClusters][raysPerCluster].
-     * @param[out] rayZoaRadian Output per-ray zenith-of-arrival angles [rad] as
-     *                          [numClusters][raysPerCluster].
-     * @param[out] rayZodRadian Output per-ray zenith-of-departure angles [rad] as
-     *                          [numClusters][raysPerCluster].
-     * @param clusterAoa Input per-cluster azimuth-of-arrival center angles [deg].
-     * @param clusterAod Input per-cluster azimuth-of-departure center angles [deg].
-     * @param clusterZoa Input per-cluster zenith-of-arrival center angles [deg].
-     * @param clusterZod Input per-cluster zenith-of-departure center angles [deg].
-     *
-     * @note Angles in clusterA* and clusterZ* are degrees; outputs are radians.
-     * @pre ray* output containers are cleared and resized by this function.
+     * @param channelParams Channel parameters (provides reduced cluster count).
+     * @param table3gpp 3GPP parameters table (provides rays per cluster and spread constants).
+     * @param[out] rayAoaRadian Per-ray azimuth-of-arrival angles [rad] as
+     * [numClusters][raysPerCluster].
+     * @param[out] rayAodRadian Per-ray azimuth-of-departure angles [rad] as
+     * [numClusters][raysPerCluster].
+     * @param[out] rayZoaRadian Per-ray zenith-of-arrival angles [rad] as
+     * [numClusters][raysPerCluster].
+     * @param[out] rayZodRadian Per-ray zenith-of-departure angles [rad] as
+     * [numClusters][raysPerCluster].
      */
-    void RandomRaysCoupling(const Ptr<const ThreeGppChannelParams> channelParams,
-                            const Ptr<const ParamsTable> table3gpp,
+    void ComputeRayAngles(Ptr<const ThreeGppChannelParams> channelParams,
+                          Ptr<const ParamsTable> table3gpp,
+                          Double2DVector* rayAoaRadian,
+                          Double2DVector* rayAodRadian,
+                          Double2DVector* rayZoaRadian,
+                          Double2DVector* rayZodRadian) const;
+
+    /**
+     * @brief Randomly couples rays within each cluster by shuffling per-ray angles.
+     *
+     * Applies in-place shuffling of per-ray AOA/AOD/ZOA/ZOD arrays independently
+     * for each cluster, realizing random intra-cluster ray coupling.
+     *
+     * @param channelParams Channel parameters (provides reduced cluster count).
+     * @param[in,out] rayAoaRadian Per-ray AOA angles [rad] as [numClusters][raysPerCluster].
+     * @param[in,out] rayAodRadian Per-ray AOD angles [rad] as [numClusters][raysPerCluster].
+     * @param[in,out] rayZoaRadian Per-ray ZOA angles [rad] as [numClusters][raysPerCluster].
+     * @param[in,out] rayZodRadian Per-ray ZOD angles [rad] as [numClusters][raysPerCluster].
+     */
+    void RandomRaysCoupling(Ptr<const ThreeGppChannelParams> channelParams,
                             Double2DVector* rayAoaRadian,
                             Double2DVector* rayAodRadian,
                             Double2DVector* rayZoaRadian,
-                            Double2DVector* rayZodRadian,
-                            const DoubleVector& clusterAoa,
-                            const DoubleVector& clusterAod,
-                            const DoubleVector& clusterZoa,
-                            const DoubleVector& clusterZod) const;
+                            Double2DVector* rayZodRadian) const;
     /**
      * @brief Generate cross-polarization power ratios and initial per-ray phases.
      *
      * For each cluster and ray, draws the cross-polarization power ratio (XPR) according
-     * to the 3GPP parameters and initializes four polarization-dependent phases uniformly
-     * in [-pi, pi]. The outputs are resized/filled by this function.
+     * to the 3GPP parameters and initializes four polarization-dependent phases
+     * uniformly in [-pi, pi]. The outputs are resized/filled by this function.
      *
-     * @param[out] crossPolarizationPowerRatios Matrix [numClusters][raysPerCluster] with XPR values
-     * (linear scale).
-     * @param[out] clusterPhase 3D array [numClusters][raysPerCluster][4] with initial phases
-     * (radians).
+     * @param[out] crossPolarizationPowerRatios Matrix [numClusters][raysPerCluster] with
+     * XPR values (linear scale).
+     * @param[out] clusterPhase 3D array [numClusters][raysPerCluster][4] with initial
+     * phases (radians).
      * @param reducedClusterNumber Number of (possibly reduced) clusters to generate.
-     * @param table3gpp Pointer to the 3GPP parameters table (uXpr, sigXpr, rays per cluster).
+     * @param table3gpp Pointer to the 3GPP parameters table (uXpr, sigXpr, rays per
+     * cluster).
      */
     void GenerateCrossPolPowerRatiosAndInitialPhases(Double2DVector* crossPolarizationPowerRatios,
                                                      Double3DVector* clusterPhase,
-                                                     uint8_t reducedClusterNumber,
-                                                     const Ptr<const ParamsTable> table3gpp) const;
+                                                     const uint8_t reducedClusterNumber,
+                                                     Ptr<const ParamsTable> table3gpp) const;
     /**
-     * @brief Identify the two strongest clusters and derive sub-cluster parameters.
+     * @brief Identify the two strongest base clusters and append their derived subclusters.
      *
-     * Finds the indices of the two strongest clusters by power, and appends delayed copies
-     * and duplicated angles for the strongest clusters as per 3GPP procedure (sub-clusters).
+     * Finds the indices of the strongest and second-strongest clusters (by power) within the
+     * base (reduced) cluster set, and appends the corresponding subclusters by extending the
+     * per-cluster delay/angle vectors according to the 3GPP strongest-cluster subclustering rule.
+     * The associated Doppler terms (alpha and dTerm) are appended in the same order,
+     * inheriting the parent cluster values for each appended subcluster.
      *
-     * @param channelParams Current channel parameters (cluster powers, counts).
-     * @param table3gpp Pointer to 3GPP parameters table (cDS, rays per cluster).
-     * @param[out] cluster1st Index of the strongest cluster.
-     * @param[out] cluster2nd Index of the second strongest cluster.
-     * @param[in,out] clusterDelay Per-cluster delays [s]; sub-cluster delays are appended.
-     * @param[in,out] clusterAoa Per-cluster AOA centers [deg]; duplicated for sub-clusters.
-     * @param[in,out] clusterAod Per-cluster AOD centers [deg]; duplicated for sub-clusters.
-     * @param[in,out] clusterZoa Per-cluster ZOA centers [deg]; duplicated for sub-clusters.
-     * @param[in,out] clusterZod Per-cluster ZOD centers [deg]; duplicated for sub-clusters.
+     * @param channelParams Current channel parameters (cluster powers and reduced cluster count).
+     * @param table3gpp 3GPP parameters table (e.g., cDS).
+     * @param[out] cluster1st Index of the strongest base cluster.
+     * @param[out] cluster2nd Index of the second-strongest base cluster.
+     * @param[in,out] clusterDelay Per-cluster delays [s]; subcluster delays are appended.
+     * @param[in,out] angles Per-cluster angles [deg]; subcluster angles are appended/duplicated.
+     * @param[in,out] alpha Per-cluster Doppler alpha terms; subcluster terms are appended.
+     * @param[in,out] dTerm Per-cluster Doppler D terms; subcluster terms are appended.
+     * @param[in,out] clusterPower Per-cluster power; subcluster powers are appended.
      */
-    void FindStrongestClusters(const Ptr<const ThreeGppChannelParams> channelParams,
-                               const Ptr<const ParamsTable> table3gpp,
+    void FindStrongestClusters(Ptr<const ThreeGppChannelParams> channelParams,
+                               Ptr<const ParamsTable> table3gpp,
                                uint8_t* cluster1st,
                                uint8_t* cluster2nd,
                                DoubleVector* clusterDelay,
-                               DoubleVector* clusterAoa,
-                               DoubleVector* clusterAod,
-                               DoubleVector* clusterZoa,
-                               DoubleVector* clusterZod) const;
+                               Double2DVector* angles,
+                               DoubleVector* alpha,
+                               DoubleVector* dTerm,
+                               DoubleVector* clusterPower) const;
+
+    /**
+     * @brief Trim per-cluster vectors back to the base (reduced) cluster set.
+     *
+     * After channel generation/update, two or four derived subclusters may be appended
+     * at the end of the per-cluster vectors (to represent the additional strongest-cluster
+     * subclusters). This helper removes any such appended tail so that the vectors
+     * contain exactly @p reducedClusterNumber base clusters.
+     *
+     * @param reducedClusterNumber Number of base clusters (after weak-cluster removal).
+     * @param delay Per-cluster delays (tail subclusters, if present, are removed).
+     * @param angles Per-cluster angles (AOA/ZOA/AOD/ZOD; tail subclusters, if present, are
+     * removed).
+     * @param cachedAngleSincos Optional cached sin/cos pairs per cluster angle (tail
+     * subclusters, if present, are removed).
+     * @param alpha Optional Doppler alpha terms per cluster (tail subclusters, if present, are
+     * removed).
+     * @param dTerm Optional Doppler D terms per cluster (tail subclusters, if present, are
+     * removed).
+     * @param clusterPower Per cluster power (tail subclusters, if present, are removed).
+     */
+    void TrimToBaseClusters(const uint8_t reducedClusterNumber,
+                            DoubleVector* delay,
+                            Double2DVector* angles,
+                            std::vector<std::vector<std::pair<double, double>>>* cachedAngleSincos,
+                            DoubleVector* alpha,
+                            DoubleVector* dTerm,
+                            DoubleVector* clusterPower) const;
 
     /**
      * @brief Precomputes the sine and cosine values for angles.
@@ -747,14 +946,18 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @brief Generate additional Doppler terms for delayed (reflected) paths.
      *
      * Produces per-cluster Doppler parameters used to model moving scatterers
-     * as per TR 37.885. Two (or four) extra terms are included to account for
-     * first/second strongest cluster sub-rays.
+     * as per TR 37.885. v15.3.0, Sec. 6.2.3. These terms account for an additional
+     * Doppler contribution due to the presence of moving objects in the surrounding
+     * environment, such as in vehicular scenarios. This contribution is applied
+     * only to the delayed (reflected) paths and must be properly configured by
+     * setting the value of m_vScatt, which is defined as "maximum speed of the
+     * vehicle in the layout".
      *
      * @param reducedClusterNumber Number of (possibly reduced) clusters.
      * @param[out] dopplerTermAlpha Per-cluster alpha terms in [-1, 1].
      * @param[out] dopplerTermD Per-cluster Doppler speed terms in [-vScatt, vScatt] [m/s].
      */
-    void GenerateDopplerTerms(uint8_t reducedClusterNumber,
+    void GenerateDopplerTerms(const uint8_t reducedClusterNumber,
                               DoubleVector* dopplerTermAlpha,
                               DoubleVector* dopplerTermD) const;
 
@@ -773,8 +976,8 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      */
     virtual Ptr<ChannelMatrix> GetNewChannel(Ptr<const ThreeGppChannelParams> channelParams,
                                              Ptr<const ParamsTable> table3gpp,
-                                             const Ptr<const MobilityModel> sMob,
-                                             const Ptr<const MobilityModel> uMob,
+                                             Ptr<const MobilityModel> sMob,
+                                             Ptr<const MobilityModel> uMob,
                                              Ptr<const PhasedArrayModel> sAntenna,
                                              Ptr<const PhasedArrayModel> uAntenna) const;
 
@@ -797,25 +1000,51 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param channelCondition current channel condition
      * @param aMob mobility model of device A
      * @param bMob mobility model of device B
-     * @param dis2D current 2D distance between devices
      */
-    void UpdateChannelParametersForConsistency(Ptr<ThreeGppChannelParams> channelParams,
-                                               Ptr<const ChannelCondition> channelCondition,
-                                               Ptr<const MobilityModel> aMob,
-                                               Ptr<const MobilityModel> bMob) const;
+    void UpdateChannelParameters(Ptr<ThreeGppChannelParams> channelParams,
+                                 Ptr<const ChannelCondition> channelCondition,
+                                 Ptr<const MobilityModel> aMob,
+                                 Ptr<const MobilityModel> bMob) const;
+
+    /**
+     * Compute the effective 2D displacement of a link with respect to previously stored endpoint
+     * positions.
+     *
+     * The channel parameters are stored using a reciprocal key, therefore endpoint-specific state
+     * is handled using a canonical ordering by node ID (min ID / max ID). The returned endpoint
+     * displacement is the maximum of the two endpoint displacements, so that the channel can evolve
+     * even when the change in inter-node distance between consecutive updates is close to zero
+     * (e.g., parallel motion in V2V).
+     *
+     * @param aMob The mobility model of the first node (unordered).
+     * @param bMob The mobility model of the second node (unordered).
+     * @param lastPositionFirst Previously stored position of the endpoint with the smallest node
+     * ID.
+     * @param lastPositionSecond Previously stored position of the endpoint with the largest node
+     * ID.
+     * @return The effective 2D displacement (in meters).
+     */
+    double ComputeEndpointDisplacement2d(Ptr<const MobilityModel> aMob,
+                                         Ptr<const MobilityModel> bMob,
+                                         const Vector& lastPositionFirst,
+                                         const Vector& lastPositionSecond) const;
 
     /**
      * Check if the channel params has to be updated
-     * @param channelParams channel params
-     * @param channelCondition the channel condition
+     * @param channelParamsKey the channel params key
+     * @param condition the pointer to the channel condition instance
+     * @param aMob mobility model of the device a
+     * @param bMob mobility model of the device b
      * @return true if the channel params has to be updated, false otherwise
      */
-    bool NewChannelParamsNeeded(uint64_t channelParamsKey,
-                                Ptr<const ChannelCondition> condition) const;
+    bool NewChannelParamsNeeded(const uint64_t channelParamsKey,
+                                Ptr<const ChannelCondition> condition,
+                                Ptr<const MobilityModel> aMob,
+                                Ptr<const MobilityModel> bMob) const;
 
     /**
-     * @brief Check if channel matrix needs update based on parameter changes or coherence time
-     * expiration
+     * @brief Check if channel matrix needs update based on parameter changes or
+     * the update period expired.
      *
      * This method determines whether a new channel matrix should be generated by comparing
      * the generation times of the current channel parameters and existing channel matrix.
@@ -830,18 +1059,22 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     bool NewChannelMatrixNeeded(uint64_t channelMatrixKey,
                                 Ptr<const ThreeGppChannelParams> channelParams,
                                 Ptr<const PhasedArrayModel> aAntenna,
-                                Ptr<const PhasedArrayModel> bAntenna);
+                                Ptr<const PhasedArrayModel> bAntenna) const;
 
     /**
      * @brief Check if spatial-consistency requires updating channel parameters.
      *
-     * Returns true when spatial consistency is enabled and the coherence time
+     * Returns true when spatial consistency is enabled, and the update period
      * (UpdatePeriod) has elapsed since the parameters were generated.
      *
      * @param channelParams Channel parameters whose generation time is checked.
+     * @param aMob mobility model of the device a
+     * @param bMob mobility model of the device b
      * @return true if a parameter update is needed; false otherwise.
      */
-    bool SpatialConsistencyUpdate(Ptr<const ThreeGppChannelParams> channelParams);
+    bool ChannelUpdateNeeded(Ptr<const ThreeGppChannelParams> channelParams,
+                             Ptr<const MobilityModel> aMob,
+                             Ptr<const MobilityModel> bMob) const;
 
     /**
      * Check if the channel matrix has to be updated due to
@@ -853,85 +1086,63 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      */
     bool AntennaSetupChanged(Ptr<const PhasedArrayModel> aAntenna,
                              Ptr<const PhasedArrayModel> bAntenna,
-                             Ptr<const ChannelMatrix> channelMatrix);
+                             Ptr<const ChannelMatrix> channelMatrix) const;
 
     /**
-     * Update the channel matrix between two devices using the consistency procedure (procedure A)
-     * described in 3GPP TR 38.901
-     * @param channelId the Id of the channel between the two devices
-     * @param channelCondition the channel condition
-     * @param sMob the s node mobility model
-     * @param uMob the u node mobility model
-     * @param sAntenna the s node antenna array
-     * @param uAntenna the u node antenna array
-     * @param uAngle the u node angle
-     * @param sAngle the s node angle
-     * @param dis2D the 2D distance between tx and rx
-     * @param hBS the height of the BS
-     * @param hUT the height of the UT
-     * @return the updated channel realization
+     * map containing the channel realizations per a pair of
+     * PhasedAntennaArray instances; the key of this map is reciprocal
+     * uniquely identifies a pair of PhasedAntennaArrays
      */
-    Ptr<ChannelMatrix> GetUpdatedChannel(uint32_t channelId,
-                                         Ptr<const ChannelCondition> channelCondition,
-                                         Ptr<const MobilityModel> sMob,
-                                         Ptr<const MobilityModel> uMob,
-                                         Ptr<const PhasedArrayModel> sAntenna,
-                                         Ptr<const PhasedArrayModel> uAntenna,
-                                         Angles& uAngle,
-                                         Angles& sAngle,
-                                         double dis2D,
-                                         double hBS,
-                                         double hUT) const;
-
+    std::unordered_map<uint64_t, Ptr<ChannelMatrix>> m_channelMatrixMap;
     /**
-     * Applies the blockage model A described in 3GPP TR 38.901
-     * @param params the channel matrix
-     * @param clusterAOA vector containing the azimuth angle of arrival for each cluster
-     * @param clusterZOA vector containing the zenith angle of arrival for each cluster
-     * @return vector containing the power attenuation for each cluster
+     * map containing the common channel parameters per a pair of nodes, the
+     * key of this map is reciprocal and uniquely identifies a pair of
+     * nodes
      */
-    DoubleVector CalcAttenuationOfBlockage(Ptr<ChannelMatrix> params,
-                                           const DoubleVector& clusterAOA,
-                                           const DoubleVector& clusterZOA) const;
-
-    std::unordered_map<uint64_t, Ptr<ChannelMatrix>>
-        m_channelMatrixMap; //!< map containing the channel realizations per pair of
-                            //!< PhasedAntennaArray instances, the key of this map is reciprocal
-                            //!< uniquely identifies a pair of PhasedAntennaArrays
-    std::unordered_map<uint64_t, Ptr<ThreeGppChannelParams>>
-        m_channelParamsMap; //!< map containing the common channel parameters per pair of nodes, the
-                            //!< key of this map is reciprocal and uniquely identifies a pair of
-                            //!< nodes
-    Time m_updatePeriod;    //!< the channel update period
-    double m_frequency;     //!< the operating frequency
-    std::string m_scenario; //!< the 3GPP scenario
-    Ptr<ChannelConditionModel> m_channelConditionModel; //!< the channel condition model
-    Ptr<UniformRandomVariable> m_uniformRv;             //!< uniform random variable
-    Ptr<NormalRandomVariable> m_normalRv;               //!< normal random variable
-    Ptr<UniformRandomVariable>
-        m_uniformRvShuffle; //!< uniform random variable used to shuffle array in GetNewChannel
-
-    // Variable used to compute the additional Doppler contribution for the delayed
-    // (reflected) paths, as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3.
-    double m_vScatt; //!< value used to compute the additional Doppler contribution for the delayed
-                     //!< paths
-    Ptr<UniformRandomVariable> m_uniformRvDoppler; //!< uniform random variable, used to compute the
-                                                   //!< additional Doppler contribution
-    // parameters for the spatial consistency update
-    bool m_spatial_consistency; //!< enables spatial consistency, procedure A
-
+    std::unordered_map<uint64_t, Ptr<ThreeGppChannelParams>> m_channelParamsMap;
+    /// the channel update period enables spatial consistency, procedure A
+    Time m_updatePeriod;
+    /// the operating frequency
+    double m_frequency;
+    /// the 3GPP scenario
+    std::string m_scenario;
+    /// the channel condition model
+    Ptr<ChannelConditionModel> m_channelConditionModel;
+    /// uniform random variable
+    Ptr<UniformRandomVariable> m_uniformRv;
+    /// normal random variable
+    Ptr<NormalRandomVariable> m_normalRv;
+    /// uniform random variable used to shuffle an array in GetNewChannel
+    Ptr<UniformRandomVariable> m_uniformRvShuffle;
+    /**
+     * Variable used to compute the additional Doppler contribution for the delayed
+     * (reflected) paths, as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3.
+     */
+    double m_vScatt;
+    /**
+     * Uniform random variable, used to compute the additional Doppler contribution
+     */
+    Ptr<UniformRandomVariable> m_uniformRvDoppler;
     // parameters for the blockage model
-    bool m_blockage;               //!< enables the blockage model A
-    uint16_t m_numNonSelfBlocking; //!< number of non-self-blocking regions
-    bool m_portraitMode;           //!< true if portrait mode, false if landscape
-    double m_blockerSpeed;         //!< the blocker speed
+    /// enables the blockage model A
+    bool m_blockage;
+    /// number of non-self-blocking regions
+    uint16_t m_numNonSelfBlocking;
+    /// true if portrait mode, false if landscape
+    bool m_portraitMode;
+    /// the blocker speed
+    double m_blockerSpeed;
 
-    static const uint8_t PHI_INDEX = 0; //!< index of the PHI value in the m_nonSelfBlocking array
-    static const uint8_t X_INDEX = 1;   //!< index of the X value in the m_nonSelfBlocking array
-    static const uint8_t THETA_INDEX =
-        2;                            //!< index of the THETA value in the m_nonSelfBlocking array
-    static const uint8_t Y_INDEX = 3; //!< index of the Y value in the m_nonSelfBlocking array
-    static const uint8_t R_INDEX = 4; //!< index of the R value in the m_nonSelfBlocking array
+    /// index of the PHI value in the m_nonSelfBlocking array
+    static constexpr uint8_t PHI_INDEX = 0;
+    /// index of the X value in the m_nonSelfBlocking array
+    static constexpr uint8_t X_INDEX = 1;
+    /// index of the THETA value in the m_nonSelfBlocking array
+    static constexpr uint8_t THETA_INDEX = 2;
+    /// index of the Y value in the m_nonSelfBlocking array
+    static constexpr uint8_t Y_INDEX = 3;
+    /// index of the R value in the m_nonSelfBlocking array
+    static constexpr uint8_t R_INDEX = 4;
 };
 } // namespace ns3
 

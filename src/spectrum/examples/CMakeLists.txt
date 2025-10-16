@@ -74,3 +74,15 @@ build_lib_example(
     ${libmobility}
     ${libspectrum}
 )
+
+build_lib_example(
+  NAME three-gpp-channel-consistency-example
+  SOURCE_FILES three-gpp-channel-consistency-example.cc
+  LIBRARIES_TO_LINK
+    ${libantenna}
+    ${libbuildings}
+    ${libcore}
+    ${libmobility}
+    ${libpropagation}
+    ${libspectrum}
+)

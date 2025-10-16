@@ -16,7 +16,6 @@
 #include "ns3/random-variable-stream.h"
 
 #include <complex.h>
-#include <map>
 #include <unordered_map>
 
 class ThreeGppCalcLongTermMultiPortTest;
@@ -125,7 +124,7 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
     /**
      * Data structure that stores the long term component for a tx-rx pair
      */
-    struct LongTerm : public SimpleRefCount<LongTerm>
+    struct LongTerm : SimpleRefCount<LongTerm>
     {
         Ptr<const MatrixBasedChannelModel::Complex3DVector>
             m_longTerm; //!< vector containing the long term component for each cluster
@@ -149,15 +148,15 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
      * @param isReverse true if params and longTerm were computed with RX->TX switched
      * @return 3D spectrum channel matrix with dimensions numRxPorts * numTxPorts * numRBs
      */
-    Ptr<MatrixBasedChannelModel::Complex3DVector> GenSpectrumChannelMatrix(
+    static Ptr<MatrixBasedChannelModel::Complex3DVector> GenSpectrumChannelMatrix(
         Ptr<SpectrumValue> inPsd,
         Ptr<const MatrixBasedChannelModel::Complex3DVector> longTerm,
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
         PhasedArrayModel::ComplexVector doppler,
-        uint8_t numTxPorts,
-        uint8_t numRxPorts,
-        bool isReverse) const;
+        const uint8_t numTxPorts,
+        const uint8_t numRxPorts,
+        const bool isReverse);
 
     /**
      * Get the operating frequency
@@ -205,9 +204,9 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
         Ptr<const PhasedArrayModel> sAnt,
         Ptr<const PhasedArrayModel> uAnt,
-        uint16_t sPortIdx,
-        uint16_t uPortIdx,
-        uint16_t cIndex) const;
+        const uint16_t sPortIdx,
+        const uint16_t uPortIdx,
+        const uint16_t cIndex) const;
 
     /**
      * @brief Computes the beamforming gain and applies it to the TX PSD
@@ -218,7 +217,7 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
      * @param sSpeed the speed of the first node
      * @param uSpeed the speed of the second node
      * @param numTxPorts the number of the ports of the first node
-     * @param numRxPorts the number of the porst of the second node
+     * @param numRxPorts the number of the ports of the second node
      * @param isReverse indicator that tells whether the channel matrix is reverse
      * @return
      */
@@ -229,15 +228,16 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
         const Vector& sSpeed,
         const Vector& uSpeed,
-        uint8_t numTxPorts,
-        uint8_t numRxPorts,
-        bool isReverse) const;
+        const uint8_t numTxPorts,
+        const uint8_t numRxPorts,
+        const bool isReverse) const;
 
     int64_t DoAssignStreams(int64_t stream) override;
 
-    mutable std::unordered_map<uint64_t, Ptr<const LongTerm>>
-        m_longTermMap;                           //!< map containing the long term components
-    Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
+    //! map containing the long-term components
+    mutable std::unordered_map<uint64_t, Ptr<const LongTerm>> m_longTermMap;
+    //! the model to generate the channel matrix
+    Ptr<MatrixBasedChannelModel> m_channelModel;
 };
 } // namespace ns3
 

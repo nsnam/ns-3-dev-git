@@ -6,20 +6,21 @@
  */
 
 /*
- * This is an example on how to configure the channel model classes to simulate
+ * @file
+ * This is an example of how to configure the channel model classes to simulate
  * a vehicular environment.
  * The channel condition is determined using the model specified in [1], Table 6.2-1.
  * The pathloss is determined using the model specified in [1], Table 6.2.1-1.
  * The model for the fast fading is the one described in 3GPP TR 38.901 v15.0.0,
  * the model parameters are those specified in [1], Table 6.2.3-1.
  *
- * This example generates the output file 'example-output.txt'. Each row of the
- * file is organized as follows:
- * Time[s] TxPosX[m] TxPosY[m] RxPosX[m] RxPosY[m] ChannelState SNR[dB] Pathloss[dB]
- * We also provide a bash script which reads the output file and generates two
+ * This example generates the output file 'three-gpp-v2v-channel-example-output.txt'. Each row of
+ * the file is organized as follows: Time[s] TxPosX[m] TxPosY[m] RxPosX[m] RxPosY[m] ChannelState
+ * SNR[dB] Pathloss[dB] We also provide a bash script which reads the output file and generates two
  * figures:
- * (i) map.gif, a GIF representing the simulation scenario and vehicle mobility;
- * (ii) snr.png, which represents the behavior of the SNR.
+ * (i) three-gpp-v2v-channel-example-map.gif, a GIF representing the simulation scenario and vehicle
+ * mobility;
+ * (ii) three-gpp-v2v-channel-example-snr.png, which represents the behavior of the SNR.
  *
  * [1] 3GPP TR 37.885, v15.3.0
  */
@@ -64,31 +65,22 @@ struct ComputeSnrParams
 
 /**
  * Perform the beamforming using the DFT beamforming method
- * @param thisDevice the device performing the beamforming
+ * @param txMob the mobility model of the node performing the beamforming
  * @param thisAntenna the antenna object associated to thisDevice
- * @param otherDevice the device towards which point the beam
+ * @param rxMob the mobility model of the node towards which will point the beam
  */
 static void
-DoBeamforming(Ptr<NetDevice> thisDevice,
-              Ptr<PhasedArrayModel> thisAntenna,
-              Ptr<NetDevice> otherDevice)
+DoBeamforming(Ptr<MobilityModel> txMob, Ptr<PhasedArrayModel> thisAntenna, Ptr<MobilityModel> rxMob)
 {
-    PhasedArrayModel::ComplexVector antennaWeights;
-
-    // retrieve the position of the two devices
-    Vector aPos = thisDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
-    Vector bPos = otherDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
-
     // compute the azimuth and the elevation angles
-    Angles completeAngle(bPos, aPos);
-
+    Angles completeAngle(rxMob->GetPosition(), txMob->GetPosition());
     PhasedArrayModel::ComplexVector bf = thisAntenna->GetBeamformingVector(completeAngle);
     thisAntenna->SetBeamformingVector(bf);
 }
 
 /**
  * Compute the average SNR
- * @param params A structure that holds a bunch of parameters needed by ComputSnr function to
+ * @param params A structure that holds a bunch of parameters needed by ComputeSnr function to
  * calculate the average SNR
  */
 static void
@@ -96,13 +88,11 @@ ComputeSnr(const ComputeSnrParams& params)
 {
     // check the channel condition
     Ptr<ChannelCondition> cond = m_condModel->GetChannelCondition(params.txMob, params.rxMob);
-
     // apply the pathloss
     double propagationGainDb = m_propagationLossModel->CalcRxPower(0, params.txMob, params.rxMob);
     NS_LOG_DEBUG("Pathloss " << -propagationGainDb << " dB");
     double propagationGainLinear = std::pow(10.0, (propagationGainDb) / 10.0);
     *(params.txParams->psd) *= propagationGainLinear;
-
     // apply the fast fading and the beamforming gain
     auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(params.txParams,
                                                                     params.txMob,
@@ -120,13 +110,11 @@ ComputeSnr(const ComputeSnrParams& params)
     double noisePowerSpectralDensity = kT_W_Hz * noiseFigureLinear;
     Ptr<SpectrumValue> noisePsd = Create<SpectrumValue>(params.txParams->psd->GetSpectrumModel());
     (*noisePsd) = noisePowerSpectralDensity;
-
-    // compute the SNR
+    // log the average SNR
     NS_LOG_DEBUG("Average SNR " << 10 * log10(Sum(*rxPsd) / Sum(*noisePsd)) << " dB");
-
-    // print the SNR and pathloss values in the snr-trace.txt file
+    // print the SNR and pathloss values in the three-gpp-v2v-channel-example-output.txt file
     std::ofstream f;
-    f.open("example-output.txt", std::ios::out | std::ios::app);
+    f.open("three-gpp-v2v-channel-example-output.txt", std::ios::out | std::ios::app);
     f << Simulator::Now().GetSeconds() << " " // time [s]
       << params.txMob->GetPosition().x << " " << params.txMob->GetPosition().y << " "
       << params.rxMob->GetPosition().x << " " << params.rxMob->GetPosition().y << " "
@@ -170,27 +158,19 @@ main(int argc, char* argv[])
     double vScatt = 0;                  // maximum speed of the vehicles in the scenario [m/s]
     double subCarrierSpacing = 60e3;    // subcarrier spacing in kHz
     uint32_t numRb = 275;               // number of resource blocks
+    uint32_t updatePeriodMs = 0;
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("frequency", "operating frequency in Hz", frequency);
     cmd.AddValue("txPow", "tx power in dBm", txPow_dbm);
     cmd.AddValue("noiseFigure", "noise figure in dB", noiseFigure);
     cmd.AddValue("scenario", "3GPP propagation scenario, V2V-Urban or V2V-Highway", scenario);
+    cmd.AddValue("updatePeriodMs", "the channel update period", updatePeriodMs);
     cmd.Parse(argc, argv);
 
     // create the nodes
     NodeContainer nodes;
     nodes.Create(2);
-
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
 
     // create the antenna objects and set their dimensions
     Ptr<PhasedArrayModel> txAntenna =
@@ -321,6 +301,7 @@ main(int argc, char* argv[])
     channelModel->SetAttribute("Frequency", DoubleValue(frequency));
     channelModel->SetAttribute("ChannelConditionModel", PointerValue(m_condModel));
     channelModel->SetAttribute("vScatt", DoubleValue(vScatt));
+    channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs)));
 
     // create the spectrum propagation loss model
     m_spectrumLossModel = CreateObjectWithAttributes<ThreeGppSpectrumPropagationLossModel>(
@@ -330,8 +311,8 @@ main(int argc, char* argv[])
     BuildingsHelper::Install(nodes);
 
     // set the beamforming vectors
-    DoBeamforming(txDev, txAntenna, rxDev);
-    DoBeamforming(rxDev, rxAntenna, txDev);
+    DoBeamforming(txMob, txAntenna, rxMob);
+    DoBeamforming(rxMob, rxAntenna, txMob);
 
     // create the tx power spectral density
     Bands rbs;
@@ -340,9 +321,9 @@ main(int argc, char* argv[])
     {
         BandInfo rb;
         rb.fl = freqSubBand;
-        freqSubBand += subCarrierSpacing / 2;
+        freqSubBand += (subCarrierSpacing * 12) / 2;
         rb.fc = freqSubBand;
-        freqSubBand += subCarrierSpacing / 2;
+        freqSubBand += (subCarrierSpacing * 12) / 2;
         rb.fh = freqSubBand;
         rbs.push_back(rb);
     }
@@ -350,7 +331,7 @@ main(int argc, char* argv[])
     Ptr<SpectrumValue> txPsd = Create<SpectrumValue>(spectrumModel);
     Ptr<SpectrumSignalParameters> txParams = Create<SpectrumSignalParameters>();
     double txPow_w = std::pow(10., (txPow_dbm - 30) / 10);
-    double txPowDens = (txPow_w / (numRb * subCarrierSpacing));
+    double txPowDens = (txPow_w / (numRb * subCarrierSpacing * 12));
     (*txPsd) = txPowDens;
     txParams->psd = txPsd->Copy();
 
@@ -362,13 +343,13 @@ main(int argc, char* argv[])
 
     // initialize the output file
     std::ofstream f;
-    f.open("example-output.txt", std::ios::out);
+    f.open("three-gpp-v2v-channel-example-output.txt", std::ios::out);
     f << "Time[s] TxPosX[m] TxPosY[m] RxPosX[m] RxPosY[m] ChannelState SNR[dB] Pathloss[dB]"
       << std::endl;
     f.close();
 
     // print the list of buildings to file
-    PrintGnuplottableBuildingListToFile("buildings.txt");
+    PrintGnuplottableBuildingListToFile("three-gpp-v2v-channel-example-buildings.txt");
 
     Simulator::Run();
     Simulator::Destroy();

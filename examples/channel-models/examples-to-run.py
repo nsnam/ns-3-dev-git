@@ -8,6 +8,11 @@
 # See test.py for more information.
 cpp_examples = [
     ("three-gpp-v2v-channel-example", "True", "True"),
+    (
+        "three-gpp-v2v-channel-example --updatePeriodMs=1",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
