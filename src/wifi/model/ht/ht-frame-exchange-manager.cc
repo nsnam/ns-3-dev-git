@@ -729,7 +729,13 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
     WifiTxParameters txParams;
     txParams.m_txVector = GetBlockAckReqTxVector(mpdu->GetHeader().GetAddr1());
 
-    if (!TryAddMpdu(mpdu, txParams, availableTime))
+    // The TXOP holder may exceed the TXOP limit [..] only for the following situations:
+    // - Transmission of a Control frame or a QoS Null frame, not in an A-MPDU consisting of more
+    //   than one MPDU
+    // (Sec. 10.23.2.9 of 802.11-2024)
+    auto actualAvailableTime = (exceedLimit ? Time::Min() : availableTime);
+
+    if (!TryAddMpdu(mpdu, txParams, actualAvailableTime))
     {
         NS_LOG_DEBUG("Not enough time to send the BAR frame returned by the Block Ack Manager");
         return false;
