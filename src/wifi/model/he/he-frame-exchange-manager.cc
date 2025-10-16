@@ -124,9 +124,9 @@ HeFrameExchangeManager::SetMultiUserScheduler(const Ptr<MultiUserScheduler> muSc
 }
 
 bool
-HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << edca << availableTime << exceedLimit);
 
     MultiUserScheduler::TxFormat txFormat = MultiUserScheduler::SU_TX;
     Ptr<const WifiMpdu> mpdu;
@@ -151,7 +151,7 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
 
     if (txFormat == MultiUserScheduler::SU_TX)
     {
-        return VhtFrameExchangeManager::StartFrameExchange(edca, availableTime, initialFrame);
+        return VhtFrameExchangeManager::StartFrameExchange(edca, availableTime, exceedLimit);
     }
 
     if (txFormat == MultiUserScheduler::DL_MU_TX)

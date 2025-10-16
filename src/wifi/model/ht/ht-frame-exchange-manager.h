@@ -41,7 +41,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     HtFrameExchangeManager();
     ~HtFrameExchangeManager() override;
 
-    bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
+    bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit) override;
     void SetWifiMac(const Ptr<WifiMac> mac) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
 
@@ -260,12 +260,11 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @param mpdu the given MPDU
      * @param availableTime the amount of time allowed for the frame exchange. Equals
      *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
+     * @param exceedLimit whether the available time can be exceeded; this is the case, e.g., if the
+     *                    frame being transmitted is the initial frame of a TXOP
      * @return true if frame is transmitted, false otherwise
      */
-    virtual bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu, Time availableTime, bool initialFrame);
+    virtual bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu, Time availableTime, bool exceedLimit);
 
     /**
      * Get the TXVECTOR to use to send a BlockAckReq to the given recipient.
@@ -284,12 +283,11 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @param peekedItem the given non-broadcast QoS data frame
      * @param availableTime the amount of time allowed for the frame exchange. Equals
      *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
+     * @param exceedLimit whether the available time can be exceeded; this is the case, e.g., if the
+     *                    frame being transmitted is the initial frame of a TXOP
      * @return true if frame is transmitted, false otherwise
      */
-    virtual bool SendDataFrame(Ptr<WifiMpdu> peekedItem, Time availableTime, bool initialFrame);
+    virtual bool SendDataFrame(Ptr<WifiMpdu> peekedItem, Time availableTime, bool exceedLimit);
 
     /**
      * Retrieve the starting sequence number for a BA agreement to be established.

@@ -283,14 +283,15 @@ class QosTxop : public Txop
      * @param availableTime the time available for the transmission of the frame
                             (including protection and acknowledgment); a value of
      *                      Time::Min() indicates no time constraint
-     * @param initialFrame true if the frame is the initial PPDU of a TXOP
+     * @param exceedLimit whether the available time can be exceeded; this is the case, e.g., if the
+     *                    frame being transmitted is the initial frame of a TXOP
      * @return the frame to transmit or a null pointer if no frame meets the time constraints
      */
     Ptr<WifiMpdu> GetNextMpdu(uint8_t linkId,
                               Ptr<WifiMpdu> peekedItem,
                               WifiTxParameters& txParams,
                               Time availableTime,
-                              bool initialFrame);
+                              bool exceedLimit);
 
     /**
      * Assign a sequence number to the given MPDU, if it is not a fragment

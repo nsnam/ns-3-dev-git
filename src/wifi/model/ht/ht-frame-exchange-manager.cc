@@ -480,13 +480,13 @@ HtFrameExchangeManager::SendBufferedUnit(Mac48Address sender)
 }
 
 bool
-HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << edca << availableTime << exceedLimit);
 
     // First, check if there is a BAR to be transmitted
     if (auto mpdu = GetBar(edca->GetAccessCategory());
-        mpdu && SendMpduFromBaManager(mpdu, availableTime, initialFrame))
+        mpdu && SendMpduFromBaManager(mpdu, availableTime, exceedLimit))
     {
         return true;
     }
@@ -533,7 +533,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
         !GetWifiRemoteStationManager()->NeedFragmentation(peekedItem =
                                                               CreateAliasIfNeeded(peekedItem)))
     {
-        return SendDataFrame(peekedItem, availableTime, initialFrame);
+        return SendDataFrame(peekedItem, availableTime, exceedLimit);
     }
 
     // Use the QoS FEM to transmit the frame in all the other cases, i.e.:
@@ -541,7 +541,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     // - the frame is a broadcast QoS data frame
     // - the frame is a fragment
     // - the frame must be fragmented
-    return QosFrameExchangeManager::StartFrameExchange(edca, availableTime, initialFrame);
+    return QosFrameExchangeManager::StartFrameExchange(edca, availableTime, exceedLimit);
 }
 
 Ptr<WifiMpdu>
@@ -713,9 +713,9 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
 bool
 HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
                                               Time availableTime,
-                                              bool initialFrame)
+                                              bool exceedLimit)
 {
-    NS_LOG_FUNCTION(this << *mpdu << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << *mpdu << availableTime << exceedLimit);
 
     // First, check if there is a BAR to be transmitted
     if (!mpdu->GetHeader().IsBlockAckReq())
@@ -759,18 +759,18 @@ HtFrameExchangeManager::GetBlockAckReqTxVector(Mac48Address to) const
 bool
 HtFrameExchangeManager::SendDataFrame(Ptr<WifiMpdu> peekedItem,
                                       Time availableTime,
-                                      bool initialFrame)
+                                      bool exceedLimit)
 {
     NS_ASSERT(peekedItem && peekedItem->GetHeader().IsQosData() &&
               !peekedItem->GetHeader().GetAddr1().IsBroadcast() && !peekedItem->IsFragment());
-    NS_LOG_FUNCTION(this << *peekedItem << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << *peekedItem << availableTime << exceedLimit);
 
     Ptr<QosTxop> edca = m_mac->GetQosTxop(peekedItem->GetHeader().GetQosTid());
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(peekedItem->GetHeader(), m_allowedWidth);
     Ptr<WifiMpdu> mpdu =
-        edca->GetNextMpdu(m_linkId, peekedItem, txParams, availableTime, initialFrame);
+        edca->GetNextMpdu(m_linkId, peekedItem, txParams, availableTime, exceedLimit);
 
     if (!mpdu)
     {

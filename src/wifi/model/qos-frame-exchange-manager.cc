@@ -272,11 +272,9 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 }
 
 bool
-QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
-                                            Time availableTime,
-                                            bool initialFrame)
+QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << edca << availableTime << exceedLimit);
 
     Ptr<WifiMpdu> mpdu = edca->PeekNextMpdu(m_linkId);
 
@@ -294,7 +292,7 @@ QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
 
-    Ptr<WifiMpdu> item = edca->GetNextMpdu(m_linkId, mpdu, txParams, availableTime, initialFrame);
+    Ptr<WifiMpdu> item = edca->GetNextMpdu(m_linkId, mpdu, txParams, availableTime, exceedLimit);
 
     if (!item)
     {

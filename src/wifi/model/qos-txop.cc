@@ -520,10 +520,10 @@ QosTxop::GetNextMpdu(uint8_t linkId,
                      Ptr<WifiMpdu> peekedItem,
                      WifiTxParameters& txParams,
                      Time availableTime,
-                     bool initialFrame)
+                     bool exceedLimit)
 {
     NS_ASSERT(peekedItem);
-    NS_LOG_FUNCTION(this << +linkId << *peekedItem << &txParams << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << +linkId << *peekedItem << &txParams << availableTime << exceedLimit);
 
     Mac48Address recipient = peekedItem->GetHeader().GetAddr1();
 
@@ -531,7 +531,7 @@ QosTxop::GetNextMpdu(uint8_t linkId,
     // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
     // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016)
     Time actualAvailableTime =
-        (initialFrame && txParams.GetSize(recipient) == 0 ? Time::Min() : availableTime);
+        (exceedLimit && txParams.GetSize(recipient) == 0 ? Time::Min() : availableTime);
 
     auto qosFem = StaticCast<QosFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
     if (!qosFem->TryAddMpdu(peekedItem, txParams, actualAvailableTime))
