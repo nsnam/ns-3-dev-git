@@ -15,6 +15,7 @@
 #include "singleton.h"
 #include "system-path.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <list>
