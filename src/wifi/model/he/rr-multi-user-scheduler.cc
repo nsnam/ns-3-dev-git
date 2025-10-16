@@ -795,13 +795,10 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     m_txParams.m_txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
     m_txParams.m_txVector.SetBssColor(heConfiguration->m_bssColor);
 
-    // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
-    // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
-    // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016).
-    // For the moment, we are considering just one MPDU per receiver.
-    Time actualAvailableTime = (m_initialFrame ? Time::Min() : m_availableTime);
+    // The TXOP holder may exceed the TXOP limit only if it does not transmit more than one Data
+    // or Management frame in the TXOP, only if it does not transmit a DL MU-MIMO PPDU in the TXOP
+    // (Sec. 10.23.2.9 of 802.11-2024)
 
-    // iterate over the associated stations until an enough number of stations is identified
     auto staIt = m_staListDl[primaryAc].begin();
     m_candidates.clear();
 
@@ -884,7 +881,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                         staIt->aid,
                         {ru, suTxVector.GetMode().GetMcsValue(), suTxVector.GetNss()});
 
-                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
+                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, m_txParams, m_availableTime))
                     {
                         NS_LOG_DEBUG("Adding the peeked frame violates the time constraints");
                         m_txParams.m_txVector = txVectorCopy;
@@ -1050,15 +1047,13 @@ RrMultiUserScheduler::ComputeDlMuInfo()
     Ptr<WifiMpdu> mpdu;
 
     // Compute the TX params (again) by using the stored MPDUs and the final TXVECTOR
-    Time actualAvailableTime = (m_initialFrame ? Time::Min() : m_availableTime);
-
     for (const auto& candidate : m_candidates)
     {
         mpdu = candidate.second;
         NS_ASSERT(mpdu);
 
         bool ret [[maybe_unused]] =
-            GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime);
+            GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, m_availableTime);
         NS_ASSERT_MSG(ret,
                       "Weird that an MPDU does not meet constraints when "
                       "transmitted over a larger RU");

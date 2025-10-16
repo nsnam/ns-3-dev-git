@@ -59,6 +59,7 @@ Python 3.10 to 3.14.
 - (wifi) !2938 A DL MU PPDU transmitted in a non-initial frame exchange of a TXOP is now protected by an MU-RTS if any of its receivers is unprotected; previously the decision was made per MPDU and such a PPDU could be sent without the configured protection (debug builds failed an assert).
 - (wifi) Fix Duration/ID for group addressed frames sent under multiple protection setting
 - (wifi) The building blocks to enable layer-2 roaming are now added, allowing the construction of a roaming manager (no such a manager is provided yet).
+- (wifi) The TXOP Limit cannot be exceeded to transmit a DL MU PPDU
 
 ## Release 3.48
 
