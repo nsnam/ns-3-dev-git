@@ -42,8 +42,6 @@ defined in the system.
 
 * LOG_ERROR --- Log error messages (associated macro: NS_LOG_ERROR);
 * LOG_WARN --- Log warning messages (associated macro: NS_LOG_WARN);
-* LOG_DEBUG --- Log relatively rare, ad-hoc debugging messages
-  (associated macro: NS_LOG_DEBUG);
 * LOG_INFO --- Log informational messages about program progress
   (associated macro: NS_LOG_INFO);
 * LOG_FUNCTION --- Log a message describing each function called
@@ -51,10 +49,12 @@ defined in the system.
   and NS_LOG_FUNCTION_NOARGS, used for static functions);
 * LOG_LOGIC -- Log messages describing logical flow within a function
   (associated macro: NS_LOG_LOGIC);
+* LOG_DEBUG --- Log relatively rare, ad-hoc debugging messages
+  (associated macro: NS_LOG_DEBUG);
 * LOG_ALL --- Log everything mentioned above (no associated macro).
 
 For each LOG_TYPE there is also LOG_LEVEL_TYPE that, if used, enables
-logging of all the levels above it in addition to it's level.  (As a
+logging of all the levels above it in addition to its level (see list above).  (As a
 consequence of this, LOG_ERROR and LOG_LEVEL_ERROR and also LOG_ALL
 and LOG_LEVEL_ALL are functionally equivalent.)  For example,
 enabling LOG_INFO will only enable messages provided by NS_LOG_INFO macro,
