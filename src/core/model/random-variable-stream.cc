@@ -687,6 +687,12 @@ NormalRandomVariable::NormalRandomVariable()
     NS_LOG_FUNCTION(this);
 }
 
+void
+NormalRandomVariable::SetStdDev(double stdDev)
+{
+    m_variance = stdDev * stdDev;
+}
+
 double
 NormalRandomVariable::GetMean() const
 {
@@ -697,6 +703,12 @@ double
 NormalRandomVariable::GetVariance() const
 {
     return m_variance;
+}
+
+double
+NormalRandomVariable::GetStdDev() const
+{
+    return sqrt(m_variance);
 }
 
 double

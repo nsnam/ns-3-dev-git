@@ -744,6 +744,23 @@ NormalTestCase::DoRun()
                               expectedMean,
                               expectedRms * TOLERANCE,
                               "Wrong mean value.");
+
+    // Repeat test when setting via stddev attribute instead of variance
+    x->SetStdDev(sqrt(variance));
+
+    // Calculate the mean of these values.
+    valueMean = Average(x);
+
+    // The expected value for the mean of the values returned by a
+    // normally distributed random variable is equal to mean.
+    expectedMean = mean;
+    expectedRms = mean / std::sqrt(variance * N_MEASUREMENTS);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+                              expectedMean,
+                              expectedRms * TOLERANCE,
+                              "Wrong mean value.");
 }
 
 /**
