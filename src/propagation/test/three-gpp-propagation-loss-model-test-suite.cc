@@ -1008,14 +1008,16 @@ class ThreeGppShadowingTestCase : public TestCase
      * @param hBs the BS height in meters
      * @param hUt the UT height in meters
      * @param distance the initial distance between the BS and the UT
-     * @param shadowingEnabled true if shadowging must be enabled
+     * @param shadowingEnabled true if shadowing must be enabled
+     * @param frequency channel frequency
      */
     void RunTest(uint16_t testNum,
                  std::string propagationLossModelType,
                  double hBs,
                  double hUt,
                  double distance,
-                 bool shadowingEnabled);
+                 bool shadowingEnabled,
+                 double frequency);
 
     /**
      * Compute the propagation loss
@@ -1044,6 +1046,7 @@ class ThreeGppShadowingTestCase : public TestCase
                                   //!< case in dB
         double m_shadowingStdNlos; //!< the standard deviation of the shadowing component in the
                                    //!< NLOS case in dB
+        double m_frequency;        //!< channel frequency
     };
 
     TestVectors<TestVector> m_testVectors;         //!< array containing all the test vectors
@@ -1080,7 +1083,8 @@ ThreeGppShadowingTestCase::RunTest(uint16_t testNum,
                                    double hBs,
                                    double hUt,
                                    double distance,
-                                   bool shadowingEnabled)
+                                   bool shadowingEnabled,
+                                   double frequency)
 {
     // Add a new entry for this test in the results map
     m_results[testNum] = std::vector<double>();
@@ -1102,7 +1106,7 @@ ThreeGppShadowingTestCase::RunTest(uint16_t testNum,
     // Create the propagation loss model
     ObjectFactory propagationLossModelFactory = ObjectFactory(propagationLossModelType);
     m_lossModel = propagationLossModelFactory.Create<ThreeGppPropagationLossModel>();
-    m_lossModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    m_lossModel->SetAttribute("Frequency", DoubleValue(frequency));
     m_lossModel->SetAttribute("ShadowingEnabled",
                               BooleanValue(shadowingEnabled)); // enable the shadow fading
 
@@ -1163,6 +1167,9 @@ ThreeGppShadowingTestCase::DoRun()
     // RMa, UMa, UMi and Indoor-Office.
 
     TestVector testVector;
+
+    // Above 6GHz
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppRmaPropagationLossModel";
     testVector.m_hBs = 25;
     testVector.m_hUt = 1.6;
@@ -1171,6 +1178,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 8;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppRmaPropagationLossModel";
     testVector.m_hBs = 25;
     testVector.m_hUt = 1.6;
@@ -1179,6 +1187,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 8;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppUmaPropagationLossModel";
     testVector.m_hBs = 25;
     testVector.m_hUt = 1.6;
@@ -1187,6 +1196,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 6;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppUmiStreetCanyonPropagationLossModel";
     testVector.m_hBs = 10;
     testVector.m_hUt = 1.6;
@@ -1195,6 +1205,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 7.82;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppIndoorOfficePropagationLossModel";
     testVector.m_hBs = 3;
     testVector.m_hUt = 1;
@@ -1203,6 +1214,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 8.03;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppV2vUrbanPropagationLossModel";
     testVector.m_hBs = 1.6;
     testVector.m_hUt = 1.6;
@@ -1211,12 +1223,32 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 4;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppV2vHighwayPropagationLossModel";
     testVector.m_hBs = 1.6;
     testVector.m_hUt = 1.6;
     testVector.m_distance = 50;
     testVector.m_shadowingStdLos = 3;
     testVector.m_shadowingStdNlos = 4;
+    m_testVectors.Add(testVector);
+
+    // Sub 6GHz
+    testVector.m_frequency = 3.5e9;
+    testVector.m_propagationLossModelType = "ns3::ThreeGppUmaPropagationLossModel";
+    testVector.m_hBs = 25;
+    testVector.m_hUt = 1.6;
+    testVector.m_distance = 100;
+    testVector.m_shadowingStdLos = 7;
+    testVector.m_shadowingStdNlos = 7;
+    m_testVectors.Add(testVector);
+
+    testVector.m_frequency = 3.5e9;
+    testVector.m_propagationLossModelType = "ns3::ThreeGppUmiStreetCanyonPropagationLossModel";
+    testVector.m_hBs = 10;
+    testVector.m_hUt = 1.6;
+    testVector.m_distance = 100;
+    testVector.m_shadowingStdLos = 7;
+    testVector.m_shadowingStdNlos = 7;
     m_testVectors.Add(testVector);
 
     uint16_t numSamples = 250;
@@ -1233,12 +1265,13 @@ ThreeGppShadowingTestCase::DoRun()
                     tv.m_hBs,
                     tv.m_hUt,
                     tv.m_distance,
-                    true);
+                    true,
+                    tv.m_frequency);
         }
 
         // analyze the results
-        std::vector<double> mean_vector; // the vector containing the mean propagation loss for each
-                                         // position (sample mean)
+        std::vector<double> mean_vector; // the vector containing the mean propagation loss for
+                                         // each position (sample mean)
 
         uint16_t numPositions = m_results.at(0).size();
         for (uint16_t k = 0; k < numPositions; k++)
@@ -1259,7 +1292,8 @@ ThreeGppShadowingTestCase::DoRun()
                 tv.m_hBs,
                 tv.m_hUt,
                 tv.m_distance,
-                false);
+                false,
+                tv.m_frequency);
         std::vector<double> true_mean =
             m_results.at(numSamples); // the result of the last test is the true mean
 

@@ -138,6 +138,22 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
      *        independent realization and stores it in the map, otherwise it calculates
      *        a new value as defined in 3GPP TR 38.901 7.4.3.1.
      *
+     *
+     * @param a tx mobility model (used for the key calculation)
+     * @param b rx mobility model (used for the key calculation)
+     * @param cond the LOS/NLOS channel condition
+     * @return o2iLoss
+     */
+    double GetO2iSub6GhzPenetrationLoss(Ptr<MobilityModel> a,
+                                        Ptr<MobilityModel> b,
+                                        ChannelCondition::LosConditionValue cond) const;
+
+    /**
+     * @brief Retrieves the o2i building penetration loss value by looking at m_o2iLossMap.
+     *        If not found or if the channel condition changed it generates a new
+     *        independent realization and stores it in the map, otherwise it calculates
+     *        a new value as defined in 3GPP TR 38.901 7.4.3.1.
+     *
      *        Note that all child classes should implement this function to support
      *        low losses calculation. As such, this function should be purely virtual.
      *
@@ -253,6 +269,18 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
 
   protected:
     void DoDispose() override;
+
+    /**
+     * @brief Returns a a single, link-specific, uniformly distributed variable
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    virtual double GetO2iDistance2dInSub6Ghz() const;
 
     /**
      * @brief Computes the 2D distance between two 3D vectors
@@ -469,6 +497,18 @@ class ThreeGppUmaPropagationLossModel : public ThreeGppPropagationLossModel
     double GetO2iDistance2dIn() const override;
 
     /**
+     * @brief Returns a a single, link-specific, uniformly distributed variable
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    double GetO2iDistance2dInSub6Ghz() const override;
+
+    /**
      * @brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed.
      * @param a tx mobility model
@@ -562,6 +602,18 @@ class ThreeGppUmiStreetCanyonPropagationLossModel : public ThreeGppPropagationLo
      * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
      */
     double GetO2iDistance2dIn() const override;
+
+    /**
+     * @brief Returns a a single, link-specific, uniformly distributed variable
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    double GetO2iDistance2dInSub6Ghz() const override;
 
     /**
      * @brief Computes the pathloss between a and b considering that the line of

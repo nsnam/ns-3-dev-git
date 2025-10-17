@@ -401,13 +401,21 @@ ThreeGppPropagationLossModel::DoCalcRxPower(double txPowerDbm,
          (cond->GetO2iCondition() == ChannelCondition::O2iConditionValue::I2I &&
           cond->GetLosCondition() == ChannelCondition::LosConditionValue::NLOS)))
     {
-        if (IsO2iLowPenetrationLoss(cond))
+        if (m_frequency < 6e9)
         {
-            rxPow -= GetO2iLowPenetrationLoss(a, b, cond->GetLosCondition());
+            // TR 38.901 has a backward compatibility O2I penetration loss for sub 6GHz channels
+            rxPow -= GetO2iSub6GhzPenetrationLoss(a, b, cond->GetLosCondition());
         }
         else
         {
-            rxPow -= GetO2iHighPenetrationLoss(a, b, cond->GetLosCondition());
+            if (IsO2iLowPenetrationLoss(cond))
+            {
+                rxPow -= GetO2iLowPenetrationLoss(a, b, cond->GetLosCondition());
+            }
+            else
+            {
+                rxPow -= GetO2iHighPenetrationLoss(a, b, cond->GetLosCondition());
+            }
         }
     }
 
@@ -438,6 +446,69 @@ ThreeGppPropagationLossModel::GetLoss(Ptr<ChannelCondition> cond,
     }
 
     return loss;
+}
+
+double
+ThreeGppPropagationLossModel::GetO2iSub6GhzPenetrationLoss(
+    Ptr<MobilityModel> a,
+    Ptr<MobilityModel> b,
+    ChannelCondition::LosConditionValue cond) const
+{
+    NS_LOG_FUNCTION(this);
+
+    double o2iLossValue = 0;
+    double lossTw = 0;
+    double lossIn = 0;
+    double lossNormalVariate = 0;
+
+    // compute the channel key
+    uint32_t key = GetKey(a, b);
+
+    bool notFound = false;     // indicates if the o2iLoss value has not been computed yet
+    bool newCondition = false; // indicates if the channel condition has changed
+
+    auto it = m_o2iLossMap.end(); // the o2iLoss map iterator
+    if (m_o2iLossMap.find(key) != m_o2iLossMap.end())
+    {
+        // found the o2iLoss value in the map
+        it = m_o2iLossMap.find(key);
+        newCondition = (it->second.m_condition != cond); // true if the condition changed
+    }
+    else
+    {
+        notFound = true;
+        // add a new entry in the map and update the iterator
+        O2iLossMapItem newItem;
+        it = m_o2iLossMap.insert(it, std::make_pair(key, newItem));
+    }
+
+    if (notFound || newCondition)
+    {
+        // distance2dIn is a single, link-specific, uniformly distributed variable
+        // between 0 and 25 m for UMa and UMi-Street Canyon.
+        double distance2dIn = GetO2iDistance2dInSub6Ghz();
+
+        // calculate penetration losses, see TR 38.901 Table 7.4.3-3
+        lossTw = 20;
+
+        // calculate indoor loss
+        lossIn = 0.5 * distance2dIn;
+
+        // calculate low loss standard deviation
+        lossNormalVariate = 0;
+
+        o2iLossValue = lossTw + lossIn + lossNormalVariate;
+    }
+    else
+    {
+        o2iLossValue = it->second.m_o2iLoss;
+    }
+
+    // update the entry in the map
+    it->second.m_o2iLoss = o2iLossValue;
+    it->second.m_condition = cond;
+
+    return o2iLossValue;
 }
 
 double
@@ -716,6 +787,12 @@ ThreeGppPropagationLossModel::GetVectorDifference(Ptr<MobilityModel> a, Ptr<Mobi
     {
         return a->GetPosition() - b->GetPosition();
     }
+}
+
+double
+ThreeGppPropagationLossModel::GetO2iDistance2dInSub6Ghz() const
+{
+    return 0;
 }
 
 // ------------------------------------------------------------------------- //
@@ -1099,6 +1176,13 @@ ThreeGppUmaPropagationLossModel::GetO2iDistance2dIn() const
 }
 
 double
+ThreeGppUmaPropagationLossModel::GetO2iDistance2dInSub6Ghz() const
+{
+    // distance2dIn is a single, link-specific, uniformly distributed variable between 0 and 25 m.
+    return m_randomO2iVar1->GetValue(0, 25);
+}
+
+double
 ThreeGppUmaPropagationLossModel::GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
     NS_LOG_FUNCTION(this);
@@ -1150,20 +1234,25 @@ ThreeGppUmaPropagationLossModel::GetShadowingStd(Ptr<MobilityModel> /* a */,
 {
     NS_LOG_FUNCTION(this);
     double shadowingStd;
-
-    if (cond == ChannelCondition::LosConditionValue::LOS)
+    if (m_frequency < 6e9)
     {
-        shadowingStd = 4.0;
-    }
-    else if (cond == ChannelCondition::LosConditionValue::NLOS)
-    {
-        shadowingStd = 6.0;
+        shadowingStd = 7.0;
     }
     else
     {
-        NS_FATAL_ERROR("Unknown channel condition");
+        if (cond == ChannelCondition::LosConditionValue::LOS)
+        {
+            shadowingStd = 4.0;
+        }
+        else if (cond == ChannelCondition::LosConditionValue::NLOS)
+        {
+            shadowingStd = 6.0;
+        }
+        else
+        {
+            NS_FATAL_ERROR("Unknown channel condition");
+        }
     }
-
     return shadowingStd;
 }
 
@@ -1251,6 +1340,13 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetO2iDistance2dIn() const
     // distance2dIn is minimum of two independently generated uniformly distributed variables
     // between 0 and 25 m for UMa and UMi-Street Canyon. 2D−in d shall be UT-specifically generated.
     return std::min(m_randomO2iVar1->GetValue(0, 25), m_randomO2iVar2->GetValue(0, 25));
+}
+
+double
+ThreeGppUmiStreetCanyonPropagationLossModel::GetO2iDistance2dInSub6Ghz() const
+{
+    // distance2dIn is a single, link-specific, uniformly distributed variable between 0 and 25 m.
+    return m_randomO2iVar1->GetValue(0, 25);
 }
 
 double
@@ -1374,19 +1470,25 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetShadowingStd(
     NS_LOG_FUNCTION(this);
     double shadowingStd;
 
-    if (cond == ChannelCondition::LosConditionValue::LOS)
+    if (m_frequency < 6e9)
     {
-        shadowingStd = 4.0;
-    }
-    else if (cond == ChannelCondition::LosConditionValue::NLOS)
-    {
-        shadowingStd = 7.82;
+        shadowingStd = 7.0;
     }
     else
     {
-        NS_FATAL_ERROR("Unknown channel condition");
+        if (cond == ChannelCondition::LosConditionValue::LOS)
+        {
+            shadowingStd = 4.0;
+        }
+        else if (cond == ChannelCondition::LosConditionValue::NLOS)
+        {
+            shadowingStd = 7.82;
+        }
+        else
+        {
+            NS_FATAL_ERROR("Unknown channel condition");
+        }
     }
-
     return shadowingStd;
 }
 
