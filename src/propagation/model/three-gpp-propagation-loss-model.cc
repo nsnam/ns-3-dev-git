@@ -317,11 +317,11 @@ ThreeGppPropagationLossModel::ThreeGppPropagationLossModel()
 
     m_normalO2iLowLossVar = CreateObject<NormalRandomVariable>();
     m_normalO2iLowLossVar->SetAttribute("Mean", DoubleValue(0));
-    m_normalO2iLowLossVar->SetAttribute("Variance", DoubleValue(4.4));
+    m_normalO2iLowLossVar->SetStdDev(4.4);
 
     m_normalO2iHighLossVar = CreateObject<NormalRandomVariable>();
     m_normalO2iHighLossVar->SetAttribute("Mean", DoubleValue(0));
-    m_normalO2iHighLossVar->SetAttribute("Variance", DoubleValue(6.5));
+    m_normalO2iHighLossVar->SetStdDev(6.5);
 }
 
 ThreeGppPropagationLossModel::~ThreeGppPropagationLossModel()
