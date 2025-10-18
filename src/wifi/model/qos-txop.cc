@@ -519,7 +519,7 @@ Ptr<WifiMpdu>
 QosTxop::GetNextMpdu(uint8_t linkId,
                      Ptr<WifiMpdu> peekedItem,
                      WifiTxParameters& txParams,
-                     Time availableTime,
+                     const std::optional<Time>& availableTime,
                      bool exceedLimit)
 {
     NS_ASSERT(peekedItem);
@@ -530,8 +530,8 @@ QosTxop::GetNextMpdu(uint8_t linkId,
     // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
     // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
     // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016)
-    Time actualAvailableTime =
-        (exceedLimit && txParams.GetSize(recipient) == 0 ? Time::Min() : availableTime);
+    const auto actualAvailableTime =
+        (exceedLimit && txParams.GetSize(recipient) == 0 ? std::nullopt : availableTime);
 
     auto qosFem = StaticCast<QosFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
     if (!qosFem->TryAddMpdu(peekedItem, txParams, actualAvailableTime))

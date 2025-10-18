@@ -212,7 +212,7 @@ MpduAggregator::GetAmpduSubframeHeader(uint16_t mpduSize, bool isSingle)
 std::vector<Ptr<WifiMpdu>>
 MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                              WifiTxParameters& txParams,
-                             Time availableTime) const
+                             const std::optional<Time>& availableTime) const
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams << availableTime);
 

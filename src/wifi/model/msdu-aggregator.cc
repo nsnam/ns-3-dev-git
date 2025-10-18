@@ -80,7 +80,7 @@ MsduAggregator::GetSizeIfAggregated(uint16_t msduSize, uint16_t amsduSize)
 Ptr<WifiMpdu>
 MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
                              WifiTxParameters& txParams,
-                             Time availableTime) const
+                             const std::optional<Time>& availableTime) const
 {
     NS_LOG_FUNCTION(this << *peekedItem << &txParams << availableTime);
 

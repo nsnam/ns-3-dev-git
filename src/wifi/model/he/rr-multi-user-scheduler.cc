@@ -418,7 +418,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     NS_ASSERT(m_txParams.m_txDuration.has_value());
     m_triggerTxDuration = m_txParams.m_txDuration.value();
 
-    if (m_availableTime != Time::Min())
+    if (m_availableTime)
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
         NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
@@ -428,7 +428,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
 
         if (*m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // BSRP TF tx time
                 + m_apMac->GetWifiPhy(m_linkId)->GetSifs() + qosNullTxDuration >
-            m_availableTime)
+            *m_availableTime)
         {
             NS_LOG_DEBUG("Remaining TXOP duration is not enough for BSRP TF exchange");
             return NO_TX;
@@ -540,7 +540,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     NS_ASSERT(m_txParams.m_txDuration.has_value());
     m_triggerTxDuration = m_txParams.m_txDuration.value();
 
-    if (m_availableTime != Time::Min())
+    if (m_availableTime)
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
         NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
@@ -548,7 +548,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
                   m_txParams.m_acknowledgment->acknowledgmentTime.has_value());
 
         maxDuration = Min(maxDuration,
-                          m_availableTime - *m_txParams.m_protection->protectionTime -
+                          *m_availableTime - *m_txParams.m_protection->protectionTime -
                               *m_txParams.m_txDuration - m_apMac->GetWifiPhy(m_linkId)->GetSifs() -
                               *m_txParams.m_acknowledgment->acknowledgmentTime);
         if (maxDuration.IsNegative())

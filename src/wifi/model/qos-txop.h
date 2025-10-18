@@ -280,9 +280,8 @@ class QosTxop : public Txop
      * @param linkId the ID of the given link
      * @param peekedItem the peeked frame.
      * @param txParams the TX parameters for the frame
-     * @param availableTime the time available for the transmission of the frame
-                            (including protection and acknowledgment); a value of
-     *                      Time::Min() indicates no time constraint
+     * @param availableTime the limit (if any) on the time available for the transmission of the
+     *                      frame (including protection and acknowledgment)
      * @param exceedLimit whether the available time can be exceeded; this is the case, e.g., if the
      *                    frame being transmitted is the initial frame of a TXOP
      * @return the frame to transmit or a null pointer if no frame meets the time constraints
@@ -290,7 +289,7 @@ class QosTxop : public Txop
     Ptr<WifiMpdu> GetNextMpdu(uint8_t linkId,
                               Ptr<WifiMpdu> peekedItem,
                               WifiTxParameters& txParams,
-                              Time availableTime,
+                              const std::optional<Time>& availableTime,
                               bool exceedLimit);
 
     /**

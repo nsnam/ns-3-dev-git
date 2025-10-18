@@ -186,7 +186,7 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
                                          uint16_t startingSeq,
                                          uint16_t timeout,
                                          bool immediateBAck,
-                                         Time availableTime,
+                                         const std::optional<Time>& availableTime,
                                          std::optional<Mac48Address> gcrGroupAddr)
 {
     NS_LOG_FUNCTION(this << dest << +tid << startingSeq << timeout << immediateBAck << availableTime
@@ -470,7 +470,7 @@ HtFrameExchangeManager::SendBufferedUnit(Mac48Address sender)
                                                    {},
                                                    {m_linkId});
 
-        if (mpdu && SendMpduFromBaManager(mpdu, Time::Min(), false))
+        if (mpdu && SendMpduFromBaManager(mpdu, std::nullopt, false))
         {
             return true;
         }
@@ -480,7 +480,9 @@ HtFrameExchangeManager::SendBufferedUnit(Mac48Address sender)
 }
 
 bool
-HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit)
+HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
+                                           const std::optional<Time>& availableTime,
+                                           bool exceedLimit)
 {
     NS_LOG_FUNCTION(this << edca << availableTime << exceedLimit);
 
@@ -712,7 +714,7 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
 
 bool
 HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
-                                              Time availableTime,
+                                              const std::optional<Time>& availableTime,
                                               bool exceedLimit)
 {
     NS_LOG_FUNCTION(this << *mpdu << availableTime << exceedLimit);
@@ -733,7 +735,7 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
     // - Transmission of a Control frame or a QoS Null frame, not in an A-MPDU consisting of more
     //   than one MPDU
     // (Sec. 10.23.2.9 of 802.11-2024)
-    auto actualAvailableTime = (exceedLimit ? Time::Min() : availableTime);
+    auto actualAvailableTime = (exceedLimit ? std::nullopt : availableTime);
 
     if (!TryAddMpdu(mpdu, txParams, actualAvailableTime))
     {
@@ -764,7 +766,7 @@ HtFrameExchangeManager::GetBlockAckReqTxVector(Mac48Address to) const
 
 bool
 HtFrameExchangeManager::SendDataFrame(Ptr<WifiMpdu> peekedItem,
-                                      Time availableTime,
+                                      const std::optional<Time>& availableTime,
                                       bool exceedLimit)
 {
     NS_ASSERT(peekedItem && peekedItem->GetHeader().IsQosData() &&
@@ -1476,7 +1478,7 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
 bool
 HtFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
                                                 const WifiTxParameters& txParams,
-                                                Time ppduDurationLimit) const
+                                                const std::optional<Time>& ppduDurationLimit) const
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << ppduDurationLimit);
@@ -1544,7 +1546,7 @@ HtFrameExchangeManager::IsWithinAmpduSizeLimit(uint32_t ampduSize,
 bool
 HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
                                          WifiTxParameters& txParams,
-                                         Time availableTime) const
+                                         const std::optional<Time>& availableTime) const
 {
     NS_ASSERT(msdu && msdu->GetHeader().IsQosData());
     NS_LOG_FUNCTION(this << *msdu << &txParams << availableTime);
@@ -1594,10 +1596,10 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
     }
     NS_ASSERT(acknowledgmentTime.has_value());
 
-    Time ppduDurationLimit = Time::Min();
-    if (availableTime != Time::Min())
+    std::optional<Time> ppduDurationLimit;
+    if (availableTime)
     {
-        ppduDurationLimit = availableTime - *protectionTime - *acknowledgmentTime;
+        ppduDurationLimit = *availableTime - *protectionTime - *acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAggregateMsdu(msdu, txParams, ppduDurationLimit))
@@ -1621,9 +1623,10 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
 }
 
 bool
-HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(Ptr<const WifiMpdu> msdu,
-                                                      const WifiTxParameters& txParams,
-                                                      Time ppduDurationLimit) const
+HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(
+    Ptr<const WifiMpdu> msdu,
+    const WifiTxParameters& txParams,
+    const std::optional<Time>& ppduDurationLimit) const
 {
     NS_ASSERT(msdu && msdu->GetHeader().IsQosData());
     NS_LOG_FUNCTION(this << *msdu << &txParams << ppduDurationLimit);

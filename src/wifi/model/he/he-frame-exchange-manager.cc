@@ -124,7 +124,9 @@ HeFrameExchangeManager::SetMultiUserScheduler(const Ptr<MultiUserScheduler> muSc
 }
 
 bool
-HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit)
+HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
+                                           const std::optional<Time>& availableTime,
+                                           bool exceedLimit)
 {
     NS_LOG_FUNCTION(this << edca << availableTime << exceedLimit);
 

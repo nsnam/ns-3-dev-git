@@ -261,7 +261,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
     m_initialFrame = true;
     m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
 
-    if (StartFrameExchange(m_edca, Time::Min(), true))
+    if (StartFrameExchange(m_edca, std::nullopt, true))
     {
         return true;
     }
@@ -272,7 +272,9 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 }
 
 bool
-QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool exceedLimit)
+QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
+                                            const std::optional<Time>& availableTime,
+                                            bool exceedLimit)
 {
     NS_LOG_FUNCTION(this << edca << availableTime << exceedLimit);
 
@@ -331,7 +333,7 @@ QosFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
 bool
 QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
                                     WifiTxParameters& txParams,
-                                    Time availableTime) const
+                                    const std::optional<Time>& availableTime) const
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << availableTime);
@@ -389,10 +391,10 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
     NS_ASSERT(acknowledgmentTime.has_value());
     NS_LOG_DEBUG("acknowledgment time=" << *acknowledgmentTime);
 
-    Time ppduDurationLimit = Time::Min();
-    if (availableTime != Time::Min())
+    std::optional<Time> ppduDurationLimit;
+    if (availableTime)
     {
-        ppduDurationLimit = availableTime - *protectionTime - *acknowledgmentTime;
+        ppduDurationLimit = *availableTime - *protectionTime - *acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAddMpdu(mpdu, txParams, ppduDurationLimit))
@@ -418,7 +420,7 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
 bool
 QosFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
                                                  const WifiTxParameters& txParams,
-                                                 Time ppduDurationLimit) const
+                                                 const std::optional<Time>& ppduDurationLimit) const
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << ppduDurationLimit);
@@ -432,14 +434,15 @@ QosFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
 }
 
 bool
-QosFrameExchangeManager::IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize,
-                                                   Mac48Address receiver,
-                                                   const WifiTxParameters& txParams,
-                                                   Time ppduDurationLimit) const
+QosFrameExchangeManager::IsWithinSizeAndTimeLimits(
+    uint32_t ppduPayloadSize,
+    Mac48Address receiver,
+    const WifiTxParameters& txParams,
+    const std::optional<Time>& ppduDurationLimit) const
 {
     NS_LOG_FUNCTION(this << ppduPayloadSize << receiver << &txParams << ppduDurationLimit);
 
-    if (ppduDurationLimit != Time::Min() && ppduDurationLimit.IsNegative())
+    if (ppduDurationLimit && ppduDurationLimit->IsNegative())
     {
         NS_LOG_DEBUG("ppduDurationLimit is null or negative, time limit is trivially exceeded");
         return false;
@@ -458,7 +461,8 @@ QosFrameExchangeManager::IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize,
     auto txTime = txParams.m_txDuration.value();
     NS_LOG_DEBUG("PPDU duration: " << txTime.As(Time::MS));
 
-    if ((ppduDurationLimit.IsStrictlyPositive() && txTime > ppduDurationLimit) ||
+    if ((ppduDurationLimit && ppduDurationLimit->IsStrictlyPositive() &&
+         txTime > *ppduDurationLimit) ||
         (maxPpduDuration.IsStrictlyPositive() && txTime > maxPpduDuration))
     {
         NS_LOG_DEBUG(
