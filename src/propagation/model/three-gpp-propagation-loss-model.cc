@@ -298,7 +298,13 @@ ThreeGppPropagationLossModel::GetTypeId()
                 "Enable/disable Building Penetration Losses.",
                 BooleanValue(true),
                 MakeBooleanAccessor(&ThreeGppPropagationLossModel::m_buildingPenLossesEnabled),
-                MakeBooleanChecker());
+                MakeBooleanChecker())
+            .AddAttribute("MeanVehicularLoss",
+                          "9dB for standard cars, 20dB for cars with "
+                          "metal coated glass panels.",
+                          DoubleValue(9),
+                          MakeDoubleAccessor(&ThreeGppPropagationLossModel::m_meanVehicleO2iLoss),
+                          MakeDoubleChecker<double>());
     return tid;
 }
 
@@ -322,6 +328,10 @@ ThreeGppPropagationLossModel::ThreeGppPropagationLossModel()
     m_normalO2iHighLossVar = CreateObject<NormalRandomVariable>();
     m_normalO2iHighLossVar->SetAttribute("Mean", DoubleValue(0));
     m_normalO2iHighLossVar->SetStdDev(6.5);
+
+    m_normalO2iVehicularLossVar = CreateObject<NormalRandomVariable>();
+    m_normalO2iVehicularLossVar->SetAttribute("Mean", DoubleValue(m_meanVehicleO2iLoss));
+    m_normalO2iVehicularLossVar->SetStdDev(5);
 }
 
 ThreeGppPropagationLossModel::~ThreeGppPropagationLossModel()
@@ -418,6 +428,8 @@ ThreeGppPropagationLossModel::DoCalcRxPower(double txPowerDbm,
             }
         }
     }
+
+    rxPow -= GetO2iVehicularLoss(a, b, cond->GetO2iCondition());
 
     return rxPow;
 }
@@ -745,7 +757,7 @@ ThreeGppPropagationLossModel::DoAssignStreams(int64_t stream)
     m_randomO2iVar2->SetStream(stream + 2);
     m_normalO2iLowLossVar->SetStream(stream + 3);
     m_normalO2iHighLossVar->SetStream(stream + 4);
-
+    m_normalO2iVehicularLossVar->SetStream(stream + 5);
     return 5;
 }
 
@@ -793,6 +805,60 @@ double
 ThreeGppPropagationLossModel::GetO2iDistance2dInSub6Ghz() const
 {
     return 0;
+}
+
+void
+ThreeGppPropagationLossModel::ClearO2iLossCacheMap()
+{
+    NS_LOG_FUNCTION(this);
+    m_o2iLossMap.clear();
+    m_o2iVehicularUtLossMap.clear();
+}
+
+double
+ThreeGppPropagationLossModel::GetO2iVehicularLoss(Ptr<MobilityModel> a,
+                                                  Ptr<MobilityModel> b,
+                                                  ChannelCondition::O2iConditionValue cond) const
+{
+    NS_LOG_FUNCTION(this);
+    double o2iVehicularLoss = 0.0;
+
+    // O2I penetration loss for vehicles only applies between 600 MHz and 60 GHz.
+    if (m_frequency >= 0.6e9 && m_frequency < 60e9)
+    {
+        for (const auto& mob : {a, b})
+        {
+            auto velocityKmH = mob->GetVelocity().GetLength() * 3.6;
+            auto idNode = mob->GetObject<Node>()->GetId();
+            // Slow nodes are considered as pedestrians (no loss)
+            if (velocityKmH < 30)
+            {
+                m_o2iVehicularUtLossMap[idNode] = 0.0;
+            }
+            // Fast nodes are considered vehicles.
+            // Create one loss per terminal, and reuse throughout simulation.
+            else if (velocityKmH >= 30 && velocityKmH <= 120)
+            {
+                if (m_o2iVehicularUtLossMap.find(idNode) == m_o2iVehicularUtLossMap.end())
+                {
+                    m_o2iVehicularUtLossMap[idNode] = m_normalO2iVehicularLossVar->GetValue();
+                }
+            }
+            // Very fast nodes are not modeled
+            else
+            {
+                NS_LOG_WARN(
+                    "O2I loss for high-speed (>120 km/h) transit and satellites not implemented");
+            }
+
+            // Sum vehicle individual losses
+            if (cond == ChannelCondition::O2iConditionValue::O2O)
+            {
+                o2iVehicularLoss += m_o2iVehicularUtLossMap.at(idNode);
+            }
+        }
+    }
+    return o2iVehicularLoss;
 }
 
 // ------------------------------------------------------------------------- //
