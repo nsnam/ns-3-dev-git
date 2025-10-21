@@ -18,6 +18,12 @@
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 
+/**
+ * @file
+ * @ingroup internet-apps
+ * DhcpHeader classes declaration
+ */
+
 namespace ns3
 {
 
@@ -25,6 +31,24 @@ namespace ns3
  * @ingroup internet-apps
  * @defgroup dhcp DHCPv4 Client and Server
  */
+
+/**
+ * @ingroup dhcp
+ *
+ * This is the Chaddr field, which is 16 bytes long. Originally it was
+ * meant to hold the Client Hardware Address (hence the name), but later RFCs
+ * refers to it just as the Client Identifier.
+ */
+using DhcpChaddr = std::array<uint8_t, 16>;
+
+/**
+ * @ingroup dhcp
+ * Function to pretty-print a Chaddr.
+ *
+ * @param chaddr the Chaddr
+ * @return A formatted string
+ */
+std::string DhcpChaddrToString(const DhcpChaddr& chaddr);
 
 /**
  * @ingroup dhcp
@@ -149,20 +173,11 @@ class DhcpHeader : public Header
     void SetTime();
 
     /**
-     * @brief Set the Address of the device.
-     *
-     * Only the relevant bits are considered (i.e., not the type and length)
+     * @brief Set the Chaddress of the device.
      *
      * @param addr Address of the device
      */
-    void SetChaddr(Address addr);
-
-    /**
-     * @brief Set the Address of the device
-     * @param addr Address of the device
-     * @param len Address length
-     */
-    void SetChaddr(uint8_t* addr, uint8_t len);
+    void SetChaddr(DhcpChaddr addr);
 
     /**
      * @brief Get the Address of the client.
@@ -171,7 +186,7 @@ class DhcpHeader : public Header
      *
      * @return Address of the client
      */
-    Address GetChaddr();
+    DhcpChaddr GetChaddr();
 
     /**
      * @brief Set the IPv4Address of the client
@@ -291,7 +306,7 @@ class DhcpHeader : public Header
     uint32_t m_len;            //!< The length of the header
     uint16_t m_secs;           //!< Seconds elapsed
     uint16_t m_flags;          //!< BOOTP flags
-    uint8_t m_chaddr[16];      //!< The address identifier
+    DhcpChaddr m_chaddr;       //!< The client identifier
     Ipv4Address m_yiAddr;      //!< Your (client) IP address
     Ipv4Address m_ciAddr;      //!< The IP address of the client
     Ipv4Address m_siAddr;      //!< Next Server IP address

@@ -17,11 +17,34 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 
+#include <iomanip>
+#include <sstream>
+
+/**
+ * @file
+ * @ingroup internet-apps
+ * DhcpHeader classes implementation.
+ */
+
 namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("DhcpHeader");
 NS_OBJECT_ENSURE_REGISTERED(DhcpHeader);
+
+std::string
+DhcpChaddrToString(const DhcpChaddr& chaddr)
+{
+    std::ostringstream outStream;
+    outStream.fill('0');
+    outStream.setf(std::ios::hex, std::ios::basefield);
+
+    for (std::size_t i = 0; i < chaddr.size(); ++i)
+    {
+        outStream << std::setw(2) << (uint32_t)chaddr[i] << (i < chaddr.size() - 1 ? ":" : "");
+    }
+    return outStream.str();
+}
 
 DhcpHeader::DhcpHeader()
 {
@@ -105,27 +128,15 @@ DhcpHeader::SetTime()
 }
 
 void
-DhcpHeader::SetChaddr(Address addr)
+DhcpHeader::SetChaddr(DhcpChaddr addr)
 {
-    std::memset(m_chaddr, 0, 16);
-    NS_ASSERT_MSG(addr.GetLength() <= 16, "Address length too big");
-    addr.CopyTo(m_chaddr);
+    m_chaddr = addr;
 }
 
-void
-DhcpHeader::SetChaddr(uint8_t* addr, uint8_t len)
-{
-    std::memset(m_chaddr, 0, 16);
-    NS_ASSERT_MSG(len <= 16, "Address length too big");
-    std::memcpy(m_chaddr, addr, len);
-}
-
-Address
+DhcpChaddr
 DhcpHeader::GetChaddr()
 {
-    Address addr;
-    addr.CopyFrom(m_chaddr, 16);
-    return addr;
+    return m_chaddr;
 }
 
 void
@@ -313,7 +324,7 @@ DhcpHeader::Serialize(Buffer::Iterator start) const
     WriteTo(i, m_yiAddr);
     WriteTo(i, m_siAddr);
     WriteTo(i, m_giAddr);
-    i.Write(m_chaddr, 16);
+    i.Write(m_chaddr.data(), 16);
     i.Write(m_sname, 64);
     i.Write(m_file, 128);
     i.Write(m_magic_cookie, 4);
@@ -390,7 +401,7 @@ DhcpHeader::Deserialize(Buffer::Iterator start)
     ReadFrom(i, m_yiAddr);
     ReadFrom(i, m_siAddr);
     ReadFrom(i, m_giAddr);
-    i.Read(m_chaddr, 16);
+    i.Read(m_chaddr.data(), 16);
     i.Read(m_sname, 64);
     i.Read(m_file, 128);
     i.Read(m_magic_cookie, 4);
