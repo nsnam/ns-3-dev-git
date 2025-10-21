@@ -16,6 +16,7 @@
 
 #include <ostream>
 #include <stdint.h>
+#include <unordered_map>
 
 namespace ns3
 {
@@ -26,6 +27,7 @@ namespace ns3
  *
  * Network Address abstractions, including MAC, IPv4 and IPv6.
  */
+
 /**
  * @ingroup address
  * @brief a polymophic address class
@@ -62,6 +64,7 @@ namespace ns3
  * {
  *   return Address (GetType (), m_buffer, 2);
  * }
+ *
  * MyAddress MyAddress::ConvertFrom (const Address &address)
  * {
  *   MyAddress ad;
@@ -69,9 +72,10 @@ namespace ns3
  *   address.CopyTo (ad.m_buffer, 2);
  *   return ad;
  * }
+ *
  * uint8_t MyAddress::GetType ()
  * {
- *   static uint8_t type = Address::Register ();
+ *   static uint8_t type = Address::Register ("AddressType", 2);
  *   return type;
  * }
  * @endcode
@@ -84,10 +88,64 @@ namespace ns3
  * operator Address() const;
  * @endcode
  *
+ * Furthermore, the specific address must call the static function
+ * ``Address::Register(kind, length)``. This is typically done in a static function like
+ * ``GetType``.
+ *
+ * The kind/length pair is used to set the address type when this is not known a-priori.
+ * The typical use-case is when you decode a header where the address kind is known, but its
+ * length is specified in the header itself. The concrete example is the ARP or NDP headers,
+ * where you have a MAC address with a variable length.
+ * In these cases the code will be (assuming the address is a MAC address):
+ * @code
+ * Address addr;
+ * addr.SetType("MacAddress", addressLen);
+ * ReadFrom(i, addr, addressLen);
+ * @endcode
+ *
+ * It is forbidden to have two specific addresses sharing the same kind and length.
+ *
  * @see attribute_Address
  */
 class Address
 {
+  private:
+    /**
+     * Key for the address registry: kind (string) / type (uint8_t)
+     */
+    using KindType = std::pair<std::string, uint8_t>;
+
+    /**
+     * Structure necessary to hash KindType, used as the key for the m_typeRegistry map
+     */
+    struct KeyHash
+    {
+        /**
+         * Functional operator for (string, uint8_t) hash computation.
+         * @param k the key to hash
+         * @return The key hash
+         */
+        std::size_t operator()(const KindType& k) const
+        {
+            return std::hash<std::string>()(k.first) ^ (std::hash<uint8_t>()(k.second));
+        }
+    };
+
+    /**
+     * Type of the address registry.
+     */
+    using KindTypeRegistry = std::unordered_map<KindType, uint8_t, Address::KeyHash>;
+
+    /**
+     * Container of allocated address types.
+     *
+     * The data is ordered by KindType (a {kind, length} pair), and sores the address type.
+     */
+    static KindTypeRegistry m_typeRegistry;
+
+    /// Unassigned Address type is reserved. Defined for clarity.
+    static constexpr uint8_t UNASSIGNED_TYPE{0};
+
   public:
     /**
      * The maximum size of a byte buffer which
@@ -121,12 +179,22 @@ class Address
     /**
      * @brief Basic assignment operator.
      * @param address the address to copy
-     * @returns the address
+     * @return the address
      */
     Address& operator=(const Address& address);
 
     /**
-     * @returns true if this address is invalid, false otherwise.
+     * Set the address type.
+     *
+     * Works only if the type is not yet set.
+     * @see Register()
+     *
+     * @param length address length
+     * @param kind address kind
+     */
+    void SetType(const std::string& kind, uint8_t length);
+    /**
+     * @return true if this address is invalid, false otherwise.
      *
      * An address is invalid if and only if it was created
      * through the default constructor and it was never
@@ -135,19 +203,19 @@ class Address
     bool IsInvalid() const;
     /**
      * @brief Get the length of the underlying address.
-     * @returns the length of the underlying address.
+     * @return the length of the underlying address.
      */
     uint8_t GetLength() const;
     /**
      * @brief Copy the address bytes into a buffer.
      * @param buffer buffer to copy the address bytes to.
-     * @returns the number of bytes copied.
+     * @return the number of bytes copied.
      */
     uint32_t CopyTo(uint8_t buffer[MAX_SIZE]) const;
     /**
      * @param buffer buffer to copy the whole address data structure to
      * @param len the size of the buffer
-     * @returns the number of bytes copied.
+     * @return the number of bytes copied.
      *
      * Copies the type to buffer[0], the length of the address internal buffer
      * to buffer[1] and copies the internal buffer starting at buffer[2].  len
@@ -160,7 +228,7 @@ class Address
      *        a serialized representation of the address in network
      *        byte order.
      * @param len length of buffer
-     * @returns the number of bytes copied.
+     * @return the number of bytes copied.
      *
      * Copy the address bytes from buffer into to the internal buffer of this
      * address instance.
@@ -170,7 +238,7 @@ class Address
      * @param buffer pointer to a buffer of bytes which contain
      *        a copy of all the members of this Address class.
      * @param len the length of the buffer
-     * @returns the number of bytes copied.
+     * @return the number of bytes copied.
      *
      * The inverse of CopyAllTo().
      *
@@ -181,13 +249,13 @@ class Address
      * @param type a type id as returned by Address::Register
      * @param len the length associated to this type id.
      *
-     * @returns true if the type of the address stored internally
+     * @return true if the type of the address stored internally
      * is compatible with the requested type, false otherwise.
      */
     bool CheckCompatible(uint8_t type, uint8_t len) const;
     /**
      * @param type a type id as returned by Address::Register
-     * @returns true if the type of the address stored internally
+     * @return true if the type of the address stored internally
      * is compatible with the requested type, false otherwise.
      *
      * This method checks that the types are _exactly_ equal.
@@ -198,14 +266,28 @@ class Address
     bool IsMatchingType(uint8_t type) const;
     /**
      * Allocate a new type id for a new type of address.
-     * @returns a new type id.
+     *
+     * Each address-like class that needs to be converted to/from an
+     * ``Address`` needs to register itself once. This is typically done
+     * in the ``GetType`` function.
+     *
+     * The address kind and length are typically used during the buffer
+     * deserialization, where the exact address type is unknown, and only its
+     * kind and length are known, e.g., if you parse an ARP reply.
+     *
+     * It is not allowed to have two different addresses with the same
+     * kind and length.
+     *
+     * @param length address length
+     * @param kind address kind, such as "MacAddress"
+     * @return a new type id.
      */
-    static uint8_t Register();
+    static uint8_t Register(const std::string& kind, uint8_t length);
     /**
      * Get the number of bytes needed to serialize the underlying Address
      * Typically, this is GetLength () + 2
      *
-     * @returns the number of bytes required for an Address in serialized form
+     * @return the number of bytes required for an Address in serialized form
      */
     uint32_t GetSerializedSize() const;
     /**
@@ -227,7 +309,7 @@ class Address
      *
      * @param a the first operand
      * @param b the first operand
-     * @returns true if the operands are equal
+     * @return true if the operands are equal
      */
     friend bool operator==(const Address& a, const Address& b);
 
@@ -236,7 +318,7 @@ class Address
      *
      * @param a the first operand
      * @param b the first operand
-     * @returns true if the operands are not equal
+     * @return true if the operands are not equal
      */
     friend bool operator!=(const Address& a, const Address& b);
 
@@ -245,7 +327,7 @@ class Address
      *
      * @param a the first operand
      * @param b the first operand
-     * @returns true if the operand a is less than operand b
+     * @return true if the operand a is less than operand b
      */
     friend bool operator<(const Address& a, const Address& b);
 
@@ -254,7 +336,7 @@ class Address
      *
      * @param os the stream
      * @param address the address
-     * @returns a reference to the stream
+     * @return a reference to the stream
      */
     friend std::ostream& operator<<(std::ostream& os, const Address& address);
 
@@ -263,7 +345,7 @@ class Address
      *
      * @param is the stream
      * @param address the address
-     * @returns a reference to the stream
+     * @return a reference to the stream
      */
     friend std::istream& operator>>(std::istream& is, Address& address);
 

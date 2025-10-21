@@ -123,7 +123,7 @@ uint8_t
 Mac48Address::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", 6);
     return type;
 }
 

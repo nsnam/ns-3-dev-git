@@ -31,7 +31,7 @@ Mac8Address::~Mac8Address()
 uint8_t
 Mac8Address::GetType()
 {
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", 1);
     return type;
 }
 

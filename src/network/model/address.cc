@@ -20,8 +20,10 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("Address");
 
+Address::KindTypeRegistry Address::m_typeRegistry;
+
 Address::Address()
-    : m_type(0),
+    : m_type(UNASSIGNED_TYPE),
       m_len(0)
 {
     // Buffer left uninitialized
@@ -33,7 +35,8 @@ Address::Address(uint8_t type, const uint8_t* buffer, uint8_t len)
       m_len(len)
 {
     NS_LOG_FUNCTION(this << static_cast<uint32_t>(type) << &buffer << static_cast<uint32_t>(len));
-    NS_ASSERT(m_len <= MAX_SIZE);
+    NS_ASSERT_MSG(m_len <= MAX_SIZE, "Address length too large");
+    NS_ASSERT_MSG(type != UNASSIGNED_TYPE, "Type 0 is reserved for uninitialized addresses.");
     std::memcpy(m_data, buffer, m_len);
 }
 
@@ -56,11 +59,29 @@ Address::operator=(const Address& address)
     return *this;
 }
 
+void
+Address::SetType(const std::string& kind, uint8_t length)
+{
+    NS_LOG_FUNCTION(this << kind << static_cast<uint32_t>(length));
+    auto search = m_typeRegistry.find({kind, length});
+    NS_ASSERT_MSG(search != m_typeRegistry.end(),
+                  "No address with the given kind and length is registered.");
+
+    if (m_type != search->second)
+    {
+        NS_ASSERT_MSG(m_type == UNASSIGNED_TYPE,
+                      "You can only change the type of a type-0 address."
+                          << static_cast<uint32_t>(m_type));
+
+        m_type = search->second;
+    }
+}
+
 bool
 Address::IsInvalid() const
 {
     NS_LOG_FUNCTION(this);
-    return m_len == 0 && m_type == 0;
+    return m_len == 0 && m_type == UNASSIGNED_TYPE;
 }
 
 uint8_t
@@ -95,7 +116,9 @@ uint32_t
 Address::CopyFrom(const uint8_t* buffer, uint8_t len)
 {
     NS_LOG_FUNCTION(this << &buffer << static_cast<uint32_t>(len));
-    NS_ASSERT(len <= MAX_SIZE);
+    NS_ASSERT_MSG(m_len <= MAX_SIZE, "Address length too large");
+    NS_ASSERT_MSG(m_type != UNASSIGNED_TYPE,
+                  "Type-0 addresses are reserved. Please use SetType before using CopyFrom.");
     std::memcpy(m_data, buffer, len);
     m_len = len;
     return m_len;
@@ -119,9 +142,7 @@ Address::CheckCompatible(uint8_t type, uint8_t len) const
 {
     NS_LOG_FUNCTION(this << static_cast<uint32_t>(type) << static_cast<uint32_t>(len));
     NS_ASSERT(len <= MAX_SIZE);
-    /// @internal
-    /// Mac address type/length detection is discussed in \bugid{1568}
-    return (m_len == len && m_type == type) || (m_len >= len && m_type == 0);
+    return (m_len == len && m_type == type);
 }
 
 bool
@@ -132,12 +153,15 @@ Address::IsMatchingType(uint8_t type) const
 }
 
 uint8_t
-Address::Register()
+Address::Register(const std::string& kind, uint8_t length)
 {
-    NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = 1;
-    type++;
-    return type;
+    NS_LOG_FUNCTION(kind << length);
+    static uint8_t lastRegisteredType = UNASSIGNED_TYPE;
+    NS_ASSERT_MSG(m_typeRegistry.find({kind, length}) == m_typeRegistry.end(),
+                  "An address of the same kind and length is already registered.");
+    lastRegisteredType++;
+    m_typeRegistry[{kind, length}] = lastRegisteredType;
+    return lastRegisteredType;
 }
 
 uint32_t
@@ -171,16 +195,7 @@ ATTRIBUTE_HELPER_CPP(Address);
 bool
 operator==(const Address& a, const Address& b)
 {
-    /* Two addresses can be equal even if their types are
-     * different if one of the two types is zero. a type of
-     * zero identifies an Address which might contain meaningful
-     * payload but for which the type field could not be set because
-     * we did not know it. This can typically happen in the ARP
-     * layer where we receive an address from an ArpHeader but
-     * we do not know its type: we really want to be able to
-     * compare addresses without knowing their real type.
-     */
-    if (a.m_type != b.m_type && a.m_type != 0 && b.m_type != 0)
+    if (a.m_type != b.m_type)
     {
         return false;
     }
@@ -238,8 +253,9 @@ operator<<(std::ostream& os, const Address& address)
     {
         return os;
     }
+    std::ios_base::fmtflags ff = os.flags();
+    auto fill = os.fill('0');
     os.setf(std::ios::hex, std::ios::basefield);
-    os.fill('0');
     os << std::setw(2) << (uint32_t)address.m_type << "-" << std::setw(2) << (uint32_t)address.m_len
        << "-";
     for (uint8_t i = 0; i < (address.m_len - 1); ++i)
@@ -248,8 +264,8 @@ operator<<(std::ostream& os, const Address& address)
     }
     // Final byte not suffixed by ":"
     os << std::setw(2) << (uint32_t)address.m_data[address.m_len - 1];
-    os.setf(std::ios::dec, std::ios::basefield);
-    os.fill(' ');
+    os.flags(ff); // Restore stream flags
+    os.fill(fill);
     return os;
 }
 

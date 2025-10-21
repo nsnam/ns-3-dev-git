@@ -11,6 +11,6 @@ PING 2001:2::ff:fe00:2 - 16 bytes of data; 64 bytes including ICMP and IPv6 head
 5 packets transmitted, 5 received, 0% packet loss, time 4010ms
 rtt min/avg/max/mdev = 7/10.4/21/6.066 ms
 NDISC Cache of node 0 at time +9s
-2001:2::ff:fe00:2 dev 2 lladdr 00-06-02:00:00:00:00:02 REACHABLE
+2001:2::ff:fe00:2 dev 2 lladdr 01-06-02:00:00:00:00:02 REACHABLE
 NDISC Cache of node 1 at time +9s
-2001:2::ff:fe00:1 dev 2 lladdr 00-06-02:00:00:00:00:01 REACHABLE
+2001:2::ff:fe00:1 dev 2 lladdr 01-06-02:00:00:00:00:01 REACHABLE

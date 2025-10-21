@@ -498,7 +498,6 @@ Icmpv6L4Protocol::ReceiveLLA(Icmpv6OptionLinkLayerAddress lla,
                              Ptr<Ipv6Interface> interface)
 {
     NS_LOG_FUNCTION(this << lla << src << dst << interface);
-    Address hardwareAddress;
     NdiscCache::Entry* entry = nullptr;
     Ptr<NdiscCache> cache = FindCache(interface->GetDevice());
 
@@ -843,7 +842,6 @@ Icmpv6L4Protocol::HandleNA(Ptr<Packet> packet,
     packet->RemoveHeader(naHeader);
     Ipv6Address target = naHeader.GetIpv6Target();
 
-    Address hardwareAddress;
     NdiscCache::Entry* entry = nullptr;
     Ptr<NdiscCache> cache = FindCache(interface->GetDevice());
     std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting;

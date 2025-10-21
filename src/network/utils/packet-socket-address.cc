@@ -145,7 +145,7 @@ uint8_t
 PacketSocketAddress::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("PacketSocketAddress", Address::MAX_SIZE);
     return type;
 }
 

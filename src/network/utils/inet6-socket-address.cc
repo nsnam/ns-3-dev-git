@@ -119,7 +119,7 @@ uint8_t
 Inet6SocketAddress::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("IpAddress", 18);
     return type;
 }
 

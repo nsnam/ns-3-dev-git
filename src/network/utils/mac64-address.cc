@@ -157,7 +157,7 @@ uint8_t
 Mac64Address::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", 8);
     return type;
 }
 

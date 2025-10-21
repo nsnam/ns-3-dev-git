@@ -129,7 +129,7 @@ Mac16Address::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
 
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", 2);
     return type;
 }
 

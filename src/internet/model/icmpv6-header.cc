@@ -2044,6 +2044,7 @@ Icmpv6OptionLinkLayerAddress::Deserialize(Buffer::Iterator start)
     NS_ASSERT(GetLength() * 8 <= 32 + 2);
     i.Read(mac, (GetLength() * 8) - 2);
 
+    m_addr.SetType("MacAddress", (GetLength() * 8) - 2);
     m_addr.CopyFrom(mac, (GetLength() * 8) - 2);
 
     return GetSerializedSize();

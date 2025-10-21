@@ -212,10 +212,14 @@ ArpHeader::Deserialize(Buffer::Iterator start)
     }
 
     m_type = static_cast<ArpType_e>(i.ReadNtohU16()); // Read OP
-    ReadFrom(i, m_macSource, hardwareAddressLen);     // Read SHA (size HLN)
-    ReadFrom(i, m_ipv4Source);                        // Read SPA (size PLN == 4)
-    ReadFrom(i, m_macDest, hardwareAddressLen);       // Read THA (size HLN)
-    ReadFrom(i, m_ipv4Dest);                          // Read TPA (size PLN == 4)
+
+    m_macSource.SetType("MacAddress", hardwareAddressLen);
+    m_macDest.SetType("MacAddress", hardwareAddressLen);
+
+    ReadFrom(i, m_macSource, hardwareAddressLen); // Read SHA (size HLN)
+    ReadFrom(i, m_ipv4Source);                    // Read SPA (size PLN == 4)
+    ReadFrom(i, m_macDest, hardwareAddressLen);   // Read THA (size HLN)
+    ReadFrom(i, m_ipv4Dest);                      // Read TPA (size PLN == 4)
     return GetSerializedSize();
 }
 
