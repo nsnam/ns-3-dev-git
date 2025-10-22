@@ -75,7 +75,8 @@ class TcpAbeToggleTest : public TestCase
      */
     void DoRun() override
     {
-        m_socket = DynamicCast<TestTcpSocketBase>(CreateObject<TestTcpSocketBase>());
+        NS_LOG_FUNCTION(this);
+        m_socket = CreateObject<TestTcpSocketBase>();
         m_socket->SetUseAbe(true);
         NS_TEST_EXPECT_MSG_EQ(m_socket->GetTcb()->m_abeEnabled, true, "ABE should be enabled");
         NS_TEST_EXPECT_MSG_EQ(m_socket->GetTcb()->m_useEcn,
@@ -137,6 +138,7 @@ class TcpAbeTest : public TestCase
           m_bytesInFlight(bytesInFlight),
           m_congestionControlType(congestionControlType)
     {
+        NS_LOG_FUNCTION(this << desc);
     }
 
     /**
@@ -144,7 +146,8 @@ class TcpAbeTest : public TestCase
      */
     void DoRun() override
     {
-        m_socket = DynamicCast<TestTcpSocketBase>(CreateObject<TestTcpSocketBase>());
+        NS_LOG_FUNCTION(this);
+        m_socket = CreateObject<TestTcpSocketBase>();
         ObjectFactory congestionAlgorithmFactory;
         congestionAlgorithmFactory.SetTypeId(m_congestionControlType);
         Ptr<TcpCongestionOps> algo = congestionAlgorithmFactory.Create<TcpCongestionOps>();
@@ -182,6 +185,8 @@ class TcpAbeTest : public TestCase
         {
             NS_TEST_EXPECT_MSG_EQ(0, 1, "Invalid test case");
         }
+        Simulator::Destroy();
+        m_socket = nullptr;
     }
 };
 
