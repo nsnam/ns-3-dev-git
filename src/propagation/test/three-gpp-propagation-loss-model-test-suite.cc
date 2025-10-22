@@ -1025,7 +1025,7 @@ class ThreeGppShadowingTestCase : public TestCase
      * @param b the second mobility model
      * @param testNum the index of the experiment
      */
-    void EvaluateLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint8_t testNum);
+    void EvaluateLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint16_t testNum);
 
     /**
      * Change the channel condition model
@@ -1065,7 +1065,9 @@ ThreeGppShadowingTestCase::~ThreeGppShadowingTestCase()
 }
 
 void
-ThreeGppShadowingTestCase::EvaluateLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint8_t testNum)
+ThreeGppShadowingTestCase::EvaluateLoss(Ptr<MobilityModel> a,
+                                        Ptr<MobilityModel> b,
+                                        uint16_t testNum)
 {
     double loss = m_lossModel->CalcRxPower(0, a, b);
     m_results.at(testNum).push_back(loss);
@@ -1109,6 +1111,7 @@ ThreeGppShadowingTestCase::RunTest(uint16_t testNum,
     m_lossModel->SetAttribute("Frequency", DoubleValue(frequency));
     m_lossModel->SetAttribute("ShadowingEnabled",
                               BooleanValue(shadowingEnabled)); // enable the shadow fading
+    m_lossModel->AssignStreams(testNum);
 
     // Set the channel condition to LOS
     Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel>();
@@ -1251,7 +1254,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 7;
     m_testVectors.Add(testVector);
 
-    uint16_t numSamples = 250;
+    uint16_t numSamples = 400;
 
     for (std::size_t tvIndex = 0; tvIndex < m_testVectors.GetN(); tvIndex++)
     {
