@@ -34,7 +34,15 @@ class QosFrameExchangeManager : public FrameExchangeManager
     QosFrameExchangeManager();
     ~QosFrameExchangeManager() override;
 
-    bool StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth) override;
+    /**
+     * Request the FrameExchangeManager to start a frame exchange sequence. This function is not
+     * expected to be overridden. If needed, the StartFrameExchange function shall be overridden.
+     *
+     * @param edca the channel access function that gained channel access
+     * @param allowedWidth the allowed width for the frame exchange sequence
+     * @return true if a frame exchange sequence was started, false otherwise
+     */
+    bool StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth) final;
 
     /**
      * Recompute the protection and acknowledgment methods to use if the given MPDU
@@ -138,7 +146,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
      *                     given EDCAF is non-zero)
      * @return true if a frame exchange sequence was started, false otherwise
      */
-    virtual bool StartTransmission(Ptr<QosTxop> edca, Time txopDuration);
+    bool StartTransmission(Ptr<QosTxop> edca, Time txopDuration);
 
     /**
      * Start a frame exchange (including protection frames and acknowledgment frames
