@@ -101,7 +101,7 @@ class UdpTraceClient : public SourceApplication
     void SetTraceLoop(bool traceLoop);
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void CancelEvents() override;
 
     /**

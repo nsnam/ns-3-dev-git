@@ -176,7 +176,7 @@ class ThreeGppHttpClient : public SourceApplication
     void DoDispose() override;
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void DoStopApplication() override;
     void DoConnectionSucceeded(Ptr<Socket> socket) override;
     void DoConnectionFailed(Ptr<Socket> socket) override;

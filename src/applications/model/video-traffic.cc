@@ -184,25 +184,21 @@ VideoTraffic::DoInitialize()
 }
 
 void
-VideoTraffic::DoStartApplication(bool firstTime)
+VideoTraffic::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
+    if (m_protocolTid == TcpSocketFactory::GetTypeId())
     {
-        if (m_protocolTid == TcpSocketFactory::GetTypeId())
-        {
-            UintegerValue uintegerValue;
-            m_socket->GetAttribute("SegmentSize", uintegerValue);
-            m_maxSize = uintegerValue.Get();
-        }
-
-        m_socket->SetDataSentCallback(MakeCallback(&VideoTraffic::TxDone, this));
-        m_socket->SetSendCallback(MakeCallback(&VideoTraffic::TxAvailable, this));
-        m_socket->SetAllowBroadcast(true);
-        m_socket->ShutdownRecv();
+        UintegerValue uintegerValue;
+        m_socket->GetAttribute("SegmentSize", uintegerValue);
+        m_maxSize = uintegerValue.Get();
     }
+
+    m_socket->SetDataSentCallback(MakeCallback(&VideoTraffic::TxDone, this));
+    m_socket->SetSendCallback(MakeCallback(&VideoTraffic::TxAvailable, this));
+    m_socket->SetAllowBroadcast(true);
+    m_socket->ShutdownRecv();
 
     if (m_connected)
     {

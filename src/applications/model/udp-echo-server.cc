@@ -61,39 +61,36 @@ UdpEchoServer::~UdpEchoServer()
 }
 
 void
-UdpEchoServer::DoStartApplication(bool firstTime)
+UdpEchoServer::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
+    auto local = m_local;
+    if (local.IsInvalid())
     {
-        auto local = m_local;
-        if (local.IsInvalid())
-        {
-            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
-        }
-        if (m_socket->Bind(local) == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-        if (addressUtils::IsMulticast(m_local))
-        {
-            Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket>(m_socket);
-            if (udpSocket)
-            {
-                // equivalent to setsockopt (MCAST_JOIN_GROUP)
-                udpSocket->MulticastJoinGroup(0, m_local);
-            }
-            else
-            {
-                NS_FATAL_ERROR("Error: Failed to join multicast group");
-            }
-        }
-        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
+        local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
     }
+    if (m_socket->Bind(local) == -1)
+    {
+        NS_FATAL_ERROR("Failed to bind socket");
+    }
+    if (addressUtils::IsMulticast(m_local))
+    {
+        Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket>(m_socket);
+        if (udpSocket)
+        {
+            // equivalent to setsockopt (MCAST_JOIN_GROUP)
+            udpSocket->MulticastJoinGroup(0, m_local);
+        }
+        else
+        {
+            NS_FATAL_ERROR("Error: Failed to join multicast group");
+        }
+    }
+    m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+    m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
 
-    if (m_local.IsInvalid() && firstTime)
+    if (m_local.IsInvalid())
     {
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)

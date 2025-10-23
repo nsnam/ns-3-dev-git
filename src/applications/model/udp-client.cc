@@ -155,15 +155,11 @@ UdpClient::GetPort() const
 }
 
 void
-UdpClient::DoStartApplication(bool firstTime)
+UdpClient::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
-    {
-        m_socket->SetAllowBroadcast(true);
-    }
+    m_socket->SetAllowBroadcast(true);
 
 #ifdef NS3_LOG_ENABLE
     std::stringstream peerAddressStringStream;

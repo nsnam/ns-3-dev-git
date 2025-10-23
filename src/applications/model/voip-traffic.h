@@ -71,7 +71,7 @@ class VoipTraffic : public SourceApplication
     int64_t AssignStreams(int64_t stream) override;
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void DoConnectionSucceeded(Ptr<Socket> socket) override;
     void CancelEvents() override;
 

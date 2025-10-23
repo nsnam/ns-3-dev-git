@@ -58,7 +58,7 @@ class MobileGaming : public SourceApplication
     };
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void DoStopApplication() override;
     void DoConnectionSucceeded(Ptr<Socket> socket) override;
     void CancelEvents() override;

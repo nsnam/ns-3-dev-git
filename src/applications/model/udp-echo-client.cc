@@ -159,17 +159,11 @@ UdpEchoClient::GetPort() const
 }
 
 void
-UdpEchoClient::DoStartApplication(bool firstTime)
+UdpEchoClient::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
-
-    if (firstTime)
-    {
-        m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
-        m_socket->SetAllowBroadcast(true);
-    }
-
+    NS_LOG_FUNCTION(this);
+    m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::HandleRead, this));
+    m_socket->SetAllowBroadcast(true);
     ScheduleTransmit(Time(0));
 }
 

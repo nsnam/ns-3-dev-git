@@ -120,18 +120,14 @@ VirtualDesktop::SetParametersPacketSize(const std::vector<std::pair<double, doub
 }
 
 void
-VirtualDesktop::DoStartApplication(bool firstTime)
+VirtualDesktop::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
-    {
-        m_socket->SetDataSentCallback(MakeCallback(&VirtualDesktop::TxDone, this));
-        m_socket->SetSendCallback(MakeCallback(&VirtualDesktop::TxAvailable, this));
-        m_socket->SetAllowBroadcast(true);
-        m_socket->ShutdownRecv();
-    }
+    m_socket->SetDataSentCallback(MakeCallback(&VirtualDesktop::TxDone, this));
+    m_socket->SetSendCallback(MakeCallback(&VirtualDesktop::TxAvailable, this));
+    m_socket->SetAllowBroadcast(true);
+    m_socket->ShutdownRecv();
 
     if (m_connected)
     {

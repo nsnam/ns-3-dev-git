@@ -101,15 +101,12 @@ MobileGaming::AssignStreams(int64_t stream)
 }
 
 void
-MobileGaming::DoStartApplication(bool firstTime)
+MobileGaming::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
-    {
-        m_socket->SetAllowBroadcast(true);
-        m_socket->ShutdownRecv();
-    }
+    m_socket->SetAllowBroadcast(true);
+    m_socket->ShutdownRecv();
 
     m_currentStage = TrafficModelStage::INITIAL;
 

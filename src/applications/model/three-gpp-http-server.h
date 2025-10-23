@@ -142,7 +142,7 @@ class ThreeGppHttpServer : public SinkApplication
     void DoDispose() override;
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void DoStopApplication() override;
     void SetLocal(const Address& addr) override;
     void SetPort(uint32_t port) override;

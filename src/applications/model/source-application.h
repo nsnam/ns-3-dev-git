@@ -122,9 +122,8 @@ class SourceApplication : public Application
 
     /**
      * @brief Application specific startup code for child subclasses
-     * @param firstTime true if this is the first time the application is started
      */
-    virtual void DoStartApplication(bool firstTime);
+    virtual void DoStartApplication();
 
     /**
      * @brief Application specific shutdown code for child subclasses

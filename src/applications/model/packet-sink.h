@@ -101,7 +101,7 @@ class PacketSink : public SinkApplication
     void DoDispose() override;
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void DoStopApplication() override;
 
     /**

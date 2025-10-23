@@ -273,14 +273,10 @@ UdpTraceClient::LoadDefaultTrace()
 }
 
 void
-UdpTraceClient::DoStartApplication(bool firstTime)
+UdpTraceClient::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
-    if (firstTime)
-    {
-        m_socket->SetAllowBroadcast(true);
-    }
+    NS_LOG_FUNCTION(this);
+    m_socket->SetAllowBroadcast(true);
     m_sendEvent = Simulator::ScheduleNow(&UdpTraceClient::Send, this);
 }
 

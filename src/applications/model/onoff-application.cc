@@ -130,16 +130,12 @@ OnOffApplication::AssignStreams(int64_t stream)
 
 // Application Methods
 void
-OnOffApplication::DoStartApplication(bool firstTime) // Called at time specified by Start
+OnOffApplication::DoStartApplication() // Called at time specified by Start
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
-    {
-        m_socket->SetAllowBroadcast(true);
-        m_socket->ShutdownRecv();
-    }
+    m_socket->SetAllowBroadcast(true);
+    m_socket->ShutdownRecv();
 
     m_cbrRateFailSafe = m_cbrRate;
 

@@ -121,7 +121,7 @@ class UdpEchoClient : public SourceApplication
     void SetFill(uint8_t* fill, uint32_t fillSize, uint32_t dataSize);
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void CancelEvents() override;
 
     /**

@@ -103,60 +103,54 @@ PacketSink::DoDispose()
 
 // Application Methods
 void
-PacketSink::DoStartApplication(bool firstTime) // Called at time specified by Start
+PacketSink::DoStartApplication() // Called at time specified by Start
 {
-    NS_LOG_FUNCTION(this << firstTime);
+    NS_LOG_FUNCTION(this);
 
-    // Create the socket if not already
-    if (firstTime)
+    auto local = m_local;
+    if (local.IsInvalid())
     {
-        auto local = m_local;
-        if (local.IsInvalid())
-        {
-            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
-            NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
-        }
-        else if (InetSocketAddress::IsMatchingType(local))
-        {
-            m_port = InetSocketAddress::ConvertFrom(local).GetPort();
-            const auto ipv4 = InetSocketAddress::ConvertFrom(local).GetIpv4();
-            NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << local
-                             << ".");
-        }
-        else if (Inet6SocketAddress::IsMatchingType(local))
-        {
-            m_port = Inet6SocketAddress::ConvertFrom(local).GetPort();
-            const auto ipv6 = Inet6SocketAddress::ConvertFrom(local).GetIpv6();
-            NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << local
-                             << ".");
-        }
-        if (m_socket->Bind(local) == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-        m_socket->Listen();
-        m_socket->ShutdownSend();
-        if (addressUtils::IsMulticast(local))
-        {
-            if (auto udpSocket = DynamicCast<UdpSocket>(m_socket))
-            {
-                // equivalent to setsockopt (MCAST_JOIN_GROUP)
-                udpSocket->MulticastJoinGroup(0, local);
-            }
-            else
-            {
-                NS_FATAL_ERROR("Error: joining multicast on a non-UDP socket");
-            }
-        }
-        m_socket->SetRecvCallback(MakeCallback(&PacketSink::HandleRead, this));
-        m_socket->SetRecvPktInfo(true);
-        m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
-                                    MakeCallback(&PacketSink::HandleAccept, this));
-        m_socket->SetCloseCallbacks(MakeCallback(&PacketSink::HandlePeerClose, this),
-                                    MakeCallback(&PacketSink::HandlePeerError, this));
+        local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
     }
+    else if (InetSocketAddress::IsMatchingType(local))
+    {
+        m_port = InetSocketAddress::ConvertFrom(local).GetPort();
+        const auto ipv4 = InetSocketAddress::ConvertFrom(local).GetIpv4();
+        NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << local << ".");
+    }
+    else if (Inet6SocketAddress::IsMatchingType(local))
+    {
+        m_port = Inet6SocketAddress::ConvertFrom(local).GetPort();
+        const auto ipv6 = Inet6SocketAddress::ConvertFrom(local).GetIpv6();
+        NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << local << ".");
+    }
+    if (m_socket->Bind(local) == -1)
+    {
+        NS_FATAL_ERROR("Failed to bind socket");
+    }
+    m_socket->Listen();
+    m_socket->ShutdownSend();
+    if (addressUtils::IsMulticast(local))
+    {
+        if (auto udpSocket = DynamicCast<UdpSocket>(m_socket))
+        {
+            // equivalent to setsockopt (MCAST_JOIN_GROUP)
+            udpSocket->MulticastJoinGroup(0, local);
+        }
+        else
+        {
+            NS_FATAL_ERROR("Error: joining multicast on a non-UDP socket");
+        }
+    }
+    m_socket->SetRecvCallback(MakeCallback(&PacketSink::HandleRead, this));
+    m_socket->SetRecvPktInfo(true);
+    m_socket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
+                                MakeCallback(&PacketSink::HandleAccept, this));
+    m_socket->SetCloseCallbacks(MakeCallback(&PacketSink::HandlePeerClose, this),
+                                MakeCallback(&PacketSink::HandlePeerError, this));
 
-    if (m_local.IsInvalid() && firstTime)
+    if (m_local.IsInvalid())
     {
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)

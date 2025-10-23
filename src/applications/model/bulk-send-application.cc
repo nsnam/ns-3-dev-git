@@ -97,31 +97,27 @@ BulkSendApplication::CancelEvents()
 
 // Application Methods
 void
-BulkSendApplication::DoStartApplication(bool firstTime) // Called at time specified by Start
+BulkSendApplication::DoStartApplication() // Called at time specified by Start
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
+    // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
+    if (m_socket->GetSocketType() != Socket::NS3_SOCK_STREAM &&
+        m_socket->GetSocketType() != Socket::NS3_SOCK_SEQPACKET)
     {
-        // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
-        if (m_socket->GetSocketType() != Socket::NS3_SOCK_STREAM &&
-            m_socket->GetSocketType() != Socket::NS3_SOCK_SEQPACKET)
-        {
-            NS_FATAL_ERROR("Using BulkSend with an incompatible socket type. "
-                           "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "
-                           "In other words, use TCP instead of UDP.");
-        }
+        NS_FATAL_ERROR("Using BulkSend with an incompatible socket type. "
+                       "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "
+                       "In other words, use TCP instead of UDP.");
+    }
 
-        m_socket->ShutdownRecv();
-        m_socket->SetSendCallback(MakeCallback(&BulkSendApplication::DataSend, this));
+    m_socket->ShutdownRecv();
+    m_socket->SetSendCallback(MakeCallback(&BulkSendApplication::DataSend, this));
 
-        if (auto tcpSocket = DynamicCast<TcpSocketBase>(m_socket))
-        {
-            tcpSocket->TraceConnectWithoutContext(
-                "Retransmission",
-                MakeCallback(&BulkSendApplication::PacketRetransmitted, this));
-        }
+    if (auto tcpSocket = DynamicCast<TcpSocketBase>(m_socket))
+    {
+        tcpSocket->TraceConnectWithoutContext(
+            "Retransmission",
+            MakeCallback(&BulkSendApplication::PacketRetransmitted, this));
     }
 
     if (m_connected)

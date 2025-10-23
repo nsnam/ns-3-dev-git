@@ -163,16 +163,12 @@ VoipTraffic::SetInactiveExponentialMean(Time mean)
 }
 
 void
-VoipTraffic::DoStartApplication(bool firstTime)
+VoipTraffic::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
-    if (firstTime)
-    {
-        m_socket->SetAllowBroadcast(true);
-        m_socket->ShutdownRecv();
-    }
+    m_socket->SetAllowBroadcast(true);
+    m_socket->ShutdownRecv();
 
     if (m_connected)
     {

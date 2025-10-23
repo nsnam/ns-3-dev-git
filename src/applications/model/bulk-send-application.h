@@ -89,7 +89,7 @@ class BulkSendApplication : public SourceApplication
     void SetMaxBytes(uint64_t maxBytes);
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
     void DoConnectionSucceeded(Ptr<Socket> socket) override;
     void CancelEvents() override;
 

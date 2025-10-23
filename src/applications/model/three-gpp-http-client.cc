@@ -208,10 +208,9 @@ ThreeGppHttpClient::DoDispose()
 }
 
 void
-ThreeGppHttpClient::DoStartApplication(bool firstTime)
+ThreeGppHttpClient::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
-    NS_ASSERT(m_socket != nullptr);
+    NS_LOG_FUNCTION(this);
 
     if (m_state == NOT_STARTED)
     {

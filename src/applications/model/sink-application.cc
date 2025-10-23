@@ -104,18 +104,18 @@ void
 SinkApplication::StartApplication()
 {
     NS_LOG_FUNCTION(this);
-    const auto firstTime = !m_socket;
-    if (!m_socket)
-    {
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-    }
+
+    // note: it is currently not possible to restart an application
+
+    m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
     if (m_local.IsInvalid() && !m_socket6)
     {
         // local address is not specified, so create another socket to also listen to all IPv6
         // addresses
         m_socket6 = Socket::CreateSocket(GetNode(), m_protocolTid);
     }
-    DoStartApplication(firstTime);
+
+    DoStartApplication();
 }
 
 void
@@ -154,9 +154,9 @@ SinkApplication::CloseSocket(Ptr<Socket> socket)
 }
 
 void
-SinkApplication::DoStartApplication(bool firstTime)
+SinkApplication::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
+    NS_LOG_FUNCTION(this);
 }
 
 void

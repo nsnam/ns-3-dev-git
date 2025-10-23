@@ -109,52 +109,52 @@ void
 SourceApplication::StartApplication()
 {
     NS_LOG_FUNCTION(this);
-    const auto firstTime = !m_socket;
-    if (!m_socket)
+
+    // note: it is currently not possible to restart an application
+
+    NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
+    if (!m_local.IsInvalid())
     {
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
-
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-        }
-
-        m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
-        m_socket->SetConnectCallback(MakeCallback(&SourceApplication::ConnectionSucceeded, this),
-                                     MakeCallback(&SourceApplication::ConnectionFailed, this));
-
-        int ret = -1;
-        if (InetSocketAddress::IsMatchingType(m_peer) ||
-            (m_allowPacketSocket && PacketSocketAddress::IsMatchingType(m_peer)))
-        {
-            ret = m_socket->Bind();
-        }
-        else if (Inet6SocketAddress::IsMatchingType(m_peer))
-        {
-            ret = m_socket->Bind6();
-        }
-        else
-        {
-            NS_FATAL_ERROR("Incompatible address type: " << m_peer);
-        }
-        if (ret == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-
-        if (InetSocketAddress::IsMatchingType(m_peer))
-        {
-            m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        }
-
-        m_socket->Connect(m_peer);
+        NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
+                         InetSocketAddress::IsMatchingType(m_local)) ||
+                            (InetSocketAddress::IsMatchingType(m_peer) &&
+                             Inet6SocketAddress::IsMatchingType(m_local)),
+                        "Incompatible peer and local address IP version");
     }
+
+    m_socket = Socket::CreateSocket(GetNode(), m_protocolTid);
+    m_socket->SetConnectCallback(MakeCallback(&SourceApplication::ConnectionSucceeded, this),
+                                 MakeCallback(&SourceApplication::ConnectionFailed, this));
+
+    int ret{-1};
+    if (InetSocketAddress::IsMatchingType(m_peer) ||
+        (m_allowPacketSocket && PacketSocketAddress::IsMatchingType(m_peer)))
+    {
+        ret = m_socket->Bind();
+    }
+    else if (Inet6SocketAddress::IsMatchingType(m_peer))
+    {
+        ret = m_socket->Bind6();
+    }
+    else
+    {
+        NS_FATAL_ERROR("Incompatible address type: " << m_peer);
+    }
+    if (ret == -1)
+    {
+        NS_FATAL_ERROR("Failed to bind socket");
+    }
+
+    if (InetSocketAddress::IsMatchingType(m_peer))
+    {
+        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+    }
+
+    m_socket->Connect(m_peer);
+
     CancelEvents();
-    DoStartApplication(firstTime);
+
+    DoStartApplication();
 }
 
 void
@@ -206,9 +206,9 @@ SourceApplication::CancelEvents()
 }
 
 void
-SourceApplication::DoStartApplication(bool firstTime)
+SourceApplication::DoStartApplication()
 {
-    NS_LOG_FUNCTION(this << firstTime);
+    NS_LOG_FUNCTION(this);
 }
 
 void

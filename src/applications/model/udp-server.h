@@ -75,7 +75,7 @@ class UdpServer : public SinkApplication
     void SetPacketWindowSize(uint16_t size);
 
   private:
-    void DoStartApplication(bool firstTime) override;
+    void DoStartApplication() override;
 
     /**
      * @brief Handle a packet reception.
