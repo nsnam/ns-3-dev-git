@@ -481,18 +481,18 @@ HtFrameExchangeManager::SendBufferedUnit(Mac48Address sender)
 }
 
 bool
-HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+HtFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << availableTime << initialFrame);
 
     // First, check if there is a BAR to be transmitted
-    if (auto mpdu = GetBar(edca->GetAccessCategory());
+    if (auto mpdu = GetBar(m_edca->GetAccessCategory());
         mpdu && SendMpduFromBaManager(mpdu, availableTime, initialFrame))
     {
         return true;
     }
 
-    Ptr<WifiMpdu> peekedItem = edca->PeekNextMpdu(m_linkId);
+    auto peekedItem = m_edca->PeekNextMpdu(m_linkId);
 
     // Even though channel access is requested when the queue is not empty, at
     // the time channel access is granted the lifetime of the packet might be
@@ -511,7 +511,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
         return SendAddBaRequest(hdr.GetAddr1(),
                                 hdr.GetQosTid(),
                                 GetBaAgreementStartingSequenceNumber(peekedItem),
-                                edca->GetBlockAckInactivityTimeout(),
+                                m_edca->GetBlockAckInactivityTimeout(),
                                 true,
                                 availableTime);
     }
@@ -522,7 +522,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
             return SendAddBaRequest(addbaRecipient.value(),
                                     hdr.GetQosTid(),
                                     GetBaAgreementStartingSequenceNumber(peekedItem),
-                                    edca->GetBlockAckInactivityTimeout(),
+                                    m_edca->GetBlockAckInactivityTimeout(),
                                     true,
                                     availableTime,
                                     hdr.GetAddr1());
@@ -542,7 +542,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     // - the frame is a broadcast QoS data frame
     // - the frame is a fragment
     // - the frame must be fragmented
-    return QosFrameExchangeManager::StartFrameExchange(edca, availableTime, initialFrame);
+    return QosFrameExchangeManager::StartFrameExchange(availableTime, initialFrame);
 }
 
 Ptr<WifiMpdu>

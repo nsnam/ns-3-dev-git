@@ -145,7 +145,6 @@ class QosFrameExchangeManager : public FrameExchangeManager
      * as needed) that fits within the given <i>availableTime</i> (if different than
      * Time::Min()).
      *
-     * @param edca the EDCAF which has been granted the opportunity to transmit
      * @param availableTime the amount of time allowed for the frame exchange. Pass
      *                      Time::Min() in case the TXOP limit is null
      * @param initialFrame true if the frame being transmitted is the initial frame
@@ -153,7 +152,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
      *                     limit can be exceeded
      * @return true if a frame exchange is started, false otherwise
      */
-    virtual bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame);
+    virtual bool StartFrameExchange(Time availableTime, bool initialFrame);
 
     /**
      * Perform a PIFS recovery as a response to transmission failure within a TXOP.

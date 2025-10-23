@@ -124,9 +124,9 @@ HeFrameExchangeManager::SetMultiUserScheduler(const Ptr<MultiUserScheduler> muSc
 }
 
 bool
-HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+HeFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << availableTime << initialFrame);
 
     MultiUserScheduler::TxFormat txFormat = MultiUserScheduler::SU_TX;
     Ptr<const WifiMpdu> mpdu;
@@ -139,19 +139,19 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
      *   or the next frame in the AC queue is a non-broadcast QoS data frame addressed to
      *   a receiver with which a BA agreement has been already established
      */
-    if (m_muScheduler && !GetBar(edca->GetAccessCategory()) &&
-        (!(mpdu = edca->PeekNextMpdu(m_linkId)) ||
+    if (m_muScheduler && !GetBar(m_edca->GetAccessCategory()) &&
+        (!(mpdu = m_edca->PeekNextMpdu(m_linkId)) ||
          (mpdu->GetHeader().IsQosData() && !mpdu->GetHeader().GetAddr1().IsGroup() &&
           m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
                                                        mpdu->GetHeader().GetQosTid()))))
     {
         txFormat =
-            m_muScheduler->NotifyAccessGranted(edca, availableTime, m_allowedWidth, m_linkId);
+            m_muScheduler->NotifyAccessGranted(m_edca, availableTime, m_allowedWidth, m_linkId);
     }
 
     if (txFormat == MultiUserScheduler::SU_TX)
     {
-        return VhtFrameExchangeManager::StartFrameExchange(edca, availableTime, initialFrame);
+        return VhtFrameExchangeManager::StartFrameExchange(availableTime, initialFrame);
     }
 
     if (txFormat == MultiUserScheduler::DL_MU_TX)

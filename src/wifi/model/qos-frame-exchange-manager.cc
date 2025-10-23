@@ -233,7 +233,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
             // starting a new TXOP
             m_edca->NotifyChannelAccessed(m_linkId, txopDuration);
 
-            if (StartFrameExchange(m_edca, txopDuration, true))
+            if (StartFrameExchange(txopDuration, true))
             {
                 m_initialFrame = true;
                 return true;
@@ -248,7 +248,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
         // We are continuing a TXOP, check if we can transmit another frame
         NS_ASSERT(!m_initialFrame);
 
-        if (!StartFrameExchange(m_edca, m_edca->GetRemainingTxop(m_linkId), false))
+        if (!StartFrameExchange(m_edca->GetRemainingTxop(m_linkId), false))
         {
             NS_LOG_DEBUG("Not enough remaining TXOP time");
             return SendCfEndIfNeeded();
@@ -261,7 +261,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
     m_initialFrame = true;
     m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
 
-    if (StartFrameExchange(m_edca, Time::Min(), true))
+    if (StartFrameExchange(Time::Min(), true))
     {
         return true;
     }
@@ -272,13 +272,11 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 }
 
 bool
-QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
-                                            Time availableTime,
-                                            bool initialFrame)
+QosFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << availableTime << initialFrame);
 
-    Ptr<WifiMpdu> mpdu = edca->PeekNextMpdu(m_linkId);
+    auto mpdu = m_edca->PeekNextMpdu(m_linkId);
 
     // Even though channel access is requested when the queue is not empty, at
     // the time channel access is granted the lifetime of the packet might be
@@ -294,7 +292,7 @@ QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
 
-    Ptr<WifiMpdu> item = edca->GetNextMpdu(m_linkId, mpdu, txParams, availableTime, initialFrame);
+    auto item = m_edca->GetNextMpdu(m_linkId, mpdu, txParams, availableTime, initialFrame);
 
     if (!item)
     {
