@@ -183,124 +183,13 @@ EhtFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFram
 
     if (m_apMac)
     {
-        for (uint8_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
-        {
-            if (linkId == m_linkId)
-            {
-                continue;
-            }
-
-            // EMLSR clients involved in a DL or UL TXOP on another link
-            std::set<Mac48Address> emlsrClients;
-            auto ehtFem =
-                StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
-
-            // check if an EMLSR client is the holder of an UL TXOP on the other link
-            if (ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
-                m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(
-                    ehtFem->m_txopHolder.value()))
-            {
-                NS_LOG_DEBUG("Involved in UL TXOP: " << ehtFem->m_txopHolder.value());
-                emlsrClients.insert(ehtFem->m_txopHolder.value());
-            }
-
-            // check if EMLSR clients are involved in a DL TXOP on another link
-            for (const auto& address : ehtFem->m_protectedStas)
-            {
-                if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address))
-                {
-                    NS_LOG_DEBUG("Involved in DL TXOP: " << address);
-                    emlsrClients.insert(address);
-                }
-            }
-
-            for (const auto& address : emlsrClients)
-            {
-                auto mldAddress =
-                    m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(address);
-                NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
-
-                if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(*mldAddress))
-                {
-                    // EMLSR client did not enable EMLSR mode on this link, we can transmit to it
-                    continue;
-                }
-
-                // check that this link is blocked as expected
-                const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, *mldAddress, 0);
-                auto mask =
-                    m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
-                NS_ASSERT_MSG(mask,
-                              "No mask for client " << *mldAddress << " on link " << +m_linkId);
-                if (!mask->test(
-                        static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)))
-                {
-                    NS_ASSERT_MSG(false,
-                                  "Transmissions to " << *mldAddress << " on link " << +m_linkId
-                                                      << " are not blocked");
-                    // in case asserts are disabled, block transmissions on the other links because
-                    // this is what we need
-                    m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
-                                                 *mldAddress,
-                                                 {m_linkId});
-                }
-            }
-        }
+        ApCheckTxBlocked();
     }
 
-    if (initialFrame && m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    if (initialFrame && m_staMac && m_staMac->IsEmlsrLink(m_linkId) &&
+        !GetEmlsrClientCanStartTxop())
     {
-        // Cannot start a transmission on a link blocked because another EMLSR link is being used
-        if (UsingOtherEmlsrLink())
-        {
-            NS_LOG_DEBUG("StartTransmission called while another EMLSR link is being used");
-            return false;
-        }
-
-        auto emlsrManager = m_staMac->GetEmlsrManager();
-
-        if (auto elapsed = emlsrManager->GetElapsedMediumSyncDelayTimer(m_linkId);
-            elapsed && emlsrManager->MediumSyncDelayNTxopsExceeded(m_linkId))
-        {
-            NS_LOG_DEBUG("No new TXOP attempts allowed while MediumSyncDelay is running");
-            // request channel access if needed when the MediumSyncDelay timer expires; in the
-            // meantime no queued packet can be transmitted
-            Simulator::Schedule(
-                emlsrManager->GetMediumSyncDuration() - *elapsed,
-                &Txop::StartAccessAfterEvent,
-                m_edca,
-                m_linkId,
-                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be transmitted until
-                                                     // MSD expires
-                Txop::DONT_CHECK_MEDIUM_BUSY);       // generate backoff regardless of medium busy
-            return false;
-        }
-
-        if (!m_phy)
-        {
-            NS_LOG_DEBUG("No PHY is currently operating on EMLSR link " << +m_linkId);
-            return false;
-        }
-
-        // let EMLSR manager decide whether to prevent or allow this UL TXOP
-        if (const auto [startTxop, delay] =
-                emlsrManager->GetDelayUntilAccessRequest(m_linkId, m_edca->GetAccessCategory());
-            !startTxop)
-
-        {
-            if (delay.IsStrictlyPositive())
-            {
-                Simulator::Schedule(
-                    delay,
-                    &Txop::StartAccessAfterEvent,
-                    m_edca,
-                    m_linkId,
-                    Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
-                                                         // transmitted until RX ends
-                    Txop::CHECK_MEDIUM_BUSY);            // generate backoff if medium busy
-            }
-            return false;
-        }
+        return false;
     }
 
     auto started = HeFrameExchangeManager::StartFrameExchange(availableTime, initialFrame);
@@ -319,6 +208,131 @@ EhtFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFram
     }
 
     return started;
+}
+
+void
+EhtFrameExchangeManager::ApCheckTxBlocked()
+{
+    NS_LOG_FUNCTION(this);
+
+    for (linkId_t linkId = 0; linkId < m_apMac->GetNLinks(); linkId++)
+    {
+        if (linkId == m_linkId)
+        {
+            continue;
+        }
+
+        // EMLSR clients involved in a DL or UL TXOP on another link
+        std::set<Mac48Address> emlsrClients;
+        auto ehtFem = StaticCast<EhtFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
+
+        // check if an EMLSR client is the holder of an UL TXOP on the other link
+        if (ehtFem->m_ongoingTxopEnd.IsPending() && ehtFem->m_txopHolder &&
+            m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(
+                ehtFem->m_txopHolder.value()))
+        {
+            NS_LOG_DEBUG("Involved in UL TXOP: " << ehtFem->m_txopHolder.value());
+            emlsrClients.insert(ehtFem->m_txopHolder.value());
+        }
+
+        // check if EMLSR clients are involved in a DL TXOP on another link
+        for (const auto& address : ehtFem->m_protectedStas)
+        {
+            if (m_mac->GetWifiRemoteStationManager(linkId)->GetEmlsrEnabled(address))
+            {
+                NS_LOG_DEBUG("Involved in DL TXOP: " << address);
+                emlsrClients.insert(address);
+            }
+        }
+
+        for (const auto& address : emlsrClients)
+        {
+            auto mldAddress = m_mac->GetWifiRemoteStationManager(linkId)->GetMldAddress(address);
+            NS_ASSERT_MSG(mldAddress, "MLD address not found for " << address);
+
+            if (!GetWifiRemoteStationManager()->GetEmlsrEnabled(*mldAddress))
+            {
+                // EMLSR client did not enable EMLSR mode on this link, we can transmit to it
+                continue;
+            }
+
+            // check that this link is blocked as expected
+            const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, *mldAddress, 0);
+            auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, m_linkId);
+            NS_ASSERT_MSG(mask, "No mask for client " << *mldAddress << " on link " << +m_linkId);
+            if (!mask->test(
+                    static_cast<std::size_t>(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK)))
+            {
+                NS_ASSERT_MSG(false,
+                              "Transmissions to " << *mldAddress << " on link " << +m_linkId
+                                                  << " are not blocked");
+                // in case asserts are disabled, block transmissions on the other links because
+                // this is what we need
+                m_mac->BlockUnicastTxOnLinks(WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK,
+                                             *mldAddress,
+                                             {m_linkId});
+            }
+        }
+    }
+}
+
+bool
+EhtFrameExchangeManager::GetEmlsrClientCanStartTxop()
+{
+    NS_LOG_FUNCTION(this);
+
+    // Cannot start a transmission on a link blocked because another EMLSR link is being used
+    if (UsingOtherEmlsrLink())
+    {
+        NS_LOG_DEBUG("StartTransmission called while another EMLSR link is being used");
+        return false;
+    }
+
+    auto emlsrManager = m_staMac->GetEmlsrManager();
+
+    if (auto elapsed = emlsrManager->GetElapsedMediumSyncDelayTimer(m_linkId);
+        elapsed && emlsrManager->MediumSyncDelayNTxopsExceeded(m_linkId))
+    {
+        NS_LOG_DEBUG("No new TXOP attempts allowed while MediumSyncDelay is running");
+        // request channel access if needed when the MediumSyncDelay timer expires; in the
+        // meantime no queued packet can be transmitted
+        Simulator::Schedule(
+            emlsrManager->GetMediumSyncDuration() - *elapsed,
+            &Txop::StartAccessAfterEvent,
+            m_edca,
+            m_linkId,
+            Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be transmitted until
+                                                 // MSD expires
+            Txop::DONT_CHECK_MEDIUM_BUSY);       // generate backoff regardless of medium busy
+        return false;
+    }
+
+    if (!m_phy)
+    {
+        NS_LOG_DEBUG("No PHY is currently operating on EMLSR link " << +m_linkId);
+        return false;
+    }
+
+    // let EMLSR manager decide whether to prevent or allow this UL TXOP
+    if (const auto [startTxop, delay] =
+            emlsrManager->GetDelayUntilAccessRequest(m_linkId, m_edca->GetAccessCategory());
+        !startTxop)
+
+    {
+        if (delay.IsStrictlyPositive())
+        {
+            Simulator::Schedule(delay,
+                                &Txop::StartAccessAfterEvent,
+                                m_edca,
+                                m_linkId,
+                                Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
+                                                                     // transmitted until RX ends
+                                Txop::CHECK_MEDIUM_BUSY); // generate backoff if medium busy
+        }
+        return false;
+    }
+
+    return true;
 }
 
 void

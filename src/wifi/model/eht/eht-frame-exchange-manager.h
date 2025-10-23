@@ -204,6 +204,21 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void PrepareFrameToSend(Ptr<WifiMpdu> peekedItem) override;
 
     /**
+     * This function is expected to be called when the AP is starting a frame exchange and checks
+     * that transmissions to EMLSR clients involved in a TXOP on another link are blocked for this
+     * link.
+     */
+    void ApCheckTxBlocked();
+
+    /**
+     * This function is expected to be called when an EMLSR client gains channel access to determine
+     * whether the TXOP can be started.
+     *
+     * @return whether the TXOP can be started
+     */
+    bool GetEmlsrClientCanStartTxop();
+
+    /**
      * @return whether this is an EMLSR client that cannot respond to an ICF received a SIFS before
      */
     bool EmlsrClientCannotRespondToIcf() const;
