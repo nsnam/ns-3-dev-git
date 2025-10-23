@@ -79,7 +79,6 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     void SetLinkId(uint8_t linkId) override;
     Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const override;
-    bool StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth) override;
 
     /**
      * Send an EML Operating Mode Notification frame to the given station.
@@ -180,6 +179,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
+    bool StartFrameExchange(Time availableTime, bool initialFrame) override;
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
     void NotifyChannelReleased() override;

@@ -177,11 +177,9 @@ EhtFrameExchangeManager::UsingOtherEmlsrLink() const
 }
 
 bool
-EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
+EhtFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame)
 {
-    NS_LOG_FUNCTION(this << edca << allowedWidth);
-
-    m_allowedWidth = allowedWidth;
+    NS_LOG_FUNCTION(this << availableTime << initialFrame);
 
     if (m_apMac)
     {
@@ -250,14 +248,12 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         }
     }
 
-    if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    if (initialFrame && m_staMac && m_staMac->IsEmlsrLink(m_linkId))
     {
         // Cannot start a transmission on a link blocked because another EMLSR link is being used
         if (UsingOtherEmlsrLink())
         {
             NS_LOG_DEBUG("StartTransmission called while another EMLSR link is being used");
-            m_edca = DynamicCast<QosTxop>(edca);
-            NotifyChannelReleased();
             return false;
         }
 
@@ -272,39 +268,32 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
             Simulator::Schedule(
                 emlsrManager->GetMediumSyncDuration() - *elapsed,
                 &Txop::StartAccessAfterEvent,
-                edca,
+                m_edca,
                 m_linkId,
                 Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be transmitted until
                                                      // MSD expires
                 Txop::DONT_CHECK_MEDIUM_BUSY);       // generate backoff regardless of medium busy
-            m_edca = DynamicCast<QosTxop>(edca);
-            NotifyChannelReleased();
             return false;
         }
 
         if (!m_phy)
         {
             NS_LOG_DEBUG("No PHY is currently operating on EMLSR link " << +m_linkId);
-            m_edca = DynamicCast<QosTxop>(edca);
-            NotifyChannelReleased();
             return false;
         }
 
         // let EMLSR manager decide whether to prevent or allow this UL TXOP
-        if (const auto [startTxop, delay] = emlsrManager->GetDelayUntilAccessRequest(
-                m_linkId,
-                DynamicCast<QosTxop>(edca)->GetAccessCategory());
+        if (const auto [startTxop, delay] =
+                emlsrManager->GetDelayUntilAccessRequest(m_linkId, m_edca->GetAccessCategory());
             !startTxop)
 
         {
             if (delay.IsStrictlyPositive())
             {
-                m_edca = DynamicCast<QosTxop>(edca);
-                NotifyChannelReleased();
                 Simulator::Schedule(
                     delay,
                     &Txop::StartAccessAfterEvent,
-                    edca,
+                    m_edca,
                     m_linkId,
                     Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT, // queued frames cannot be
                                                          // transmitted until RX ends
@@ -314,17 +303,17 @@ EhtFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
         }
     }
 
-    auto started = HeFrameExchangeManager::StartTransmission(edca, allowedWidth);
+    auto started = HeFrameExchangeManager::StartFrameExchange(availableTime, initialFrame);
 
-    if (started && m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+    if (initialFrame && started)
     {
-        // notify the EMLSR Manager of the UL TXOP start on an EMLSR link
-        NS_ASSERT(m_staMac->GetEmlsrManager());
-        m_staMac->GetEmlsrManager()->NotifyUlTxopStart(m_linkId);
-    }
+        if (m_staMac && m_staMac->IsEmlsrLink(m_linkId))
+        {
+            // notify the EMLSR Manager of the UL TXOP start on an EMLSR link
+            NS_ASSERT(m_staMac->GetEmlsrManager());
+            m_staMac->GetEmlsrManager()->NotifyUlTxopStart(m_linkId);
+        }
 
-    if (started)
-    {
         // we are starting a new TXOP, hence consider the previous ongoing TXOP as terminated
         m_ongoingTxopEnd.Cancel();
     }
