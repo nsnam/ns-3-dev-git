@@ -187,7 +187,7 @@ SourceApplication::ConnectionSucceeded(Ptr<Socket> socket)
     NS_LOG_FUNCTION(this << socket);
     m_connected = true;
     DoConnectionSucceeded(socket);
-    m_connectionSuccess(socket);
+    m_connectionSuccess(socket, m_local, m_peer);
 }
 
 void
@@ -196,7 +196,7 @@ SourceApplication::ConnectionFailed(Ptr<Socket> socket)
     NS_LOG_FUNCTION(this << socket);
     m_connected = false;
     DoConnectionFailed(socket);
-    m_connectionFailure(socket);
+    m_connectionFailure(socket, m_local, m_peer);
 }
 
 void

@@ -85,14 +85,18 @@ class SourceApplication : public Application
      * TracedCallback signature for connection success/failure event.
      *
      * @param [in] socket The socket for which connection succeeded/failed.
+     * @param [in] local The local address.
+     * @param [in] remote The remote address.
      */
-    typedef void (*ConnectionEventCallback)(Ptr<Socket> socket);
+    typedef void (*ConnectionEventCallback)(Ptr<Socket> socket,
+                                            const Address& local,
+                                            const Address& remote);
 
     /// Traced Callback: connection success event.
-    TracedCallback<Ptr<Socket>> m_connectionSuccess;
+    TracedCallback<Ptr<Socket>, const Address&, const Address&> m_connectionSuccess;
 
     /// Traced Callback: connection failure event.
-    TracedCallback<Ptr<Socket>> m_connectionFailure;
+    TracedCallback<Ptr<Socket>, const Address&, const Address&> m_connectionFailure;
 
     Ptr<Socket> m_socket; //!< Socket
 
