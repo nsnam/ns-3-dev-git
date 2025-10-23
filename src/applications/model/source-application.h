@@ -145,7 +145,7 @@ class SourceApplication : public Application
     /**
      * @brief Cancel all pending events.
      */
-    virtual void CancelEvents();
+    virtual void CancelEvents() = 0;
 
     bool m_allowPacketSocket; //!< Allow use of packet socket
 };

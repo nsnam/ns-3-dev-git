@@ -200,12 +200,6 @@ SourceApplication::ConnectionFailed(Ptr<Socket> socket)
 }
 
 void
-SourceApplication::CancelEvents()
-{
-    NS_LOG_FUNCTION(this);
-}
-
-void
 SourceApplication::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
