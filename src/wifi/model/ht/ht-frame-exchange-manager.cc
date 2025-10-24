@@ -936,11 +936,9 @@ HtFrameExchangeManager::TransmissionSucceeded()
         // f) Any number of BlockAckReq frames
         // (Sec. 10.22.2.8 of 802.11-2016)
         NS_LOG_DEBUG("Schedule a transmission from Block Ack Manager in a SIFS");
-        bool (HtFrameExchangeManager::*fp)(Ptr<QosTxop>, Time) =
-            &HtFrameExchangeManager::StartTransmission;
+        bool (HtFrameExchangeManager::*fp)() = &HtFrameExchangeManager::StartTransmission;
 
-        // TXOP limit is null, hence the txopDuration parameter is unused
-        Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+        Simulator::Schedule(m_phy->GetSifs(), fp, this);
 
         if (m_protectedIfResponded)
         {

@@ -144,8 +144,7 @@ QosFrameExchangeManager::PifsRecovery(bool forceCurrentCw)
     }
     else
     {
-        // the txopDuration parameter is unused because we are not starting a new TXOP
-        StartTransmission(m_edca, Seconds(0));
+        StartTransmission();
     }
 }
 
@@ -181,14 +180,16 @@ QosFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
     }
 
     m_allowedWidth = allowedWidth;
-    auto qosTxop = StaticCast<QosTxop>(edca);
-    return StartTransmission(qosTxop, qosTxop->GetTxopLimit(m_linkId));
+    m_dcf = edca;
+    m_edca = StaticCast<QosTxop>(edca);
+    return StartTransmission();
 }
 
 bool
-QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
+QosFrameExchangeManager::StartTransmission()
 {
-    NS_LOG_FUNCTION(this << edca << txopDuration);
+    NS_ASSERT(m_edca);
+    NS_LOG_FUNCTION(this << m_edca->GetAccessCategory());
 
     if (m_pifsRecoveryEvent.IsPending())
     {
@@ -201,8 +202,6 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
     {
         m_txTimer.Cancel();
     }
-    m_dcf = edca;
-    m_edca = edca;
 
     // We check if this EDCAF invoked the backoff procedure (without terminating
     // the TXOP) because the transmission of a non-initial frame of a TXOP failed
@@ -231,6 +230,7 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
             (backingOff && m_edca->GetRemainingTxop(m_linkId).IsZero()))
         {
             // starting a new TXOP
+            const auto txopDuration = m_edca->GetTxopLimit(m_linkId);
             m_edca->NotifyChannelAccessed(m_linkId, txopDuration);
 
             if (StartFrameExchange(txopDuration, true))
@@ -624,11 +624,9 @@ QosFrameExchangeManager::TransmissionSucceeded()
         m_edca->GetRemainingTxop(m_linkId) > m_phy->GetSifs())
     {
         NS_LOG_DEBUG("Schedule another transmission in a SIFS");
-        bool (QosFrameExchangeManager::*fp)(Ptr<QosTxop>, Time) =
-            &QosFrameExchangeManager::StartTransmission;
+        bool (QosFrameExchangeManager::*fp)() = &QosFrameExchangeManager::StartTransmission;
 
-        // we are continuing a TXOP, hence the txopDuration parameter is unused
-        Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+        Simulator::Schedule(m_phy->GetSifs(), fp, this);
 
         if (m_protectedIfResponded)
         {

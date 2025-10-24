@@ -138,15 +138,12 @@ class QosFrameExchangeManager : public FrameExchangeManager
                         Time psduDuration) override;
 
     /**
-     * Request the FrameExchangeManager to start a frame exchange sequence.
+     * Request the FrameExchangeManager to start a frame exchange sequence by using the EDCAF
+     * that got channel access.
      *
-     * @param edca the EDCA that gained channel access
-     * @param txopDuration the duration of a TXOP. This value is only used when a
-     *                     new TXOP is started (and hence the TXOP limit for the
-     *                     given EDCAF is non-zero)
      * @return true if a frame exchange sequence was started, false otherwise
      */
-    bool StartTransmission(Ptr<QosTxop> edca, Time txopDuration);
+    bool StartTransmission();
 
     /**
      * Start a frame exchange (including protection frames and acknowledgment frames

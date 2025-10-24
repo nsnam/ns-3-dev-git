@@ -486,8 +486,7 @@ HeFrameExchangeManager::TransmissionSucceeded()
     {
         NS_LOG_DEBUG("Schedule another transmission in a SIFS after successful BSRP TF");
         Simulator::Schedule(m_phy->GetSifs(), [=, this]() {
-            // TXOP limit is null, hence the txopDuration parameter is unused
-            if (!StartTransmission(m_edca, Seconds(0)))
+            if (!StartTransmission())
             {
                 SendCfEndIfNeeded();
             }
