@@ -93,7 +93,7 @@ class MpiInterface
      * MPI_COMM_WORLD communicator.
      *
      * For more complex situations, such as embedding ns-3 with other
-     * MPI simulators or libraries, the Enable(MPI_Comm communcicator)
+     * MPI simulators or libraries, the Enable(MPI_Comm communicator)
      * may be used if MPI is initialized externally or if ns-3 needs to
      * be run unique communicator.  For example if there are two
      * parallel simulators and the goal is to run each simulator on a

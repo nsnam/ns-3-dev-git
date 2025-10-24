@@ -152,7 +152,7 @@ class TracedValue
     /**
      * Copy from a TracedValue of a compatible type.
      * @tparam U \deduced The underlying type of the other TracedValue.
-     * @param [in] other The other TracedValuet to copy.
+     * @param [in] other The other TracedValue to copy.
      */
     template <typename U>
     TracedValue(const TracedValue<U>& other)
