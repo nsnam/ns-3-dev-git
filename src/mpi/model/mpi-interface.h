@@ -99,7 +99,7 @@ class MpiInterface
      * parallel simulators and the goal is to run each simulator on a
      * different set of ranks.
      *
-     * @note The `SimulatorImplementationType attribute in
+     * @note The `SimulatorImplementationType` attribute in
      * ns3::GlobalValues must be set before calling Enable()
      *
      * @param pargc number of command line arguments

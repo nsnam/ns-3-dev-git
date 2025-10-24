@@ -336,12 +336,12 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * This method invoke the copy constructor of the input object
      * and returns the new instance.
      */
-    /**@{*/
     template <typename T>
     friend Ptr<T> CopyObject(Ptr<T> object);
+
+    /** @copydoc CopyObject(Ptr<T>) */
     template <typename T>
     friend Ptr<T> CopyObject(Ptr<const T> object);
-    /**@}*/
 
     /**
      * Set the TypeId and construct all Attributes of an Object.
