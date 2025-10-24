@@ -120,7 +120,7 @@ namespace ns3
  * @verbatim
    --SchedulerType=HeapScheduler \endverbatim
  *
- * A simple example of CommandLine is in `src/core/example/``command-line-example.cc`
+ * A simple example of CommandLine is in `src/core/example/command-line-example.cc`
  * See that file for an example of handling non-option arguments.
  *
  * The heart of that example is this code:
@@ -142,7 +142,7 @@ namespace ns3
  *    cmd.Parse (argc, argv);
  * @endcode
  * after which it prints the values of each variable.  (The \c SetCbArg function
- * is not shown here; see `src/core/example/``command-line-example.cc`)
+ * is not shown here; see `src/core/example/command-line-example.cc`)
  *
  * Here is the output from a few runs of that program:
  *

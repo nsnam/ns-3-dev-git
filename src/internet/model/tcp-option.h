@@ -71,7 +71,7 @@ class TcpOption : public Object
     virtual uint32_t Deserialize(Buffer::Iterator start) = 0;
 
     /**
-     * @brief Get the `kind' (as in \RFC{793}) of this option
+     * @brief Get the `kind` (as in \RFC{793}) of this option
      * @return the Option Kind
      */
     virtual uint8_t GetKind() const = 0;
