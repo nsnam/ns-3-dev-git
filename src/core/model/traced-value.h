@@ -498,8 +498,7 @@ operator>(const U& lhs, const TracedValue<T>& rhs)
  * @tparam U \deduced The underlying type held by the right-hand argument.
  * @param [in] lhs The left-hand argument.
  * @param [in] rhs The right-hand argument.
- * @returns The result of doing the operator on
- *     the underlying values.
+ * @returns The result of doing the operator on the underlying values.
  */
 template <typename T, typename U>
 auto
@@ -791,8 +790,7 @@ operator>>(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs 
  * @tparam U \deduced The underlying type held by the right-hand argument.
  * @param [in] lhs The left-hand argument.
  * @param [in] rhs The right-hand argument.
- * @returns The result of doing the operator on
- *     the underlying values.
+ * @returns The result of doing the operator on the underlying values.
  */
 template <typename T, typename U>
 TracedValue<T>&
@@ -918,8 +916,7 @@ operator^=(TracedValue<T>& lhs, const U& rhs)
  *
  * @tparam T \deduced The underlying type held by the TracedValue.
  * @param [in] lhs The TracedValue.
- * @returns The result of doing the operator on
- *     the underlying values.
+ * @returns The result of doing the operator on the underlying values.
  */
 template <typename T>
 TracedValue<T>
