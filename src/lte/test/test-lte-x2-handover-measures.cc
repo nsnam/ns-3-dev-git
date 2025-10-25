@@ -597,7 +597,6 @@ LteX2HandoverMeasuresTestCase::CheckConnected(Ptr<NetDevice> ueDevice, Ptr<NetDe
 
     UeManager::State ueManagerState = ueManager->GetState();
     NS_TEST_ASSERT_MSG_EQ(ueManagerState, UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
-    NS_ASSERT_MSG(ueManagerState == UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
 
     uint16_t ueCellId = ueRrc->GetCellId();
     uint16_t enbCellId = enbLteDevice->GetCellId();
