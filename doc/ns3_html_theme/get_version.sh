@@ -48,17 +48,38 @@
 #
 
 me=`basename $0`
+
+# Controls
+
+# Build public URLs
+public=0
+# Build URLs for nsnam.org
+nsnam=0
+# Build for nsnam automated build directory
+daily=0
+# Build at a tag
+tag=0
+# Show progress details and final JS variables
+verbose=0
+
+
 function say
 {
     echo "$me: $*"
 }
 
+function verb
+{
+    [[ $verbose -eq 1 ]] && say $* || :
+}
+
 function usage
 {
     cat <<-EOF
-    Usage:  $me [-p]              normal versioning
+    Usage:  $me [-pv]             normal versioning
             $me [-n] [-d] [-t]    test options
       -p  build public urls, NS3_WWW_URLS=public is an alternative
+      -v  verbose: show output javascript variables
 
     Testing options:
       -n  pretend we are on nsnam.org
@@ -69,15 +90,7 @@ EOF
     exit 1
 }
 
-# script arguments
-say
-say using doxygen: $(which doxygen) $(doxygen --version)
-public=0
-nsnam=0
-daily=0
-tag=0
-
-while getopts :pndth option ; do
+while getopts :pndtvh option ; do
     case $option in
     (p)  public=1 ;;
     (n)  nsnam=1  ;;
@@ -86,11 +99,17 @@ while getopts :pndth option ; do
 
     (t)  tag=1    ;;
 
+    (v)  verbose=1 ;;
+
     (h)  usage ;;
     (:)  say "Missing argument to -$OPTARG" ; usage ;;
     (\?) say "Invalid option: -$OPTARG"     ; usage ;;
     esac
 done
+
+# script arguments
+verb
+verb using doxygen: $(which doxygen) $(doxygen --version)
 
 # Hostname, fully qualified, e.g. nsnam-www.coe-hosted.gatech.edu
 HOST=`hostname`
@@ -101,18 +120,18 @@ DAILY="^/tmp/daily-nsnam/"
 
 if [ $nsnam -eq 1 ]; then
     HOST=$NSNAM
-    say "-n forcing HOST = $HOST"
+    verb "-n forcing HOST = $HOST"
 fi
 
 if [ $daily -eq 1 ] ; then
     OLDPWD=$PWD
     PWD=/tmp/daily-nsnam/foo
-    say "-d forcing PWD = $PWD"
+    verb "-d forcing PWD = $PWD"
 fi
 
 if [ $tag -eq 1 ]; then
     version="ns-3.14"
-    say "-t forcing tagged version = $version"
+    verb "-t forcing tagged version = $version"
 fi
 
 if  ((nsnam + daily + tag > 0)) ; then
@@ -123,10 +142,10 @@ if [[ ($public == 1) || \
     ("${NS3_WWW_URLS:-}" == "public") || \
     ( ($HOST == $NSNAM) && ($PWD =~ $DAILY) ) ]] ; then
     PUBLIC=1
-    say "building public docs for nsnam.org"
+    verb "building public docs for nsnam.org"
 else
     PUBLIC=0
-    say "building private docs"
+    verb "building private docs"
 fi
 
 if [ $daily -eq 1 ]; then
@@ -144,7 +163,7 @@ distance=`git describe HEAD --tags --long | cut -d '-' -f 3`
 
 if [ $distance -eq 1 ] | [ $distance -eq 0 ]; then
     version=`git describe HEAD --tags --long | cut -d '-' -f 2`
-    say "at version $version"
+    verb "at version $version"
 
 elif [ $tag -eq 1 ]; then
     distance=1
@@ -214,7 +233,7 @@ done
 cd - 2>&1 >/dev/null
 
 # Show what was done
-say
-say "outf = $outf:"
-cat -n $outf
-say Done.
+verb
+verb "outf = $outf:"
+[[ $verbose -eq 1 ]] && cat -n $outf
+verb Done.
