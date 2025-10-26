@@ -1679,7 +1679,10 @@ Miscellaneous items
         ...
     };
 
-- When checking whether a Time value is zero, use ``Time::IsZero()`` rather than comparing it to a zero-valued time object with ``operator==``, to avoid construction of a temporary.  Similar guidance applies to the related functions ``Time::IsPositive()``, ``Time::IsNegative()``, ``Time::IsStrictlyPositive``, and ``Time::IsStrictlyNegative()``.
+- When checking whether a Time value is zero, use ``Time::IsZero()`` rather than comparing it to
+  a zero-valued time object with ``operator==``, to avoid construction of a temporary.
+  Similar guidance applies to the related functions ``Time::IsPositive()``,
+  ``Time::IsNegative()``, ``Time::IsStrictlyPositive``, and ``Time::IsStrictlyNegative()``.
 
   .. sourcecode:: cpp
 
@@ -1690,6 +1693,43 @@ Miscellaneous items
     // to this alternative:
     if (t > Seconds(0))
     {...}
+
+- Use ``std::array`` instead of C-style arrays, e.g.:
+
+  .. sourcecode:: cpp
+
+    // Avoid
+    uint8_t myArray[16];
+
+    // Prefer
+    std::array<uint8_t, 16> myArray;
+
+  This enables many useful operations without writing extra code, such as copy constructors, default
+  comparison operators, etc.
+
+- In C++ 20, a new comparison operator <=> ... was added, and a new pattern started to become a C++
+  best practice: to avoid defining operators separately but to make use of a member declaration such as:
+
+  .. sourcecode:: cpp
+
+    #include <compare>
+    struct IntWrapper
+    {
+      int value{0};
+      constexpr IntWrapper(int value): value{value} { }
+      auto operator<=>(const IntWrapper&) const = default;
+      bool operator==(const IntWrapper&) const = default; // Unnecessary, derived from <=>
+      bool operator!=(const IntWrapper&) const = default; // Unnecessary, derived from ==
+    };
+
+  For new ns-3 code, we recommend using this operator where possible.  There are cases in which
+  the default does not apply, and you can read about some of them
+  `here <https://en.cppreference.com/w/cpp/language/default_comparisons.html>`_ and
+  `here <https://devblogs.microsoft.com/cppblog/simplify-your-code-with-rocket-science-c20s-spaceship-operator/>`_.
+  You may notice in the ns-3 codebase that most code defines operators separately, because the code predates C++20.
+  Some of this code may be changed to use ``<=>`` over time.
+
+  Two examples are in ``ns3::LollipopCounter``, and ``ns3::SequenceNumber``.
 
 Clang-tidy rules
 ================
