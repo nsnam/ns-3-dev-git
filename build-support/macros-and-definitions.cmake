@@ -394,9 +394,25 @@ macro(process_options)
   endif()
 
   if(${NS3_SANITIZE})
-    set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -fsanitize=address,leak,undefined -fno-sanitize-recover=all"
-    )
+    set(SANITIZERS "address" "undefined" "leak")
+    set(AVAILABLE_SANITIZERS)
+    foreach(flag ${SANITIZERS})
+      set(CMAKE_REQUIRED_FLAGS "-fsanitize=${flag}")
+      check_cxx_source_compiles("int main() { return 0; }" HAS_FLAG_${flag})
+      if(HAS_FLAG_${flag})
+        list(APPEND AVAILABLE_SANITIZERS ${flag})
+      endif()
+    endforeach()
+    unset(CMAKE_REQUIRED_FLAGS)
+    string(REPLACE ";" "," SANITIZERS_FLAGS "${AVAILABLE_SANITIZERS}")
+    if(AVAILABLE_SANITIZERS)
+      message(STATUS "Sanitizers: found ${SANITIZERS_FLAGS}")
+      set(CMAKE_CXX_FLAGS
+          "${CMAKE_CXX_FLAGS} -fsanitize=${SANITIZERS_FLAGS} -fno-sanitize-recover=all"
+      )
+    else()
+      message(WARNING "Sanitizers: no sanitizers available")
+    endif()
   endif()
 
   if(${NS3_SANITIZE_MEMORY})
@@ -625,7 +641,7 @@ macro(process_options)
   set(THREADS_PREFER_PTHREAD_FLAG)
   find_package(Threads QUIET)
   if(NOT ${Threads_FOUND})
-    message(FATAL_ERROR Threads are required by ns-3)
+    message(FATAL_ERROR "Threads are required by ns-3")
   endif()
 
   set(Python3_LIBRARIES)
