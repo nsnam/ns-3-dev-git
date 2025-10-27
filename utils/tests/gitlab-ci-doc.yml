@@ -1,6 +1,6 @@
 # NS3 CI script for the documentation
 # For the moment we do not install the generated documentation
-#
+
 .doc:
   stage: documentation
   before_script:
@@ -21,9 +21,6 @@
   timeout: 2h
   interruptible: true
   dependencies: []
-  # artifacts:
-  #   paths:
-  #     - public
 
 doxygen-1.15:
   extends: .doc
@@ -36,7 +33,7 @@ doxygen-1.15:
     - CXX=$COMPILER ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
     - ./ns3 build
     - ./ns3 build assemble-introspected-command-line
-    # - mkdir -p public/doxygen
+
     # The following four lines were needed when ns-3 had warnings, and
     # it was necessary to have a filter to check only the files touched by a MR.
     # - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
@@ -49,8 +46,6 @@ doxygen-1.15:
     - ./ns3 clean
     # print the doxygen version - just to double check what has been used.
     - doxygen -v
-    # - doxygen doc/doxygen.conf
-    # - mv doc/html/ public/doxygen
   cache:
     # Reuse the ccache from the per-commit-gcc-debug job
     key: "ccache-per-commit-gcc-debug"
@@ -64,9 +59,6 @@ doxygen-1.15:
     paths:
       - doc/doxygen.warnings.log
     when: always
-  # tags:
-  #   - nsnam
-  #   - linux
 
 .sphinx-doc:
   extends: .doc
