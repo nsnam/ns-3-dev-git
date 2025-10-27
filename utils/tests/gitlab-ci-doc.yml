@@ -41,11 +41,13 @@ doxygen-1.15:
     # - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
     # - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
     - doc/doxygen.warnings.report.sh
-    # Just need to check doc/introspected-command-line.h and doc/introspected-doxygen.h
-    - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h doc/introspected-command-line.h
+
+    # Clean the build directory
     - ./ns3 clean
-    # print the doxygen version - just to double check what has been used.
-    - doxygen -v
+    # Print the Doxygen version - just to double check what has been used.
+    - echo "Doxygen version $(doxygen -v)"
+    # Check the generated documentation files
+    - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h doc/introspected-command-line.h
   cache:
     # Reuse the ccache from the per-commit-gcc-debug job
     key: "ccache-per-commit-gcc-debug"
