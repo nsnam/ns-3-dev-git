@@ -11,6 +11,7 @@
 
 #include "ns3/type-name.h"
 
+#include <compare>
 #include <iostream>
 #include <limits>
 #include <stdint.h>
@@ -256,26 +257,6 @@ class SequenceNumber
     }
 
     /**
-     * Here is the critical part, how the comparison is made taking into
-     * account wrap-around.  From RFC 3626:
-     *
-     * The sequence number S1 is said to be "greater than" the sequence
-     * number S2 if:
-     *      S1 > S2 AND S1 - S2 <= MAXVALUE/2 OR
-     *      S2 > S1 AND S2 - S1 > MAXVALUE/2
-     *
-     * @param other sequence number to compare to this one
-     * @returns true if this sequence number is greater than other
-     */
-    bool operator>(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
-    {
-        static const NUMERIC_TYPE halfMaxValue = std::numeric_limits<NUMERIC_TYPE>::max() / 2;
-
-        return (((m_value > other.m_value) && (m_value - other.m_value) <= halfMaxValue) ||
-                ((other.m_value > m_value) && (other.m_value - m_value) > halfMaxValue));
-    }
-
-    /**
      * @brief Equality operator for comparing sequence number
      * @param other sequence number to compare to this sequence number
      * @returns true if the sequence numbers are equal
@@ -286,43 +267,35 @@ class SequenceNumber
     }
 
     /**
-     * @brief Inequality operator for comparing sequence numbers
-     * @param other sequence number to compare to this sequence number
-     * @returns true if the sequence numbers are not equal
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * Here is the critical part, how the comparison is made taking into
+     * account wrap-around. From RFC 3626:
+     *
+     * The sequence number S1 is said to be "greater than" the sequence
+     * number S2 if:
+     *      S1 > S2 AND S1 - S2 <= MAXVALUE/2 OR
+     *      S2 > S1 AND S2 - S1 > MAXVALUE/2
+     *
+     * @param other sequence number to compare to this one
+     * @returns The result of the comparison.
      */
-    bool operator!=(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
+    constexpr std::strong_ordering operator<=>(
+        const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
     {
-        return m_value != other.m_value;
-    }
+        constexpr auto halfMaxValue = std::numeric_limits<NUMERIC_TYPE>::max() / 2;
 
-    /**
-     * @brief Less than or equal operator for comparing sequence numbers
-     * @param other sequence number to compare to this sequence number
-     * @returns true if this sequence number is less than or equal to other
-     */
-    bool operator<=(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
-    {
-        return (!this->operator>(other));
-    }
-
-    /**
-     * @brief Greater than or equal operator for comparing sequence numbers
-     * @param other sequence number to compare to this sequence number
-     * @returns true if this sequence number is greater than or equal to other
-     */
-    bool operator>=(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
-    {
-        return (this->operator>(other) || this->operator==(other));
-    }
-
-    /**
-     * @brief Less than operator for comparing sequence numbers
-     * @param other sequence number to compare to this sequence number
-     * @returns true if this sequence number is less than other
-     */
-    bool operator<(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
-    {
-        return !this->operator>(other) && m_value != other.m_value;
+        if (m_value == other.m_value)
+        {
+            return std::strong_ordering::equivalent;
+        }
+        if (((m_value > other.m_value) && (m_value - other.m_value) <= halfMaxValue) ||
+            ((other.m_value > m_value) && (other.m_value - m_value) > halfMaxValue))
+        {
+            return std::strong_ordering::greater;
+        }
+        return std::strong_ordering::less;
     }
 
     /**
