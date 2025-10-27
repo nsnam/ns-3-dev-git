@@ -30,7 +30,7 @@ doxygen-1.15:
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     # debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
     - export MPI_CI=1
-    - CXX=$COMPILER ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
+    - CXX=g++ ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
     - ./ns3 build
     - ./ns3 build assemble-introspected-command-line
 
@@ -54,7 +54,6 @@ doxygen-1.15:
     policy: pull
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
-    COMPILER: g++
   artifacts:
     paths:
       - doc/doxygen.warnings.log
