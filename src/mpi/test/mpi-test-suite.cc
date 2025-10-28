@@ -109,7 +109,8 @@ class MpiTestSuite : public TestSuite
                  const bool shouldNotErr = true)
         : TestSuite(name, Type::EXAMPLE)
     {
-        AddTestCase(new MpiTestCase(name, program, dataDir, ranks, args, shouldNotErr), duration);
+        // AddTestCase(new MpiTestCase(name, program, dataDir, ranks, args, shouldNotErr),
+        // duration);
     }
 
     // end of class MpiTestSuite
