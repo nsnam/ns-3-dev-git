@@ -510,15 +510,15 @@ ThreeGppPropagationLossModel::GetO2iSub6GhzPenetrationLoss(
         lossNormalVariate = 0;
 
         o2iLossValue = lossTw + lossIn + lossNormalVariate;
+
+        // update the entry in the map
+        it->second.m_o2iLoss = o2iLossValue;
+        it->second.m_condition = cond;
     }
     else
     {
         o2iLossValue = it->second.m_o2iLoss;
     }
-
-    // update the entry in the map
-    it->second.m_o2iLoss = o2iLossValue;
-    it->second.m_condition = cond;
 
     return o2iLossValue;
 }
@@ -580,15 +580,15 @@ ThreeGppPropagationLossModel::GetO2iLowPenetrationLoss(
         lowlossNormalVariate = m_normalO2iLowLossVar->GetValue();
 
         o2iLossValue = lowLossTw + lossIn + lowlossNormalVariate;
+
+        // update the entry in the map
+        it->second.m_o2iLoss = o2iLossValue;
+        it->second.m_condition = cond;
     }
     else
     {
         o2iLossValue = it->second.m_o2iLoss;
     }
-
-    // update the entry in the map
-    it->second.m_o2iLoss = o2iLossValue;
-    it->second.m_condition = cond;
 
     return o2iLossValue;
 }
@@ -652,15 +652,15 @@ ThreeGppPropagationLossModel::GetO2iHighPenetrationLoss(
         highlossNormalVariate = m_normalO2iHighLossVar->GetValue();
 
         o2iLossValue = highLossTw + lossIn + highlossNormalVariate;
+
+        // update the entry in the map
+        it->second.m_o2iLoss = o2iLossValue;
+        it->second.m_condition = cond;
     }
     else
     {
         o2iLossValue = it->second.m_o2iLoss;
     }
-
-    // update the entry in the map
-    it->second.m_o2iLoss = o2iLossValue;
-    it->second.m_condition = cond;
 
     return o2iLossValue;
 }
