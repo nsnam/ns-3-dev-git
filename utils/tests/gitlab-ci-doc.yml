@@ -6,13 +6,13 @@
   before_script:
     - pacman-key --init
     - pacman -Syu --noconfirm
-      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh libxml2-legacy
-      graphviz imagemagick texlive-basic texlive-bin texlive-binextra texlive-latexextra
-      texlive-fontutils texlive-fontsrecommended texlive-mathscience python-sphinx
-    - pacman --noconfirm -U https://archive.archlinux.org/packages/d/doxygen/doxygen-1.15.0-1-x86_64.pkg.tar.zst
+      python python-sphinx make libxml2-legacy
+      graphviz imagemagick
+      texlive-basic texlive-bin texlive-binextra texlive-latexextra texlive-fontutils texlive-fontsrecommended texlive-mathscience
     # dia is archived
-    - pacman --noconfirm -U https://archive.archlinux.org/packages/g/gtk2/gtk2-2.24.33-5-x86_64.pkg.tar.zst
-    - pacman --noconfirm -U https://archive.archlinux.org/packages/d/dia/dia-0.97.3-9-x86_64.pkg.tar.zst
+    - pacman --noconfirm -U
+      https://archive.archlinux.org/packages/g/gtk2/gtk2-2.24.33-5-x86_64.pkg.tar.zst
+      https://archive.archlinux.org/packages/d/dia/dia-0.97.3-9-x86_64.pkg.tar.zst
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
     # - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
@@ -25,10 +25,16 @@
 doxygen-1.15:
   extends: .doc
   script:
+    # Install Doxygen and dependencies to build ns-3
+    - pacman -Syu --noconfirm
+      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh
+    - pacman --noconfirm -U https://archive.archlinux.org/packages/d/doxygen/doxygen-1.15.0-1-x86_64.pkg.tar.zst
+
+    # Build ns-3.
+    # Debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    # debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
     - export MPI_CI=1
     - CXX=g++ ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
     - ./ns3 build
