@@ -545,7 +545,7 @@ ThreeGppChannelConditionModel::AssignStreams(int64_t stream)
     m_uniformVarO2i->SetStream(stream + 1);
     m_uniformO2iLowHighLossVar->SetStream(stream + 2);
 
-    return 3;
+    return stream + 3;
 }
 
 double

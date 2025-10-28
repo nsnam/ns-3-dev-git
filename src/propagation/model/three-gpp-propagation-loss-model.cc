@@ -758,7 +758,7 @@ ThreeGppPropagationLossModel::DoAssignStreams(int64_t stream)
     m_normalO2iLowLossVar->SetStream(stream + 3);
     m_normalO2iHighLossVar->SetStream(stream + 4);
     m_normalO2iVehicularLossVar->SetStream(stream + 5);
-    return 5;
+    return stream + 6;
 }
 
 double
@@ -1353,7 +1353,7 @@ ThreeGppUmaPropagationLossModel::DoAssignStreams(int64_t stream)
 
     m_normRandomVariable->SetStream(stream);
     m_uniformVar->SetStream(stream + 1);
-    return 2;
+    return stream + 2;
 }
 
 // ------------------------------------------------------------------------- //
