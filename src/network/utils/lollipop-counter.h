@@ -11,6 +11,7 @@
 
 #include "ns3/abort.h"
 
+#include <compare>
 #include <limits>
 
 namespace ns3
@@ -189,19 +190,25 @@ class LollipopCounter
     }
 
     /**
-     * Arithmetic operator greater-than
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * Note that the comparison is a ``std::partial_ordering``, as two
+     * lollipop counters could be not comparable, @see IsComparable() for details.
+     *
      * @param [in] lhs Left hand argument
      * @param [in] rhs Right hand argument
-     * @return The result of the operator.
+     * @returns The result of the comparison.
      */
-    friend bool operator>(const LollipopCounter& lhs, const LollipopCounter& rhs)
+    friend constexpr std::partial_ordering operator<=>(const LollipopCounter& lhs,
+                                                       const LollipopCounter& rhs)
     {
         NS_ABORT_MSG_IF(lhs.m_sequenceWindow != rhs.m_sequenceWindow,
                         "Can not compare two Lollipop Counters with different sequence windows");
 
         if (lhs.m_value == rhs.m_value)
         {
-            return false;
+            return std::partial_ordering::equivalent;
         }
 
         if ((lhs.m_value <= m_circularRegion && rhs.m_value <= m_circularRegion) ||
@@ -213,14 +220,17 @@ class LollipopCounter
             if (absDiff > lhs.m_sequenceWindow)
             {
                 // They are desynchronized - comparison is impossible.
-                // return false because we can not return anything else.
-                return false;
+                return std::partial_ordering::unordered;
             }
 
             // They are synchronized - comparison according to RFC1982.
             T serialRegion = ((m_circularRegion >> 1) + 1);
-            return (((lhs.m_value < rhs.m_value) && ((rhs.m_value - lhs.m_value) > serialRegion)) ||
-                    ((lhs.m_value > rhs.m_value) && ((lhs.m_value - rhs.m_value) < serialRegion)));
+            if (((lhs.m_value < rhs.m_value) && ((rhs.m_value - lhs.m_value) > serialRegion)) ||
+                ((lhs.m_value > rhs.m_value) && ((lhs.m_value - rhs.m_value) < serialRegion)))
+            {
+                return std::partial_ordering::greater;
+            }
+            return std::partial_ordering::less;
         }
 
         // One counter is in the "high" region and the other is in the in the "lower" region
@@ -240,40 +250,18 @@ class LollipopCounter
             difference = rhs.m_value - lhs.m_value;
         }
 
-        T distance = (m_maxValue - difference) +
-                     1; // this is guaranteed to be positive and between [1...m_lollipopMaxValue].
-        if (distance > lhs.m_sequenceWindow)
+        // this is guaranteed to be positive and between [1...m_lollipopMaxValue].
+        T distance = (m_maxValue - difference) + 1;
+        if (distance <= lhs.m_sequenceWindow)
         {
-            return lhsIsHigher;
-        }
-        else
-        {
-            return !lhsIsHigher;
+            lhsIsHigher = !lhsIsHigher;
         }
 
-        // this should never be reached.
-        return false;
-    }
-
-    /**
-     * Arithmetic operator less-than
-     * @param [in] lhs Left hand argument
-     * @param [in] rhs Right hand argument
-     * @return The result of the operator.
-     */
-    friend bool operator<(const LollipopCounter& lhs, const LollipopCounter& rhs)
-    {
-        if (!lhs.IsComparable(rhs))
+        if (lhsIsHigher)
         {
-            return false;
+            return std::partial_ordering::greater;
         }
-
-        if (lhs > rhs || lhs == rhs)
-        {
-            return false;
-        }
-
-        return true;
+        return std::partial_ordering::less;
     }
 
     /**
