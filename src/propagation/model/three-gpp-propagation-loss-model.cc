@@ -330,7 +330,7 @@ ThreeGppPropagationLossModel::ThreeGppPropagationLossModel()
     m_normalO2iHighLossVar->SetStdDev(6.5);
 
     m_normalO2iVehicularLossVar = CreateObject<NormalRandomVariable>();
-    m_normalO2iVehicularLossVar->SetAttribute("Mean", DoubleValue(m_meanVehicleO2iLoss));
+    // mean is set via an attribute, so must be set in NotifyConstructionCompleted
     m_normalO2iVehicularLossVar->SetStdDev(5);
 }
 
@@ -345,6 +345,12 @@ ThreeGppPropagationLossModel::DoDispose()
     m_channelConditionModel->Dispose();
     m_channelConditionModel = nullptr;
     m_shadowingMap.clear();
+}
+
+void
+ThreeGppPropagationLossModel::NotifyConstructionCompleted()
+{
+    m_normalO2iVehicularLossVar->SetAttribute("Mean", DoubleValue(m_meanVehicleO2iLoss));
 }
 
 void
