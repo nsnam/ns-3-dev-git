@@ -96,8 +96,6 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
                          Ptr<MobilityModel> a,
                          Ptr<MobilityModel> b) const override;
 
-    int64_t DoAssignStreams(int64_t stream) override;
-
     /**
      * @brief Computes the pathloss between a and b
      * @param cond the channel condition
@@ -359,6 +357,7 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     Ptr<NormalRandomVariable>
         m_normalO2iVehicularLossVar; //!< a normal random variable for the calculation of
                                      //!< penetration loss for vehicles see TR38.901 section 7.4.3.2
+    int64_t DoAssignStreams(int64_t stream) override;
 };
 
 /**
