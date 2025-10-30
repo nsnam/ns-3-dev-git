@@ -13,7 +13,6 @@
 #include "ns3/data-rate.h"
 #include "ns3/dhcp6-header.h"
 #include "ns3/dhcp6-helper.h"
-#include "ns3/header-serialization-test.h"
 #include "ns3/internet-apps-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/internet-stack-helper.h"
@@ -26,7 +25,6 @@
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
-#include "ns3/ssid.h"
 #include "ns3/test.h"
 #include "ns3/trace-helper.h"
 
