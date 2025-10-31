@@ -82,7 +82,7 @@ Coordinate Systems
 - **Format**: Earth-centered Cartesian system with origin at Earth's center of mass
 - **Use case**: Satellite communications and global-scale simulations
 - **Implementation**: ``GeocentricConstantPositionMobilityModel``
-- **Reference**: Follows 3GPP TR 38.811, Section 6.3 [2]_
+- **Reference**: Follows 3GPP TR 38.811, Section 6.3 [:ref:`2<mobilityRef2>`]
 
 **Geographic Coordinates**:
 
@@ -102,6 +102,9 @@ via the methods Get/SetGeographicPosition.
 Available Mobility Models
 -------------------------
 
+All mobility models inherit from the base class ``ns3::MobilityModel``.
+Child classes implement specific movement behaviors.
+Below is an overview of the key mobility models available in |ns3|.
 
 Core Classes
 ~~~~~~~~~~~~
@@ -137,15 +140,15 @@ Child Classes
 
 **Static Models:**
 
-- **ConstantPositionMobilityModel**: Nodes remain at fixed positions throughout the simulation. The position is set once during initialization and only changes if explicitly set by the user during runtime. This model is ideal for stationary infrastructure nodes, base stations, or scenarios where mobility is not required. It has near zero computational overhead during simulation runtime.
+- ``ConstantPositionMobilityModel``: Nodes remain at fixed positions throughout the simulation. The position is set once during initialization and only changes if explicitly set by the user during runtime. This model is ideal for stationary infrastructure nodes, base stations, or scenarios where mobility is not required. It has near zero computational overhead during simulation runtime.
 
-- **GeocentricConstantPositionMobilityModel**: Similar to ConstantPositionMobilityModel but with geographic coordinate support. Positions can be specified using latitude, longitude, and altitude coordinates, which are internally converted to the simulation's Cartesian coordinate system. Useful for real-world GPS-based scenarios and satellite communication simulations.
+- ``GeocentricConstantPositionMobilityModel``: Similar to ConstantPositionMobilityModel but with geographic coordinate support. Positions can be specified using latitude, longitude, and altitude coordinates, which are internally converted to the simulation's Cartesian coordinate system. Useful for real-world GPS-based scenarios and satellite communication simulations.
 
 **Linear Motion Models:**
 
-- **ConstantVelocityMobilityModel**: Nodes move in a straight line with constant speed. The velocity vector (speed and direction) is set once and remains unchanged unless explicitly modified by external events. This model is commonly used with |ns2| mobility traces where setdest commands update the velocity.
+- ``ConstantVelocityMobilityModel``: Nodes move in a straight line with constant speed. The velocity vector (speed and direction) is set once and remains unchanged unless explicitly modified by external events. This model is commonly used with |ns2| mobility traces where setdest commands update the velocity.
 
-- **ConstantAccelerationMobilityModel**: Implements uniformly accelerated motion following kinematic equations. The node starts with an initial velocity and acceleration vector, with position updated according to:
+- ``ConstantAccelerationMobilityModel``: Implements uniformly accelerated motion following kinematic equations. The node starts with an initial velocity and acceleration vector, with position updated according to:
 
 .. math::
 
@@ -155,19 +158,19 @@ This model is useful for scenarios involving vehicle acceleration/deceleration o
 
 **Random Motion Models:**
 
-- **RandomWalk2dMobilityModel**: Implements a two-dimensional random walk where nodes change direction and speed at regular time intervals. At each step, a new direction is randomly selected from a uniform distribution [0, 2pi], and speed is drawn from a configurable random variable. Movement is constrained within specified rectangular bounds, with reflection or wrapping behavior at boundaries. The model includes configurable parameters for step time, speed distribution, and boundary behavior.
+- ``RandomWalk2dMobilityModel``: Implements a two-dimensional random walk where nodes change direction and speed at regular time intervals. At each step, a new direction is randomly selected from a uniform distribution [0, 2pi], and speed is drawn from a configurable random variable. Movement is constrained within specified rectangular bounds, with reflection or wrapping behavior at boundaries. The model includes configurable parameters for step time, speed distribution, and boundary behavior.
 
-- **RandomWalk2dOutdoorMobilityModel**: Enhanced version of RandomWalk2dMobilityModel that incorporates building awareness. Nodes avoid moving through building obstacles by checking for intersections with building polygons before committing to movement. When a building collision is detected, the node selects an alternative direction. This model requires integration with building models and is particularly useful for urban mobility scenarios.
+- ``RandomWalk2dOutdoorMobilityModel``: Enhanced version of RandomWalk2dMobilityModel that incorporates building awareness. Nodes avoid moving through building obstacles by checking for intersections with building polygons before committing to movement. When a building collision is detected, the node selects an alternative direction. This model requires integration with building models and is particularly useful for urban mobility scenarios.
 
-- **RandomDirection2dMobilityModel**: Nodes move in straight lines for random durations, then pause and select new random directions. Unlike RandomWalk2d, movement occurs in longer straight-line segments rather than frequent small steps. The model alternates between movement and pause periods, with both durations drawn from configurable random variables. Direction changes occur uniformly over [0, 2pi], and speed is constant during each movement phase.
+- ``RandomDirection2dMobilityModel``: Nodes move in straight lines for random durations, then pause and select new random directions. Unlike RandomWalk2d, movement occurs in longer straight-line segments rather than frequent small steps. The model alternates between movement and pause periods, with both durations drawn from configurable random variables. Direction changes occur uniformly over [0, 2pi], and speed is constant during each movement phase.
 
-- **RandomWaypointMobilityModel**: Classic random waypoint model where nodes move from their current position to randomly selected destination waypoints. Upon reaching a waypoint, the node pauses for a random duration, then selects a new random destination. Movement between waypoints follows straight-line paths at constant speeds drawn from a configurable distribution. This model exhibits well-known characteristics including non-uniform spatial distribution and speed decay over time.
+- ``RandomWaypointMobilityModel``: Classic random waypoint model where nodes move from their current position to randomly selected destination waypoints. Upon reaching a waypoint, the node pauses for a random duration, then selects a new random destination. Movement between waypoints follows straight-line paths at constant speeds drawn from a configurable distribution. This model exhibits well-known characteristics including non-uniform spatial distribution and speed decay over time.
 
-- **SteadyStateRandomWaypointMobilityModel**: Addresses the initial transient behavior of the standard RandomWaypointMobilityModel by starting nodes with positions and velocities drawn from the model's steady-state distribution. This eliminates the artificial clustering and speed artifacts present during the initial simulation phase of the standard random waypoint model, providing more realistic results from simulation start.
+- ``SteadyStateRandomWaypointMobilityModel``: Addresses the initial transient behavior of the standard RandomWaypointMobilityModel by starting nodes with positions and velocities drawn from the model's steady-state distribution. This eliminates the artificial clustering and speed artifacts present during the initial simulation phase of the standard random waypoint model, providing more realistic results from simulation start.
 
 **Advanced Models:**
 
-- **GaussMarkovMobilityModel**: Implements a Gaussian-Markov stochastic process where velocity components are correlated over time. The model balances between random movement and momentum conservation using a tunable randomness parameter alpha in the range [0,1]. When alpha=0, movement is completely random; when alpha=1, movement maintains constant velocity. The velocity update equation is:
+- ``GaussMarkovMobilityModel``: Implements a Gaussian-Markov stochastic process where velocity components are correlated over time. The model balances between random movement and momentum conservation using a tunable randomness parameter alpha in the range [0,1]. When alpha=0, movement is completely random; when alpha=1, movement maintains constant velocity. The velocity update equation is:
 
 .. math::
 
@@ -175,103 +178,20 @@ This model is useful for scenarios involving vehicle acceleration/deceleration o
 
 This model produces more realistic mobility patterns with temporal correlation, suitable for human pedestrian movement.
 
-- **WaypointMobilityModel**: Follows user-defined sequences of waypoints with precise timing control. Each waypoint specifies a position and arrival time, allowing deterministic or scripted mobility patterns. The model supports complex trajectories, synchronized movement scenarios, and replay of real-world mobility traces. Waypoints can be added dynamically during simulation, enabling adaptive mobility patterns based on simulation events.
+- ``WaypointMobilityModel``: Follows user-defined sequences of waypoints with precise timing control. Each waypoint specifies a position and arrival time, allowing deterministic or scripted mobility patterns. The model supports complex trajectories, synchronized movement scenarios, and replay of real-world mobility traces. Waypoints can be added dynamically during simulation, enabling adaptive mobility patterns based on simulation events.
 
-- **HierarchicalMobilityModel**: Supports group mobility scenarios using parent-child relationships. Child nodes move relative to a parent mobility model, with the final position being the vector sum of parent and child positions. The parent model defines the group's overall movement pattern, while child models define individual member movements relative to the group. This architecture enables scenarios like vehicular convoys, pedestrian groups, or mobile sensor clusters where individual nodes maintain local mobility within a moving group context.
+- ``HierarchicalMobilityModel``: Supports group mobility scenarios using parent-child relationships. Child nodes move relative to a parent mobility model, with the final position being the vector sum of parent and child positions. The parent model defines the group's overall movement pattern, while child models define individual member movements relative to the group. This architecture enables scenarios like vehicular convoys, pedestrian groups, or mobile sensor clusters where individual nodes maintain local mobility within a moving group context.
 
 **Position Allocators**:
 
-- **ListPositionAllocator**: Uses a predefined list of positions
-- **GridPositionAllocator**: Arranges nodes in regular grid patterns
-- **RandomRectanglePositionAllocator**: Uniform distribution within rectangular areas
-- **RandomBoxPositionAllocator**: Uniform distribution within 3D box regions
-- **RandomDiscPositionAllocator**: Uniform distribution within circular areas
-- **UniformDiscPositionAllocator**: Even distribution on disc circumference
+- ``ListPositionAllocator``: Uses a predefined list of positions
+- ``GridPositionAllocator``: Arranges nodes in regular grid patterns
+- ``RandomRectanglePositionAllocator``: Uniform distribution within rectangular areas
+- ``RandomBoxPositionAllocator``: Uniform distribution within 3D box regions
+- ``RandomDiscPositionAllocator``: Uniform distribution within circular areas
+- ``UniformDiscPositionAllocator``: Even distribution on disc circumference
 
 A position allocator is not always required, as some mobility models generate initial positions during initialization. Among the built-in ns-3 models, **SteadyStateRandomWaypointMobilityModel** is the only one with this capability.
-
-Helper Classes
---------------
-
-A special mobility helper is provided that is mainly aimed at supporting
-the installation of mobility to a Node container (when using containers
-at the helper API level).  The MobilityHelper class encapsulates
-a MobilityModel factory object and a PositionAllocator used for
-initial node layout.
-
-Group mobility is also configurable via a GroupMobilityHelper object.
-Group mobility reuses the HierarchicalMobilityModel allowing one to
-define a reference (parent) mobility model and child (member) mobility
-models, with the position being the vector sum of the two mobility
-model positions (i.e., the child position is defined as an offset to
-the parent position).  In the GroupMobilityHelper, the parent mobility
-model is not associated with any node, and is used as the parent mobility
-model for all (distinct) child mobility models.  The reference point group
-mobility model [1]_ is the basis for this |ns3| model.
-
-
-MobilityHelper
-~~~~~~~~~~~~~~
-
-The ``MobilityHelper`` class simplifies mobility configuration:
-
-.. sourcecode:: cpp
-
-   // Basic configuration
-   MobilityHelper mobility;
-   mobility.SetPositionAllocator("ns3::GridPositionAllocator",
-                                 "MinX", DoubleValue(0.0),
-                                 "MinY", DoubleValue(0.0),
-                                 "DeltaX", DoubleValue(5.0),
-                                 "DeltaY", DoubleValue(10.0));
-
-   mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
-                            "Bounds", RectangleValue(Rectangle(-50, 50, -50, 50)));
-
-   // Installation
-   mobility.Install(nodeContainer);
-
-GroupMobilityHelper
-~~~~~~~~~~~~~~~~~~~
-
-Supports group mobility scenarios using the reference point group mobility model [1]_:
-
-.. sourcecode:: cpp
-
-   GroupMobilityHelper groupMobility;
-   groupMobility.SetReferencePointMobilityModel("ns3::RandomWaypointMobilityModel");
-   groupMobility.SetMemberMobilityModel("ns3::RandomWalk2dMobilityModel");
-   groupMobility.Install(groupNodes);
-
-Ns2MobilityHelper
-~~~~~~~~~~~~~~~~~
-
-Parses |ns2| format mobility traces for compatibility with existing tools:
-
-.. sourcecode:: cpp
-
-   Ns2MobilityHelper ns2mobility("mobility-trace.ns_movements");
-   ns2mobility.Install();
-
-The |ns2| mobility format is a widely used mobility trace format. Valid trace files use the following |ns2| statements:
-
-.. sourcecode:: bash
-
-   $node set X_ x1
-   $node set Y_ y1
-   $node set Z_ z1
-   $ns at $time $node setdest x2 y2 speed
-
-Supported ns-2 Commands
-~~~~~~~~~~~~~~~~~~~~~~~
-
-- ``$node set X_ x1``: Set initial X position
-- ``$node set Y_ y1``: Set initial Y position
-- ``$node set Z_ z1``: Set initial Z position
-- ``$ns at $time $node setdest x2 y2 speed``: Move to destination at specified time
-
-Note that in |ns3|, movement along the Z dimension is not supported by all mobility models.
-
 
 Usage
 -----
@@ -385,7 +305,7 @@ External Tool Integration
 
 **BonnMotion**
 
-BonnMotion is a Java software which creates and analyses mobility scenarios [3]_ . It is developed within the Communication Systems group at the Institute of Computer Science 4 of the University of Bonn, Germany, where it serves as a tool for the investigation of mobile ad hoc network characteristics. BonnMotion is being jointly developed by the Communication Systems group at the University of Bonn, Germany, the Toilers group at the Colorado School of Mines, Golden, CO, USA, and the Distributed Systems group at the University of Osnabrück, Germany.
+BonnMotion is a Java software which creates and analyses mobility scenarios [:ref:`1<mobilityRef3>`] . It is developed within the Communication Systems group at the Institute of Computer Science 4 of the University of Bonn, Germany, where it serves as a tool for the investigation of mobile ad hoc network characteristics. BonnMotion is being jointly developed by the Communication Systems group at the University of Bonn, Germany, the Toilers group at the Colorado School of Mines, Golden, CO, USA, and the Distributed Systems group at the University of Osnabrück, Germany.
 
 - **Installation**: `Installation instructions <https://www.nsnam.org/wiki/HOWTO_use_ns-3_with_BonnMotion_mobility_generator_and_analysis_tool>`_ for using BonnMotion with |ns3|
 - **Documentation**: `Documentation <https://sys.cs.uos.de/bonnmotion/doc/README.pdf>`_ available
@@ -410,6 +330,88 @@ Literature on the subject of urban wireless network often use SUMO to model the 
 **|ns2| setdest Utility**
 
 The |ns2| `setdest <http://www.winlab.rutgers.edu/~zhibinwu/html/ns2_wireless_scene.htm>`_ utility can generate basic mobility patterns.
+
+Helpers
+~~~~~~~
+
+A special mobility helper is provided that is mainly aimed at supporting
+the installation of mobility to a Node container (when using containers
+at the helper API level).  The MobilityHelper class encapsulates
+a MobilityModel factory object and a PositionAllocator used for
+initial node layout.
+
+Group mobility is also configurable via a GroupMobilityHelper object.
+Group mobility reuses the HierarchicalMobilityModel allowing one to
+define a reference (parent) mobility model and child (member) mobility
+models, with the position being the vector sum of the two mobility
+model positions (i.e., the child position is defined as an offset to
+the parent position).  In the GroupMobilityHelper, the parent mobility
+model is not associated with any node, and is used as the parent mobility
+model for all (distinct) child mobility models.  The reference point group
+mobility model [:ref:`1<mobilityRef1>`] is the basis for this |ns3| model.
+
+
+MobilityHelper
+^^^^^^^^^^^^^^
+
+The ``MobilityHelper`` class simplifies mobility configuration:
+
+.. sourcecode:: cpp
+
+   // Basic configuration
+   MobilityHelper mobility;
+   mobility.SetPositionAllocator("ns3::GridPositionAllocator",
+                                 "MinX", DoubleValue(0.0),
+                                 "MinY", DoubleValue(0.0),
+                                 "DeltaX", DoubleValue(5.0),
+                                 "DeltaY", DoubleValue(10.0));
+
+   mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+                            "Bounds", RectangleValue(Rectangle(-50, 50, -50, 50)));
+
+   // Installation
+   mobility.Install(nodeContainer);
+
+GroupMobilityHelper
+^^^^^^^^^^^^^^^^^^^
+
+Supports group mobility scenarios using the reference point group mobility model [:ref:`1<mobilityRef1>`]:
+
+.. sourcecode:: cpp
+
+   GroupMobilityHelper groupMobility;
+   groupMobility.SetReferencePointMobilityModel("ns3::RandomWaypointMobilityModel");
+   groupMobility.SetMemberMobilityModel("ns3::RandomWalk2dMobilityModel");
+   groupMobility.Install(groupNodes);
+
+Ns2MobilityHelper
+^^^^^^^^^^^^^^^^^
+
+Parses |ns2| format mobility traces for compatibility with existing tools:
+
+.. sourcecode:: cpp
+
+   Ns2MobilityHelper ns2mobility("mobility-trace.ns_movements");
+   ns2mobility.Install();
+
+The |ns2| mobility format is a widely used mobility trace format. Valid trace files use the following |ns2| statements:
+
+.. sourcecode:: bash
+
+   $node set X_ x1
+   $node set Y_ y1
+   $node set Z_ z1
+   $ns at $time $node setdest x2 y2 speed
+
+**Supported ns-2 Commands**
+
+- ``$node set X_ x1``: Set initial X position
+- ``$node set Y_ y1``: Set initial Y position
+- ``$node set Z_ z1``: Set initial Z position
+- ``$ns at $time $node setdest x2 y2 speed``: Move to destination at specified time
+
+Note that in |ns3|, movement along the Z dimension is not supported by all mobility models.
+
 
 Tracing and Visualization
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -589,7 +591,7 @@ in |ns3|.
 reference-point-group-mobility-example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The reference point group mobility model [1]_ is demonstrated in the example program ``reference-point-group-mobility-example.cc``. This example runs a short simulation that illustrates a parent WaypointMobilityModel traversing a rectangular course within a bounding box, and three member nodes independently execute a two-dimensional random walk around the parent position, within a small bounding box.
+The reference point group mobility model [:ref:`1<mobilityRef1>`] is demonstrated in the example program ``reference-point-group-mobility-example.cc``. This example runs a short simulation that illustrates a parent WaypointMobilityModel traversing a rectangular course within a bounding box, and three member nodes independently execute a two-dimensional random walk around the parent position, within a small bounding box.
 
 The example illustrates configuration using the GroupMobilityHelper and manual configuration without a helper; the configuration option is selectable by command-line argument.
 
@@ -608,9 +610,15 @@ No formal validation has been done.
 References
 ----------
 
-.. [1] T. Camp, J. Boleng, V. Davies. "A survey of mobility models for ad hoc network research",
+.. _mobilityRef1:
+
+[`1 <https://onlinelibrary.wiley.com/doi/full/10.1002/wcm.72>`_] T. Camp, J. Boleng, V. Davies. "A survey of mobility models for ad hoc network research",
    in Wireless Communications and Mobile Computing, 2002: vol. 2, pp. 2483-2502.
 
-.. [2] 3GPP. 2018. TR 38.811, Study on New Radio (NR) to support non-terrestrial networks, V15.4.0. (2020-09).
+.. _mobilityRef2:
 
-.. [3] BonnMotion documentation, https://sys.cs.uos.de/bonnmotion/doc/README.pdf
+[`2 <https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3234>`_] 3GPP. 2018. TR 38.811, Study on New Radio (NR) to support non-terrestrial networks, V15.4.0. (2020-09).
+
+.. _mobilityRef3:
+
+[`3 <https://sys.cs.uos.de/bonnmotion/doc/README.pdf>`_] BonnMotion documentation
