@@ -189,7 +189,7 @@
  *
  * Output the name of the function.
  *
- * This should be used only in static functions; most member functions
+ * This should be used only in static functions without arguments; most member functions
  * should instead use NS_LOG_FUNCTION().
  */
 #define NS_LOG_FUNCTION_NOARGS()                                                                   \
@@ -221,8 +221,10 @@
  * @endcode
  *
  * To facilitate function tracing, most functions should begin with
- * (at least) NS_LOG_FUNCTION(this).  Static functions should use
- * NS_LOG_FUNCTION_NOARGS() instead.
+ * (at least) NS_LOG_FUNCTION(this).
+ *
+ * Static functions should use NS_LOG_FUNCTION(args) when they have arguments,
+ * and NS_LOG_FUNCTION_NOARGS() when they have no arguments.
  *
  * @param [in] parameters The parameters to output.
  */
