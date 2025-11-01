@@ -776,6 +776,26 @@ which would be ignored otherwise. This is illustrated in Figure :ref:`fig-cca-ch
 
    Illustration of signals tracking upon channel switching
 
+TX power
+########
+
+The transmission power level used by a PHY is configured via 3 attributes:
+  - ``WifiPhy::TxPowerLevels`` configures the number of power levels supported by the PHY (default 1)
+  - ``WifiPhy::TxPowerStart`` configures the minimum Tx power level supported by the PHY (default 16.0206 dBm, equivalent to 40 mW)
+  - ``WifiPhy::TxPowerEnd`` configures the maximum Tx power level supported by the PHY (default 16.0206 dBm, equivalent to 40 mW)
+
+ Even though the standard allows up to 8 different power levels, the mapping of these integers to power levels is implementation dependent.
+ The ns-3 model allows for up to 255 (1..255) power levels to be supported.
+ If only one power level is configured (the default), the transmission power is equal to ``WifiPhy::TxPowerStart``
+ (or ``WifiPhy::TxPowerEnd``, since they are equal by default).
+ If more than one power level is configured, the transmission power at a given power level is linearly interpolated in decibels
+ between ``WifiPhy::TxPowerStart`` and ``WifiPhy::TxPowerEnd`` according to the following formula:
+
+.. math::
+ txPower = WifiPhy::TxPowerStart + (powerLevel-1) \times \frac{WifiPhy::TxPowerEnd - WifiPhy::TxPowerStart}{WifiPhy::TxPowerLevels-1}
+
+where powerLevel is the requested power level and is an integer between 1 and ``WifiPhy::TxPowerLevels``.
+
 MU-MIMO PHY support
 ###################
 
