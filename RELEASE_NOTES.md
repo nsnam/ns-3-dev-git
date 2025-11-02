@@ -39,6 +39,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 ### Bugs fixed
 
 - (wifi) Fix incorrect aPSDUMaxLength value for 802.11be.
+- (wifi) Fix hardcoded threshold value in EHT PHY to determine per-20MHz CCA indication.
 
 ## Release 3.46.1
 

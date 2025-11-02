@@ -533,7 +533,7 @@ EhtPhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
          * aCCATime after the signal starts and shall continue to indicate the 20 MHz subchannel is
          * busy while the threshold continues to be exceeded.
          */
-        dBm_u ccaThreshold = -62;
+        dBm_u ccaThreshold = m_wifiPhy->GetCcaEdThreshold();
         auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, band);
 
         if (ppdu)
