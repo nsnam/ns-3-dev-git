@@ -21,6 +21,10 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### Changes to existing API
 
 * Address type 0 was previously used as a wildcard. Type 0 is now disallowd for any practical use. In order to create an Address from raw bytes, you must now set the Address type beforehand. An example is in ArpHeader::Deserialize.
+* (applications) The trace source `UdpServer::Rx` has a changed trace signature as a result of the
+  move of this trace to the `SinkApplication` class.  Client code using this trace can either update
+  to the new `Rx` trace signature or instead use the same trace sink function or method with the
+  the `SinkApplication::RxWithoutAddress` trace.
 
 ### Changes to build system
 
