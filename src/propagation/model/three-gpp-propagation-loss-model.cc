@@ -764,7 +764,7 @@ ThreeGppPropagationLossModel::DoAssignStreams(int64_t stream)
     m_normalO2iLowLossVar->SetStream(stream + 3);
     m_normalO2iHighLossVar->SetStream(stream + 4);
     m_normalO2iVehicularLossVar->SetStream(stream + 5);
-    return stream + 6;
+    return 6;
 }
 
 double
@@ -1357,9 +1357,9 @@ ThreeGppUmaPropagationLossModel::DoAssignStreams(int64_t stream)
 {
     NS_LOG_FUNCTION(this);
 
-    stream = ThreeGppPropagationLossModel::DoAssignStreams(stream);
-    m_uniformVar->SetStream(stream);
-    return stream + 1;
+    int64_t streams = ThreeGppPropagationLossModel::DoAssignStreams(stream);
+    m_uniformVar->SetStream(stream + streams);
+    return streams + 1;
 }
 
 // ------------------------------------------------------------------------- //
