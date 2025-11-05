@@ -51,14 +51,14 @@ void
 Mac16Address::CopyFrom(const uint8_t buffer[2])
 {
     NS_LOG_FUNCTION(this << &buffer);
-    memcpy(m_address, buffer, 2);
+    std::copy(buffer, buffer + 2, m_address.begin());
 }
 
 void
 Mac16Address::CopyTo(uint8_t buffer[2]) const
 {
     NS_LOG_FUNCTION(this << &buffer);
-    memcpy(buffer, m_address, 2);
+    std::copy(m_address.begin(), m_address.end(), buffer);
 }
 
 bool
@@ -80,7 +80,7 @@ Mac16Address::ConvertFrom(const Address& address)
     NS_LOG_FUNCTION(address);
     NS_ASSERT(address.CheckCompatible(GetType(), 2));
     Mac16Address retval;
-    address.CopyTo(retval.m_address);
+    address.CopyTo(retval.m_address.data());
     return retval;
 }
 
@@ -88,7 +88,7 @@ Address
 Mac16Address::ConvertTo() const
 {
     NS_LOG_FUNCTION(this);
-    return Address(GetType(), m_address, 2);
+    return Address(GetType(), m_address.data(), 2);
 }
 
 uint16_t
@@ -180,19 +180,16 @@ Mac16Address::IsMulticast() const
 std::ostream&
 operator<<(std::ostream& os, const Mac16Address& address)
 {
-    uint8_t ad[2];
-    address.CopyTo(ad);
-
+    std::ios_base::fmtflags ff = os.flags();
     os.setf(std::ios::hex, std::ios::basefield);
-    os.fill('0');
-    for (uint8_t i = 0; i < 1; i++)
-    {
-        os << std::setw(2) << (uint32_t)ad[i] << ":";
-    }
-    // Final byte not suffixed by ":"
-    os << std::setw(2) << (uint32_t)ad[1];
-    os.setf(std::ios::dec, std::ios::basefield);
-    os.fill(' ');
+    auto fill = os.fill('0');
+
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[0]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[1]);
+
+    os.flags(ff); // Restore stream flags
+    os.fill(fill);
+
     return os;
 }
 

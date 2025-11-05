@@ -14,6 +14,8 @@
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"
 
+#include <array>
+#include <compare>
 #include <ostream>
 #include <stdint.h>
 
@@ -116,39 +118,21 @@ class Mac64Address
      */
     static void ResetAllocationIndex();
 
+    /**
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * @param other address to compare to this one
+     * @returns The result of the comparison.
+     */
+    constexpr std::strong_ordering operator<=>(const Mac64Address& other) const = default;
+
   private:
     /**
      * @brief Return the Type of address.
      * @return type of address
      */
     static uint8_t GetType();
-
-    /**
-     * @brief Equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are equal
-     */
-    friend bool operator==(const Mac64Address& a, const Mac64Address& b);
-
-    /**
-     * @brief Not equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are not equal
-     */
-    friend bool operator!=(const Mac64Address& a, const Mac64Address& b);
-
-    /**
-     * @brief Less than operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operand a is less than operand b
-     */
-    friend bool operator<(const Mac64Address& a, const Mac64Address& b);
 
     /**
      * @brief Stream insertion operator.
@@ -168,8 +152,8 @@ class Mac64Address
      */
     friend std::istream& operator>>(std::istream& is, Mac64Address& address);
 
-    static uint64_t m_allocationIndex; //!< Address allocation index
-    uint8_t m_address[8]{0};           //!< Address value
+    static uint64_t m_allocationIndex;  //!< Address allocation index
+    std::array<uint8_t, 8> m_address{}; //!< Address value
 };
 
 /**
@@ -178,24 +162,6 @@ class Mac64Address
  */
 
 ATTRIBUTE_HELPER_HEADER(Mac64Address);
-
-inline bool
-operator==(const Mac64Address& a, const Mac64Address& b)
-{
-    return memcmp(a.m_address, b.m_address, 8) == 0;
-}
-
-inline bool
-operator!=(const Mac64Address& a, const Mac64Address& b)
-{
-    return memcmp(a.m_address, b.m_address, 8) != 0;
-}
-
-inline bool
-operator<(const Mac64Address& a, const Mac64Address& b)
-{
-    return memcmp(a.m_address, b.m_address, 8) < 0;
-}
 
 std::ostream& operator<<(std::ostream& os, const Mac64Address& address);
 std::istream& operator>>(std::istream& is, Mac64Address& address);

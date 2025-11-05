@@ -51,14 +51,14 @@ void
 Mac48Address::CopyFrom(const uint8_t buffer[6])
 {
     NS_LOG_FUNCTION(this << &buffer);
-    std::memcpy(m_address, buffer, 6);
+    std::copy(buffer, buffer + 6, m_address.begin());
 }
 
 void
 Mac48Address::CopyTo(uint8_t buffer[6]) const
 {
     NS_LOG_FUNCTION(this << &buffer);
-    std::memcpy(buffer, m_address, 6);
+    std::copy(m_address.begin(), m_address.end(), buffer);
 }
 
 bool
@@ -78,7 +78,7 @@ Address
 Mac48Address::ConvertTo() const
 {
     NS_LOG_FUNCTION(this);
-    return Address(GetType(), m_address, 6);
+    return Address(GetType(), m_address.data(), 6);
 }
 
 Mac48Address
@@ -87,7 +87,7 @@ Mac48Address::ConvertFrom(const Address& address)
     NS_LOG_FUNCTION(&address);
     NS_ASSERT(address.CheckCompatible(GetType(), 6));
     Mac48Address retval;
-    address.CopyTo(retval.m_address);
+    address.CopyTo(retval.m_address.data());
     return retval;
 }
 
@@ -229,19 +229,20 @@ Mac48Address::GetMulticast(Ipv6Address addr)
 std::ostream&
 operator<<(std::ostream& os, const Mac48Address& address)
 {
-    uint8_t ad[6];
-    address.CopyTo(ad);
-
+    std::ios_base::fmtflags ff = os.flags();
     os.setf(std::ios::hex, std::ios::basefield);
-    os.fill('0');
-    for (uint8_t i = 0; i < 5; i++)
-    {
-        os << std::setw(2) << (uint32_t)ad[i] << ":";
-    }
-    // Final byte not suffixed by ":"
-    os << std::setw(2) << (uint32_t)ad[5];
-    os.setf(std::ios::dec, std::ios::basefield);
-    os.fill(' ');
+    auto fill = os.fill('0');
+
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[0]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[1]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[2]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[3]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[4]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[5]);
+
+    os.flags(ff); // Restore stream flags
+    os.fill(fill);
+
     return os;
 }
 
