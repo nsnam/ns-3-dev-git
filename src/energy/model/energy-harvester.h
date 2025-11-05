@@ -10,17 +10,17 @@
 #ifndef ENERGY_HARVESTER_H
 #define ENERGY_HARVESTER_H
 
-#include <iostream>
-
-// include from ns-3
-#include "ns3/energy-source-container.h"
-#include "ns3/node.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/type-id.h"
 
+#include <iostream>
+
 namespace ns3
 {
+
+class Node;
+
 namespace energy
 {
 

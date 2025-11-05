@@ -9,7 +9,10 @@
 
 #include "energy-harvester.h"
 
+#include "energy-source.h"
+
 #include "ns3/log.h"
+#include "ns3/node.h"
 
 namespace ns3
 {
