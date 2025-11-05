@@ -218,7 +218,8 @@ BuildingsPenetrationLossesTestCase::DoRun()
         buildingInfoB->MakeConsistent(b);
 
         Ptr<ChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel>();
-        auto streamOffset = condModel->AssignStreams(0);
+        int64_t streamOffset = 0;
+        streamOffset += condModel->AssignStreams(streamOffset);
 
         // Configure test case setup
         const auto& testVector = m_testVectors.at(i);
@@ -243,10 +244,10 @@ BuildingsPenetrationLossesTestCase::DoRun()
         m_propModel = propModelFactory.Create<ThreeGppPropagationLossModel>();
         m_propModel->SetAttribute("Frequency", DoubleValue(testVector.m_frequency));
         m_propModel->SetAttribute("ShadowingEnabled", BooleanValue(false));
-        streamOffset = m_propModel->AssignStreams(streamOffset);
-        streamOffset = m_propModel->GetChannelConditionModel()->AssignStreams(streamOffset);
+        streamOffset += m_propModel->AssignStreams(streamOffset);
+        streamOffset += m_propModel->GetChannelConditionModel()->AssignStreams(streamOffset);
         m_propModel->SetChannelConditionModel(condModel);
-        streamOffset = m_propModel->AssignStreams(streamOffset);
+        streamOffset += m_propModel->AssignStreams(streamOffset);
         m_propModel->GetChannelConditionModel()->AssignStreams(streamOffset);
         std::vector<double> samples(1000);
         for (auto& sample : samples)
