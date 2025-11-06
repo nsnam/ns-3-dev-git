@@ -84,11 +84,10 @@ void
 HeFrameExchangeManager::Reset()
 {
     NS_LOG_FUNCTION(this);
-    if (m_intraBssNavResetEvent.IsPending())
-    {
-        m_intraBssNavResetEvent.Cancel();
-    }
+    m_intraBssNavResetEvent.Cancel();
     m_intraBssNavEnd = Simulator::Now();
+    m_psduMap.clear();
+    m_multiStaBaEvent.Cancel();
     VhtFrameExchangeManager::Reset();
 }
 

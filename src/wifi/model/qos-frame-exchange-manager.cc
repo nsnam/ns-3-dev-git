@@ -83,6 +83,17 @@ QosFrameExchangeManager::DoDispose()
     FrameExchangeManager::DoDispose();
 }
 
+void
+QosFrameExchangeManager::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    m_edca = nullptr;
+    m_edcaBackingOff = nullptr;
+    m_pifsRecoveryEvent.Cancel();
+    m_initialFrame = false;
+    FrameExchangeManager::Reset();
+}
+
 bool
 QosFrameExchangeManager::SendCfEndIfNeeded()
 {

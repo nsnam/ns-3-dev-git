@@ -61,6 +61,15 @@ HtFrameExchangeManager::~HtFrameExchangeManager()
 }
 
 void
+HtFrameExchangeManager::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    m_flushGroupcastMpdusEvent.Cancel();
+    m_psdu = nullptr;
+    QosFrameExchangeManager::Reset();
+}
+
+void
 HtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);

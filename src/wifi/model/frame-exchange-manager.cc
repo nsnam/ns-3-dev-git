@@ -75,6 +75,9 @@ FrameExchangeManager::Reset()
     m_mpdu = nullptr;
     m_txParams.Clear();
     m_ongoingRxInfo.Reset();
+    m_sentRtsTo.clear();
+    m_sentFrameTo.clear();
+    m_protectedStas.clear();
     m_dcf = nullptr;
 }
 

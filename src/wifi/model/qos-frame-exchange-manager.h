@@ -118,6 +118,7 @@ class QosFrameExchangeManager : public FrameExchangeManager
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void NavResetTimeout() override;
+    void Reset() override;
     void UpdateNav(const WifiMacHeader& hdr,
                    const WifiTxVector& txVector,
                    const Time& surplus = Time{0}) override;

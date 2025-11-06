@@ -169,7 +169,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
 
   protected:
     void DoDispose() override;
-
+    void Reset() override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
