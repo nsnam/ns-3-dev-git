@@ -18,6 +18,8 @@
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 
+#include <array>
+
 /**
  * @file
  * @ingroup internet-apps
