@@ -403,7 +403,7 @@ DhcpServer::AddStaticDhcpEntry(Address macAddr, Ipv4Address addr)
                                                          << ", " << m_maxAddress << "]");
     NS_ASSERT_MSG(macAddr.GetLength() <= 16,
                   "DHCP server can not handle a chaddr larger than 16 bytes");
-    macAddr.CopyTo(chAddr.begin());
+    macAddr.CopyTo(chAddr.data());
 
     NS_ASSERT_MSG(m_leasedAddresses.find(chAddr) == m_leasedAddresses.end(),
                   "Client has already an active lease: " << m_leasedAddresses[chAddr].first);

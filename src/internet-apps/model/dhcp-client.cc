@@ -170,7 +170,7 @@ DhcpClient::StartApplication()
                   "DHCP client can not handle a chaddr larger than 16 bytes");
 
     m_chaddr.fill(0);
-    myAddress.CopyTo(m_chaddr.begin());
+    myAddress.CopyTo(m_chaddr.data());
     NS_LOG_INFO("My Chaddr is " << DhcpChaddrToString(m_chaddr));
 
     bool found = false;
