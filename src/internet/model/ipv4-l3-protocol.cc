@@ -755,8 +755,6 @@ Ipv4L3Protocol::Send(Ptr<Packet> packet,
 
     // Handle a few cases:
     // 1) packet is passed in with a route entry
-    // 1a) packet is passed in with a route entry but route->GetGateway is not set (e.g., on-demand)
-    // 1b) packet is passed in with a route entry and valid gateway
     // 2) packet is passed without a route and packet is destined to limited broadcast address
     // 3) packet is passed without a route and packet is destined to a subnet-directed broadcast
     // address 4) packet is passed without a route, packet is not broadcast (e.g., a raw socket
@@ -765,18 +763,6 @@ Ipv4L3Protocol::Send(Ptr<Packet> packet,
     // 1) packet is passed in with route entry
     if (route)
     {
-        // 1a) route->GetGateway is not set (e.g., on-demand)
-        if (!route->GetGateway().IsInitialized())
-        {
-            // This could arise because the synchronous RouteOutput() call
-            // returned to the transport protocol with a source address but
-            // there was no next hop available yet (since a route may need
-            // to be queried).
-            NS_FATAL_ERROR("Ipv4L3Protocol::Send case 1a: packet passed with a route but the "
-                           "Gateway address is uninitialized. This case not yet implemented.");
-        }
-
-        // 1b) with a valid gateway
         NS_LOG_LOGIC("Ipv4L3Protocol::Send case 1b:  passed in with route and valid gateway");
         int32_t interface = GetInterfaceForDevice(route->GetOutputDevice());
         m_sendOutgoingTrace(ipHeader, packet, interface);

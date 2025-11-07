@@ -14,6 +14,7 @@
 
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/deprecated.h"
 
 #include <cstring>
 #include <ostream>
@@ -44,9 +45,22 @@ class Ipv6Address
 
     /**
      * @brief Constructs an Ipv6Address by parsing the input C-string.
-     * @param address the C-string containing the IPv6 address (e.g. 2001:660:4701::1).
+     * @param address the C-string containing the IPv6 address (e.g. 2001:db8:f00d:cafe::1).
      */
     Ipv6Address(const char* address);
+
+    /**
+     * @brief Checks if the string contains an Ipv6Address
+     *
+     * Input address is in format:
+     * \c 2001:db8:f00d:cafe::1
+     *
+     * Note: the function uses ``inet_pton`` internally.
+     *
+     * @param addressStr string containing the address as described above
+     * @return true if the string can be parsed as an IPv6 address
+     */
+    static bool CheckCompatibility(const std::string& addressStr);
 
     /**
      * @brief Constructs an Ipv6Address by using the input 16 bytes.
@@ -74,7 +88,7 @@ class Ipv6Address
 
     /**
      * @brief Sets an Ipv6Address by parsing the input C-string.
-     * @param address the C-string containing the IPv6 address (e.g. 2001:660:4701::1).
+     * @param address the C-string containing the IPv6 address (e.g. 2001:db8:f00d:cafe::1).
      */
     void Set(const char* address);
 
@@ -342,6 +356,7 @@ class Ipv6Address
     /**
      * @return true if address is initialized (i.e., set to something), false otherwise
      */
+    NS_DEPRECATED_3_47("Use IsAny or std::optional")
     bool IsInitialized() const;
 
     /**
@@ -403,7 +418,6 @@ class Ipv6Address
      * @brief The address representation on 128 bits (16 bytes).
      */
     uint8_t m_address[16];
-    bool m_initialized; //!< IPv6 address has been explicitly initialized to a valid value.
 
     /**
      * @brief Equal to operator.

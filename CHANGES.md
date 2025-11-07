@@ -25,6 +25,10 @@ This file is a best-effort approach to solving this issue; we will do our best b
   move of this trace to the `SinkApplication` class.  Client code using this trace can either update
   to the new `Rx` trace signature or instead use the same trace sink function or method with the
   the `SinkApplication::RxWithoutAddress` trace.
+* Initializing a Ipv[4,6]Address from a string using the constructor or the `Set` function will result in a crash if the string can not be parsed as an IPv4 or IPv6 address.
+* The `Ipv[4,6]Address::IsInitialized()` function has been deprecated and returns always `true`.
+* A new static function `Ipv[4,6]Address::CheckCompatibility()` has been added to safely check if a string can be parsed as an IPv4 or IPv6 address.
+* The default value for `Ipv4Address` is now "0.0.0.0", which is consistent with RFC 1122.
 
 ### Changes to build system
 

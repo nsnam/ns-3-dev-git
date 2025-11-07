@@ -856,8 +856,8 @@ Icmpv6Redirection::GetInstanceTypeId() const
 }
 
 Icmpv6Redirection::Icmpv6Redirection()
-    : m_target(Ipv6Address("")),
-      m_destination(Ipv6Address("")),
+    : m_target(Ipv6Address::GetAny()),
+      m_destination(Ipv6Address::GetAny()),
       m_reserved(0)
 {
     NS_LOG_FUNCTION(this);

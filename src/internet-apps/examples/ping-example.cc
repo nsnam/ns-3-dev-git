@@ -6,60 +6,66 @@
  * Author: Chandrakant Jena <chandrakant.barcelona@gmail.com>
  */
 
-// Example to demonstrate the working of the Ping Application
-// Network topology:
-// A ------------------------------ B ------------------------------ C
-//             100 Mbps                           100 Mbps
-//               5 ms (one way)                     5 ms (one way)
-// IPv4 addresses:
-// 10.1.1.1    <->         10.1.1.2 / 10.1.2.1     <->         10.1.2.2
-//
-// IPv6 addresses:
-// 2001:1::200:ff:fe00:1
-//     <->    2001:1::200:ff:fe00:2 / 2001:1:0:1:200:ff:fe00:3
-//                                       <-> 2001:1:0:1:200:ff:fe00:4
-//
-// The topology has three nodes interconnected by two point-to-point links.
-// Each link has 5 ms one-way delay, for a round-trip propagation delay
-// of 20 ms.  The transmission rate on each link is 100 Mbps.  The routing
-// between links is enabled by ns-3's NixVector routing.
-//
-// By default, this program will send 5 pings from node A to node C using IPv6.
-// When using IPv6, the output will look like this:
-//
-// PING 2001:1:0:1:200:ff:fe00:4 - 56 bytes of data; 104 bytes including ICMP and IPv6 headers.
-// 64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=0 ttl=63 time=20.033 ms
-// 64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=1 ttl=63 time=20.033 ms
-// 64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=2 ttl=63 time=20.033 ms
-// 64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=3 ttl=63 time=20.033 ms
-// 64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=4 ttl=63 time=20.033 ms
-//
-// --- 2001:1:0:1:200:ff:fe00:4 ping statistics ---
-// 5 packets transmitted, 5 received, 0% packet loss, time 4020ms
-// rtt min/avg/max/mdev = 20/20/20/0 ms
-//
-// When using IPv4, the output will look like this:
-//
-//   PING 10.1.2.2 - 56 bytes of data; 84 bytes including ICMP and IPv4 headers.
-//   64 bytes from (10.1.2.2): icmp_seq=0 ttl=63 time=20.027 ms
-//   64 bytes from (10.1.2.2): icmp_seq=1 ttl=63 time=20.027 ms
-//   64 bytes from (10.1.2.2): icmp_seq=2 ttl=63 time=20.027 ms
-//   64 bytes from (10.1.2.2): icmp_seq=3 ttl=63 time=20.027 ms
-//   64 bytes from (10.1.2.2): icmp_seq=4 ttl=63 time=20.027 ms
-//   --- 10.1.2.2 ping statistics ---
-//   5 packets transmitted, 5 received, 0% packet loss, time 4020ms
-//   rtt min/avg/max/mdev = 20/20/20/0 ms
-//
-// The example program will also produce four pcap traces (one for each
-// NetDevice in the scenario) that can be viewed using tcpdump or Wireshark.
-//
-// Other program options include options to change the destination and
-// source addresses, number of packets (count), packet size, interval,
-// and whether to enable logging (if logging is enabled in the build).
-//
-// The Ping application in this example starts at simulation time 1 and will
-// stop either at simulation time 50 or once 'Count' pings have been responded
-// to, whichever comes first.
+/**
+ * @file
+ * Example to demonstrate the working of the Ping Application
+ * Network topology:
+ * @verbatim
+   A ------------------------------ B ------------------------------ C
+               100 Mbps                           100 Mbps
+                 5 ms (one way)                     5 ms (one way)
+   IPv4 addresses:
+   10.1.1.1    <->         10.1.1.2 / 10.1.2.1     <->         10.1.2.2
+
+   IPv6 addresses:
+   2001:1::200:ff:fe00:1
+       <->    2001:1::200:ff:fe00:2 / 2001:1:0:1:200:ff:fe00:3
+                                          <-> 2001:1:0:1:200:ff:fe00:4
+   @endverbatim
+ *
+ * The topology has three nodes interconnected by two point-to-point links.
+ * Each link has 5 ms one-way delay, for a round-trip propagation delay
+ * of 20 ms.  The transmission rate on each link is 100 Mbps.  The routing
+ * between links is enabled by ns-3's NixVector routing.
+ *
+ * By default, this program will send 5 pings from node A to node C using IPv6.
+ * When using IPv6, the output will look like this:
+ * @verbatim
+   PING 2001:1:0:1:200:ff:fe00:4 - 56 bytes of data; 104 bytes including ICMP and IPv6 headers.
+   64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=0 ttl=63 time=20.033 ms
+   64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=1 ttl=63 time=20.033 ms
+   64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=2 ttl=63 time=20.033 ms
+   64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=3 ttl=63 time=20.033 ms
+   64 bytes from (2001:1:0:1:200:ff:fe00:4): icmp_seq=4 ttl=63 time=20.033 ms
+   --- 2001:1:0:1:200:ff:fe00:4 ping statistics ---
+   5 packets transmitted, 5 received, 0% packet loss, time 4020ms
+   rtt min/avg/max/mdev = 20/20/20/0 ms
+   @endverbatim
+ *
+ * When using IPv4, the output will look like this:
+ * @verbatim
+   PING 10.1.2.2 - 56 bytes of data; 84 bytes including ICMP and IPv4 headers.
+   64 bytes from (10.1.2.2): icmp_seq=0 ttl=63 time=20.027 ms
+   64 bytes from (10.1.2.2): icmp_seq=1 ttl=63 time=20.027 ms
+   64 bytes from (10.1.2.2): icmp_seq=2 ttl=63 time=20.027 ms
+   64 bytes from (10.1.2.2): icmp_seq=3 ttl=63 time=20.027 ms
+   64 bytes from (10.1.2.2): icmp_seq=4 ttl=63 time=20.027 ms
+   --- 10.1.2.2 ping statistics ---
+   5 packets transmitted, 5 received, 0% packet loss, time 4020ms
+   rtt min/avg/max/mdev = 20/20/20/0 ms
+   @endverbatim
+ *
+ * The example program will also produce four pcap traces (one for each
+ * NetDevice in the scenario) that can be viewed using tcpdump or Wireshark.
+ *
+ * Other program options include options to change the destination and
+ * source addresses, number of packets (count), packet size, interval,
+ * and whether to enable logging (if logging is enabled in the build).
+ *
+ * The Ping application in this example starts at simulation time 1 and will
+ * stop either at simulation time 50 or once 'Count' pings have been responded
+ * to, whichever comes first.
+ */
 
 #include "ns3/core-module.h"
 #include "ns3/internet-apps-module.h"
@@ -69,6 +75,7 @@
 #include "ns3/point-to-point-module.h"
 
 #include <fstream>
+#include <optional>
 
 using namespace ns3;
 
@@ -86,6 +93,10 @@ main(int argc, char* argv[])
     std::string sourceStr;
     Address source;
     bool useIpv6{true};
+    std::optional<Ipv4Address> v4Dst;
+    std::optional<Ipv6Address> v6Dst;
+    std::optional<Ipv4Address> v4Src;
+    std::optional<Ipv6Address> v6Src;
 
     GlobalValue::Bind("ChecksumEnabled", BooleanValue(true));
 
@@ -104,39 +115,48 @@ main(int argc, char* argv[])
 
     if (!destinationStr.empty())
     {
-        Ipv4Address v4Dst(destinationStr.c_str());
-        Ipv6Address v6Dst(destinationStr.c_str());
-        if (v4Dst.IsInitialized())
+        if (Ipv4Address::CheckCompatibility(destinationStr))
         {
+            v4Dst = Ipv4Address(destinationStr.c_str());
             useIpv6 = false;
-            destination = v4Dst;
+            destination = v4Dst.value();
         }
-        else if (v6Dst.IsInitialized())
+        else if (Ipv6Address::CheckCompatibility(destinationStr))
         {
+            v6Dst = Ipv6Address(destinationStr.c_str());
             useIpv6 = true;
-            destination = v6Dst;
+            destination = v6Dst.value();
+        }
+        else
+        {
+            NS_ABORT_MSG("Can't parse destination address " << destinationStr);
         }
     }
 
     if (!sourceStr.empty())
     {
-        Ipv4Address v4Src(sourceStr.c_str());
-        Ipv6Address v6Src(sourceStr.c_str());
-        if (v4Src.IsInitialized())
+        if (Ipv4Address::CheckCompatibility(sourceStr))
         {
-            source = v4Src;
+            v4Src = Ipv4Address(sourceStr.c_str());
+            useIpv6 = false;
+            source = v4Src.value();
         }
-        else if (v6Src.IsInitialized())
+        else if (Ipv6Address::CheckCompatibility(sourceStr))
         {
-            source = v6Src;
+            v6Src = Ipv6Address(sourceStr.c_str());
+            useIpv6 = true;
+            source = v6Src.value();
+        }
+        else
+        {
+            NS_ABORT_MSG("Can't parse destination address " << destinationStr);
         }
     }
     if (sourceStr.empty())
     {
         if (useIpv6)
         {
-            Ipv6Address v6Dst = Ipv6Address(destinationStr.c_str());
-            if (v6Dst.IsInitialized() && v6Dst.IsMulticast())
+            if (v6Dst && v6Dst->IsMulticast())
             {
                 std::cout << "Specify a source address to use when pinging multicast addresses"
                           << std::endl;
@@ -146,8 +166,7 @@ main(int argc, char* argv[])
         }
         else
         {
-            Ipv4Address v4Dst(destinationStr.c_str());
-            if (v4Dst.IsInitialized() && (v4Dst.IsBroadcast() || v4Dst.IsMulticast()))
+            if (v4Dst && (v4Dst->IsBroadcast() || v4Dst->IsMulticast()))
             {
                 std::cout << "Specify a source address to use when pinging broadcast or multicast "
                              "addresses"

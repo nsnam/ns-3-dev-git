@@ -148,21 +148,18 @@ Ipv6Address::Ipv6Address()
 {
     NS_LOG_FUNCTION(this);
     memset(m_address, 0x00, 16);
-    m_initialized = false;
 }
 
 Ipv6Address::Ipv6Address(const Ipv6Address& addr)
 {
     // Do not add function logging here, to avoid stack overflow
     memcpy(m_address, addr.m_address, 16);
-    m_initialized = true;
 }
 
 Ipv6Address::Ipv6Address(const Ipv6Address* addr)
 {
     // Do not add function logging here, to avoid stack overflow
     memcpy(m_address, addr->m_address, 16);
-    m_initialized = true;
 }
 
 Ipv6Address::Ipv6Address(const char* address)
@@ -171,12 +168,24 @@ Ipv6Address::Ipv6Address(const char* address)
 
     if (inet_pton(AF_INET6, address, m_address) <= 0)
     {
-        memset(m_address, 0x00, 16);
-        NS_LOG_LOGIC("Error, can not build an IPv6 address from an invalid string: " << address);
-        m_initialized = false;
+        NS_ABORT_MSG("Error, can not build an IPv6 address from an invalid string: " << address);
         return;
     }
-    m_initialized = true;
+}
+
+bool
+Ipv6Address::CheckCompatibility(const std::string& addressStr)
+{
+    NS_LOG_FUNCTION(addressStr);
+
+    uint8_t buffer[16];
+
+    if (inet_pton(AF_INET6, addressStr.c_str(), &buffer) <= 0)
+    {
+        NS_LOG_LOGIC("Error, can not build an IPv6 address from an invalid string: " << addressStr);
+        return false;
+    }
+    return true;
 }
 
 Ipv6Address::Ipv6Address(uint8_t address[16])
@@ -184,7 +193,6 @@ Ipv6Address::Ipv6Address(uint8_t address[16])
     NS_LOG_FUNCTION(this << &address);
     /* 128 bit => 16 bytes */
     memcpy(m_address, address, 16);
-    m_initialized = true;
 }
 
 Ipv6Address::~Ipv6Address()
@@ -200,11 +208,9 @@ Ipv6Address::Set(const char* address)
     if (inet_pton(AF_INET6, address, m_address) <= 0)
     {
         memset(m_address, 0x00, 16);
-        NS_LOG_LOGIC("Error, can not build an IPv6 address from an invalid string: " << address);
-        m_initialized = false;
+        NS_ABORT_MSG("Error, can not set an IPv6 address from an invalid string: " << address);
         return;
     }
-    m_initialized = true;
 }
 
 void
@@ -213,7 +219,6 @@ Ipv6Address::Set(uint8_t address[16])
     /* 128 bit => 16 bytes */
     NS_LOG_FUNCTION(this << &address);
     memcpy(m_address, address, 16);
-    m_initialized = true;
 }
 
 void
@@ -228,7 +233,6 @@ Ipv6Address::Deserialize(const uint8_t buf[16])
 {
     NS_LOG_FUNCTION(&buf);
     Ipv6Address ipv6((uint8_t*)buf);
-    ipv6.m_initialized = true;
     return ipv6;
 }
 
@@ -760,7 +764,7 @@ bool
 Ipv6Address::IsInitialized() const
 {
     NS_LOG_FUNCTION(this);
-    return m_initialized;
+    return true;
 }
 
 std::ostream&

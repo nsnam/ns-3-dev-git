@@ -11,6 +11,7 @@
 
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/deprecated.h"
 
 #include <ostream>
 #include <stdint.h>
@@ -43,9 +44,25 @@ class Ipv4Address
      * \c hhh.xxx.xxx.lll
      * where \c h is the high byte and \c l the
      * low byte
+     *
      * @param address C-string containing the address as described above
      */
     Ipv4Address(const char* address);
+
+    /**
+     * @brief Checks if the string contains an Ipv4Address
+     *
+     * Input address is in format:
+     * \c hhh.xxx.xxx.lll
+     * where \c h is the high byte and \c l the
+     * low byte
+     *
+     * Note: the function uses ``inet_pton`` internally.
+     *
+     * @param addressStr string containing the address as described above
+     * @return true if the string can be parsed as an IPv4 address
+     */
+    static bool CheckCompatibility(const std::string& addressStr);
     /**
      * Get the host-order 32-bit IP address
      * @return the host-order 32-bit IP address
@@ -91,6 +108,7 @@ class Ipv4Address
     /**
      * @return true if address is initialized (i.e., set to something), false otherwise
      */
+    NS_DEPRECATED_3_47("Use IsAny or std::optional")
     bool IsInitialized() const;
     /**
      * @return true if address is 0.0.0.0; false otherwise
@@ -209,7 +227,6 @@ class Ipv4Address
      */
     static uint8_t GetType();
     uint32_t m_address; //!< IPv4 address
-    bool m_initialized; //!< IPv4 address has been explicitly initialized to a valid value.
 
     /**
      * @brief Equal to operator.
