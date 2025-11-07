@@ -332,7 +332,7 @@ class Ipv4Mask
     friend bool operator!=(const Ipv4Mask& a, const Ipv4Mask& b);
 
   private:
-    uint32_t m_mask{}; //!< IP mask
+    uint32_t m_mask{0}; //!< IP mask
 };
 
 ATTRIBUTE_HELPER_HEADER(Ipv4Address);

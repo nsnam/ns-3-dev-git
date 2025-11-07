@@ -26,7 +26,6 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("Ipv4Address");
 
 Ipv4Mask::Ipv4Mask()
-    : m_mask(0x66666666)
 {
     NS_LOG_FUNCTION(this);
 }
