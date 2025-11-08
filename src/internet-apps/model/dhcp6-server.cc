@@ -160,11 +160,6 @@ Dhcp6Server::SendAdvertise(Ptr<NetDevice> iDev, Dhcp6Header header, Inet6SocketA
     // Available address pools and IA information is sent in this option.
     for (auto& subnet : m_subnets)
     {
-        Ipv6Address pool = subnet.GetAddressPool();
-        Ipv6Prefix prefix = subnet.GetPrefix();
-        Ipv6Address minAddress = subnet.GetMinAddress();
-        Ipv6Address maxAddress = subnet.GetMaxAddress();
-
         /*
          * Find the next available address. Checks the expired address map.
          * If there are no expired addresses, it advertises a new address.
@@ -210,6 +205,7 @@ Dhcp6Server::SendAdvertise(Ptr<NetDevice> iDev, Dhcp6Header header, Inet6SocketA
         {
             // Allocate a new address.
             uint8_t minAddrBuf[16];
+            Ipv6Address minAddress = subnet.GetMinAddress();
             minAddress.GetBytes(minAddrBuf);
 
             // Get the latest leased address.

@@ -1428,7 +1428,6 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
     Ptr<IpL4Protocol> protocol = nullptr;
     Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
     Ptr<Ipv6Extension> ipv6Extension = nullptr;
-    Ipv6Address src = ip.GetSource();
     Ipv6Address dst = ip.GetDestination();
     uint8_t nextHeader = ip.GetNextHeader();
     uint8_t nextHeaderPosition = 0;
@@ -1515,7 +1514,6 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
             else
             {
                 p->RemoveAtStart(nextHeaderPosition);
-                /* protocol->Receive (p, src, dst, incomingInterface); */
 
                 // Options have been processed, and the packet is good.
                 // We need to adjust the IP header fields

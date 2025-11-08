@@ -102,7 +102,6 @@ Ipv6ListRouting::RouteInput(Ptr<const Packet> p,
     NS_ASSERT(m_ipv6);
     // Check if input device supports IP
     NS_ASSERT(m_ipv6->GetInterfaceForDevice(idev) >= 0);
-    Ipv6Address dst = header.GetDestination();
 
     // Check if input device supports IP forwarding
     uint32_t iif = m_ipv6->GetInterfaceForDevice(idev);

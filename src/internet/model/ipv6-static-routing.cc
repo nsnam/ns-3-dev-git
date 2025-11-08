@@ -559,7 +559,6 @@ Ipv6StaticRouting::GetDefaultRoute()
         uint32_t metric = it->second;
         Ipv6Prefix mask = j->GetDestNetworkPrefix();
         uint16_t maskLen = mask.GetPrefixLength();
-        Ipv6Address entry = j->GetDestNetwork();
 
         if (maskLen)
         {
