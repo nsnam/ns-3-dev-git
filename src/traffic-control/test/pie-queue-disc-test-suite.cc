@@ -786,7 +786,6 @@ PieQueueDiscTestCase::EnqueueWithDelay(Ptr<PieQueueDisc> queue,
                                        uint32_t nPkt,
                                        Ptr<PieQueueDiscTestItem> testAttributes)
 {
-    Address dest;
     double delay = 0.01; // enqueue packets with delay
     for (uint32_t i = 0; i < nPkt; i++)
     {

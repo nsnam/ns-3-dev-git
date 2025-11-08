@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Modified by: Dhiraj Lokesh <dhirajlokesh@gmail.com>
  */
 
 #ifndef ADDRESS_H
@@ -14,6 +15,8 @@
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"
 
+#include <array>
+#include <compare>
 #include <ostream>
 #include <stdint.h>
 #include <unordered_map>
@@ -156,7 +159,7 @@ class Address
     /**
      * Create an invalid address
      */
-    Address();
+    Address() = default;
     /**
      * @brief Create an address from a type and a buffer.
      *
@@ -172,25 +175,13 @@ class Address
      */
     Address(uint8_t type, const uint8_t* buffer, uint8_t len);
     /**
-     * @brief Create an address from another address.
-     * @param address the address to copy
-     */
-    Address(const Address& address);
-    /**
-     * @brief Basic assignment operator.
-     * @param address the address to copy
-     * @return the address
-     */
-    Address& operator=(const Address& address);
-
-    /**
      * Set the address type.
      *
      * Works only if the type is not yet set.
      * @see Register()
      *
-     * @param length address length
      * @param kind address kind
+     * @param length address length
      */
     void SetType(const std::string& kind, uint8_t length);
     /**
@@ -278,8 +269,8 @@ class Address
      * It is not allowed to have two different addresses with the same
      * kind and length.
      *
-     * @param length address length
      * @param kind address kind, such as "MacAddress"
+     * @param length address length
      * @return a new type id.
      */
     static uint8_t Register(const std::string& kind, uint8_t length);
@@ -303,34 +294,15 @@ class Address
      */
     void Deserialize(TagBuffer buffer);
 
+    /**
+     * @brief Three-way comparison operator.
+     *
+     * @param other the other address to compare with
+     * @return comparison result
+     */
+    constexpr std::strong_ordering operator<=>(const Address& other) const = default;
+
   private:
-    /**
-     * @brief Equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @return true if the operands are equal
-     */
-    friend bool operator==(const Address& a, const Address& b);
-
-    /**
-     * @brief Not equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @return true if the operands are not equal
-     */
-    friend bool operator!=(const Address& a, const Address& b);
-
-    /**
-     * @brief Less than operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @return true if the operand a is less than operand b
-     */
-    friend bool operator<(const Address& a, const Address& b);
-
     /**
      * @brief Stream insertion operator.
      *
@@ -349,16 +321,13 @@ class Address
      */
     friend std::istream& operator>>(std::istream& is, Address& address);
 
-    uint8_t m_type;           //!< Type of the address
-    uint8_t m_len;            //!< Length of the address
-    uint8_t m_data[MAX_SIZE]; //!< The address value
+    uint8_t m_type{UNASSIGNED_TYPE};        //!< Type of the address
+    uint8_t m_len{0};                       //!< Length of the address
+    std::array<uint8_t, MAX_SIZE> m_data{}; //!< The address value
 };
 
 ATTRIBUTE_HELPER_HEADER(Address);
 
-bool operator==(const Address& a, const Address& b);
-bool operator!=(const Address& a, const Address& b);
-bool operator<(const Address& a, const Address& b);
 std::ostream& operator<<(std::ostream& os, const Address& address);
 std::istream& operator>>(std::istream& is, Address& address);
 

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Modified by: Dhiraj Lokesh <dhirajlokesh@gmail.com>
  */
 
 #include "address.h"
@@ -22,14 +23,6 @@ NS_LOG_COMPONENT_DEFINE("Address");
 
 Address::KindTypeRegistry Address::m_typeRegistry;
 
-Address::Address()
-    : m_type(UNASSIGNED_TYPE),
-      m_len(0)
-{
-    // Buffer left uninitialized
-    NS_LOG_FUNCTION(this);
-}
-
 Address::Address(uint8_t type, const uint8_t* buffer, uint8_t len)
     : m_type(type),
       m_len(len)
@@ -37,26 +30,7 @@ Address::Address(uint8_t type, const uint8_t* buffer, uint8_t len)
     NS_LOG_FUNCTION(this << static_cast<uint32_t>(type) << &buffer << static_cast<uint32_t>(len));
     NS_ASSERT_MSG(m_len <= MAX_SIZE, "Address length too large");
     NS_ASSERT_MSG(type != UNASSIGNED_TYPE, "Type 0 is reserved for uninitialized addresses.");
-    std::memcpy(m_data, buffer, m_len);
-}
-
-Address::Address(const Address& address)
-    : m_type(address.m_type),
-      m_len(address.m_len)
-{
-    NS_ASSERT(m_len <= MAX_SIZE);
-    std::memcpy(m_data, address.m_data, m_len);
-}
-
-Address&
-Address::operator=(const Address& address)
-{
-    NS_ASSERT(m_len <= MAX_SIZE);
-    m_type = address.m_type;
-    m_len = address.m_len;
-    NS_ASSERT(m_len <= MAX_SIZE);
-    std::memcpy(m_data, address.m_data, m_len);
-    return *this;
+    std::copy(buffer, buffer + len, m_data.begin());
 }
 
 void
@@ -97,7 +71,7 @@ Address::CopyTo(uint8_t buffer[MAX_SIZE]) const
 {
     NS_LOG_FUNCTION(this << &buffer);
     NS_ASSERT(m_len <= MAX_SIZE);
-    std::memcpy(buffer, m_data, m_len);
+    std::copy(m_data.begin(), m_data.begin() + m_len, buffer);
     return m_len;
 }
 
@@ -108,7 +82,7 @@ Address::CopyAllTo(uint8_t* buffer, uint8_t len) const
     NS_ASSERT(len - m_len > 1);
     buffer[0] = m_type;
     buffer[1] = m_len;
-    std::memcpy(buffer + 2, m_data, m_len);
+    std::copy(m_data.begin(), m_data.begin() + m_len, buffer + 2);
     return m_len + 2;
 }
 
@@ -119,7 +93,7 @@ Address::CopyFrom(const uint8_t* buffer, uint8_t len)
     NS_ASSERT_MSG(m_len <= MAX_SIZE, "Address length too large");
     NS_ASSERT_MSG(m_type != UNASSIGNED_TYPE,
                   "Type-0 addresses are reserved. Please use SetType before using CopyFrom.");
-    std::memcpy(m_data, buffer, len);
+    std::copy(buffer, buffer + len, m_data.begin());
     m_len = len;
     return m_len;
 }
@@ -133,7 +107,7 @@ Address::CopyAllFrom(const uint8_t* buffer, uint8_t len)
     m_len = buffer[1];
 
     NS_ASSERT(len - m_len > 1);
-    std::memcpy(m_data, buffer + 2, m_len);
+    std::copy(buffer + 2, buffer + 2 + m_len, m_data.begin());
     return m_len + 2;
 }
 
@@ -177,7 +151,7 @@ Address::Serialize(TagBuffer buffer) const
     NS_LOG_FUNCTION(this << &buffer);
     buffer.WriteU8(m_type);
     buffer.WriteU8(m_len);
-    buffer.Write(m_data, m_len);
+    buffer.Write(m_data.data(), m_len);
 }
 
 void
@@ -187,64 +161,10 @@ Address::Deserialize(TagBuffer buffer)
     m_type = buffer.ReadU8();
     m_len = buffer.ReadU8();
     NS_ASSERT(m_len <= MAX_SIZE);
-    buffer.Read(m_data, m_len);
+    buffer.Read(m_data.data(), m_len);
 }
 
 ATTRIBUTE_HELPER_CPP(Address);
-
-bool
-operator==(const Address& a, const Address& b)
-{
-    if (a.m_type != b.m_type)
-    {
-        return false;
-    }
-    if (a.m_len != b.m_len)
-    {
-        return false;
-    }
-    return std::memcmp(a.m_data, b.m_data, a.m_len) == 0;
-}
-
-bool
-operator!=(const Address& a, const Address& b)
-{
-    return !(a == b);
-}
-
-bool
-operator<(const Address& a, const Address& b)
-{
-    if (a.m_type < b.m_type)
-    {
-        return true;
-    }
-    else if (a.m_type > b.m_type)
-    {
-        return false;
-    }
-    if (a.m_len < b.m_len)
-    {
-        return true;
-    }
-    else if (a.m_len > b.m_len)
-    {
-        return false;
-    }
-    NS_ASSERT(a.GetLength() == b.GetLength());
-    for (uint8_t i = 0; i < a.GetLength(); i++)
-    {
-        if (a.m_data[i] < b.m_data[i])
-        {
-            return true;
-        }
-        else if (a.m_data[i] > b.m_data[i])
-        {
-            return false;
-        }
-    }
-    return false;
-}
 
 std::ostream&
 operator<<(std::ostream& os, const Address& address)

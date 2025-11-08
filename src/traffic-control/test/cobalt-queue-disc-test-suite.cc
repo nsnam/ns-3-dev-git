@@ -333,7 +333,6 @@ CobaltQueueDiscDropTest::RunDropTest(QueueSizeUnit mode)
 void
 CobaltQueueDiscDropTest::EnqueueWithDelay(Ptr<CobaltQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
-    Address dest;
     double delay = 0.01; // enqueue packets with delay
     for (uint32_t i = 0; i < nPkt; i++)
     {

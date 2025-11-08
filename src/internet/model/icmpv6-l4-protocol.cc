@@ -600,7 +600,6 @@ Icmpv6L4Protocol::HandleRS(Ptr<Packet> packet,
     Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol>();
     Icmpv6RS rsHeader;
     packet->RemoveHeader(rsHeader);
-    Address hardwareAddress;
     Icmpv6OptionLinkLayerAddress lla(true);
     NdiscCache::Entry* entry = nullptr;
     Ptr<NdiscCache> cache = FindCache(interface->GetDevice());

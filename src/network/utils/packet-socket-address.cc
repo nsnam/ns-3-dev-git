@@ -88,7 +88,6 @@ Address
 PacketSocketAddress::ConvertTo() const
 {
     NS_LOG_FUNCTION(this);
-    Address address;
     uint8_t buffer[Address::MAX_SIZE];
     buffer[0] = m_protocol & 0xff;
     buffer[1] = (m_protocol >> 8) & 0xff;
