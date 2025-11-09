@@ -250,74 +250,50 @@ class HePhy : public VhtPhy
     static WifiMode GetHeMcs(uint8_t index);
 
     /**
-     * Return MCS 0 from HE MCS values.
-     *
      * @return MCS 0 from HE MCS values
      */
     static WifiMode GetHeMcs0();
     /**
-     * Return MCS 1 from HE MCS values.
-     *
      * @return MCS 1 from HE MCS values
      */
     static WifiMode GetHeMcs1();
     /**
-     * Return MCS 2 from HE MCS values.
-     *
      * @return MCS 2 from HE MCS values
      */
     static WifiMode GetHeMcs2();
     /**
-     * Return MCS 3 from HE MCS values.
-     *
      * @return MCS 3 from HE MCS values
      */
     static WifiMode GetHeMcs3();
     /**
-     * Return MCS 4 from HE MCS values.
-     *
      * @return MCS 4 from HE MCS values
      */
     static WifiMode GetHeMcs4();
     /**
-     * Return MCS 5 from HE MCS values.
-     *
      * @return MCS 5 from HE MCS values
      */
     static WifiMode GetHeMcs5();
     /**
-     * Return MCS 6 from HE MCS values.
-     *
      * @return MCS 6 from HE MCS values
      */
     static WifiMode GetHeMcs6();
     /**
-     * Return MCS 7 from HE MCS values.
-     *
      * @return MCS 7 from HE MCS values
      */
     static WifiMode GetHeMcs7();
     /**
-     * Return MCS 8 from HE MCS values.
-     *
      * @return MCS 8 from HE MCS values
      */
     static WifiMode GetHeMcs8();
     /**
-     * Return MCS 9 from HE MCS values.
-     *
      * @return MCS 9 from HE MCS values
      */
     static WifiMode GetHeMcs9();
     /**
-     * Return MCS 10 from HE MCS values.
-     *
      * @return MCS 10 from HE MCS values
      */
     static WifiMode GetHeMcs10();
     /**
-     * Return MCS 11 from HE MCS values.
-     *
      * @return MCS 11 from HE MCS values
      */
     static WifiMode GetHeMcs11();

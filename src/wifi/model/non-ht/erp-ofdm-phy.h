@@ -62,50 +62,34 @@ class ErpOfdmPhy : public OfdmPhy
     static WifiMode GetErpOfdmRate(uint64_t rate);
 
     /**
-     * Return a WifiMode for ERP-OFDM at 6 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 6 Mbps
      */
     static WifiMode GetErpOfdmRate6Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 9 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 9 Mbps
      */
     static WifiMode GetErpOfdmRate9Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 12 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 12 Mbps
      */
     static WifiMode GetErpOfdmRate12Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 18 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 18 Mbps
      */
     static WifiMode GetErpOfdmRate18Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 24 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 24 Mbps
      */
     static WifiMode GetErpOfdmRate24Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 36 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 36 Mbps
      */
     static WifiMode GetErpOfdmRate36Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 48 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 48 Mbps
      */
     static WifiMode GetErpOfdmRate48Mbps();
     /**
-     * Return a WifiMode for ERP-OFDM at 54 Mbps.
-     *
      * @return a WifiMode for ERP-OFDM at 54 Mbps
      */
     static WifiMode GetErpOfdmRate54Mbps();

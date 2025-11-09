@@ -73,26 +73,18 @@ class DsssPhy : public PhyEntity
      */
     static WifiMode GetDsssRate(uint64_t rate);
     /**
-     * Return a WifiMode for DSSS at 1 Mbps.
-     *
      * @return a WifiMode for DSSS at 1 Mbps
      */
     static WifiMode GetDsssRate1Mbps();
     /**
-     * Return a WifiMode for DSSS at 2 Mbps.
-     *
      * @return a WifiMode for DSSS at 2 Mbps
      */
     static WifiMode GetDsssRate2Mbps();
     /**
-     * Return a WifiMode for HR/DSSS at 5.5 Mbps.
-     *
      * @return a WifiMode for HR/DSSS at 5.5 Mbps
      */
     static WifiMode GetDsssRate5_5Mbps();
     /**
-     * Return a WifiMode for HR/DSSS at 11 Mbps.
-     *
      * @return a WifiMode for HR/DSSS at 11 Mbps
      */
     static WifiMode GetDsssRate11Mbps();

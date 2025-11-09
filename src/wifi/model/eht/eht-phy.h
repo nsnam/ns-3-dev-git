@@ -72,86 +72,58 @@ class EhtPhy : public HePhy
     static WifiMode GetEhtMcs(uint8_t index);
 
     /**
-     * Return MCS 0 from EHT MCS values.
-     *
      * @return MCS 0 from EHT MCS values
      */
     static WifiMode GetEhtMcs0();
     /**
-     * Return MCS 1 from EHT MCS values.
-     *
      * @return MCS 1 from EHT MCS values
      */
     static WifiMode GetEhtMcs1();
     /**
-     * Return MCS 2 from EHT MCS values.
-     *
      * @return MCS 2 from EHT MCS values
      */
     static WifiMode GetEhtMcs2();
     /**
-     * Return MCS 3 from EHT MCS values.
-     *
      * @return MCS 3 from EHT MCS values
      */
     static WifiMode GetEhtMcs3();
     /**
-     * Return MCS 4 from EHT MCS values.
-     *
      * @return MCS 4 from EHT MCS values
      */
     static WifiMode GetEhtMcs4();
     /**
-     * Return MCS 5 from EHT MCS values.
-     *
      * @return MCS 5 from EHT MCS values
      */
     static WifiMode GetEhtMcs5();
     /**
-     * Return MCS 6 from EHT MCS values.
-     *
      * @return MCS 6 from EHT MCS values
      */
     static WifiMode GetEhtMcs6();
     /**
-     * Return MCS 7 from EHT MCS values.
-     *
      * @return MCS 7 from EHT MCS values
      */
     static WifiMode GetEhtMcs7();
     /**
-     * Return MCS 8 from EHT MCS values.
-     *
      * @return MCS 8 from EHT MCS values
      */
     static WifiMode GetEhtMcs8();
     /**
-     * Return MCS 9 from EHT MCS values.
-     *
      * @return MCS 9 from EHT MCS values
      */
     static WifiMode GetEhtMcs9();
     /**
-     * Return MCS 10 from EHT MCS values.
-     *
      * @return MCS 10 from EHT MCS values
      */
     static WifiMode GetEhtMcs10();
     /**
-     * Return MCS 11 from EHT MCS values.
-     *
      * @return MCS 11 from EHT MCS values
      */
     static WifiMode GetEhtMcs11();
     /**
-     * Return MCS 12 from EHT MCS values.
-     *
      * @return MCS 12 from EHT MCS values
      */
     static WifiMode GetEhtMcs12();
     /**
-     * Return MCS 13 from EHT MCS values.
-     *
      * @return MCS 13 from EHT MCS values
      */
     static WifiMode GetEhtMcs13();

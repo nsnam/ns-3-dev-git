@@ -95,146 +95,98 @@ class OfdmPhy : public PhyEntity
      */
     static WifiMode GetOfdmRate(uint64_t rate, MHz_u bw = MHz_u{20});
     /**
-     * Return a WifiMode for OFDM at 6 Mbps.
-     *
      * @return a WifiMode for OFDM at 6 Mbps
      */
     static WifiMode GetOfdmRate6Mbps();
     /**
-     * Return a WifiMode for OFDM at 9 Mbps.
-     *
      * @return a WifiMode for OFDM at 9 Mbps
      */
     static WifiMode GetOfdmRate9Mbps();
     /**
-     * Return a WifiMode for OFDM at 12Mbps.
-     *
      * @return a WifiMode for OFDM at 12 Mbps
      */
     static WifiMode GetOfdmRate12Mbps();
     /**
-     * Return a WifiMode for OFDM at 18 Mbps.
-     *
      * @return a WifiMode for OFDM at 18 Mbps
      */
     static WifiMode GetOfdmRate18Mbps();
     /**
-     * Return a WifiMode for OFDM at 24 Mbps.
-     *
      * @return a WifiMode for OFDM at 24 Mbps
      */
     static WifiMode GetOfdmRate24Mbps();
     /**
-     * Return a WifiMode for OFDM at 36 Mbps.
-     *
      * @return a WifiMode for OFDM at 36 Mbps
      */
     static WifiMode GetOfdmRate36Mbps();
     /**
-     * Return a WifiMode for OFDM at 48 Mbps.
-     *
      * @return a WifiMode for OFDM at 48 Mbps
      */
     static WifiMode GetOfdmRate48Mbps();
     /**
-     * Return a WifiMode for OFDM at 54 Mbps.
-     *
      * @return a WifiMode for OFDM at 54 Mbps
      */
     static WifiMode GetOfdmRate54Mbps();
     /**
-     * Return a WifiMode for OFDM at 3 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 3 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate3MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 4.5 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 4.5 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate4_5MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 6 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 6 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate6MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 9 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 9 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate9MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 12 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 12 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate12MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 18 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 18 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate18MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 24 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 24 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate24MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 27 Mbps with 10 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 27 Mbps with 10 MHz channel spacing
      */
     static WifiMode GetOfdmRate27MbpsBW10MHz();
     /**
-     * Return a WifiMode for OFDM at 1.5 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 1.5 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate1_5MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 2.25 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 2.25 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate2_25MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 3 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 3 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate3MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 4.5 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 4.5 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate4_5MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 6 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 6 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate6MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 9 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 9 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate9MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 12 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 12 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate12MbpsBW5MHz();
     /**
-     * Return a WifiMode for OFDM at 13.5 Mbps with 5 MHz channel spacing.
-     *
      * @return a WifiMode for OFDM at 13.5 Mbps with 5 MHz channel spacing
      */
     static WifiMode GetOfdmRate13_5MbpsBW5MHz();

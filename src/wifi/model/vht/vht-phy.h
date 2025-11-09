@@ -97,62 +97,42 @@ class VhtPhy : public HtPhy
     static WifiMode GetVhtMcs(uint8_t index);
 
     /**
-     * Return MCS 0 from VHT MCS values.
-     *
      * @return MCS 0 from VHT MCS values
      */
     static WifiMode GetVhtMcs0();
     /**
-     * Return MCS 1 from VHT MCS values.
-     *
      * @return MCS 1 from VHT MCS values
      */
     static WifiMode GetVhtMcs1();
     /**
-     * Return MCS 2 from VHT MCS values.
-     *
      * @return MCS 2 from VHT MCS values
      */
     static WifiMode GetVhtMcs2();
     /**
-     * Return MCS 3 from VHT MCS values.
-     *
      * @return MCS 3 from VHT MCS values
      */
     static WifiMode GetVhtMcs3();
     /**
-     * Return MCS 4 from VHT MCS values.
-     *
      * @return MCS 4 from VHT MCS values
      */
     static WifiMode GetVhtMcs4();
     /**
-     * Return MCS 5 from VHT MCS values.
-     *
      * @return MCS 5 from VHT MCS values
      */
     static WifiMode GetVhtMcs5();
     /**
-     * Return MCS 6 from VHT MCS values.
-     *
      * @return MCS 6 from VHT MCS values
      */
     static WifiMode GetVhtMcs6();
     /**
-     * Return MCS 7 from VHT MCS values.
-     *
      * @return MCS 7 from VHT MCS values
      */
     static WifiMode GetVhtMcs7();
     /**
-     * Return MCS 8 from VHT MCS values.
-     *
      * @return MCS 8 from VHT MCS values
      */
     static WifiMode GetVhtMcs8();
     /**
-     * Return MCS 9 from VHT MCS values.
-     *
      * @return MCS 9 from VHT MCS values
      */
     static WifiMode GetVhtMcs9();

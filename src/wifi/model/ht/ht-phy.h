@@ -148,194 +148,130 @@ class HtPhy : public OfdmPhy
     static WifiMode GetHtMcs(uint8_t index);
 
     /**
-     * Return MCS 0 from HT MCS values.
-     *
      * @return MCS 0 from HT MCS values
      */
     static WifiMode GetHtMcs0();
     /**
-     * Return MCS 1 from HT MCS values.
-     *
      * @return MCS 1 from HT MCS values
      */
     static WifiMode GetHtMcs1();
     /**
-     * Return MCS 2 from HT MCS values.
-     *
      * @return MCS 2 from HT MCS values
      */
     static WifiMode GetHtMcs2();
     /**
-     * Return MCS 3 from HT MCS values.
-     *
      * @return MCS 3 from HT MCS values
      */
     static WifiMode GetHtMcs3();
     /**
-     * Return MCS 4 from HT MCS values.
-     *
      * @return MCS 4 from HT MCS values
      */
     static WifiMode GetHtMcs4();
     /**
-     * Return MCS 5 from HT MCS values.
-     *
      * @return MCS 5 from HT MCS values
      */
     static WifiMode GetHtMcs5();
     /**
-     * Return MCS 6 from HT MCS values.
-     *
      * @return MCS 6 from HT MCS values
      */
     static WifiMode GetHtMcs6();
     /**
-     * Return MCS 7 from HT MCS values.
-     *
      * @return MCS 7 from HT MCS values
      */
     static WifiMode GetHtMcs7();
     /**
-     * Return MCS 8 from HT MCS values.
-     *
      * @return MCS 8 from HT MCS values
      */
     static WifiMode GetHtMcs8();
     /**
-     * Return MCS 9 from HT MCS values.
-     *
      * @return MCS 9 from HT MCS values
      */
     static WifiMode GetHtMcs9();
     /**
-     * Return MCS 10 from HT MCS values.
-     *
      * @return MCS 10 from HT MCS values
      */
     static WifiMode GetHtMcs10();
     /**
-     * Return MCS 11 from HT MCS values.
-     *
      * @return MCS 11 from HT MCS values
      */
     static WifiMode GetHtMcs11();
     /**
-     * Return MCS 12 from HT MCS values.
-     *
      * @return MCS 12 from HT MCS values
      */
     static WifiMode GetHtMcs12();
     /**
-     * Return MCS 13 from HT MCS values.
-     *
      * @return MCS 13 from HT MCS values
      */
     static WifiMode GetHtMcs13();
     /**
-     * Return MCS 14 from HT MCS values.
-     *
      * @return MCS 14 from HT MCS values
      */
     static WifiMode GetHtMcs14();
     /**
-     * Return MCS 15 from HT MCS values.
-     *
      * @return MCS 15 from HT MCS values
      */
     static WifiMode GetHtMcs15();
     /**
-     * Return MCS 16 from HT MCS values.
-     *
      * @return MCS 16 from HT MCS values
      */
     static WifiMode GetHtMcs16();
     /**
-     * Return MCS 17 from HT MCS values.
-     *
      * @return MCS 17 from HT MCS values
      */
     static WifiMode GetHtMcs17();
     /**
-     * Return MCS 18 from HT MCS values.
-     *
      * @return MCS 18 from HT MCS values
      */
     static WifiMode GetHtMcs18();
     /**
-     * Return MCS 19 from HT MCS values.
-     *
      * @return MCS 19 from HT MCS values
      */
     static WifiMode GetHtMcs19();
     /**
-     * Return MCS 20 from HT MCS values.
-     *
      * @return MCS 20 from HT MCS values
      */
     static WifiMode GetHtMcs20();
     /**
-     * Return MCS 21 from HT MCS values.
-     *
      * @return MCS 21 from HT MCS values
      */
     static WifiMode GetHtMcs21();
     /**
-     * Return MCS 22 from HT MCS values.
-     *
      * @return MCS 22 from HT MCS values
      */
     static WifiMode GetHtMcs22();
     /**
-     * Return MCS 23 from HT MCS values.
-     *
      * @return MCS 23 from HT MCS values
      */
     static WifiMode GetHtMcs23();
     /**
-     * Return MCS 24 from HT MCS values.
-     *
      * @return MCS 24 from HT MCS values
      */
     static WifiMode GetHtMcs24();
     /**
-     * Return MCS 25 from HT MCS values.
-     *
      * @return MCS 25 from HT MCS values
      */
     static WifiMode GetHtMcs25();
     /**
-     * Return MCS 26 from HT MCS values.
-     *
      * @return MCS 26 from HT MCS values
      */
     static WifiMode GetHtMcs26();
     /**
-     * Return MCS 27 from HT MCS values.
-     *
      * @return MCS 27 from HT MCS values
      */
     static WifiMode GetHtMcs27();
     /**
-     * Return MCS 28 from HT MCS values.
-     *
      * @return MCS 28 from HT MCS values
      */
     static WifiMode GetHtMcs28();
     /**
-     * Return MCS 29 from HT MCS values.
-     *
      * @return MCS 29 from HT MCS values
      */
     static WifiMode GetHtMcs29();
     /**
-     * Return MCS 30 from HT MCS values.
-     *
      * @return MCS 30 from HT MCS values
      */
     static WifiMode GetHtMcs30();
     /**
-     * Return MCS 31 from HT MCS values.
-     *
      * @return MCS 31 from HT MCS values
      */
     static WifiMode GetHtMcs31();
