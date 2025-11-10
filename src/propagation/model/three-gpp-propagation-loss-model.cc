@@ -853,6 +853,7 @@ ThreeGppPropagationLossModel::GetO2iVehicularLoss(Ptr<MobilityModel> a,
             // Very fast nodes are not modeled
             else
             {
+                m_o2iVehicularUtLossMap[idNode] = 0.0;
                 NS_LOG_WARN(
                     "O2I loss for high-speed (>120 km/h) transit and satellites not implemented");
             }
