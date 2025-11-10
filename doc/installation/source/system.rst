@@ -100,8 +100,8 @@ Moreover, clang-tidy is integrated with CMake, enabling code scanning during the
 
 .. note::
 
-  Check the list of supported versions of clang-format in the ``utils/check-style-clang-format.py`` program
-  or in the `coding-style.rst <https://gitlab.com/nsnam/ns-3-dev/-/blob/master/doc/contributing/source/coding-style.rst>`_ document.
+  Check the list of supported versions of clang-format and clang-tidy in the
+  `RELEASE_NOTES.md <https://gitlab.com/nsnam/ns-3-dev/-/blob/master/RELEASE_NOTES.md>`_ document.
 
 clang-format is strongly recommended to write code that follows the ns-3 code conventions, but
 might be skipped for simpler tasks (e.g., writing a simple simulation script for yourself).
