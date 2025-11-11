@@ -1281,10 +1281,16 @@ class DsrOptionAckHeader : public DsrOptionHeader
     Ipv4Address m_realDstAddress;
 };
 
+/**
+ * @brief Output streamer for DsrOptionSRHeader
+ * @param os The output stream
+ * @param dsr The DsrOptionSRHeader
+ * @return The stream
+ */
 [[maybe_unused]] static inline std::ostream&
-operator<<(std::ostream& os, const DsrOptionSRHeader& sr)
+operator<<(std::ostream& os, const DsrOptionSRHeader& dsr)
 {
-    sr.Print(os);
+    dsr.Print(os);
     return os;
 }
 

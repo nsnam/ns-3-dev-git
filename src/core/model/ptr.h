@@ -401,6 +401,14 @@ template <typename T>
 struct EventMemberImplObjTraits;
 
 /**
+ * @ingroup events
+ * @defgroup makeeventmemptr MakeEvent from class methods.
+ *
+ * Create EventImpl instances from class member methods which take
+ * varying numbers of arguments.
+ */
+
+/**
  * @ingroup makeeventmemptr
  * Helper for the MakeEvent functions which take a class method.
  *

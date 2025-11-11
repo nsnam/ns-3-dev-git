@@ -308,6 +308,12 @@ class DsrRoutingHeader : public DsrFsHeader, public DsrOptionField
     uint32_t Deserialize(Buffer::Iterator start) override;
 };
 
+/**
+ * @brief Output streamer for DsrRoutingHeader
+ * @param os The output stream
+ * @param dsr The DsrRoutingHeader
+ * @return The stream
+ */
 static inline std::ostream&
 operator<<(std::ostream& os, const DsrRoutingHeader& dsr)
 {

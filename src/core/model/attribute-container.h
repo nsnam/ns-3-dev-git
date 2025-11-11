@@ -23,7 +23,7 @@
 namespace ns3
 {
 
-/*!
+/**
  * @ingroup attributes
  * @addtogroup attribute_AttributeContainer AttributeContainer Attribute
  * AttributeValue implementation for AttributeContainer
@@ -187,7 +187,7 @@ class AttributeContainerValue : public AttributeValue
     container_type m_container; //!< Internal container
 };
 
-/*!
+/**
  * @ingroup attribute_AttributeContainer
  *
  * @class  ns3::AttributeContainerChecker "attribute-container.h"

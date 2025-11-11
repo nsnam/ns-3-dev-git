@@ -7,6 +7,11 @@
  */
 
 /**
+ * @ingroup antenna
+ * @defgroup antenna-examples Antenna Examples
+ */
+
+/**
  * @file
  * @ingroup antenna-examples
  * Example program illustrating one application of symmetric adjacency matrices for routing

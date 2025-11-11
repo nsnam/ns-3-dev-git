@@ -23,6 +23,7 @@ using namespace ns3;
 
 /**
  * @ingroup core-tests
+ * @ingroup randomvariable
  * @defgroup rng-tests Random number generators tests
  */
 

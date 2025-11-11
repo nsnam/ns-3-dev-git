@@ -33,6 +33,7 @@ namespace ns3
 namespace dsr
 {
 
+/** Flag used to prioritize packets */
 enum DsrMessageType
 {
     DSR_CONTROL_PACKET = 1,
