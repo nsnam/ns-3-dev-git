@@ -259,13 +259,13 @@ macro(process_options)
   if(${NS3_CLANG_TIDY})
     find_program(
       CLANG_TIDY
-      NAMES clang-tidy
-            clang-tidy-15
-            clang-tidy-16
-            clang-tidy-17
-            clang-tidy-18
+      NAMES clang-tidy-20
             clang-tidy-19
-            clang-tidy-20
+            clang-tidy-18
+            clang-tidy-17
+            clang-tidy-16
+            clang-tidy-15
+            clang-tidy
     )
     if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
       message(FATAL_ERROR "Clang-tidy was not found")
