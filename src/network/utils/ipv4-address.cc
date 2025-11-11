@@ -167,7 +167,7 @@ Ipv4Address::Ipv4Address(const char* address)
 }
 
 bool
-Ipv4Address::CheckCompatibility(const std::string& addressStr)
+Ipv4Address::IsCompatible(const std::string& addressStr)
 {
     NS_LOG_FUNCTION(addressStr);
 

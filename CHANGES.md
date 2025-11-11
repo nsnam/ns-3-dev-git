@@ -27,7 +27,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
   the `SinkApplication::RxWithoutAddress` trace.
 * Initializing a Ipv[4,6]Address from a string using the constructor or the `Set` function will result in a crash if the string can not be parsed as an IPv4 or IPv6 address.
 * The `Ipv[4,6]Address::IsInitialized()` function has been deprecated and returns always `true`.
-* A new static function `Ipv[4,6]Address::CheckCompatibility()` has been added to safely check if a string can be parsed as an IPv4 or IPv6 address.
+* A new static function `Ipv[4,6]Address::IsCompatible()` has been added to safely check if a string can be parsed as an IPv4 or IPv6 address.
 * The default value for `Ipv4Address` is now "0.0.0.0", which is consistent with RFC 1122.
 
 ### Changes to build system

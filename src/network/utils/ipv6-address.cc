@@ -174,7 +174,7 @@ Ipv6Address::Ipv6Address(const char* address)
 }
 
 bool
-Ipv6Address::CheckCompatibility(const std::string& addressStr)
+Ipv6Address::IsCompatible(const std::string& addressStr)
 {
     NS_LOG_FUNCTION(addressStr);
 

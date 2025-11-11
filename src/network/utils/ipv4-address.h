@@ -62,7 +62,7 @@ class Ipv4Address
      * @param addressStr string containing the address as described above
      * @return true if the string can be parsed as an IPv4 address
      */
-    static bool CheckCompatibility(const std::string& addressStr);
+    static bool IsCompatible(const std::string& addressStr);
     /**
      * Get the host-order 32-bit IP address
      * @return the host-order 32-bit IP address

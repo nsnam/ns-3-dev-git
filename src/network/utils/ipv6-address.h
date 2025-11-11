@@ -60,7 +60,7 @@ class Ipv6Address
      * @param addressStr string containing the address as described above
      * @return true if the string can be parsed as an IPv6 address
      */
-    static bool CheckCompatibility(const std::string& addressStr);
+    static bool IsCompatible(const std::string& addressStr);
 
     /**
      * @brief Constructs an Ipv6Address by using the input 16 bytes.
