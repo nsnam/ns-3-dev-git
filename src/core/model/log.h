@@ -25,6 +25,9 @@
  * @file
  * @ingroup logging
  * Debug message logging
+ *
+ * Included by graph was not generated because of its size.
+ * @hideincludedbygraph
  */
 
 /**

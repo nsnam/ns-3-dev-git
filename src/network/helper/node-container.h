@@ -120,6 +120,7 @@ class NodeContainer
      * @endcode
      *
      * @returns an iterator which refers to the first Node in the container.
+     * @hidecaller
      */
     Iterator Begin() const;
 
@@ -141,6 +142,7 @@ class NodeContainer
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.
+     * @hidecaller
      */
     Iterator End() const;
 
@@ -186,6 +188,7 @@ class NodeContainer
      *
      * @param i the index of the requested node pointer.
      * @returns the requested node pointer.
+     * @hidecaller
      */
     Ptr<Node> Get(uint32_t i) const;
 
@@ -198,6 +201,7 @@ class NodeContainer
      * automates that task.
      *
      * @param n The number of Nodes to create
+     * @hidecaller
      */
     void Create(uint32_t n);
 

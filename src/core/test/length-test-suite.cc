@@ -303,6 +303,10 @@ class LengthTestCase : public TestCase
     void TestModReturnsNonZero();
     /** @} */
 
+    /**
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
+     */
     void DoRun() override;
 };
 

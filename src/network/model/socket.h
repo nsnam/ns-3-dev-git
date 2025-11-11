@@ -142,6 +142,7 @@ class Socket : public Object
      *
      * @param node The node on which to create the socket
      * @param tid The TypeId of a SocketFactory class to use
+     * @hidecaller
      */
     static Ptr<Socket> CreateSocket(Ptr<Node> node, TypeId tid);
     /**

@@ -2409,6 +2409,9 @@ class Experiment
      * @param staTxPower the STA transmit power
      * @param pktInterval the packet interval
      * @return 0 if all went well
+     *
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
      */
     int Run(const WifiHelper& wifi,
             const YansWifiPhyHelper& wifiPhy,

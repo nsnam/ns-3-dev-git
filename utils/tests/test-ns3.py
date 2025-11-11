@@ -55,6 +55,7 @@ def run_ns3(args, env=None, generator=platform_makefiles):
     @param env: environment variables dictionary
     @param generator: CMake generator
     @return tuple containing (error code, stdout and stderr)
+    @hidecaller
     """
     if "clean" in args:
         possible_leftovers = ["contrib/borked", "contrib/calibre"]

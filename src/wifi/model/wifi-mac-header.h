@@ -148,6 +148,7 @@ class WifiMacHeader : public Header
      * Fill the Address 1 field with the given address.
      *
      * @param address the address to be used in the Address 1 field
+     * @hidecaller
      */
     void SetAddr1(Mac48Address address);
     /**
@@ -175,6 +176,7 @@ class WifiMacHeader : public Header
      * @param type the WifiMacType for the header
      * @param resetToDsFromDs whether the ToDs and FromDs flags
      *        should be reset.
+     * @hidecaller
      */
     virtual void SetType(WifiMacType type, bool resetToDsFromDs = true);
     /**
@@ -293,6 +295,7 @@ class WifiMacHeader : public Header
      * Return the address in the Address 1 field.
      *
      * @return the address in the Address 1 field
+     * @hidecaller
      */
     Mac48Address GetAddr1() const;
     /**

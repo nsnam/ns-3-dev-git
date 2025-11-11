@@ -132,6 +132,8 @@ class TypeId
      *
      * This method cannot fail: it will crash if the input
      * name is not a valid TypeId name.
+     *
+     * @hidecaller
      */
     static TypeId LookupByName(std::string name);
     /**
@@ -244,6 +246,7 @@ class TypeId
      * Get the name.
      *
      * @returns The name of this interface.
+     * @hidecaller
      */
     std::string GetName() const;
 
@@ -326,6 +329,8 @@ class TypeId
      *
      * Record in this TypeId which TypeId is the TypeId
      * of the base class of the subclass.
+     *
+     * @hidecaller
      */
     TypeId SetParent(TypeId tid);
     /**
@@ -336,6 +341,8 @@ class TypeId
      *
      * Record in this TypeId which TypeId is the TypeId
      * of the base class of the subclass.
+     *
+     * @hidecaller
      */
     template <typename T>
     TypeId SetParent();

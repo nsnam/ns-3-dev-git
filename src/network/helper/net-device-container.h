@@ -159,6 +159,7 @@ class NetDeviceContainer
      *
      * @param i the index of the requested device pointer.
      * @returns the requested device pointer.
+     * @hidecaller
      */
     Ptr<NetDevice> Get(uint32_t i) const;
 
@@ -167,6 +168,7 @@ class NetDeviceContainer
      * this container.
      *
      * @param other The NetDeviceContainer to append.
+     * @hidecaller
      */
     void Add(NetDeviceContainer other);
 

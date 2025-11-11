@@ -61,6 +61,9 @@ namespace ns3
  * (or ObjectBase) there is also a convenience wrapper Create<>()
  *
  * @tparam T \explicit The type of the underlying object.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 template <typename T>
 class Ptr
@@ -95,6 +98,8 @@ class Ptr
      * @tparam U \deduced The actual type of the argument and return pointer.
      * @param [in] p Smart pointer
      * @return The pointer managed by this smart pointer.
+     * @hidecaller
+     * @hideref
      */
     template <typename U>
     friend U* PeekPointer(const Ptr<U>& p);
@@ -233,6 +238,8 @@ class Ptr
  * @tparam Ts \deduced Types of the constructor arguments.
  * @param  [in] args Constructor arguments.
  * @return A Ptr to the newly created \c T.
+ * @hidecaller
+ * @hiderefby
  */
 template <typename T, typename... Ts>
 Ptr<T> Create(Ts&&... args);
@@ -588,6 +595,11 @@ ConstCast(const Ptr<T2>& p)
     return Ptr<T1>(const_cast<T1*>(PeekPointer(p)));
 }
 
+/**
+ * @copydoc ConstCast()
+ * @hidecaller
+ * @hiderefby
+ */
 template <typename T1, typename T2>
 Ptr<T1>
 DynamicCast(const Ptr<T2>& p)

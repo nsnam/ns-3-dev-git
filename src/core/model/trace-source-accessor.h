@@ -101,6 +101,7 @@ class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
  *
  * @param [in] a The trace source
  * @returns The TraceSourceAccessor
+ * @hidecaller
  */
 template <typename T>
 Ptr<const TraceSourceAccessor> MakeTraceSourceAccessor(T a);

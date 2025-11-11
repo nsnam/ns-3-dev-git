@@ -1559,6 +1559,7 @@ class WifiRemoteStationManager : public Object
      *
      * @param address the address of the station
      * @return WifiRemoteStationState corresponding to the address
+     * @hidecaller
      */
     std::shared_ptr<WifiRemoteStationState> LookupState(Mac48Address address) const;
     /**

@@ -206,6 +206,9 @@ SimulatorEventsTestCase::DoRun()
  * @brief Check that all templates are instantiated correctly.
  *
  * This is a compilation test, it cannot fail at runtime.
+ *
+ * Call graph was not generated because of its size.
+ * @hidecallgraph
  */
 class SimulatorTemplateTestCase : public TestCase
 {
@@ -228,6 +231,10 @@ class SimulatorTemplateTestCase : public TestCase
     /** @} */
 
   private:
+    /**
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
+     */
     void DoRun() override;
 
     /**

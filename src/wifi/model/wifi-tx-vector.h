@@ -152,12 +152,14 @@ class WifiTxVector
      *
      * @param staId the station ID for MU
      * @returns the selected payload transmission mode
+     * @hidecaller
      */
     WifiMode GetMode(uint16_t staId = SU_STA_ID) const;
     /**
      * Sets the selected payload transmission mode
      *
      * @param mode the payload WifiMode
+     * @hidecaller
      */
     void SetMode(WifiMode mode);
     /**
@@ -197,6 +199,7 @@ class WifiTxVector
     void SetPreambleType(WifiPreamble preamble);
     /**
      * @returns the channel width
+     * @hidecaller
      */
     MHz_u GetChannelWidth() const;
     /**

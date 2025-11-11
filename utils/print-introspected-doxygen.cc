@@ -71,6 +71,7 @@ std::string headingStop;        ///< end of section heading (h3)
 std::string headingWithIdStart; ///< start of section heading with id (h3)
 std::string headingWithIdMid;   ///< middle of section heading with id (h3)
 std::string headingWithIdStop;  ///< end of section heading with id (h3)
+std::string hideCaller;         ///< hide caller graph
 // Linking:  [The link text displayed](\ref TheTarget)
 std::string hrefStart;        ///< start of a link
 std::string hrefMid;          ///< middle part of a link
@@ -219,6 +220,7 @@ SetMarkup()
         headingWithIdStart = "";
         headingWithIdMid = "";
         headingWithIdStop = "";
+        hideCaller = "";
         // Linking:  The link text displayed (see TheTarget)
         hrefStart = "";
         hrefMid = " (see ";
@@ -273,6 +275,7 @@ SetMarkup()
         headingWithIdStart = "<h3 id=\"";
         headingWithIdMid = "\">";
         headingWithIdStop = "</h3>";
+        hideCaller = "@hidecaller";
         // Linking:  [The link text displayed](\ref TheTarget)
         hrefStart = "[";
         hrefMid = "](\\ref ";
@@ -1418,7 +1421,7 @@ PrintAttributeValueSection(std::ostream& os, const std::string& name, const bool
     {
         os << seeAlso << "ns3::" << name << "\n";
     }
-    os << commentStop;
+    os << hideCaller << "\n" << commentStop;
 
 } // PrintAttributeValueSection()
 
@@ -1450,7 +1453,7 @@ PrintAttributeValueWithName(std::ostream& os,
     os << classStart << qualClass << " \"" << header << "\"" << std::endl;
     os << "AttributeValue implementation for " << name << "." << std::endl;
     os << seeAlso << "AttributeValue" << std::endl;
-    os << commentStop;
+    os << hideCaller << "\n" << commentStop;
 
     // Ctor: <name>Value::<name>Value
     os << commentStart << functionStart << qualClass << "::" << valClass;
@@ -1511,6 +1514,7 @@ PrintMakeAccessors(std::ostream& os, const std::string& name)
        << make << "(T1 a1)\n"
        << copyDoc << "ns3::MakeAccessorHelper(T1)\n"
        << seeAlso << "ns3::AttributeAccessor\n"
+       << hideCaller << "\n"
        << commentStop;
 
     // \ingroup attribute_<name>Value
@@ -1519,6 +1523,7 @@ PrintMakeAccessors(std::ostream& os, const std::string& name)
        << make << "(T1 a1, T2 a2)\n"
        << copyDoc << "ns3::MakeAccessorHelper(T1,T2)\n"
        << seeAlso << "ns3::AttributeAccessor\n"
+       << hideCaller << "\n"
        << commentStop;
 } // PrintMakeAccessors()
 
@@ -1545,7 +1550,7 @@ PrintMakeChecker(std::ostream& os, const std::string& name, const std::string& h
        << " \"" << header << "\"" << std::endl;
     os << "AttributeChecker implementation for " << name << "Value." << std::endl;
     os << seeAlso << "ns3::AttributeChecker" << std::endl;
-    os << commentStop;
+    os << hideCaller << "\n" << commentStop;
 
     // \ingroup attribute_<name>Value
     // Make<name>Checker()
@@ -1553,6 +1558,7 @@ PrintMakeChecker(std::ostream& os, const std::string& name, const std::string& h
        << make << "()\n"
        << returns << "The AttributeChecker.\n"
        << seeAlso << "ns3::AttributeChecker\n"
+       << hideCaller << "\n"
        << commentStop;
 } // PrintMakeChecker()
 

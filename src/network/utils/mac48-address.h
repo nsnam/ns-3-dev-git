@@ -70,6 +70,8 @@ class Mac48Address
      * This function performs a type check and asserts if the
      * type of the input address is not compatible with an
      * Mac48Address.
+     *
+     * @hidecaller
      */
     static Mac48Address ConvertFrom(const Address& address);
     /**
@@ -117,6 +119,7 @@ class Mac48Address
 
     /**
      * @returns the broadcast address
+     * @hidecaller
      */
     static Mac48Address GetBroadcast();
 

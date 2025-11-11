@@ -315,6 +315,7 @@ class FrameExchangeManager : public Object
 
     /**
      * @return the remote station manager operating on our link
+     * @hidecaller
      */
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager() const;
 

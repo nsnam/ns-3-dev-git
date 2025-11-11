@@ -76,6 +76,8 @@ bool SetFailSafe(std::string path, const AttributeValue& value);
  * This method overrides the initial value of the
  * matching attribute. This method cannot fail: it will
  * crash if the input attribute name or value is invalid.
+ *
+ * @hidecaller
  */
 void SetDefault(std::string name, const AttributeValue& value);
 /**
@@ -115,6 +117,8 @@ bool SetGlobalFailSafe(std::string name, const AttributeValue& value);
  * to them.  If no matching trace sources are found, this method will
  * throw a fatal error.  Use ConnectWithoutContextFailSafe if the absence
  * of matching trace sources should not be fatal.
+ *
+ * @hidecaller
  */
 void ConnectWithoutContext(std::string path, const CallbackBase& cb);
 /**
@@ -149,6 +153,8 @@ void DisconnectWithoutContext(std::string path, const CallbackBase& cb);
  * If no matching trace sources are found, this method will
  * throw a fatal error.  Use ConnectFailSafe if the absence
  * of matching trace sources should not be fatal.
+ *
+ * @hidecaller
  */
 void Connect(std::string path, const CallbackBase& cb);
 /**

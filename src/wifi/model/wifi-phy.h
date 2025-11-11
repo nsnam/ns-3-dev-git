@@ -69,6 +69,9 @@ class WIFI_EXPORT WifiPhy : public Object
     /**
      * @brief Get the type ID.
      * @return the object TypeId
+     *
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
      */
     static TypeId GetTypeId();
 
@@ -252,6 +255,8 @@ class WIFI_EXPORT WifiPhy : public Object
      * @param staId the STA-ID of the recipient (only used for MU)
      *
      * @return the total amount of time this PHY will stay busy for the transmission of these bytes.
+     *
+     * @hidecaller
      */
     static Time CalculateTxDuration(uint32_t size,
                                     const WifiTxVector& txVector,

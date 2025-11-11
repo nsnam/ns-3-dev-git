@@ -44,6 +44,8 @@ class RngSeedManager
      * @note While the underlying RNG takes six integer values as a seed;
      * it is sufficient to set these all to the same integer, so we provide
      * a simpler interface here that just takes one integer.
+     *
+     * @hidecaller
      */
     static void SetSeed(uint32_t seed);
 
@@ -79,6 +81,7 @@ class RngSeedManager
      * @endcode
      *
      * @param [in] run The run number.
+     * @hidecaller
      */
     static void SetRun(uint64_t run);
     /**

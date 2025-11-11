@@ -208,6 +208,7 @@ class Ipv4Header : public Header
     Ipv4Address GetSource() const;
     /**
      * @returns the destination address of this packet
+     * @hidecaller
      */
     Ipv4Address GetDestination() const;
 

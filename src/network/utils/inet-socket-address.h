@@ -94,6 +94,7 @@ class InetSocketAddress
      *
      * @param address the Address instance to convert from.
      * @returns an InetSocketAddress
+     * @hidecaller
      */
     static InetSocketAddress ConvertFrom(const Address& address);
 

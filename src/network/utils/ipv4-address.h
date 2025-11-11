@@ -211,6 +211,7 @@ class Ipv4Address
     static Ipv4Address GetZero();
     /**
      * @return the 0.0.0.0 address
+     * @hidecaller
      */
     static Ipv4Address GetAny();
     /**

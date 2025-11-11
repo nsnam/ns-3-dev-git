@@ -339,6 +339,9 @@ class CallbackImpl : public CallbackImplBase
  * @ingroup callbackimpl
  * Base class for Callback class.
  * Provides pimpl abstraction.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 class CallbackBase
 {
@@ -416,6 +419,9 @@ class CallbackBase
  *
  * @tparam R \explicit The return type of the Callback.
  * @tparam UArgs \explicit The types of any arguments to the Callback.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 template <typename R, typename... UArgs>
 class Callback : public CallbackBase
@@ -661,11 +667,13 @@ operator!=(Callback<R, Args...> a, Callback<R, Args...> b)
 }
 
 /**
+ * @ingroup callback
+ * Build Callbacks for class method members which take varying numbers
+ * of arguments and potentially returning a value.
  * @{
  */
 /**
- * Build Callbacks for class method members which take varying numbers
- * of arguments and potentially returning a value.
+ * Build Callbacks for class method members
  *
  * @tparam T   \deduced Type of the class having the member function.
  * @tparam OBJ \deduced Type of the class instance.
@@ -675,9 +683,7 @@ operator!=(Callback<R, Args...> a, Callback<R, Args...> b)
  * @param [in] memPtr Class method member pointer
  * @param [in] objPtr Class instance
  * @return A wrapper Callback
- *
- * Build Callbacks for class method members which take varying numbers of arguments
- * and potentially returning a value.
+ * @hidecaller
  */
 template <typename T, typename OBJ, typename R, typename... Args>
 Callback<R, Args...>
@@ -697,13 +703,14 @@ MakeCallback(R (T::*memPtr)(Args...) const, OBJ objPtr)
 
 /**
  * @ingroup callback
+ * Build Callbacks for functions which take varying numbers of arguments
+ * and potentially returning a value.
+ *
  * @tparam R   \deduced Return type of the callback function..
  * @tparam Args  \deduced Type list of any arguments to the member function.
  * @param [in] fnPtr Function pointer
  * @return A wrapper Callback
- *
- * Build Callbacks for functions which take varying numbers of arguments
- * and potentially returning a value.
+ * @hidecaller
  */
 template <typename R, typename... Args>
 Callback<R, Args...>
@@ -714,13 +721,13 @@ MakeCallback(R (*fnPtr)(Args...))
 
 /**
  * @ingroup callback
- * @tparam R   \deduced Return type of the callback function..
- * @tparam Args  \deduced Type list of any arguments to the member function.
- * @return A wrapper Callback
- *
  * Build null Callbacks which take no arguments,
  * for varying number of template arguments,
  * and potentially returning a value.
+ * @tparam R   \deduced Return type of the callback function..
+ * @tparam Args  \deduced Type list of any arguments to the member function.
+ * @return A wrapper Callback
+ * @hidecaller
  */
 template <typename R, typename... Args>
 Callback<R, Args...>
@@ -739,6 +746,7 @@ MakeNullCallback()
  * @param [in] fnPtr Function pointer
  * @param [in] bargs Bound arguments
  * @return A bound Callback
+ * @hidecaller
  */
 template <typename R, typename... Args, typename... BArgs>
 auto

@@ -173,6 +173,8 @@ class EnumChecker : public AttributeChecker
  * @param [in] v  The default enum value.
  * @param [in] n  The corresponding name.
  * @param [in] args Any additional arguments.
+ *
+ * @hidecaller
  */
 template <typename T, typename... Ts>
 Ptr<const AttributeChecker>

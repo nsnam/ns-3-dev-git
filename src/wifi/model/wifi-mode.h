@@ -138,6 +138,8 @@ class WifiMode
      *
      * @returns the Modulation Class (Section 9.7.8 "Modulation classes"; IEEE 802.11-2012)
      * to which this WifiMode belongs.
+     *
+     * @hidecaller
      */
     WifiModulationClass GetModulationClass() const;
     /**

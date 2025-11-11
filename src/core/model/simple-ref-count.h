@@ -28,6 +28,9 @@ namespace ns3
 /**
  * @ingroup ptr
  * @brief Empty class, used as a default parent class for SimpleRefCount
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 class Empty
 {
@@ -64,6 +67,9 @@ class Empty
  *      to the object it manages exist anymore.
  *
  * Interesting users of this class include ns3::Object as well as ns3::Packet.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 template <typename T, typename PARENT = Empty, typename DELETER = DefaultDeleter<T>>
 class SimpleRefCount : public PARENT
