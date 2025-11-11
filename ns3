@@ -2070,6 +2070,27 @@ def main():
         elif ".py" in target_to_run and os.path.exists(target_to_run):
             # We let python scripts pass to be able to run ./utils/python-unit-tests.py
             pass
+        elif "clang-tidy" in target_to_run:
+            clang_tidy_versions = [
+                "run-clang-tidy",
+                *[f"run-clang-tidy-{x}" for x in range(15, 21)],
+            ]
+            clang_tidy_versions = list(map(lambda x: shutil.which(x), clang_tidy_versions))
+            clang_tidy_versions = list(filter(lambda x: x, clang_tidy_versions))
+            if not clang_tidy_versions:
+                raise Exception(
+                    "Clang-tidy not found; please install version 15.0.0 or greater, or modify the PATH environment variable"
+                )
+            target_to_run = clang_tidy_versions[-1]
+            target_args = [
+                "-p",
+                current_cmake_cache_folder,
+                "-quiet",
+                "-format",
+                "-warnings-as-errors=*",
+            ] + target_args
+            run_only = True
+            build_and_run = False
         else:
             raise Exception("Couldn't find the specified program: %s" % target_to_run)
 
