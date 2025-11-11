@@ -6,6 +6,9 @@
 // in a scratch subdirectory, one can create new programs that are implemented
 // in multiple files and headers.
 
+#ifndef SCRATCH_SUBDIR_ADDITIONAL_HEADER_H
+#define SCRATCH_SUBDIR_ADDITIONAL_HEADER_H
+
 #include <string>
 
 namespace ns3
@@ -19,3 +22,5 @@ namespace ns3
 std::string ScratchSubdirGetMessage();
 
 } // namespace ns3
+
+#endif // SCRATCH_SUBDIR_ADDITIONAL_HEADER_H

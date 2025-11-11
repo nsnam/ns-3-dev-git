@@ -6,6 +6,9 @@
  * Authors: Kirill Andreev  <andreev@iitp.ru>
  */
 
+#ifndef HWMP_SIMPLEST_REGRESSION_H
+#define HWMP_SIMPLEST_REGRESSION_H
+
 #include "ns3/ipv4-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
@@ -115,3 +118,5 @@ class HwmpSimplestRegressionTest : public TestCase
      */
     void HandleReadClient(Ptr<Socket> socket);
 };
+
+#endif // HWMP_SIMPLEST_REGRESSION_H

@@ -4,6 +4,9 @@
  * Author: Moatamri Faker <faker.moatamri@sophia.inria.fr>
  */
 
+#ifndef MODEL_TYPEID_CREATOR_H
+#define MODEL_TYPEID_CREATOR_H
+
 #include "attribute-default-iterator.h"
 
 #include "ns3/type-id.h"
@@ -99,3 +102,5 @@ class ModelTypeidCreator : public AttributeDefaultIterator
     std::vector<GtkTreeIter*> m_iters;
 };
 } // namespace ns3
+
+#endif // MODEL_TYPEID_CREATOR_H

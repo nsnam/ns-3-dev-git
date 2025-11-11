@@ -6,6 +6,9 @@
  * Authors: Kirill Andreev  <andreev@iitp.ru>
  */
 
+#ifndef HWMP_TARGET_FLAGS_REGRESSION_H
+#define HWMP_TARGET_FLAGS_REGRESSION_H
+
 #include "ns3/ipv4-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
@@ -139,3 +142,5 @@ class HwmpDoRfRegressionTest : public TestCase
      */
     void HandleReadClient(Ptr<Socket> socket);
 };
+
+#endif // HWMP_TARGET_FLAGS_REGRESSION_H

@@ -5,6 +5,9 @@
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#ifndef MODEL_NODE_CREATOR_H
+#define MODEL_NODE_CREATOR_H
+
 #include "attribute-iterator.h"
 
 #include <gtk/gtk.h>
@@ -90,3 +93,5 @@ class ModelCreator : public AttributeIterator
     std::vector<GtkTreeIter*> m_iters; ///< attribute tree item
 };
 } // namespace ns3
+
+#endif // MODEL_NODE_CREATOR_H

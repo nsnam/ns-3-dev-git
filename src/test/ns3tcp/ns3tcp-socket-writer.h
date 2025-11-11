@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: GPL-2.0-only
  */
 
+#ifndef NS3TCP_SOCKET_WRITER_H
+#define NS3TCP_SOCKET_WRITER_H
+
 #include "ns3/address.h"
 #include "ns3/application.h"
 #include "ns3/node.h"
@@ -59,3 +62,5 @@ class SocketWriter : public Application
     bool m_isConnected;   //!< True if the socket setup has been done.
 };
 } // namespace ns3
+
+#endif // NS3TCP_SOCKET_WRITER_H
