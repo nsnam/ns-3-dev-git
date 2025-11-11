@@ -67,11 +67,10 @@ class BuildingContainer
      * for-loop to run through the Buildings
      *
      * @code
-     *   BuildingContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Building method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Building method
+     *   }
      * @endcode
      *
      * @returns an iterator which refers to the first Building in the container.
@@ -88,11 +87,10 @@ class BuildingContainer
      * for-loop to run through the Buildings
      *
      * @code
-     *   BuildingContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Building method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Building method
+     *   }
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.

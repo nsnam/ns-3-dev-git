@@ -1292,8 +1292,7 @@ within the container ``devs``::
 
    std::vector<uint8_t> measIdList;
 
-   NetDeviceContainer::Iterator it;
-   for (it = devs.Begin(); it != devs.End(); it++)
+   for (auto it = devs.Begin(); it != devs.End(); it++)
    {
      Ptr<NetDevice> dev = *it;
      Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice>();

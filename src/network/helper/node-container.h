@@ -112,11 +112,10 @@ class NodeContainer
      * for-loop to run through the Nodes
      *
      * @code
-     *   NodeContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Node method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Node method
+     *   }
      * @endcode
      *
      * @returns an iterator which refers to the first Node in the container.
@@ -134,11 +133,10 @@ class NodeContainer
      * for-loop to run through the Nodes
      *
      * @code
-     *   NodeContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Node method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Node method
+     *   }
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.

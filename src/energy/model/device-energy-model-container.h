@@ -87,11 +87,10 @@ class DeviceEnergyModelContainer
      * for-loop to run through the DeviceEnergyModels.
      *
      * @code
-     *   DeviceEnergyModelContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some DeviceEnergyModel method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some DeviceEnergyModel method
+     *   }
      * @endcode
      */
     Iterator Begin() const;
@@ -108,11 +107,10 @@ class DeviceEnergyModelContainer
      * for-loop to run through the DeviceEnergyModels.
      *
      * @code
-     *   DeviceEnergyModelContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some DeviceEnergyModel method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some DeviceEnergyModel method
+     *   }
      * @endcode
      */
     Iterator End() const;

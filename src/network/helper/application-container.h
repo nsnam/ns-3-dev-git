@@ -68,11 +68,10 @@ class ApplicationContainer
      * for-loop to run through the Applications
      *
      * @code
-     *   ApplicationContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Application method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Application method
+     *   }
      * @endcode
      *
      * @returns an iterator which refers to the first Application in the container.
@@ -89,11 +88,10 @@ class ApplicationContainer
      * for-loop to run through the Applications
      *
      * @code
-     *   ApplicationContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Application method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Application method
+     *   }
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.
