@@ -13,6 +13,7 @@
 #define PHY_ENTITY_H
 
 #include "wifi-phy-band.h"
+#include "wifi-phy-common.h"
 #include "wifi-phy-state-helper.h"
 #include "wifi-phy.h"
 #include "wifi-ppdu.h"
@@ -41,11 +42,6 @@
 
 namespace ns3
 {
-
-/**
- * A map of the received power for each band
- */
-using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
 
 class WifiMpdu;
 class WifiPhy;

@@ -57,6 +57,9 @@ struct WifiSpectrumBandInfo
 /// vector of spectrum bands
 using WifiSpectrumBands = std::vector<WifiSpectrumBandInfo>;
 
+/// A map of the received power for each band
+using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
+
 /**
  * @ingroup wifi
  * Compare two bands.

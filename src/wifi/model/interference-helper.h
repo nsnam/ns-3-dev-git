@@ -25,11 +25,6 @@ class WifiPsdu;
 class ErrorRateModel;
 
 /**
- * A map of the received power for each band
- */
-using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
-
-/**
  * @ingroup wifi
  * @brief handles interference calculations
  * @brief signal event for a PPDU.
