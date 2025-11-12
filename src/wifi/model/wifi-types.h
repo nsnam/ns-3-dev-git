@@ -97,7 +97,7 @@ struct WifiChannelConfig
     struct SegmentWithoutUnits
     {
         uint8_t number{};                            ///< channel number
-        double width{};                              ///< channel width in MHz
+        MHz_u width{};                               ///< channel width in MHz
         WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
         uint8_t p20Index{};                          ///< primary20 index
 
@@ -109,7 +109,7 @@ struct WifiChannelConfig
          * @param b the PHY band
          * @param i the primary20 index
          */
-        SegmentWithoutUnits(uint8_t n, double w, WifiPhyBand b, uint8_t i)
+        SegmentWithoutUnits(uint8_t n, MHz_u w, WifiPhyBand b, uint8_t i)
             : number(n),
               width(w),
               band(b),

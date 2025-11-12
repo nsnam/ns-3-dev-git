@@ -393,7 +393,7 @@ WifiRetransmitTest::Transmit(uint8_t phyId,
 
     // check width of transmitted frames, except CTS because we do not support yet static/dynamic
     // bandwidth operation
-    const auto expectedWidth = (phyId == 0 ? 80 : 40);
+    const auto expectedWidth = (phyId == 0 ? MHz_u{80} : MHz_u{40});
     if (!hdr.IsCts())
     {
         NS_TEST_EXPECT_MSG_EQ(txVector.GetChannelWidth(),

@@ -61,15 +61,15 @@ const Time ehtPhyHeaderDuration = MicroSeconds(40);
 // add small delta to be right after aCcaTime, since test checks are scheduled before wifi events
 const Time aCcaTimeWithDelta = aCcaTime + smallDelta;
 const std::map<MHz_u, Time> hePpduDurations = {
-    {20, NanoSeconds(1009600)},
-    {40, NanoSeconds(533600)},
-    {80, NanoSeconds(275200)},
+    {MHz_u{20}, NanoSeconds(1009600)},
+    {MHz_u{40}, NanoSeconds(533600)},
+    {MHz_u{80}, NanoSeconds(275200)},
 };
 const std::map<MHz_u, Time> ehtPpduDurations = {
-    {20, NanoSeconds(1017600)},
-    {40, NanoSeconds(541600)},
-    {80, NanoSeconds(287200)},
-    {160, NanoSeconds(178400)},
+    {MHz_u{20}, NanoSeconds(1017600)},
+    {MHz_u{40}, NanoSeconds(541600)},
+    {MHz_u{80}, NanoSeconds(287200)},
+    {MHz_u{160}, NanoSeconds(178400)},
 };
 
 /**
@@ -719,7 +719,7 @@ WifiPhyCcaThresholdsTest::RunOne()
     // EHT PHY: 160 MHz EHT PPDU in secondary160 channel (160 MHz) if power above the max
     // between the CCA sensitivity threshold for Per 20MHz check and the OBSS-PD level
     VerifyCcaThreshold(m_phy->GetPhyEntity(WIFI_MOD_CLASS_EHT),
-                       CreateDummyEhtPpdu(160, m_phy->GetOperatingChannel()),
+                       CreateDummyEhtPpdu(MHz_u{160}, m_phy->GetOperatingChannel()),
                        WIFI_CHANLIST_SECONDARY160,
                        std::max(m_obssPdLevel, m_per20CcaSensitivity));
 }

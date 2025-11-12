@@ -65,17 +65,17 @@ class ObssPdAlgorithm : public Object
     /**
      * TracedCallback signature for OBSS_PD reset events.
      *
-     * @param [in] bssColor The BSS color of frame triggering the reset
-     * @param [in] rssiDbm The RSSI (dBm) of frame triggering the reset
+     * @param [in] bssColor The BSS color of the frame triggering the reset
+     * @param [in] rssiDbm The RSSI of the frame triggering the reset
      * @param [in] powerRestricted Whether a TX power restriction is triggered
-     * @param [in] txPowerMaxDbmSiso The SISO TX power restricted level (dBm)
-     * @param [in] txPowerMaxDbmMimo The MIMO TX power restricted level (dBm)
+     * @param [in] txPowerMaxDbmSiso The SISO TX power restricted level
+     * @param [in] txPowerMaxDbmMimo The MIMO TX power restricted level
      */
     typedef void (*ResetTracedCallback)(uint8_t bssColor,
-                                        double rssiDbm,
+                                        dBm_u rssiDbm,
                                         bool powerRestricted,
-                                        double txPowerMaxDbmSiso,
-                                        double txPowerMaxDbmMimo);
+                                        dBm_u txPowerMaxDbmSiso,
+                                        dBm_u txPowerMaxDbmMimo);
 
     /**
      * @param level the current OBSS PD level

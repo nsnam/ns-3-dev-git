@@ -222,12 +222,12 @@ SetWifiOperatingChannelTest::DoRun()
            true);
 
     RunOne("default 320 MHz OFDM channel operating on channel 31",
-           {{31, 0, 320, WIFI_PHY_BAND_6GHZ}},
+           {{31, MHz_u{0}, MHz_u{320}, WIFI_PHY_BAND_6GHZ}},
            WIFI_STANDARD_UNSPECIFIED,
            WIFI_PHY_BAND_UNSPECIFIED,
            false,
            WifiChannelWidthType::CW_320MHZ,
-           {{31, 6105, 320, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM}});
+           {{31, MHz_u{6105}, MHz_u{320}, WIFI_PHY_BAND_6GHZ, FrequencyChannelType::OFDM}});
 }
 
 /**
@@ -428,7 +428,7 @@ PhyChannelSettingsToOperatingChannelTest::DoRun()
     // TODO: logic should be changed to support passing BAND_UNSPECIFIED
     RunOne("{31, 0, BAND_6GHZ, 0}",
            WifiChannelWidthType::CW_320MHZ,
-           {{31, 6105, 320, WIFI_PHY_BAND_6GHZ}},
+           {{31, MHz_u{6105}, MHz_u{320}, WIFI_PHY_BAND_6GHZ}},
            0);
 
     // Test 80+80 MHz
@@ -480,7 +480,7 @@ PhyChannelSettingsToOperatingChannelTest::DoRun()
     // TODO: logic should be changed to support passing BAND_UNSPECIFIED
     RunOne("{0, 320, BAND_6GHZ, 0}",
            WifiChannelWidthType::CW_320MHZ,
-           {{31, 6105, 320, WIFI_PHY_BAND_6GHZ}},
+           {{31, MHz_u{6105}, MHz_u{320}, WIFI_PHY_BAND_6GHZ}},
            0);
 }
 
