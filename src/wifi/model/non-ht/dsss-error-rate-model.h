@@ -110,13 +110,6 @@ class DsssErrorRateModel
 #ifdef HAVE_GSL
     static double SymbolErrorProb16Cck(double e2);  /// equation (18) in Pursley's paper
     static double SymbolErrorProb256Cck(double e1); /// equation (17) in Pursley's paper
-#else
-
-  protected:
-    /// WLAN perfect
-    static const double WLAN_SIR_PERFECT;
-    /// WLAN impossible
-    static const double WLAN_SIR_IMPOSSIBLE;
 #endif
 };
 
