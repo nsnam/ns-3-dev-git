@@ -57,7 +57,7 @@ class Ipv6Address
      *
      * Note: the function uses ``inet_pton`` internally.
      *
-     * @see Address::CheckCompatible hich has a similar name but which 
+     * @see Address::CheckCompatible hich has a similar name but which
      * instead checks the underlying type and length embedded in the Address.
      *
      * @param addressStr string containing the address as described above
