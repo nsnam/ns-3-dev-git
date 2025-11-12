@@ -7,6 +7,8 @@
 
 #include "display-functions.h"
 
+#include "model-node-creator.h"
+#include "model-typeid-creator.h"
 #include "raw-text-config.h"
 
 #include "ns3/config.h"

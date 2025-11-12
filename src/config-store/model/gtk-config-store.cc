@@ -8,7 +8,8 @@
 #include "gtk-config-store.h"
 
 #include "display-functions.h"
-#include "raw-text-config.h"
+#include "model-node-creator.h"
+#include "model-typeid-creator.h"
 
 #include "ns3/log.h"
 

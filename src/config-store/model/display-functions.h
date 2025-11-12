@@ -7,9 +7,6 @@
 #ifndef DISPLAY_FUNCTIONS_H
 #define DISPLAY_FUNCTIONS_H
 
-#include "model-node-creator.h"
-#include "model-typeid-creator.h"
-
 #include <gtk/gtk.h>
 
 namespace ns3
