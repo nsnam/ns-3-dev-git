@@ -150,6 +150,109 @@ In summary, use ``Create<B>`` if B is not an object but just uses reference
 counting (e.g. :cpp:class:`Packet`), and use ``CreateObject<B>`` if B derives
 from :cpp:class:`ns3::Object`.
 
+Reference counting: SimpleRefCount and Ptr versus std::shared_ptr
+*****************************************************************
+
+The |ns3| reference counting smart pointer class :cpp:class:`Ptr` and the base
+class :cpp:class:`SimpleRefCount` were designed and implemented before the C++
+standard library introduced :cpp:class:`std::shared_ptr` (in C++11). For new
+code that creates C++ objects to be managed by a shared pointer, authors must
+use `ns3::Ptr` for any class that derives from `ns3::Object`, for pointers to
+`ns3::Packet`, and for any object that is passed between nodes (including
+configuration objects) or between an `ns3::Node` and an `ns3::Channel`. The
+requirements about using `Ptr<>` when leaving a node's scope are to support
+distributed execution, where the `Ptr<>` enables us to hide the fact that the
+object may be remote and to handle it appropriately. In other situations
+internal to the workings of a model, authors are free to use either the
+traditional |ns3| approach (:cpp:class:`SimpleRefCount` and :cpp:class:`Ptr`),
+or the standard C++ approach (:cpp:class:`std::shared_ptr` and
+:cpp:func:`std::make_shared`).
+
+Both approaches provide similar functionality and have their merits. The
+:cpp:class:`Ptr` class is frequently used in |ns3| and is needed for objects
+that derive from :cpp:class:`Object`, while :cpp:class:`std::shared_ptr` is
+now familiar to C++ developers and is part of the standard library.
+
+Example using std::shared_ptr
++++++++++++++++++++++++++++++
+
+Here is a simple example of declaring a plain C++ struct and managing it with
+:cpp:class:`std::shared_ptr`::
+
+    #include <memory>
+
+    struct ExampleStruct
+    {
+        int m_value;
+        ExampleStruct(int value) : m_value(value) {}
+    };
+
+    struct Container
+    {
+        std::vector<std::shared_ptr<ExampleStruct>> m_items;
+
+        void Add(std::shared_ptr<ExampleStruct> item)
+        {
+            m_items.push_back(item);
+        }
+    };
+
+    // Create an object on the heap using std::make_shared
+    auto example = std::make_shared<ExampleStruct>(42); // The type of example is deduced to std::shared_ptr<ExampleStruct>
+
+    // Use the object
+    std::cout << example->m_value << std::endl;
+
+    // Add the object to a container, creating shared ownership
+    Container container;
+    container.Add(example);
+
+    // If the shared pointer goes out of scope or is nullified (``nullptr``), the object is not deleted.
+    // The object is only deleted when both example and container.m_items go out of scope.
+
+Example using SimpleRefCount and Ptr
++++++++++++++++++++++++++++++++++++++
+
+Here is the equivalent example using |ns3|'s :cpp:class:`SimpleRefCount` and
+:cpp:class:`Ptr`::
+
+    #include "ns3/simple-ref-count.h"
+    #include "ns3/ptr.h"
+
+    class ExampleStruct : public SimpleRefCount<ExampleStruct>
+    {
+    public:
+        int m_value;
+        ExampleStruct(int value) : m_value(value) {}
+    };
+
+    struct Container
+    {
+        std::vector<Ptr<ExampleStruct>> m_items;
+
+        void Add(Ptr<ExampleStruct> item)
+        {
+            m_items.push_back(item);
+        }
+    };
+
+    // Create an object on the heap using Create
+    auto example = Create<ExampleStruct>(42); // The type of example is deduced to Ptr<ExampleStruct>
+
+    // Use the object
+    std::cout << example->m_value << std::endl;
+
+    // Add the object to a container, creating shared ownership
+    Container container;
+    container.Add(example);
+
+    // If the shared pointer goes out of scope or is nullified (``nullptr``), the object is not deleted.
+    // The object is only deleted when both example and container.m_items go out of scope.
+
+Both approaches achieve the same result: automatic memory management with
+reference counting and safe pointer semantics. Choose the approach that best fits
+your code's context and integration with the rest of the |ns3| codebase.
+
 Aggregation
 ***********
 
