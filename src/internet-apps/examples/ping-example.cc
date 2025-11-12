@@ -115,13 +115,13 @@ main(int argc, char* argv[])
 
     if (!destinationStr.empty())
     {
-        if (Ipv4Address::IsCompatible(destinationStr))
+        if (Ipv4Address::CheckCompatible(destinationStr))
         {
             v4Dst = Ipv4Address(destinationStr.c_str());
             useIpv6 = false;
             destination = v4Dst.value();
         }
-        else if (Ipv6Address::IsCompatible(destinationStr))
+        else if (Ipv6Address::CheckCompatible(destinationStr))
         {
             v6Dst = Ipv6Address(destinationStr.c_str());
             useIpv6 = true;
@@ -135,13 +135,13 @@ main(int argc, char* argv[])
 
     if (!sourceStr.empty())
     {
-        if (Ipv4Address::IsCompatible(sourceStr))
+        if (Ipv4Address::CheckCompatible(sourceStr))
         {
             v4Src = Ipv4Address(sourceStr.c_str());
             useIpv6 = false;
             source = v4Src.value();
         }
-        else if (Ipv6Address::IsCompatible(sourceStr))
+        else if (Ipv6Address::CheckCompatible(sourceStr))
         {
             v6Src = Ipv6Address(sourceStr.c_str());
             useIpv6 = true;

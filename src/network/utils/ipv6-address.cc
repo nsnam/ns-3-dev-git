@@ -174,7 +174,7 @@ Ipv6Address::Ipv6Address(const char* address)
 }
 
 bool
-Ipv6Address::IsCompatible(const std::string& addressStr)
+Ipv6Address::CheckCompatible(const std::string& addressStr)
 {
     NS_LOG_FUNCTION(addressStr);
 
@@ -182,7 +182,7 @@ Ipv6Address::IsCompatible(const std::string& addressStr)
 
     if (inet_pton(AF_INET6, addressStr.c_str(), &buffer) <= 0)
     {
-        NS_LOG_LOGIC("Error, can not build an IPv6 address from an invalid string: " << addressStr);
+        NS_LOG_WARN("Error, can not build an IPv6 address from an invalid string: " << addressStr);
         return false;
     }
     return true;

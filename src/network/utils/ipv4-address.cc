@@ -136,18 +136,6 @@ Ipv4Mask::GetPrefixLength() const
     return tmp;
 }
 
-/**
- * Value of a not-yet-initialized IPv4 address, corresponding to 0.0.0.0.
- * See also \RFC{1122}
- */
-static constexpr uint32_t UNINITIALIZED = 0x00000000U;
-
-Ipv4Address::Ipv4Address()
-    : m_address(UNINITIALIZED)
-{
-    NS_LOG_FUNCTION(this);
-}
-
 Ipv4Address::Ipv4Address(uint32_t address)
 {
     NS_LOG_FUNCTION(this << address);
@@ -167,7 +155,7 @@ Ipv4Address::Ipv4Address(const char* address)
 }
 
 bool
-Ipv4Address::IsCompatible(const std::string& addressStr)
+Ipv4Address::CheckCompatible(const std::string& addressStr)
 {
     NS_LOG_FUNCTION(addressStr);
 
@@ -175,7 +163,7 @@ Ipv4Address::IsCompatible(const std::string& addressStr)
 
     if (inet_pton(AF_INET, addressStr.c_str(), &buffer) <= 0)
     {
-        NS_LOG_LOGIC("Error, can not build an IPv4 address from an invalid string: " << addressStr);
+        NS_LOG_WARN("Error, can not build an IPv4 address from an invalid string: " << addressStr);
         return false;
     }
     return true;

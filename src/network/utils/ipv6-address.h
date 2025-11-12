@@ -57,10 +57,13 @@ class Ipv6Address
      *
      * Note: the function uses ``inet_pton`` internally.
      *
+     * @see Address::CheckCompatible hich has a similar name but which 
+     * instead checks the underlying type and length embedded in the Address.
+     *
      * @param addressStr string containing the address as described above
      * @return true if the string can be parsed as an IPv6 address
      */
-    static bool IsCompatible(const std::string& addressStr);
+    static bool CheckCompatible(const std::string& addressStr);
 
     /**
      * @brief Constructs an Ipv6Address by using the input 16 bytes.

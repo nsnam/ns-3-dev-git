@@ -31,7 +31,7 @@ class Ipv4Mask;
 class Ipv4Address
 {
   public:
-    Ipv4Address();
+    Ipv4Address() = default;
     /**
      * input address is in host order.
      * @param address The host order 32-bit address
@@ -59,10 +59,13 @@ class Ipv4Address
      *
      * Note: the function uses ``inet_pton`` internally.
      *
+     * @see Address::CheckCompatible hich has a similar name but which 
+     * instead checks the underlying type and length embedded in the Address.
+     *
      * @param addressStr string containing the address as described above
      * @return true if the string can be parsed as an IPv4 address
      */
-    static bool IsCompatible(const std::string& addressStr);
+    static bool CheckCompatible(const std::string& addressStr);
     /**
      * Get the host-order 32-bit IP address
      * @return the host-order 32-bit IP address
@@ -226,7 +229,7 @@ class Ipv4Address
      * @returns the address type
      */
     static uint8_t GetType();
-    uint32_t m_address; //!< IPv4 address
+    uint32_t m_address{0}; //!< IPv4 address
 
     /**
      * @brief Equal to operator.
