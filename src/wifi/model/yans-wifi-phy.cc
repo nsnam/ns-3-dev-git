@@ -94,7 +94,7 @@ YansWifiPhy::StartTx(Ptr<const WifiPpdu> ppdu)
 void
 YansWifiPhy::TraceSignalArrival(Ptr<const WifiPpdu> ppdu, double rxPowerDbm, Time duration)
 {
-    NS_LOG_FUNCTION(this << ppdu);
+    NS_LOG_FUNCTION(this << ppdu << rxPowerDbm << duration.As(Time::US));
     m_signalArrivalCb(ppdu, rxPowerDbm, ppdu->GetTxDuration());
 }
 
