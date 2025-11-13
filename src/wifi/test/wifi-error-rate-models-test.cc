@@ -656,8 +656,8 @@ WifiErrorRateModelsTestCaseMimo::DoRun()
  * map of PER values that have been manually computed for a given MCS, size (in bytes) and SNR (in
  * dB) in order to verify against the PER calculated by the model
  */
-std::map<std::pair<uint8_t /* mcs */, uint32_t /* size */>,
-         std::map<dB_u /* snr */, double /* per */>>
+const std::map<std::pair<uint8_t /* mcs */, uint32_t /* size */>,
+               std::map<dB_u /* snr */, double /* per */>>
     expectedTableValues = {
         /* MCS 0 - 1458 bytes */
         {std::make_pair(0, 1458),
@@ -1066,22 +1066,30 @@ TableBasedErrorRateTestCase::DoRun()
     // Spot test some values returned from TableBasedErrorRateModel
     for (dB_u snr = -4; snr <= dB_u{30}; snr += dB_u{0.25})
     {
-        double expectedValue = 0;
+        double expectedPer = 0;
         if (m_mode.GetMcsValue() > ERROR_TABLE_BCC_MAX_NUM_MCS)
         {
             Ptr<YansErrorRateModel> yans = CreateObject<YansErrorRateModel>();
-            expectedValue =
+            expectedPer =
                 1 - yans->GetChunkSuccessRate(m_mode, txVector, std::pow(10, snr / 10), m_size * 8);
         }
         else
         {
-            auto it = expectedTableValues.find(std::make_pair(m_mode.GetMcsValue(), m_size));
-            if (it != expectedTableValues.end())
+            const auto cit = expectedTableValues.find(std::make_pair(m_mode.GetMcsValue(), m_size));
+            if (cit != expectedTableValues.cend())
             {
-                auto itValue = it->second.find(snr);
-                if (itValue != it->second.end())
+                // Lambda to find map key within tolerance (avoids floating-point comparison issues)
+                const auto& snrPerMap = cit->second;
+                const auto expectedIt = [&]() {
+                    constexpr dB_u tolerance{1e-6};
+                    const auto iter = snrPerMap.lower_bound(snr - tolerance);
+                    return (iter != snrPerMap.cend() && iter->first <= snr + tolerance)
+                               ? iter
+                               : snrPerMap.cend();
+                }();
+                if (expectedIt != snrPerMap.cend())
                 {
-                    expectedValue = itValue->second;
+                    expectedPer = expectedIt->second;
                 }
                 else
                 {
@@ -1090,15 +1098,15 @@ TableBasedErrorRateTestCase::DoRun()
             }
             else
             {
-                NS_FATAL_ERROR("No expected value found for the combination MCS "
+                NS_FATAL_ERROR("No expected PER found for the combination MCS "
                                << +m_mode.GetMcsValue() << " and size " << m_size << " bytes");
             }
         }
         const auto per =
             1 - table->GetChunkSuccessRate(m_mode, txVector, std::pow(10, snr / 10), m_size * 8);
         NS_LOG_INFO(m_testName << ": snr=" << snr << "dB per=" << per
-                               << " expectedPER=" << expectedValue);
-        NS_TEST_ASSERT_MSG_EQ_TOL(per, expectedValue, 1e-5, "Not equal within tolerance");
+                               << " expectedPER=" << expectedPer);
+        NS_TEST_ASSERT_MSG_EQ_TOL(per, expectedPer, 1e-5, "Not equal within tolerance");
     }
 }
 

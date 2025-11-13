@@ -45,6 +45,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (visualizer) !2636 - Fix overlapping labels and simulation stop time in PyViz visualizer.
 - (wifi) Fix incorrect aPSDUMaxLength value for 802.11be.
 - (wifi) Fix hardcoded threshold value in EHT PHY to determine per-20MHz CCA indication.
+- (wifi) #1295 - Avoid floating point precision issues in wifi-error-rate-models-test.cc
 
 ## Release 3.46.1
 
