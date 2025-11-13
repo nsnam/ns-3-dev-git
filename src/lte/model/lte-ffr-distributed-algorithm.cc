@@ -511,25 +511,19 @@ LteFfrDistributedAlgorithm::Calculate()
             neighbourCellMeasures = nullptr;
 
             auto it2 = it1->second.find(m_cellId);
-            if (it2 != it1->second.end())
-            {
-                servingCellMeasures = it2->second;
-            }
-            else
+            if (it2 == it1->second.end())
             {
                 continue;
             }
+            servingCellMeasures = it2->second;
 
             for (it2 = it1->second.begin(); it2 != it1->second.end(); it2++)
             {
-                if (it2->first != m_cellId)
-                {
-                    neighbourCellMeasures = it2->second;
-                }
-                else
+                if (it2->first == m_cellId)
                 {
                     continue;
                 }
+                neighbourCellMeasures = it2->second;
 
                 if (servingCellMeasures && neighbourCellMeasures)
                 {
