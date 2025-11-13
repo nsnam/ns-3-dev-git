@@ -19,9 +19,19 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
 
+/**
+ * @file
+ * @ingroup wifi
+ * Clear channel example
+ */
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("ClearChannelCmu");
+
+/** Unnamed namespace, to disambiguate class Experiment. */
+namespace
+{
 
 /**
  * WiFi clear channel cmu experiment class.
@@ -97,14 +107,14 @@ Experiment::Experiment(std::string name)
     m_output.SetStyle(Gnuplot2dDataset::LINES);
 }
 
-void
+[[maybe_unused]] void
 Experiment::SetPosition(Ptr<Node> node, Vector position)
 {
     Ptr<MobilityModel> mobility = node->GetObject<MobilityModel>();
     mobility->SetPosition(position);
 }
 
-Vector
+[[maybe_unused]] Vector
 Experiment::GetPosition(Ptr<Node> node)
 {
     Ptr<MobilityModel> mobility = node->GetObject<MobilityModel>();
@@ -210,6 +220,8 @@ Experiment::Run(const WifiHelper& wifi,
 
     return m_pktsTotal;
 }
+
+} // unnamed namespace
 
 int
 main(int argc, char* argv[])
