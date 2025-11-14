@@ -94,7 +94,7 @@ RateChange(uint64_t oldVal, uint64_t newVal)
 /// Step structure
 struct Step
 {
-    dBm_u stepSize;  ///< step size
+    dB_u stepSize;   ///< step size
     double stepTime; ///< step size in seconds
 };
 
@@ -198,7 +198,7 @@ main(int argc, char* argv[])
     uint32_t steps;
     uint32_t rtsThreshold = 999999; // disabled even for large A-MPDU
     uint32_t maxAmpduSize = 65535;
-    dBm_u stepSize{1};
+    dB_u stepSize{1};
     double stepTime = 1;        // seconds
     uint32_t packetSize = 1024; // bytes
     bool broadcast = false;
