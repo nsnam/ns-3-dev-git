@@ -1193,7 +1193,7 @@ def load_previously_successful_tests():
         exit(-1)
 
     for test_type in ["Test", "Example"]:
-        if previous_run_results.find(test_type):
+        if previous_run_results.find(test_type) is not None:
             temp = list(
                 map(
                     lambda x: (x.find("Name").text, x.find("Result").text),
