@@ -29,6 +29,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * The `Ipv[4,6]Address::IsInitialized()` function has been deprecated and returns always `true`. The default value of Ipv4Address created with the constructor that takes no arguments is 0.0.0.0 (previously, it was 102.102.102.102), and an Ipv4Address instance can be checked against that unspecified address value (or use std::optional to denote an address that has not been set yet).
 * A new static function `Ipv[4,6]Address::CheckCompatible()` has been added to safely check if a string can be parsed as an IPv4 or IPv6 address.
 * (network): The address class comparison is now based on std::strong_ordering operator<=> comparison operator.
+* (network): An empty (uninitialized) Address is now printed as "00-00:00".
 
 ### Changes to build system
 

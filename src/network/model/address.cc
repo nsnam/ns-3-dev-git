@@ -169,8 +169,9 @@ ATTRIBUTE_HELPER_CPP(Address);
 std::ostream&
 operator<<(std::ostream& os, const Address& address)
 {
-    if (address.m_len == 0)
+    if (address.m_type == 0)
     {
+        os << "00-00:00";
         return os;
     }
     std::ios_base::fmtflags ff = os.flags();
