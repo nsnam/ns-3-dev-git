@@ -1638,7 +1638,7 @@ RoutingProtocol::RecvReply(Ptr<Packet> p, Ipv4Address receiver, Ipv4Address send
     RrepHeader rrepHeader;
     p->RemoveHeader(rrepHeader);
     Ipv4Address dst = rrepHeader.GetDst();
-    NS_LOG_LOGIC("RREP destination " << dst << " RREP origin " << rrepHeader.GetOrigin());
+    NS_LOG_LOGIC("Route destination " << dst << " Route origin " << rrepHeader.GetOrigin());
 
     uint8_t hop = rrepHeader.GetHopCount() + 1;
     rrepHeader.SetHopCount(hop);
