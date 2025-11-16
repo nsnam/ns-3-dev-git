@@ -30,6 +30,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * A new static function `Ipv[4,6]Address::CheckCompatible()` has been added to safely check if a string can be parsed as an IPv4 or IPv6 address.
 * (network): The address class comparison is now based on std::strong_ordering operator<=> comparison operator.
 * (network): An empty (uninitialized) Address is now printed as "00-00:00".
+* (internet): The function `Ipv4InterfaceAddress::SetBroadcast` has been removed from the codebase because the broadcast address must be built from the IP address and mask.
 
 ### Changes to build system
 

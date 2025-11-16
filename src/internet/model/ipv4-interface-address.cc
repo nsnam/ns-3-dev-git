@@ -34,13 +34,11 @@ Ipv4InterfaceAddress::Ipv4InterfaceAddress(Ipv4Address local, Ipv4Mask mask)
         m_scope = HOST;
     }
     m_mask = mask;
-    m_broadcast = Ipv4Address(local.Get() | (~mask.Get()));
 }
 
 Ipv4InterfaceAddress::Ipv4InterfaceAddress(const Ipv4InterfaceAddress& o)
     : m_local(o.m_local),
       m_mask(o.m_mask),
-      m_broadcast(o.m_broadcast),
       m_scope(o.m_scope),
       m_secondary(o.m_secondary)
 {
@@ -87,18 +85,11 @@ Ipv4InterfaceAddress::GetMask() const
     return m_mask;
 }
 
-void
-Ipv4InterfaceAddress::SetBroadcast(Ipv4Address broadcast)
-{
-    NS_LOG_FUNCTION(this << broadcast);
-    m_broadcast = broadcast;
-}
-
 Ipv4Address
 Ipv4InterfaceAddress::GetBroadcast() const
 {
     NS_LOG_FUNCTION(this);
-    return m_broadcast;
+    return Ipv4Address(m_local.Get() | (~m_mask.Get()));
 }
 
 void
