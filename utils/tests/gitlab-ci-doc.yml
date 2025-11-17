@@ -27,7 +27,7 @@ doxygen-1.15:
   script:
     # Install Doxygen and dependencies to build ns-3
     - pacman -Syu --noconfirm
-      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh
+      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh inetutils git
     - pacman --noconfirm -U https://archive.archlinux.org/packages/d/doxygen/doxygen-1.15.0-1-x86_64.pkg.tar.zst
 
     # Build ns-3.
