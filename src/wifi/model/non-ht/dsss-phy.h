@@ -59,7 +59,11 @@ class WIFI_EXPORT DsssPhy : public PhyEntity
     Ptr<WifiPpdu> BuildPpdu(const WifiConstPsduMap& psdus,
                             const WifiTxVector& txVector,
                             Time ppduDuration) override;
-    uint32_t GetMaxPsduSize() const override;
+
+    constexpr uint32_t GetMaxPsduSize() const override
+    {
+        return WIFI_PSDU_MAX_LENGTH;
+    }
 
     /**
      * Initialize all HR/DSSS modes.

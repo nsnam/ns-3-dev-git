@@ -63,6 +63,11 @@ class WIFI_EXPORT VhtPhy : public HtPhy
     dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
 
+    constexpr uint32_t GetMaxPsduSize() const override
+    {
+        return WIFI_PSDU_MAX_LENGTH_VHT;
+    }
+
     /**
      * @return the WifiMode used for the SIG-A field
      */
@@ -247,7 +252,6 @@ class WIFI_EXPORT VhtPhy : public HtPhy
     uint8_t GetNumberBccEncoders(const WifiTxVector& txVector) const override;
     PhyFieldRxStatus DoEndReceiveField(WifiPpduField field, Ptr<Event> event) override;
     bool IsAllConfigSupported(WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
-    uint32_t GetMaxPsduSize() const override;
     const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const override;
 
     /**

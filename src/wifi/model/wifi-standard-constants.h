@@ -101,7 +101,10 @@ static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_VHT{4'692'480};
 static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_HE{6'500'631};
 
 /// The value for aPSDUMaxLength in Table 36-70 (EHT PHY characteristics) of 802.11be D7.0
-static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_EHT{15'523'200};
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_EHT{15'523'198};
+
+/// The value for aPSDUMaxLength in Table 38-61 (UHR PHY characteristics) of 802.11bn D2.0
+static constexpr uint32_t WIFI_PSDU_MAX_LENGTH_UHR{15'523'198};
 
 /// The minimum value for dot11RTSThreshold (C.3 MIB detail in IEEE Std 802.11-2020)
 static constexpr uint32_t WIFI_MIN_RTS_THRESHOLD{0};

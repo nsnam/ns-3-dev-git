@@ -1308,7 +1308,7 @@ WifiAggregationTestSuite::WifiAggregationTestSuite()
     AddTestCase(new HeAggregationTest(256), TestCase::Duration::QUICK);
     AddTestCase(new EhtAggregationTest(512, 102000), TestCase::Duration::QUICK);
     AddTestCase(new EhtAggregationTest(1024, 102000), TestCase::Duration::QUICK);
-    AddTestCase(new EhtAggregationTest(1024, 15523200), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024, 15523198), TestCase::Duration::QUICK);
     AddTestCase(new PreservePacketsInAmpdus(true), TestCase::Duration::QUICK);
     AddTestCase(new PreservePacketsInAmpdus(false), TestCase::Duration::QUICK);
 }

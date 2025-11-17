@@ -74,6 +74,11 @@ class WIFI_EXPORT HtPhy : public OfdmPhy
                             const WifiTxVector& txVector,
                             Time ppduDuration) override;
 
+    constexpr uint32_t GetMaxPsduSize() const override
+    {
+        return WIFI_PSDU_MAX_LENGTH_HT;
+    }
+
     /**
      * @return the WifiMode used for the L-SIG (non-HT header) field
      */
@@ -394,7 +399,6 @@ class WIFI_EXPORT HtPhy : public OfdmPhy
     bool IsConfigSupported(Ptr<const WifiPpdu> ppdu) const override;
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
                                                  Ptr<const WifiPpdu> ppdu) const override;
-    uint32_t GetMaxPsduSize() const override;
     CcaIndication GetCcaIndication(const Ptr<const WifiPpdu> ppdu) override;
 
     /**

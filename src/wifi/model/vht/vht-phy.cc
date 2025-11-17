@@ -517,12 +517,6 @@ VhtPhy::IsCombinationAllowed(uint8_t mcsValue, MHz_u channelWidth, uint8_t nss)
     return true;
 }
 
-uint32_t
-VhtPhy::GetMaxPsduSize() const
-{
-    return WIFI_PSDU_MAX_LENGTH_VHT;
-}
-
 dBm_u
 VhtPhy::GetCcaThreshold(const Ptr<const WifiPpdu> ppdu, WifiChannelListType channelType) const
 {

@@ -231,12 +231,6 @@ ErpOfdmPhy::IsAllowed(const WifiTxVector& /*txVector*/)
     return true;
 }
 
-uint32_t
-ErpOfdmPhy::GetMaxPsduSize() const
-{
-    return WIFI_PSDU_MAX_LENGTH;
-}
-
 } // namespace ns3
 
 namespace

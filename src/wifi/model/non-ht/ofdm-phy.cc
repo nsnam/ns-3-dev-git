@@ -647,12 +647,6 @@ OfdmPhy::IsAllowed(const WifiTxVector& /*txVector*/)
     return true;
 }
 
-uint32_t
-OfdmPhy::GetMaxPsduSize() const
-{
-    return WIFI_PSDU_MAX_LENGTH;
-}
-
 MHz_u
 OfdmPhy::GetMeasurementChannelWidth(const Ptr<const WifiPpdu> ppdu) const
 {

@@ -54,6 +54,11 @@ class WIFI_EXPORT UhrPhy : public EhtPhy
                             Time ppduDuration) override;
     Time CalculateNonHeDurationForHeMu(const WifiTxVector& txVector) const override;
 
+    constexpr uint32_t GetMaxPsduSize() const override
+    {
+        return WIFI_PSDU_MAX_LENGTH_UHR;
+    }
+
     /**
      * Initialize all UHR modes.
      */

@@ -250,7 +250,7 @@ class WIFI_EXPORT PhyEntity
      *
      * @return the maximum PSDU size in bytes
      */
-    virtual uint32_t GetMaxPsduSize() const = 0;
+    constexpr virtual uint32_t GetMaxPsduSize() const = 0;
 
     /**
      * Return a map of PHY header chunk information per PPDU field.

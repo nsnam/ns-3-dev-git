@@ -110,6 +110,11 @@ class WIFI_EXPORT HePhy : public VhtPhy
     bool CanStartRx(Ptr<const WifiPpdu> ppdu) const override;
     Ptr<const WifiPpdu> GetRxPpduFromTxPpdu(Ptr<const WifiPpdu> ppdu) override;
 
+    constexpr uint32_t GetMaxPsduSize() const override
+    {
+        return WIFI_PSDU_MAX_LENGTH_HE;
+    }
+
     /**
      * @return the BSS color of this PHY.
      */
@@ -453,7 +458,6 @@ class WIFI_EXPORT HePhy : public VhtPhy
     Time GetMaxDelayPpduSameUid(const WifiTxVector& txVector) override;
     Ptr<SpectrumValue> GetTxPowerSpectralDensity(Watt_u txPower,
                                                  Ptr<const WifiPpdu> ppdu) const override;
-    uint32_t GetMaxPsduSize() const override;
     WifiConstPsduMap GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu,
                                          const WifiTxVector& txVector) const override;
     void HandleRxPpduWithSameContent(Ptr<Event> event,

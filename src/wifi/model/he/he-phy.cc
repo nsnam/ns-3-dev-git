@@ -1800,12 +1800,6 @@ HePhy::GetWifiConstPsduMap(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVecto
     return WifiConstPsduMap({{staId, psdu}});
 }
 
-uint32_t
-HePhy::GetMaxPsduSize() const
-{
-    return WIFI_PSDU_MAX_LENGTH_HE;
-}
-
 bool
 HePhy::CanStartRx(Ptr<const WifiPpdu> ppdu) const
 {
