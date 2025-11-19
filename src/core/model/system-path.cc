@@ -116,7 +116,7 @@ Dirname(std::string path)
 }
 
 std::string
-FindSelfDirectory()
+FindSelf()
 {
     /**
      * This function returns the path to the running $PREFIX.
@@ -202,7 +202,13 @@ FindSelfDirectory()
         filename = buf;
     }
 #endif
-    return Dirname(filename);
+    return filename;
+}
+
+std::string
+FindSelfDirectory()
+{
+    return Dirname(FindSelf());
 }
 
 std::string

@@ -41,6 +41,17 @@ namespace SystemPath
  * @ingroup systempath
  * Get the file system path to the current executable.
  *
+ * This path contains the currently-executing binary. For its directory,
+ * use FindSelfDirectory() instead.
+ *
+ * @return The path to the currently-executing binary
+ */
+std::string FindSelf();
+
+/**
+ * @ingroup systempath
+ * Get the file system path to the current executable.
+ *
  * This path is only equivalent to the current working directory when
  * the executable is executed in its parent directory.
  *
