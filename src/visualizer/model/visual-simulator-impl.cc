@@ -12,6 +12,7 @@
 #include "ns3/default-simulator-impl.h"
 #include "ns3/log.h"
 #include "ns3/packet-metadata.h"
+#include "ns3/system-path.h"
 
 namespace ns3
 {
@@ -106,18 +107,25 @@ VisualSimulatorImpl::IsFinished() const
 void
 VisualSimulatorImpl::Run()
 {
+    std::stringstream ss;
+    // If not a python script, where we can easily get argv, then inject program path as argv0
+    if (SystemPath::FindSelf().find("python") == std::string::npos)
+    {
+        ss << "import sys\n"
+           << "sys.argv = ['" << SystemPath::FindSelf() << "']\n";
+    }
+    ss << "import visualizer\n"
+       << "visualizer.start()\n";
     if (!Py_IsInitialized())
     {
         Py_Initialize();
-        PyRun_SimpleString("import visualizer\n"
-                           "visualizer.start();\n");
+        PyRun_SimpleString(ss.str().data());
     }
     else
     {
         PyGILState_STATE __py_gil_state = PyGILState_Ensure();
 
-        PyRun_SimpleString("import visualizer\n"
-                           "visualizer.start();\n");
+        PyRun_SimpleString(ss.str().data());
 
         PyGILState_Release(__py_gil_state);
     }

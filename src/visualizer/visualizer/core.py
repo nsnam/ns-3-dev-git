@@ -1037,6 +1037,7 @@ class Visualizer(GObject.GObject):
 
     def create_gui(self):
         self.window = Gtk.Window()
+        self.window.set_title(sys.argv[0])
         vbox = Gtk.VBox()
         vbox.show()
         self.window.add(vbox)
