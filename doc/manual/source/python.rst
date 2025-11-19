@@ -97,8 +97,9 @@ This can be done with the following command:
 
    ~$ python3 -m venv myEnv
 
-Note: if you don't have it installed, you will need to install it either
-either via the system package manager, or via pip itself.
+Note: if you don't have venv installed, you will need to install it
+either via the system package manager (e.g. ``apt install python3-venv``),
+or via pip itself (e.g. ``pip install venv``).
 
 After creating the venv, it is necessary to activate it, to properly
 set environment variables that will treat it as the active python installation.
@@ -118,6 +119,105 @@ Note: When configuring ns-3 python bindings from source, make sure to
 activate the venv before configuring. The appropriate Python venv will be
 passed to CMake for proper configuration and used by the ns-3 script to
 execute scripts. This includes python scripts called by C++ programs.
+
+Important: Some pip packages can fail to install (for example, due to missing dependencies), as shown below.
+Their dependencies can typically be installed via the system package manager (apt, pacman, apk, etc).
+
+It is also not uncommon for frequently used pip packages, such as ``pygraphviz``, to be distributed
+along with their dependencies via the system package manager (for example, ``python3-pygraphviz``
+in Debian-based distros).
+
+However, a previously created venv will not detect pip packages installed via the package manager,
+unless it is recreated with the ``--system-site-packages flag``, as shown below. The drawback of this
+approach is that all system packages will be exposed, which may lead to version conflicts with packages
+you intend to use. If you use the ``pip freeze`` command to generate the ``requirements.txt`` list of dependencies
+for your environment, unrelated system packages will also be included.
+
+.. sourcecode:: console
+
+   (myEnv) ~$ pip install pygraphviz
+   Collecting pygraphviz
+     Using cached pygraphviz-1.14.tar.gz (106 kB)
+     Installing build dependencies ... done
+     Getting requirements to build wheel ... done
+     Preparing metadata (pyproject.toml) ... done
+   Building wheels for collected packages: pygraphviz
+     Building wheel for pygraphviz (pyproject.toml) ... error
+     error: subprocess-exited-with-error
+
+     | Building wheel for pygraphviz (pyproject.toml) did not run successfully.
+     | exit code: 1
+     --> running bdist_wheel
+         running build
+         running build_py
+         creating build/lib.linux-x86_64-cpython-313/pygraphviz
+         copying pygraphviz/testing.py -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         copying pygraphviz/scraper.py -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         copying pygraphviz/graphviz.py -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         copying pygraphviz/agraph.py -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         copying pygraphviz/__init__.py -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         creating build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_unicode.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_subgraph.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_string.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_scraper.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_repr_mimebundle.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_readwrite.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_node_attributes.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_layout.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_html.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_graph.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_edge_attributes.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_drawing.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_close.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_clear.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/test_attribute_defaults.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         copying pygraphviz/tests/__init__.py -> build/lib.linux-x86_64-cpython-313/pygraphviz/tests
+         running egg_info
+         writing pygraphviz.egg-info/PKG-INFO
+         writing dependency_links to pygraphviz.egg-info/dependency_links.txt
+         writing top-level names to pygraphviz.egg-info/top_level.txt
+         reading manifest file 'pygraphviz.egg-info/SOURCES.txt'
+         reading manifest template 'MANIFEST.in'
+         warning: no files found matching '*.swg'
+         warning: no files found matching '*.png' under directory 'doc'
+         warning: no files found matching '*.html' under directory 'doc'
+         warning: no files found matching '*.txt' under directory 'doc'
+         warning: no files found matching '*.css' under directory 'doc'
+         warning: no previously-included files matching '*~' found anywhere in distribution
+         warning: no previously-included files matching '*.pyc' found anywhere in distribution
+         warning: no previously-included files matching '.svn' found anywhere in distribution
+         no previously-included directories found matching 'doc/build'
+         adding license file 'LICENSE'
+         writing manifest file 'pygraphviz.egg-info/SOURCES.txt'
+         copying pygraphviz/graphviz.i -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         copying pygraphviz/graphviz_wrap.c -> build/lib.linux-x86_64-cpython-313/pygraphviz
+         running build_ext
+         building 'pygraphviz._graphviz' extension
+         creating build/temp.linux-x86_64-cpython-313/pygraphviz
+         x86_64-linux-gnu-gcc -fno-strict-overflow -Wsign-compare -DNDEBUG -g -O2 -Wall -fPIC -DSWIG_PYTHON_STRICT_BYTE_CHAR -I/home/gabriel/ns-3-maintainer/ns3env/include -I/usr/include/python3.13 -c pygraphviz/graphviz_wrap.c -o build/temp.linux-x86_64-cpython-313/pygraphviz/graphviz_wrap.o
+         pygraphviz/graphviz_wrap.c:9:9: warning: "SWIG_PYTHON_STRICT_BYTE_CHAR" redefined
+             9 | #define SWIG_PYTHON_STRICT_BYTE_CHAR
+               |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         <command-line>: note: this is the location of the previous definition
+         pygraphviz/graphviz_wrap.c:3023:10: fatal error: graphviz/cgraph.h: No such file or directory
+          3023 | #include "graphviz/cgraph.h"
+               |          ^~~~~~~~~~~~~~~~~~~
+         compilation terminated.
+         error: command '/usr/bin/x86_64-linux-gnu-gcc' failed with exit code 1
+         [end of output]
+
+     note: This error originates from a subprocess, and is likely not a problem with pip.
+     ERROR: Failed building wheel for pygraphviz
+   Failed to build pygraphviz
+   ERROR: Failed to build installable wheels for some pyproject.toml based projects (pygraphviz)
+   (myEnv) ~$ deactivate
+   ~$ rm -R myEnv
+   ~$ apt install python3-pygraphviz
+   ~$ python3 -m venv --system-site-packages myEnv
+   ~$ source ~/myEnv/bin/activate
+   (myEnv) ~$ pip freeze | grep pygraphviz
+   pygraphviz==1.14
 
 An Example Python Script that Runs |ns3|
 ****************************************
