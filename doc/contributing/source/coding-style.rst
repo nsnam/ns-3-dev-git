@@ -268,8 +268,8 @@ Clang-format can be installed using your OS's package manager. Please note that 
 should install one of the supported versions of clang-format, which are listed in the
 following section.
 
-Minimum clang-tidy version
-==========================
+Supported versions of clang-tidy
+================================
 
 Since clang-tidy is a linter that analyzes code and outputs errors found during
 the analysis, developers can use different versions of clang-tidy on the workflow.
@@ -281,7 +281,7 @@ whose warnings must not be ignored. Therefore, developers should, at least, scan
 code with the minimum version of clang-tidy. However, more recent versions can be used,
 which will produce better warnings.
 
-The minimum version is clang-tidy-15.
+The supported versions of clang-tidy are listed in the ``RELEASE_NOTES.md`` document.
 
 Integration with IDEs
 =====================
