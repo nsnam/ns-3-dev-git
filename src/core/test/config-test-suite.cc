@@ -18,8 +18,6 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/traced-value.h"
 
-#include <sstream>
-
 /**
  * @file
  * @ingroup core-tests

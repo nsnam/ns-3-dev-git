@@ -7,11 +7,8 @@
  */
 #include "attribute.h"
 
-#include "fatal-error.h"
 #include "log.h"
 #include "string.h"
-
-#include <sstream>
 
 /**
  * @file

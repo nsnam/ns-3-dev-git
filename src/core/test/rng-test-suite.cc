@@ -7,9 +7,7 @@
 #include "ns3/rng-seed-manager.h"
 #include "ns3/test.h"
 
-#include <cmath>
 #include <ctime>
-#include <fstream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_histogram.h>
 

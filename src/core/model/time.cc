@@ -11,8 +11,7 @@
 #include "log.h"
 #include "nstime.h"
 
-#include <cmath>   // pow
-#include <iomanip> // showpos
+#include <cmath> // pow
 #include <mutex>
 #include <sstream>
 

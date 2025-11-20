@@ -22,7 +22,6 @@
 
 #include <cmath>
 #include <ctime>
-#include <fstream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_histogram.h>
 #include <gsl/gsl_randist.h>

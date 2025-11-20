@@ -6,7 +6,6 @@
 
 #include "int64x64-128.h"
 
-#include "abort.h"
 #include "assert.h"
 #include "log.h"
 

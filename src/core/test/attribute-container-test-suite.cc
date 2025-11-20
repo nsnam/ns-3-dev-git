@@ -20,7 +20,6 @@
 #include "ns3/uinteger.h"
 
 #include <algorithm>
-#include <iterator>
 #include <list>
 #include <map>
 #include <utility>

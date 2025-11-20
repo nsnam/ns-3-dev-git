@@ -12,15 +12,10 @@
 #include "fatal-error.h"
 #include "string.h"
 
-#include "ns3/core-config.h"
-
 #include <algorithm> // transform
-#include <cstring>   // strlen
+#include <ctype.h>   // toupper
 #include <iostream>
-#include <list>
-#include <locale> // toupper
 #include <map>
-#include <numeric> // accumulate
 #include <stdexcept>
 #include <utility>
 

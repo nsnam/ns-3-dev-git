@@ -13,8 +13,6 @@
 #include "scheduler.h"
 #include "simulator.h"
 
-#include <cmath>
-
 /**
  * @file
  * @ingroup simulator

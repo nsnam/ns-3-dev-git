@@ -8,7 +8,6 @@
 #include "timer.h"
 
 #include "log.h"
-#include "simulation-singleton.h"
 #include "simulator.h"
 
 /**

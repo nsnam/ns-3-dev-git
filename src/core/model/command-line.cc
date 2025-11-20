@@ -9,7 +9,6 @@
 #include "command-line.h"
 
 #include "config.h"
-#include "des-metrics.h"
 #include "environment-variable.h"
 #include "global-value.h"
 #include "log.h"
@@ -21,11 +20,16 @@
 #include "version.h"
 #endif
 
+#ifdef ENABLE_DES_METRICS
+#include "des-metrics.h"
+#endif
+
 #include <algorithm> // transform
 #include <cctype>    // tolower
 #include <cstdlib>   // exit
 #include <cstring>   // strlen
-#include <iomanip>   // setw, boolalpha
+#include <fstream>
+#include <iomanip> // setw, boolalpha
 #include <set>
 #include <sstream>
 

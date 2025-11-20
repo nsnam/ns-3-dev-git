@@ -11,8 +11,6 @@
 #include "ns3/random-variable-stream.h"
 #include "ns3/test.h"
 
-#include <vector>
-
 /**
  * @file
  * @ingroup core-tests

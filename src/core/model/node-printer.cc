@@ -11,8 +11,6 @@
 #include "log.h"
 #include "simulator.h" // GetContext()
 
-#include <iomanip>
-
 /**
  * @file
  * @ingroup simulator

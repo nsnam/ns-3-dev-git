@@ -15,7 +15,6 @@
 #include "ns3/test.h"
 
 #include <chrono> // seconds, milliseconds
-#include <ctime>
 #include <list>
 #include <thread> // sleep_for
 #include <utility>

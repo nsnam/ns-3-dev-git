@@ -11,7 +11,6 @@
 #include "heap-scheduler.h"
 
 #include "assert.h"
-#include "event-impl.h"
 #include "log.h"
 
 /**

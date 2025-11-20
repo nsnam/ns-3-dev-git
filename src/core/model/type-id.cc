@@ -12,9 +12,7 @@
 #include "singleton.h"
 #include "trace-source-accessor.h"
 
-#include <iomanip>
 #include <map>
-#include <sstream>
 #include <vector>
 
 /**

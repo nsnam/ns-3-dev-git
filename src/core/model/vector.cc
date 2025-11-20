@@ -7,11 +7,9 @@
  */
 #include "vector.h"
 
-#include "fatal-error.h"
 #include "log.h"
 
 #include <cmath>
-#include <sstream>
 #include <tuple>
 
 /**

@@ -7,7 +7,6 @@
  */
 #include "boolean.h"
 
-#include "fatal-error.h"
 #include "log.h"
 
 /**

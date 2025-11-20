@@ -6,7 +6,6 @@
 #include "ns3/hash.h"
 
 #include <algorithm> // find
-#include <climits>   // CHAR_BIT
 #include <fstream>
 #include <iomanip>
 #include <iostream>

@@ -12,12 +12,9 @@
 #include "assert.h"
 #include "attribute.h"
 #include "log.h"
-#include "object-factory.h"
-#include "string.h"
 
 #include <cstdlib>
 #include <cstring>
-#include <sstream>
 #include <vector>
 
 /**

@@ -16,11 +16,7 @@
 #include "ns3/tuple.h"
 #include "ns3/uinteger.h"
 
-#include <algorithm>
-#include <iterator>
-#include <sstream>
 #include <tuple>
-#include <utility>
 
 using namespace ns3;
 

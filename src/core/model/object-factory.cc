@@ -9,8 +9,6 @@
 
 #include "log.h"
 
-#include <sstream>
-
 /**
  * @file
  * @ingroup object

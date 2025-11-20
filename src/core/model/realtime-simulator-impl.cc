@@ -7,19 +7,16 @@
 #include "realtime-simulator-impl.h"
 
 #include "assert.h"
-#include "boolean.h"
 #include "enum.h"
 #include "event-impl.h"
 #include "fatal-error.h"
 #include "log.h"
-#include "pointer.h"
 #include "ptr.h"
 #include "scheduler.h"
 #include "simulator.h"
 #include "synchronizer.h"
 #include "wall-clock-synchronizer.h"
 
-#include <cmath>
 #include <mutex>
 #include <thread>
 

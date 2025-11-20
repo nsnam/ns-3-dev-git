@@ -8,7 +8,6 @@
 
 #include "ns3/core-module.h"
 
-#include <iomanip>
 #include <iostream>
 #include <string>
 

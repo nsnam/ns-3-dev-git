@@ -9,13 +9,11 @@
 #include "example-as-test.h"
 
 #include "ascii-test.h"
-#include "assert.h"
 #include "environment-variable.h"
 #include "fatal-error.h"
 #include "log.h"
 
 #include <cstdlib> // itoa(), system ()
-#include <cstring>
 #include <sstream>
 #include <string>
 

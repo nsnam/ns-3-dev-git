@@ -10,7 +10,6 @@
 
 #include <chrono>
 #include <condition_variable>
-#include <ctime> // clock_t
 #include <mutex>
 
 /**

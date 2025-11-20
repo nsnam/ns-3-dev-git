@@ -22,7 +22,6 @@
 #include "ns3/core-module.h"
 
 #include <chrono>
-#include <iomanip>
 #include <string>
 #include <thread>
 

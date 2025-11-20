@@ -15,7 +15,6 @@
 #include "ns3/type-id.h"
 
 #include <cstdarg>
-#include <cstdlib>
 #include <sstream>
 
 /**

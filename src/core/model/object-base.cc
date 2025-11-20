@@ -7,14 +7,13 @@
  */
 #include "object-base.h"
 
-#include "assert.h"
+#include "abort.h"
 #include "attribute-construction-list.h"
 #include "environment-variable.h"
+#include "fatal-error.h"
 #include "log.h"
 #include "string.h"
 #include "trace-source-accessor.h"
-
-#include "ns3/core-config.h"
 
 /**
  * @file
