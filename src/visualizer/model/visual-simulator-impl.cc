@@ -132,7 +132,14 @@ VisualSimulatorImpl::Stop()
 EventId
 VisualSimulatorImpl::Stop(const Time& delay)
 {
+    m_stopTime = delay;
     return m_simulator->Stop(delay);
+}
+
+Time
+VisualSimulatorImpl::GetStopTime()
+{
+    return m_stopTime;
 }
 
 //

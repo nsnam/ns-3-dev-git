@@ -62,6 +62,12 @@ class VisualSimulatorImpl : public SimulatorImpl
     uint32_t GetContext() const override;
     uint64_t GetEventCount() const override;
 
+    /**
+     * Get the simulator implementation stop time.
+     * @returns The stop time of the simulation implementation.
+     */
+    Time GetStopTime();
+
     /// calls Run() in the wrapped simulator
     void RunRealSimulator();
 
@@ -70,8 +76,9 @@ class VisualSimulatorImpl : public SimulatorImpl
     void NotifyConstructionCompleted() override;
 
   private:
-    Ptr<SimulatorImpl> m_simulator;       ///< the simulator implementation
-    ObjectFactory m_simulatorImplFactory; ///< simulator implementation factory
+    Ptr<SimulatorImpl> m_simulator;       //!< The simulator implementation
+    ObjectFactory m_simulatorImplFactory; //!< Simulator implementation factory
+    Time m_stopTime;                      //!< The stop time of the simulation
 };
 
 } // namespace ns3

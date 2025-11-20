@@ -72,6 +72,12 @@ class PyViz
     void SimulatorRunUntil(Time time);
 
     /**
+     * Get the stop time of the underlying visual simulator implementation.
+     * @return The stop time of the visual simulator implementation.
+     */
+    Time GetSimulatorStopTime();
+
+    /**
      * Pause function
      * @param message the pause message
      */

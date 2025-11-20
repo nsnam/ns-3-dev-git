@@ -261,7 +261,7 @@ PyViz::CallbackStopSimulation()
     NS_LOG_FUNCTION_NOARGS();
     if (m_runUntil <= Simulator::Now())
     {
-        Simulator::Stop(Seconds(0)); // Stop right now
+        Simulator::Stop(); // Stop right now
         m_stop = true;
     }
 }
@@ -307,6 +307,7 @@ PyViz::SimulatorRunUntil(Time time)
     {
         return;
     }
+
     // Schedule a dummy callback function for the target time, to make
     // sure we stop at the right time.  Otherwise, simulations with few
     // events just appear to "jump" big chunks of time.
@@ -328,6 +329,14 @@ PyViz::SimulatorRunUntil(Time time)
     {
         impl->Run();
     }
+}
+
+Time
+PyViz::GetSimulatorStopTime()
+{
+    Ptr<SimulatorImpl> impl = Simulator::GetImplementation();
+    Ptr<VisualSimulatorImpl> visualImpl = DynamicCast<VisualSimulatorImpl>(impl);
+    return visualImpl->GetStopTime();
 }
 
 bool

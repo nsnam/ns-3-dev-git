@@ -83,9 +83,6 @@ from .base import (
     transform_point_simulation_to_canvas,
 )
 
-PI_OVER_2 = math.pi / 2
-PI_TIMES_2 = math.pi * 2
-
 
 ## Node class
 class Node(PyVizObject):
@@ -712,18 +709,19 @@ class SimulationThread(threading.Thread):
             # print "sim: Acquire lock"
             self.lock.acquire()
             try:
-                if 0:
-                    if ns3.Simulator.IsFinished():
-                        self.viz.play_button.set_sensitive(False)
-                        break
                 # print "sim: Current time is %f; Run until: %f" % (ns3.Simulator.Now ().GetSeconds (), self.target_time)
-                # if ns3.Simulator.Now ().GetSeconds () > self.target_time:
                 #    print "skipping, model is ahead of view!"
                 self.sim_helper.SimulatorRunUntil(ns.Seconds(self.target_time))
                 # print "sim: Run until ended at current time: ", ns3.Simulator.Now ().GetSeconds ()
                 self.pause_messages.extend(self.sim_helper.GetPauseMessages())
                 GLib.idle_add(self.viz.update_model, priority=PRIORITY_UPDATE_MODEL)
-                # print "sim: Run until: ", self.target_time, ": finished."
+
+                if (
+                    ns.Simulator.Now().GetSeconds()
+                    >= self.sim_helper.GetSimulatorStopTime().GetSeconds()
+                ):
+                    GLib.idle_add(self.viz._on_simulation_finished)
+                    break
             finally:
                 self.lock.release()
             # print "sim: Release lock, loop."
@@ -1435,10 +1433,16 @@ class Visualizer(GObject.GObject):
                 visibility_threshold=0.5,
                 font=("Sans Serif %f" % int(1 + BITRATE_FONT_SIZE * k)),
             )
+
             angle = math.atan2((pos2_y - pos1_y), (pos2_x - pos1_x))
-            if -PI_OVER_2 <= angle <= PI_OVER_2:
+            if angle > math.pi / 2 or angle < -math.pi / 2:
+                # Normalize the angle, in essence, adjust the angle to keep
+                # it from rotating beyond +/- 90 degrees. In this way, the
+                # direction of the label remain always readable regardless of
+                # the angle.
+                angle += math.pi
                 label.set_properties(
-                    text=("%.2f kbit/s →" % (kbps,)),
+                    text=("← %.2f kbit/s" % (kbps,)),
                     alignment=Pango.Alignment.CENTER,
                     anchor=GooCanvas.CanvasAnchorType.S,
                     x=0,
@@ -1446,7 +1450,7 @@ class Visualizer(GObject.GObject):
                 )
             else:
                 label.set_properties(
-                    text=("← %.2f kbit/s" % (kbps,)),
+                    text=("%.2f kbit/s →" % (kbps,)),
                     alignment=Pango.Alignment.CENTER,
                     anchor=GooCanvas.CanvasAnchorType.N,
                     x=0,
@@ -1543,6 +1547,14 @@ class Visualizer(GObject.GObject):
             new_arrows.append((arrow, label))
 
         self._drop_arrows = new_arrows + old_arrows
+
+    def _on_simulation_finished(self):
+        print("Simulation finished.")
+        if self._update_timeout_id is not None:
+            GLib.source_remove(self._update_timeout_id)
+            self._update_timeout_id = None
+        self.play_button.set_active(False)
+        self.play_button.set_sensitive(False)
 
     def update_view_timeout(self):
         # print "view: update_view_timeout called at real time ", time.time()
