@@ -206,6 +206,7 @@ def parse_args(argv):
         ),
         ("build-version", "embedding git changes as a build version during build"),
         ("clang-tidy", "clang-tidy static analysis"),
+        ("clang-tidy-fix", "clang-tidy static analysis and apply automatic fixes"),
         ("dpdk", "the fd-net-device DPDK features"),
         ("eigen", "Eigen3 library support"),
         ("examples", "the ns-3 examples"),
@@ -2071,15 +2072,12 @@ def main():
             # We let python scripts pass to be able to run ./utils/python-unit-tests.py
             pass
         elif "clang-tidy" in target_to_run:
-            clang_tidy_versions = [
-                "run-clang-tidy",
-                *[f"run-clang-tidy-{x}" for x in range(15, 21)],
-            ]
+            clang_tidy_versions = ["run-clang-tidy"]
             clang_tidy_versions = list(map(lambda x: shutil.which(x), clang_tidy_versions))
             clang_tidy_versions = list(filter(lambda x: x, clang_tidy_versions))
             if not clang_tidy_versions:
                 raise Exception(
-                    "Clang-tidy not found; please install version 15.0.0 or greater, or modify the PATH environment variable"
+                    "Clang-tidy not found; please install it, or modify the PATH environment variable"
                 )
             target_to_run = clang_tidy_versions[-1]
             target_args = [

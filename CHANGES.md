@@ -34,6 +34,12 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to build system
 
+* A new `NS3_CLANG_TIDY_FIX`/`--enable-clang-tidy-fix` option was added to use clang-tidy
+static analysis and automatically apply fixes during build. Not every clang-tidy warning/error
+has automatic fixes, and checks are performed only at build time. Thus requiring rebuilding
+things to re-run checks. As an alternative, one can use `./ns3 run clang-tidy`. And to apply
+fixes, use `./ns3 run "clang-tidy -fix"`.
+
 ### Changed behavior
 
 * (wifi) `CcaEdThreshold` can be changed at run-time.

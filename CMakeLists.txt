@@ -30,6 +30,9 @@ option(NS3_DPDK "Enable fd-net-device DPDK features" OFF)
 # maintenance and documentation
 option(NS3_CLANG_FORMAT "Enforce cody style with clang-format" OFF)
 option(NS3_CLANG_TIDY "Use clang-tidy static analysis" OFF)
+option(NS3_CLANG_TIDY_FIX
+       "Use clang-tidy static analysis and apply automatic fixes" OFF
+)
 option(NS3_CLANG_TIMETRACE
        "Collect compilation statistics to analyze the build process" OFF
 )

@@ -256,7 +256,7 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_CLANG_TIDY})
+  if(${NS3_CLANG_TIDY} OR ${NS3_CLANG_TIDY_FIX})
     find_program(
       CLANG_TIDY
       NAMES clang-tidy-20
@@ -270,9 +270,25 @@ macro(process_options)
     if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
       message(FATAL_ERROR "Clang-tidy was not found")
     else()
-      set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY}
-                               -config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
-      ) # --fix)
+      if(${NS3_CLANG_TIDY})
+        set(CMAKE_CXX_CLANG_TIDY
+            ${CLANG_TIDY} --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+            --format-style=file -p ${CMAKE_BINARY_DIR}
+        )
+      else()
+        set(CMAKE_CXX_CLANG_TIDY
+            ${CLANG_TIDY}
+            --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+            --fix
+            --fix-errors
+            --fix-notes
+            --format-style=file
+            --warnings-as-errors=*
+            --quiet
+            -p
+            ${CMAKE_BINARY_DIR}
+        )
+      endif()
     endif()
   else()
     unset(CMAKE_CXX_CLANG_TIDY)
