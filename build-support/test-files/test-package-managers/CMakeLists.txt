@@ -15,7 +15,7 @@ if(${TEST_PACKAGE_MANAGER}
   set(armadillo
       armadillo
   )
-  include_directories(${CMAKE_BINARY_DIR}/_deps/armadillo-src/include)
+  include_directories(SYSTEM ${CMAKE_BINARY_DIR}/_deps/armadillo-src/include)
 elseif(
   ${TEST_PACKAGE_MANAGER}
   STREQUAL
@@ -24,7 +24,7 @@ elseif(
   set(armadillo
       ${ARMADILLO_LIBRARIES}
   )
-  include_directories(${ARMADILLO_INCLUDE_DIRS})
+  include_directories(SYSTEM ${ARMADILLO_INCLUDE_DIRS})
 else()
   message(FATAL_ERROR "zoincs")
   message(

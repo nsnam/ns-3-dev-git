@@ -628,7 +628,7 @@ You would need to replace it with the following counterparts:
    # a.k.a. the module, its examples and tests will have the definitions,
    # compilation options and will be linked to the specified libraries
    add_compile_options(-fopenmp) # CXXFLAGS counterpart
-   include_directories(/usr/local/include/e2sim) # CXXFLAGS -I counterpart
+   include_directories(SYSTEM /usr/local/include/e2sim) # CXXFLAGS -I counterpart
    add_definitions(-DLAPACK -DLUSOLVER=LAPACK) # CXXDEFINES counterpart
    link_directories(/usr/local/src/GoToBLAS2 src/common) # LINKFLAGS -L counterpart
    link_libraries(lapack blas thyme e2sim) # LINKFLAGS -l or LIB counterpart
@@ -830,7 +830,7 @@ that should work in most cases:
 
         # This is the equivalent of -I/optional/search/path/to/custom/sqlite3/include
         # and AFFECTS ALL the targets in the CURRENT DIRECTORY and ITS SUBDIRECTORIES
-        include_directories(${SQLite3_INCLUDE_DIRS})
+        include_directories(SYSTEM ${SQLite3_INCLUDE_DIRS})
 
         # The compiler should be able to locate the headers, but it still needs to be
         # informed of the libraries that should be linked
@@ -1225,7 +1225,7 @@ example of ``find_external_library`` usage.
     # This will make the following work:
     #  include<openflow/openflow.h>
     #  include<openflow.h>
-    include_directories(${openflow_INCLUDE_DIRS})
+    include_directories(SYSTEM ${openflow_INCLUDE_DIRS})
 
     # Manually set definitions
     add_definitions(
@@ -1304,7 +1304,7 @@ As an example for the above, we use the Boost library
     #
     # If calling this from the top-level directory (ns-3-dev), it will
     # be used by all contrib/src modules, examples, etc
-    include_directories(${Boost_INCLUDE_DIRS})
+    include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
     # This is a trick for Boost
     # Sometimes you want to check if specific Boost headers are available,
@@ -1455,7 +1455,7 @@ More details on how to use the macro are listed in
           model/sqlite-data-output.h
       )
       # Include the include directories containing the sqlite3.h header
-      include_directories(${SQLite3_INCLUDE_DIRS})
+      include_directories(SYSTEM ${SQLite3_INCLUDE_DIRS})
       # Copy the list of sqlite3 libraries
       set(sqlite_libraries
           ${SQLite3_LIBRARIES}
@@ -1534,7 +1534,7 @@ source files similarly to the previous cases, as shown in the example below:
     if(PKG_CONFIG_FOUND AND THIRD_PARTY)
       # Include third-party include directories for
       # consumption of the current module and its examples
-      include_directories(${THIRD_PARTY_INCLUDE_DIRS})
+      include_directories(SYSTEM ${THIRD_PARTY_INCLUDE_DIRS})
 
       # Use exported CFLAGS required by the third-party library
       add_compile_options(${THIRD_PARTY_CFLAGS})
@@ -1661,7 +1661,7 @@ We can then use it for our targets.
     message(STATUS "Armadillo was found? ${ARMADILLO_FOUND}")
 
     # Include and link Armadillo to targets
-    include_directories(${ARMADILLO_INCLUDE_DIRS})
+    include_directories(SYSTEM ${ARMADILLO_INCLUDE_DIRS})
     link_libraries(${ARMADILLO_LIBRARIES})
 
 .. _vcpkg manifests: https://learn.microsoft.com/en-us/vcpkg/users/manifests
@@ -2066,7 +2066,7 @@ which we can link to our targets.
     # CPM is kind of jenky. It could get the ARMADILLO_INCLUDE_DIRS
     # from the ArmadilloConfig.cmake file in ${CMAKE_BINARY_DIR}/_deps/armadillo-build,
     # but it doesn't... So add its include directories directly from the source directory
-    include_directories(${CMAKE_BINARY_DIR}/_deps/armadillo-src/include)
+    include_directories(SYSTEM ${CMAKE_BINARY_DIR}/_deps/armadillo-src/include)
 
     # Link to Armadillo and
     link_libraries(armadillo)

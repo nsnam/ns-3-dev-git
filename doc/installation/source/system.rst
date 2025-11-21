@@ -107,7 +107,9 @@ clang-format is strongly recommended to write code that follows the ns-3 code co
 might be skipped for simpler tasks (e.g., writing a simple simulation script for yourself).
 
 clang-tidy is recommended when writing a module, to both follow code conventions and to provide
-hints on possible bugs in code.
+hints on possible bugs in code. Note: when using CMake's ``include_directories()`` to include a
+third-party dependency directory, it is important to set the ``SYSTEM`` flag, to prevent clang-tidy
+from checking code that is not under our control (e.g. ``include_directories(SYSTEM ${SQLite3_INCLUDE_DIRS})``).
 
 Both are used in the CI system, and a merge request will likely fail if you did not use them.
 

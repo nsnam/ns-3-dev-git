@@ -38,7 +38,10 @@ if(${NS3_FETCH_OPTIONAL_COMPONENTS})
 endif()
 
 # Only process module if include folder and library have been found
-include_directories(${brite_INCLUDE_DIRS})
+include_directories(
+  SYSTEM
+  ${brite_INCLUDE_DIRS}
+)
 set(NS3_BRITE
     "ON"
     CACHE INTERNAL
