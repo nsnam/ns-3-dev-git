@@ -81,6 +81,11 @@ Ipv6AddressTestCase::DoRun()
     NS_TEST_ASSERT_MSG_EQ(ipBytes[7], 0x01, "Failed string conversion");
     NS_TEST_ASSERT_MSG_EQ(ipBytes[15], 1, "Failed string conversion");
 
+    // This test checks that we're not comparing the optional member variable.
+    Ipv6Address addr = ip;
+    ip.GetHash();
+    NS_TEST_ASSERT_MSG_EQ(ip, addr, "Failed address comparison");
+
     // Please add more tests below
 }
 

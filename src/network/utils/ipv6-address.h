@@ -19,6 +19,7 @@
 #include <array>
 #include <compare>
 #include <cstring>
+#include <optional>
 #include <ostream>
 #include <stdint.h>
 
@@ -396,23 +397,65 @@ class Ipv6Address
     void GetBytes(uint8_t buf[16]) const;
 
     /**
+     * @brief Get the address hash.
+     * @return the address hash
+     */
+    uint32_t GetHash() const;
+
+    /**
      * @brief Three-way comparison operator.
      *
      * @param other the other address to compare with
      * @returns comparison result
      */
-    std::strong_ordering operator<=>(const Ipv6Address& other) const = default;
+    inline std::strong_ordering operator<=>(const Ipv6Address& other) const
+    {
+        return m_address <=> other.m_address;
+    }
+
+    /**
+     * @brief Equal to operator.
+     *
+     * @param other the other address to compare with
+     * @returns true if the operands are equal.
+     */
+    inline bool operator==(const Ipv6Address& other) const
+    {
+        return m_address == other.m_address;
+    }
 
   private:
+    /**
+     * @brief Mix hash keys in-place for lookuphash
+     *
+     * @param a first word of the hash key
+     * @param b second word of the hash key
+     * @param c third word of the hash key
+     */
+    static void MixHashKey(uint32_t& a, uint32_t& b, uint32_t& c);
+
+    /**
+     * @brief Generate and return a hash key.
+     * @return hash
+     * @note Adapted from Jens Jakobsen implementation (chillispot).
+     */
+    uint32_t GenerateHash() const;
+
     /**
      * @brief Return the Type of address.
      * @return type of address
      */
     static uint8_t GetType();
+
     /**
      * @brief The address representation on 128 bits (16 bytes).
      */
     std::array<uint8_t, 16> m_address{};
+
+    /**
+     * @brief address hash.
+     */
+    mutable std::optional<uint32_t> m_hash;
 };
 
 /**

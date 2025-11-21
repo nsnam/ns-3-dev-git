@@ -31,111 +31,6 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("Ipv6Address");
 
-#ifdef __cplusplus
-extern "C"
-{ /* } */
-#endif
-    /**
-     * @brief Mix hash keys in-place for lookuphash
-     *
-     * @param a first word of the hash key
-     * @param b second word of the hash key
-     * @param c third word of the hash key
-     */
-    void mixHashKey(uint32_t& a, uint32_t& b, uint32_t& c)
-    {
-        (a) -= (b);
-        (a) -= (c);
-        (a) ^= ((c) >> 13);
-        (b) -= (c);
-        (b) -= (a);
-        (b) ^= ((a) << 8);
-        (c) -= (a);
-        (c) -= (b);
-        (c) ^= ((b) >> 13);
-        (a) -= (b);
-        (a) -= (c);
-        (a) ^= ((c) >> 12);
-        (b) -= (c);
-        (b) -= (a);
-        (b) ^= ((a) << 16);
-        (c) -= (a);
-        (c) -= (b);
-        (c) ^= ((b) >> 5);
-        (a) -= (b);
-        (a) -= (c);
-        (a) ^= ((c) >> 3);
-        (b) -= (c);
-        (b) -= (a);
-        (b) ^= ((a) << 10);
-        (c) -= (a);
-        (c) -= (b);
-        (c) ^= ((b) >> 15);
-    }
-
-    /**
-     * @brief Get a hash key.
-     * @param k the key
-     * @param length the length of the key
-     * @param level the previous hash, or an arbitrary value
-     * @return hash
-     * @note Adapted from Jens Jakobsen implementation (chillispot).
-     */
-    static uint32_t lookuphash(unsigned char* k, uint32_t length, uint32_t level)
-    {
-        NS_LOG_FUNCTION(k << length << level);
-
-        typedef uint32_t ub4; /* unsigned 4-byte quantities */
-        uint32_t a = 0;
-        uint32_t b = 0;
-        uint32_t c = 0;
-        uint32_t len = 0;
-
-        /* Set up the internal state */
-        len = length;
-        a = b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
-        c = level;          /* the previous hash value */
-
-        /* handle most of the key */
-        while (len >= 12)
-        {
-            a += (k[0] + ((ub4)k[1] << 8) + ((ub4)k[2] << 16) + ((ub4)k[3] << 24));
-            b += (k[4] + ((ub4)k[5] << 8) + ((ub4)k[6] << 16) + ((ub4)k[7] << 24));
-            c += (k[8] + ((ub4)k[9] << 8) + ((ub4)k[10] << 16) + ((ub4)k[11] << 24));
-            mixHashKey(a, b, c);
-            k += 12;
-            len -= 12;
-        }
-
-        /* handle the last 11 bytes */
-        c += length;
-        switch (len)
-        {
-            // clang-format off
-            case 11: c += ((ub4)k[10] << 24); [[fallthrough]];
-            case 10: c += ((ub4)k[9]  << 16); [[fallthrough]];
-            case 9:  c += ((ub4)k[8]  << 8);  [[fallthrough]]; /* the first byte of c is reserved for the length */
-            case 8:  b += ((ub4)k[7]  << 24); [[fallthrough]];
-            case 7:  b += ((ub4)k[6]  << 16); [[fallthrough]];
-            case 6:  b += ((ub4)k[5]  << 8);  [[fallthrough]];
-            case 5:  b += k[4];               [[fallthrough]];
-            case 4:  a += ((ub4)k[3]  << 24); [[fallthrough]];
-            case 3:  a += ((ub4)k[2]  << 16); [[fallthrough]];
-            case 2:  a += ((ub4)k[1]  << 8);  [[fallthrough]];
-            case 1:  a += k[0];
-            /* case 0: nothing left to add */
-            // clang-format on
-        }
-        mixHashKey(a, b, c);
-
-        /* report the result */
-        return c;
-    }
-
-#ifdef __cplusplus
-}
-#endif
-
 Ipv6Address::Ipv6Address(const char* address)
 {
     NS_LOG_FUNCTION(this << address);
@@ -146,6 +41,7 @@ Ipv6Address::Ipv6Address(const char* address)
         NS_ABORT_MSG("Error, can not build an IPv6 address from an invalid string: " << address);
         return;
     }
+    m_hash.reset();
 }
 
 bool
@@ -167,6 +63,7 @@ Ipv6Address::Ipv6Address(uint8_t address[16])
 {
     NS_LOG_FUNCTION(this << &address);
     std::copy(address, address + 16, m_address.begin());
+    m_hash.reset();
 }
 
 void
@@ -179,6 +76,7 @@ Ipv6Address::Set(const char* address)
         NS_ABORT_MSG("Error, can not set an IPv6 address from an invalid string: " << address);
         return;
     }
+    m_hash.reset();
 }
 
 void
@@ -186,6 +84,7 @@ Ipv6Address::Set(uint8_t address[16])
 {
     NS_LOG_FUNCTION(this << &address);
     std::copy(address, address + 16, m_address.begin());
+    m_hash.reset();
 }
 
 void
@@ -207,24 +106,11 @@ Ipv6Address
 Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
 {
     NS_LOG_FUNCTION(addr);
-    uint8_t buf[16] = {
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0xff,
-        0xff,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-    };
+    uint8_t buf[16] = {0};
+
+    buf[10] = 0xff;
+    buf[11] = 0xff;
+
     addr.Serialize(&buf[12]);
     return Ipv6Address(buf);
 }
@@ -733,6 +619,67 @@ Ipv6Address::IsInitialized() const
     return true;
 }
 
+void
+Ipv6Address::MixHashKey(uint32_t& a, uint32_t& b, uint32_t& c)
+{
+    auto mix = [](uint32_t x, uint32_t y, uint32_t z, int shift) -> uint32_t {
+        x -= y + z;
+        x ^= (shift > 0) ? (z << shift) : (z >> (-shift));
+        return x;
+    };
+
+    a = mix(a, b, c, -13);
+    b = mix(b, c, a, 8);
+    c = mix(c, a, b, -13);
+    a = mix(a, b, c, -12);
+    b = mix(b, c, a, 16);
+    c = mix(c, a, b, -5);
+    a = mix(a, b, c, -3);
+    b = mix(b, c, a, 10);
+    c = mix(c, a, b, -15);
+}
+
+uint32_t
+Ipv6Address::GenerateHash() const
+{
+    NS_LOG_FUNCTION(this);
+
+    uint32_t a = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+    uint32_t b = 0x9e3779b9; /* the golden ratio; an arbitrary value */
+    uint32_t c = 0;
+
+    auto fold = [](const uint8_t* a) -> uint32_t {
+        auto f = static_cast<uint32_t>(a[0]);
+        f += static_cast<uint32_t>(a[1]) << 8;
+        f += static_cast<uint32_t>(a[2]) << 16;
+        f += static_cast<uint32_t>(a[3]) << 24;
+        return f;
+    };
+
+    a += fold(&m_address[0]);
+    b += fold(&m_address[4]);
+    c += fold(&m_address[8]);
+    MixHashKey(a, b, c);
+
+    c += 16;
+    a += fold(&m_address[12]);
+    MixHashKey(a, b, c);
+
+    /* set the hash and report the result */
+    m_hash = c;
+    return c;
+}
+
+uint32_t
+Ipv6Address::GetHash() const
+{
+    if (m_hash)
+    {
+        return m_hash.value();
+    }
+    return GenerateHash();
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Ipv6Address& address)
 {
@@ -963,11 +910,7 @@ operator>>(std::istream& is, Ipv6Prefix& prefix)
 size_t
 Ipv6AddressHash::operator()(const Ipv6Address& x) const
 {
-    uint8_t buf[16];
-
-    x.GetBytes(buf);
-
-    return lookuphash(buf, sizeof(buf), 0);
+    return x.GetHash();
 }
 
 ATTRIBUTE_HELPER_CPP(Ipv6Address);
