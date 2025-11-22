@@ -651,7 +651,7 @@ std::istream& operator>>(std::istream& is, Ipv6Prefix& prefix);
  * @class Ipv6AddressHash
  * @brief Hash function class for IPv6 addresses.
  */
-class Ipv6AddressHash
+class NS_DEPRECATED_3_47("Unnecessary thanks to std::hash specialization, remove") Ipv6AddressHash
 {
   public:
     /**
@@ -663,5 +663,26 @@ class Ipv6AddressHash
 };
 
 } /* namespace ns3 */
+
+namespace std
+{
+
+/**
+ * @brief Hash function class for IPv6 addresses.
+ */
+template <>
+struct hash<ns3::Ipv6Address>
+{
+    /**
+     * @brief Returns the hash of an IPv6 address.
+     * @param addr IPv6 address to hash
+     * @returns the hash of the address
+     */
+    size_t operator()(const ns3::Ipv6Address& addr) const
+    {
+        return addr.GetHash();
+    }
+};
+} // namespace std
 
 #endif /* IPV6_ADDRESS_H */

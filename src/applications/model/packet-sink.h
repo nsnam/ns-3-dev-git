@@ -158,12 +158,12 @@ class PacketSink : public SinkApplication
             if (InetSocketAddress::IsMatchingType(x))
             {
                 InetSocketAddress a = InetSocketAddress::ConvertFrom(x);
-                return Ipv4AddressHash()(a.GetIpv4());
+                return std::hash<Ipv4Address>{}(a.GetIpv4());
             }
             else if (Inet6SocketAddress::IsMatchingType(x))
             {
                 Inet6SocketAddress a = Inet6SocketAddress::ConvertFrom(x);
-                return Ipv6AddressHash()(a.GetIpv6());
+                return std::hash<Ipv6Address>{}(a.GetIpv6());
             }
 
             NS_ABORT_MSG("PacketSink: unexpected address type, neither IPv4 nor IPv6");

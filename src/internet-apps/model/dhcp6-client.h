@@ -249,7 +249,7 @@ class Dhcp6Client : public Application
     TracedCallback<const Ipv6Address&> m_newLease; //!< Trace the new lease.
 
     /// Track the IPv6 Address - IAID association.
-    std::unordered_map<Ipv6Address, uint32_t, Ipv6AddressHash> m_iaidMap;
+    std::unordered_map<Ipv6Address, uint32_t> m_iaidMap;
 
     /// Random variable to set transaction ID
     Ptr<RandomVariableStream> m_transactionId;

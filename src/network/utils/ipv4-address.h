@@ -369,7 +369,7 @@ std::istream& operator>>(std::istream& is, Ipv4Mask& mask);
  *
  * @brief Class providing an hash for IPv4 addresses
  */
-class Ipv4AddressHash
+class NS_DEPRECATED_3_47("Unnecessary thanks to std::hash specialization, remove") Ipv4AddressHash
 {
   public:
     /**
@@ -384,5 +384,26 @@ class Ipv4AddressHash
 };
 
 } // namespace ns3
+
+namespace std
+{
+
+/**
+ * @brief Hash function class for IPv4 addresses.
+ */
+template <>
+struct hash<ns3::Ipv4Address>
+{
+    /**
+     * @brief Returns the hash of an IPv4 address.
+     * @param addr IPv4 address to hash
+     * @returns the hash of the address
+     */
+    size_t operator()(const ns3::Ipv4Address& addr) const
+    {
+        return std::hash<uint32_t>()(addr.Get());
+    }
+};
+} // namespace std
 
 #endif /* IPV4_ADDRESS_H */

@@ -99,7 +99,7 @@ class LeaseInfo
      * @brief Declined Addresses
      * Ipv6Address + Client DUID
      */
-    typedef std::unordered_map<Ipv6Address, Duid, Ipv6AddressHash> DeclinedAddresses;
+    typedef std::unordered_map<Ipv6Address, Duid> DeclinedAddresses;
 
     LeasedAddresses m_leasedAddresses;     //!< Leased addresses
     ExpiredAddresses m_expiredAddresses;   //!< Expired addresses
