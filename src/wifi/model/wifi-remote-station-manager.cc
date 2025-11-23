@@ -1148,7 +1148,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus(Mac48Address address,
                                               uint16_t nFailedMpdus,
                                               double rxSnr,
                                               double dataSnr,
-                                              WifiTxVector dataTxVector)
+                                              const WifiTxVector& dataTxVector)
 {
     NS_LOG_FUNCTION(this << address << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr
                          << dataTxVector);

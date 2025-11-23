@@ -1089,7 +1089,7 @@ class WifiRemoteStationManager : public Object
                              uint16_t nFailedMpdus,
                              double rxSnr,
                              double dataSnr,
-                             WifiTxVector dataTxVector);
+                             const WifiTxVector& dataTxVector);
 
     /**
      * @param address remote address
