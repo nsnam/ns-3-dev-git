@@ -485,13 +485,22 @@ HtFrameExchangeManager::StartFrameExchange()
 {
     NS_LOG_FUNCTION(this);
 
+    // First, check if there is a BAR to be transmitted.
+    // The TXOP holder may exceed the TXOP limit only if it does not transmit more than one Data or
+    // Management frame in the TXOP [..] and only for the following situations:
+    // - Transmission of a Control frame or a QoS Null frame, not in an A-MPDU consisting of more
+    //   than one MPDU
+    // (Sec. 10.23.2.9 of 802.11-2024)
     const auto canExceedTxopLimit = m_edca->GetTxopStartTime(m_linkId) == Simulator::Now();
 
-    // First, check if there is a BAR to be transmitted
-    if (auto mpdu = GetBar(m_edca->GetAccessCategory());
-        mpdu && SendMpduFromBaManager(mpdu, GetAvailTxopTime(mpdu->GetHeader().GetAddr1())))
+    if (auto mpdu = GetBar(m_edca->GetAccessCategory()))
     {
-        return true;
+        const auto availableTime = GetAvailTxopTime(mpdu->GetHeader().GetAddr1());
+        const auto actualAvailableTime = (canExceedTxopLimit ? std::nullopt : availableTime);
+        if (SendMpduFromBaManager(mpdu, actualAvailableTime))
+        {
+            return true;
+        }
     }
 
     auto peekedItem = m_edca->PeekNextMpdu(m_linkId);
