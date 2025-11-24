@@ -181,11 +181,11 @@ TestMultiUserScheduler::SelectTxFormat()
                                                                    m_allowedWidth);
 
         if (!GetHeFem(SINGLE_LINK_OP_ID)->TryAddMpdu(item, m_txParams, m_availableTime) ||
-            (m_availableTime != Time::Min() &&
-             *m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // TF tx time
-                     + m_apMac->GetWifiPhy()->GetSifs() + duration +
-                     *m_txParams.m_acknowledgment->acknowledgmentTime >
-                 m_availableTime))
+            (m_availableTime && *m_txParams.m_protection->protectionTime +
+                                        *m_txParams.m_txDuration // TF tx time
+                                        + m_apMac->GetWifiPhy()->GetSifs() + duration +
+                                        *m_txParams.m_acknowledgment->acknowledgmentTime >
+                                    *m_availableTime))
         {
             NS_LOG_DEBUG("Remaining TXOP duration is not enough for BSRP TF exchange");
             return SU_TX;
@@ -230,16 +230,10 @@ TestMultiUserScheduler::SelectTxFormat()
                 continue;
             }
 
-            NS_ASSERT(m_edca);
-            auto txopStartTime = m_edca->GetTxopStartTime(m_linkId);
-            NS_ASSERT_MSG(txopStartTime.has_value(), "A TXOP must be ongoing");
-            auto initialFrame = (txopStartTime.value() == Simulator::Now());
-
-            Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop(tid)->GetNextMpdu(SINGLE_LINK_OP_ID,
-                                                                       peeked,
-                                                                       m_txParams,
-                                                                       m_availableTime,
-                                                                       initialFrame);
+            auto mpdu = m_apMac->GetQosTxop(tid)->GetNextMpdu(SINGLE_LINK_OP_ID,
+                                                              peeked,
+                                                              m_txParams,
+                                                              m_availableTime);
             if (!mpdu)
             {
                 NS_LOG_DEBUG("Not enough time to send frames to all the stations");

@@ -523,19 +523,19 @@ Ptr<WifiMpdu>
 QosTxop::GetNextMpdu(uint8_t linkId,
                      Ptr<WifiMpdu> peekedItem,
                      WifiTxParameters& txParams,
-                     Time availableTime,
-                     bool initialFrame)
+                     const std::optional<Time>& availableTime)
 {
     NS_ASSERT(peekedItem);
-    NS_LOG_FUNCTION(this << +linkId << *peekedItem << &txParams << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << +linkId << *peekedItem << &txParams << availableTime);
 
     Mac48Address recipient = peekedItem->GetHeader().GetAddr1();
 
     // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
     // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
     // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016)
-    Time actualAvailableTime =
-        (initialFrame && txParams.GetSize(recipient) == 0 ? Time::Min() : availableTime);
+    const auto canExceedTxopLimit =
+        GetTxopStartTime(linkId) == Simulator::Now() && txParams.GetSize(recipient) == 0;
+    auto actualAvailableTime = (canExceedTxopLimit ? std::nullopt : availableTime);
 
     auto qosFem = StaticCast<QosFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
     if (!qosFem->TryAddMpdu(peekedItem, txParams, actualAvailableTime))

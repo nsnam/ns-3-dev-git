@@ -117,12 +117,12 @@ class MpduAggregator : public Object
      *
      * @param mpdu the given MPDU.
      * @param txParams the TX parameters used to transmit the frame
-     * @param availableTime the time available for the frame exchange
+     * @param availableTime the limit (if any) on the time available for the frame exchange
      * @return the resulting A-MPDU, if aggregation is possible.
      */
     std::vector<Ptr<WifiMpdu>> GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                                             WifiTxParameters& txParams,
-                                            Time availableTime) const;
+                                            const std::optional<Time>& availableTime) const;
 
     /**
      * Set the MAC layer to use.

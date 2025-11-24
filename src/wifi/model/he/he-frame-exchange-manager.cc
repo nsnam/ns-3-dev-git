@@ -124,9 +124,9 @@ HeFrameExchangeManager::SetMultiUserScheduler(const Ptr<MultiUserScheduler> muSc
 }
 
 bool
-HeFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame)
+HeFrameExchangeManager::StartFrameExchange()
 {
-    NS_LOG_FUNCTION(this << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this);
 
     MultiUserScheduler::TxFormat txFormat = MultiUserScheduler::SU_TX;
     Ptr<const WifiMpdu> mpdu;
@@ -145,13 +145,14 @@ HeFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame
           m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
                                                        mpdu->GetHeader().GetQosTid()))))
     {
+        const auto availableTime = GetAvailTxopTime();
         txFormat =
             m_muScheduler->NotifyAccessGranted(m_edca, availableTime, m_allowedWidth, m_linkId);
     }
 
     if (txFormat == MultiUserScheduler::SU_TX)
     {
-        return VhtFrameExchangeManager::StartFrameExchange(availableTime, initialFrame);
+        return VhtFrameExchangeManager::StartFrameExchange();
     }
 
     if (txFormat == MultiUserScheduler::DL_MU_TX)
@@ -1873,7 +1874,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
         if (auto mpdu = edca->PeekNextMpdu(m_linkId, tid, receiver))
         {
             mpdu = CreateAliasIfNeeded(mpdu);
-            if (auto item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration, false))
+            if (auto item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration))
             {
                 // try A-MPDU aggregation
                 std::vector<Ptr<WifiMpdu>> mpduList =

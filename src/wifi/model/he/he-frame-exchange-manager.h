@@ -53,7 +53,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     HeFrameExchangeManager();
     ~HeFrameExchangeManager() override;
 
-    bool StartFrameExchange(Time availableTime, bool initialFrame) override;
+    bool StartFrameExchange() override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void CalculateProtectionTime(WifiProtection* protection) const override;
     std::optional<Mac48Address> FindTxopHolder(const WifiMacHeader& hdr,

@@ -179,7 +179,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
-    bool StartFrameExchange(Time availableTime, bool initialFrame) override;
+    bool StartFrameExchange() override;
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
     void NotifyChannelReleased() override;

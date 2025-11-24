@@ -234,7 +234,7 @@ MultiUserScheduler::AccessReqTimeout(uint8_t linkId)
 
 MultiUserScheduler::TxFormat
 MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
-                                        Time availableTime,
+                                        const std::optional<Time>& availableTime,
                                         MHz_u allowedWidth,
                                         uint8_t linkId)
 {

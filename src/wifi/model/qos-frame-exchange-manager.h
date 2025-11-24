@@ -54,10 +54,12 @@ class QosFrameExchangeManager : public FrameExchangeManager
      *
      * @param mpdu the MPDU to add to the frame being built
      * @param txParams the TX parameters describing the frame being built
-     * @param availableTime the time limit on the frame exchange sequence
+     * @param availableTime the time limit (if any) on the frame exchange sequence
      * @return true if the given MPDU can be added to the frame being built
      */
-    bool TryAddMpdu(Ptr<const WifiMpdu> mpdu, WifiTxParameters& txParams, Time availableTime) const;
+    bool TryAddMpdu(Ptr<const WifiMpdu> mpdu,
+                    WifiTxParameters& txParams,
+                    const std::optional<Time>& availableTime) const;
 
     /**
      * Check whether the given MPDU can be added to the frame being built (as described
@@ -66,12 +68,12 @@ class QosFrameExchangeManager : public FrameExchangeManager
      *
      * @param mpdu the MPDU to add to the frame being built
      * @param txParams the TX parameters describing the frame being built
-     * @param ppduDurationLimit the time limit on the PPDU transmission duration
+     * @param ppduDurationLimit the time limit (if any) on the PPDU transmission duration
      * @return true if the given MPDU can be added to the frame being built
      */
     virtual bool IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
                                          const WifiTxParameters& txParams,
-                                         Time ppduDurationLimit) const;
+                                         const std::optional<Time>& ppduDurationLimit) const;
 
     /**
      * Check whether the transmission time of the frame being built (as described
@@ -83,13 +85,13 @@ class QosFrameExchangeManager : public FrameExchangeManager
      * @param ppduPayloadSize the new PSDU size
      * @param receiver the MAC address of the receiver of the PSDU
      * @param txParams the TX parameters describing the frame being built
-     * @param ppduDurationLimit the limit on the PPDU duration
+     * @param ppduDurationLimit the limit (if any) on the PPDU duration
      * @return true if the constraints on the PPDU duration limit and the maximum PSDU size are met
      */
     virtual bool IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize,
                                            Mac48Address receiver,
                                            const WifiTxParameters& txParams,
-                                           Time ppduDurationLimit) const;
+                                           const std::optional<Time>& ppduDurationLimit) const;
 
     /**
      * Create an alias of the given MPDU for transmission by this Frame Exchange Manager.
@@ -146,18 +148,23 @@ class QosFrameExchangeManager : public FrameExchangeManager
     bool StartTransmission();
 
     /**
-     * Start a frame exchange (including protection frames and acknowledgment frames
-     * as needed) that fits within the given <i>availableTime</i> (if different than
-     * Time::Min()).
+     * This method is intended to be called when this device is the TXOP holder and returns the
+     * amount of time that can be used to transmit within the TXOP. If a receiver is specified,
+     * this function returns the amount of time that can be used to transmit to the given receiver.
      *
-     * @param availableTime the amount of time allowed for the frame exchange. Pass
-     *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
+     * @param receiver the (MLD or link) MAC address of the receiver
+     * @return the amount of time that can be used to transmit
+     */
+    std::optional<Time> GetAvailTxopTime(
+        const std::optional<Mac48Address>& receiver = std::nullopt) const;
+
+    /**
+     * Start a frame exchange (including protection frames and acknowledgment frames
+     * as needed).
+     *
      * @return true if a frame exchange is started, false otherwise
      */
-    virtual bool StartFrameExchange(Time availableTime, bool initialFrame);
+    virtual bool StartFrameExchange();
 
     /**
      * Perform a PIFS recovery as a response to transmission failure within a TXOP.

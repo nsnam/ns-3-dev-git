@@ -177,9 +177,14 @@ EhtFrameExchangeManager::UsingOtherEmlsrLink() const
 }
 
 bool
-EhtFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFrame)
+EhtFrameExchangeManager::StartFrameExchange()
 {
-    NS_LOG_FUNCTION(this << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this);
+
+    NS_ASSERT(m_edca);
+    auto txopStartTime = m_edca->GetTxopStartTime(m_linkId);
+    NS_ASSERT_MSG(txopStartTime.has_value(), "A TXOP must be ongoing");
+    auto initialFrame = (txopStartTime.value() == Simulator::Now());
 
     if (m_apMac)
     {
@@ -192,7 +197,7 @@ EhtFrameExchangeManager::StartFrameExchange(Time availableTime, bool initialFram
         return false;
     }
 
-    auto started = HeFrameExchangeManager::StartFrameExchange(availableTime, initialFrame);
+    auto started = HeFrameExchangeManager::StartFrameExchange();
 
     if (initialFrame && started)
     {
