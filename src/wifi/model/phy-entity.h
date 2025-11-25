@@ -36,7 +36,6 @@
  * @ingroup wifi
  * Declaration of:
  * - ns3::PhyEntity class
- * - ns3::SignalNoiseDbm, ns3::MpduInfo, and ns3::RxSignalInfo structs
  * - ns3::RxPowerWattPerChannelBand typedef
  */
 
