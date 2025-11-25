@@ -250,7 +250,6 @@ void
 Icmpv6L4Protocol::DoDAD(Ipv6Address target, Ptr<Ipv6Interface> interface)
 {
     NS_LOG_FUNCTION(this << target << interface);
-    Ipv6Address addr;
     Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol>();
 
     NS_ASSERT(ipv6);

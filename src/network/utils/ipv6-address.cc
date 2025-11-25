@@ -15,6 +15,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <memory>
 
@@ -135,30 +136,13 @@ extern "C"
 }
 #endif
 
-Ipv6Address::Ipv6Address()
-{
-    NS_LOG_FUNCTION(this);
-    memset(m_address, 0x00, 16);
-}
-
-Ipv6Address::Ipv6Address(const Ipv6Address& addr)
-{
-    // Do not add function logging here, to avoid stack overflow
-    memcpy(m_address, addr.m_address, 16);
-}
-
-Ipv6Address::Ipv6Address(const Ipv6Address* addr)
-{
-    // Do not add function logging here, to avoid stack overflow
-    memcpy(m_address, addr->m_address, 16);
-}
-
 Ipv6Address::Ipv6Address(const char* address)
 {
     NS_LOG_FUNCTION(this << address);
 
-    if (inet_pton(AF_INET6, address, m_address) <= 0)
+    if (inet_pton(AF_INET6, address, m_address.data()) <= 0)
     {
+        m_address.fill(0x00);
         NS_ABORT_MSG("Error, can not build an IPv6 address from an invalid string: " << address);
         return;
     }
@@ -182,23 +166,16 @@ Ipv6Address::CheckCompatible(const std::string& addressStr)
 Ipv6Address::Ipv6Address(uint8_t address[16])
 {
     NS_LOG_FUNCTION(this << &address);
-    /* 128 bit => 16 bytes */
-    memcpy(m_address, address, 16);
-}
-
-Ipv6Address::~Ipv6Address()
-{
-    /* do nothing */
-    NS_LOG_FUNCTION(this);
+    std::copy(address, address + 16, m_address.begin());
 }
 
 void
 Ipv6Address::Set(const char* address)
 {
     NS_LOG_FUNCTION(this << address);
-    if (inet_pton(AF_INET6, address, m_address) <= 0)
+    if (inet_pton(AF_INET6, address, m_address.data()) <= 0)
     {
-        memset(m_address, 0x00, 16);
+        m_address.fill(0x00);
         NS_ABORT_MSG("Error, can not set an IPv6 address from an invalid string: " << address);
         return;
     }
@@ -207,16 +184,15 @@ Ipv6Address::Set(const char* address)
 void
 Ipv6Address::Set(uint8_t address[16])
 {
-    /* 128 bit => 16 bytes */
     NS_LOG_FUNCTION(this << &address);
-    memcpy(m_address, address, 16);
+    std::copy(address, address + 16, m_address.begin());
 }
 
 void
 Ipv6Address::Serialize(uint8_t buf[16]) const
 {
     NS_LOG_FUNCTION(this << &buf);
-    memcpy(buf, m_address, 16);
+    std::copy(m_address.begin(), m_address.end(), buf);
 }
 
 Ipv6Address
@@ -524,7 +500,7 @@ Ipv6Address::Print(std::ostream& os) const
 
     char str[INET6_ADDRSTRLEN];
 
-    if (inet_ntop(AF_INET6, m_address, str, INET6_ADDRSTRLEN))
+    if (inet_ntop(AF_INET6, m_address.data(), str, INET6_ADDRSTRLEN))
     {
         os << str;
     }
@@ -556,9 +532,9 @@ bool
 Ipv6Address::IsIpv4MappedAddress() const
 {
     NS_LOG_FUNCTION(this);
-    static uint8_t v4MappedPrefix[12] =
+    static std::array<uint8_t, 12> v4MappedPrefix =
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff};
-    return memcmp(m_address, v4MappedPrefix, sizeof(v4MappedPrefix)) == 0;
+    return std::equal(v4MappedPrefix.begin(), v4MappedPrefix.end(), m_address.begin());
 }
 
 Ipv6Address
@@ -570,10 +546,9 @@ Ipv6Address::CombinePrefix(const Ipv6Prefix& prefix) const
     uint8_t pref[16];
     unsigned int i = 0;
 
-    memcpy(addr, m_address, 16);
+    std::copy(m_address.begin(), m_address.end(), addr);
     ((Ipv6Prefix)prefix).GetBytes(pref);
 
-    /* a little bit ugly... */
     for (i = 0; i < 16; i++)
     {
         addr[i] = addr[i] & pref[i];
@@ -740,7 +715,7 @@ void
 Ipv6Address::GetBytes(uint8_t buf[16]) const
 {
     NS_LOG_FUNCTION(this << &buf);
-    memcpy(buf, m_address, 16);
+    std::copy(m_address.begin(), m_address.end(), buf);
 }
 
 bool
@@ -774,17 +749,10 @@ operator>>(std::istream& is, Ipv6Address& address)
     return is;
 }
 
-Ipv6Prefix::Ipv6Prefix()
-{
-    NS_LOG_FUNCTION(this);
-    memset(m_prefix, 0x00, 16);
-    m_prefixLength = 0;
-}
-
 Ipv6Prefix::Ipv6Prefix(const char* prefix)
 {
     NS_LOG_FUNCTION(this << prefix);
-    if (inet_pton(AF_INET6, prefix, m_prefix) <= 0)
+    if (inet_pton(AF_INET6, prefix, m_prefix.data()) <= 0)
     {
         NS_ABORT_MSG("Error, can not build an IPv6 prefix from an invalid string: " << prefix);
     }
@@ -794,14 +762,14 @@ Ipv6Prefix::Ipv6Prefix(const char* prefix)
 Ipv6Prefix::Ipv6Prefix(uint8_t prefix[16])
 {
     NS_LOG_FUNCTION(this << &prefix);
-    memcpy(m_prefix, prefix, 16);
+    std::copy(prefix, prefix + 16, m_prefix.begin());
     m_prefixLength = GetMinimumPrefixLength();
 }
 
 Ipv6Prefix::Ipv6Prefix(const char* prefix, uint8_t prefixLength)
 {
     NS_LOG_FUNCTION(this << prefix);
-    if (inet_pton(AF_INET6, prefix, m_prefix) <= 0)
+    if (inet_pton(AF_INET6, prefix, m_prefix.data()) <= 0)
     {
         NS_ABORT_MSG("Error, can not build an IPv6 prefix from an invalid string: " << prefix);
     }
@@ -816,7 +784,7 @@ Ipv6Prefix::Ipv6Prefix(const char* prefix, uint8_t prefixLength)
 Ipv6Prefix::Ipv6Prefix(uint8_t prefix[16], uint8_t prefixLength)
 {
     NS_LOG_FUNCTION(this << &prefix);
-    memcpy(m_prefix, prefix, 16);
+    std::copy(prefix, prefix + 16, m_prefix.begin());
 
     uint8_t autoLength = GetMinimumPrefixLength();
     NS_ASSERT_MSG(autoLength <= prefixLength,
@@ -833,7 +801,7 @@ Ipv6Prefix::Ipv6Prefix(uint8_t prefix)
     unsigned int mod = 0;
     unsigned int i = 0;
 
-    memset(m_prefix, 0x00, 16);
+    m_prefix.fill(0x00);
     m_prefixLength = prefix;
 
     NS_ASSERT(prefix <= 128);
@@ -845,7 +813,7 @@ Ipv6Prefix::Ipv6Prefix(uint8_t prefix)
     // __warn_memset_zero_len compiler errors in some gcc>4.5.x
     if (nb > 0)
     {
-        memset(m_prefix, 0xff, nb);
+        memset(m_prefix.data(), 0xff, nb);
     }
     if (mod)
     {
@@ -860,24 +828,6 @@ Ipv6Prefix::Ipv6Prefix(uint8_t prefix)
             m_prefix[i] = 0x00;
         }
     }
-}
-
-Ipv6Prefix::Ipv6Prefix(const Ipv6Prefix& prefix)
-{
-    memcpy(m_prefix, prefix.m_prefix, 16);
-    m_prefixLength = prefix.m_prefixLength;
-}
-
-Ipv6Prefix::Ipv6Prefix(const Ipv6Prefix* prefix)
-{
-    memcpy(m_prefix, prefix->m_prefix, 16);
-    m_prefixLength = prefix->m_prefixLength;
-}
-
-Ipv6Prefix::~Ipv6Prefix()
-{
-    /* do nothing */
-    NS_LOG_FUNCTION(this);
 }
 
 bool
@@ -938,16 +888,16 @@ void
 Ipv6Prefix::GetBytes(uint8_t buf[16]) const
 {
     NS_LOG_FUNCTION(this << &buf);
-    memcpy(buf, m_prefix, 16);
+    memcpy(buf, m_prefix.data(), 16);
 }
 
 Ipv6Address
 Ipv6Prefix::ConvertToIpv6Address() const
 {
     uint8_t prefixBytes[16];
-    memcpy(prefixBytes, m_prefix, 16);
+    memcpy(prefixBytes, m_prefix.data(), 16);
 
-    Ipv6Address convertedPrefix = Ipv6Address(prefixBytes);
+    auto convertedPrefix = Ipv6Address(prefixBytes);
     return convertedPrefix;
 }
 
