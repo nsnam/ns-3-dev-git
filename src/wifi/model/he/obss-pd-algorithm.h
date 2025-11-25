@@ -101,7 +101,7 @@ class ObssPdAlgorithm : public Object
     /**
      * TracedCallback signature for PHY reset events.
      */
-    TracedCallback<uint8_t, double, bool, double, double> m_resetEvent;
+    TracedCallback<uint8_t, dBm_u, bool, dBm_u, dBm_u> m_resetEvent;
 };
 
 } // namespace ns3
