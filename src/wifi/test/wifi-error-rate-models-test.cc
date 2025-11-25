@@ -30,11 +30,11 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("WifiErrorRateModelsTest");
 
 static double
-FromRss(dBW_u rss)
+FromRss(dBm_u rss)
 {
     // SINR is based on receiver noise figure of 7 dB and thermal noise
     // of -100.5522786 dBm in this 22 MHz bandwidth at 290K
-    dBW_u noisePower = -100.5522786 + 7;
+    dBm_u noisePower = -100.5522786 + 7;
 
     dB_u sinr = rss - noisePower;
     // return SINR expressed as ratio
