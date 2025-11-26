@@ -254,8 +254,8 @@ Ipv6StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface)
 {
     NS_LOG_FUNCTION(this << outputInterface);
     auto route = new Ipv6RoutingTableEntry();
-    Ipv6Address network = Ipv6Address("ff00::"); /* RFC 3513 */
-    Ipv6Prefix networkMask = Ipv6Prefix(8);
+    auto network = Ipv6Address("ff00::"); /* RFC 3513 */
+    auto networkMask = Ipv6Prefix(8);
     *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo(network, networkMask, outputInterface);
     m_networkRoutes.emplace_back(route, 0);
 }

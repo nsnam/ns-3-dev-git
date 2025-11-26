@@ -35,7 +35,7 @@ Ipv6AddressTestCase::~Ipv6AddressTestCase()
 void
 Ipv6AddressTestCase::DoRun()
 {
-    Ipv6Address ip = Ipv6Address("2001:db8::1");
+    auto ip = Ipv6Address("2001:db8::1");
     uint8_t ipBytes[16];
     ip.Serialize(ipBytes);
     NS_TEST_ASSERT_MSG_EQ(ipBytes[0], 0x20, "Failed string conversion");

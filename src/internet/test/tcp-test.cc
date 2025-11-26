@@ -432,9 +432,9 @@ TcpTestCase::SetupDefaultSim()
 void
 TcpTestCase::SetupDefaultSim6()
 {
-    Ipv6Prefix prefix = Ipv6Prefix(64);
-    Ipv6Address ipaddr0 = Ipv6Address("2001:0100:f00d:cafe::1");
-    Ipv6Address ipaddr1 = Ipv6Address("2001:0100:f00d:cafe::2");
+    auto prefix = Ipv6Prefix(64);
+    auto ipaddr0 = Ipv6Address("2001:0100:f00d:cafe::1");
+    auto ipaddr1 = Ipv6Address("2001:0100:f00d:cafe::2");
     Ptr<Node> node0 = CreateInternetNode6();
     Ptr<Node> node1 = CreateInternetNode6();
     Ptr<SimpleNetDevice> dev0 = AddSimpleNetDevice6(node0, ipaddr0, prefix);
