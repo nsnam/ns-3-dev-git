@@ -37,7 +37,7 @@ Readers will note that many public member functions are aligned
 with real sockets function calls, and all other things being equal,
 we have tried to align with a Posix sockets API.  However, note that:
 
-* ns-3 applications handle a smart pointer to a Socket object, not
+* ns-3 applications handle a smart pointer to a :cpp:class:`Socket` object, not
   a file descriptor;
 
 * there is no notion of synchronous API or a *blocking* API;
@@ -150,7 +150,7 @@ no more can be read.
 Packet vs. buffer variants
 **************************
 
-There are two basic variants of ``Send()`` and ``Recv()`` supported::
+There are two basic variants of :cpp:func:`Send()` and :cpp:func:`Recv()` supported::
 
   virtual int Send(Ptr<Packet> p) = 0;
   int Send(const uint8_t* buf, uint32_t size);
@@ -183,7 +183,8 @@ Sometimes, users want the simulator to just pretend that there is an
 actual data payload in the packet (e.g. to calculate transmission delay)
 but do not want to actually produce or consume the data.  This is
 straightforward to support in ns-3; have applications call
-``Create<Packet> (size);`` instead of ``Create<Packet> (buffer, size);``.
+``Ptr<Packet> Create<Packet>(uint32_t)`` instead of
+``Ptr<Packet> Create<Packet>(const uint32_t*, uint32_t)``.
 Similarly, passing in a zero to the pointer argument in the raw buffer
 variants has the same effect.  Note that, if some subsequent code tries
 to read the Packet data buffer, the fake buffer will be converted to
@@ -202,13 +203,13 @@ There are two variants of methods used to send data to the socket::
                       const Address &toAddress) = 0;
 
 The first method is used if the socket has already been connected
-(``Socket::Connect()``) to a peer address.  In the case of stream-based
+(:cpp:func:`Socket::Connect()`) to a peer address.  In the case of stream-based
 sockets like TCP, the connect call is required to bind the socket to
-a peer address, and thereafter, ``Send()`` is typically used.  In the case of
+a peer address, and thereafter, :cpp:func:`Send()` is typically used.  In the case of
 datagram-based sockets like UDP, the socket is not required to
 be connected to a peer address before sending, and the socket may be used to
 send data to different destination addresses; in this case, the
-``SendTo()`` method is used to specify the destination address for
+:cpp:func:`SendTo()` method is used to specify the destination address for
 the datagram.
 
 Socket options

@@ -270,7 +270,7 @@ aggregation model. The next path segment begins with the "$" character which
 indicates a ``GetObject`` call should be made looking for the type that follows.
 When a node is initialized by an ``InternetStackHelper`` a number of interfaces
 are aggregated to the node. One of these is the TCP level four protocol. The
-runtime type of this protocol object is ``ns3::TcpL4Protocol''. When the
+runtime type of this protocol object is ``ns3::TcpL4Protocol``. When the
 ``GetObject`` is executed, it returns a pointer to the object of this type.
 
 The ``TcpL4Protocol`` class defines an Attribute called "SocketList" which is a

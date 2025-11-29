@@ -168,14 +168,14 @@ The Simulator API was designed to make it really simple to schedule most
 events. It provides three variants to do so (ordered from most commonly
 used to least commonly used):
 
-* Schedule methods which allow you to schedule an event in the future
+* ``Schedule`` methods which allow you to schedule an event in the future
   by providing the delay between the current simulation time and the
   expiration date of the target event.
-* ScheduleNow methods which allow you to schedule an event for the
+* ``ScheduleNow`` methods which allow you to schedule an event for the
   current simulation time: they will execute _after_ the current event is
   finished executing but _before_ the simulation time is changed for the
   next event.
-* ScheduleDestroy methods which allow you to hook in the shutdown
+* ``ScheduleDestroy`` methods which allow you to hook in the shutdown
   process of the Simulator to cleanup simulation resources: every
   'destroy' event is executed when the user calls the Simulator::Destroy
   method.

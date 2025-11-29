@@ -11,11 +11,11 @@ Error Model
 This section documents a few error model objects, typically associated with
 NetDevice models, that are maintained as part of the ``network`` module:
 
-* RateErrorModel
-* ListErrorModel
-* ReceiveListErrorModel
-* BurstErrorModel
-* BinaryErrorModel
+* ``RateErrorModel``
+* ``ListErrorModel``
+* ``ReceiveListErrorModel``
+* ``BurstErrorModel``
+* ``BinaryErrorModel``
 
 Error models are used to indicate that a packet should be considered to
 be errored, according to the underlying (possibly stochastic or
@@ -55,7 +55,7 @@ Design
 Error models are |ns3| objects and can be created using the typical
 pattern of ``CreateObject<>()``.  They have configuration attributes.
 
-An ErrorModel can be applied anywhere, but are commonly deployed on
+An ``ErrorModel`` can be applied anywhere, but are commonly deployed on
 NetDevice models so that artificial losses (mimicking channel losses)
 can be induced.
 
@@ -101,7 +101,7 @@ with a pointer available to hold this type of error model:
 * ``CsmaNetDevice``
 * ``VirtualNetDevice``
 
-However, the ErrorModel could be used anywhere where packets are used
+However, the ``ErrorModel`` could be used anywhere where packets are used
 
 Helpers
 =======
@@ -131,8 +131,8 @@ of a particular combination of ErrorRate and ErrorUnit for the
 Acknowledgements
 ****************
 
-The basic ErrorModel, RateErrorModel, and ListErrorModel classes were ported
-from |ns2| to |ns3| in 2007.  The ReceiveListErrorModel was added at that
+The basic ``ErrorModel``, ``RateErrorModel``, and ``ListErrorModel`` classes were ported
+from |ns2| to |ns3| in 2007.  The ``ReceiveListErrorModel`` was added at that
 time.
 
 The burst error model is due to Truc Anh N. Nguyen at the University of

@@ -643,7 +643,7 @@ a feature for this.  If we ask for command line help we should see:
     --PrintHelp:                 Print this help message.
 
 If you select the "PrintGroups" argument, you should see a list of all
-registered TypeId groups.  The group names are aligned with the module names
+registered ``TypeId`` groups.  The group names are aligned with the module names
 in the source directory (although with a leading capital letter).  Printing
 out all of the information at once would be too much, so a further filter
 is available to print information on a per-group basis.   So, focusing
@@ -657,7 +657,7 @@ again on the point-to-point module:
     ns3::PointToPointNetDevice
     ns3::PppHeader
 
-and from here, one can find the possible TypeId names to search for
+and from here, one can find the possible ``TypeId`` names to search for
 attributes, such as in the ``--PrintAttributes=ns3::PointToPointChannel``
 example shown above.
 

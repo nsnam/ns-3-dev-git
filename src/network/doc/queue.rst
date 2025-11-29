@@ -18,7 +18,7 @@ Model Description
 
 The source code for the new module lives in the directory ``src/network/utils``.
 
-ns3::Queue has been redesigned as a template class object to allow us to
+The ``Queue`` class has been redesigned as a template class object to allow us to
 instantiate queues storing different types of items. The unique template
 type parameter specifies the type of items stored in the queue.
 The only requirement on the item type is that it must provide a GetSize ()
@@ -29,25 +29,25 @@ Currently, queue items can be objects of the following classes:
 * QueueItem and subclasses (e.g., QueueDiscItem)
 * WifiMacQueueItem
 
-The internal queues of the queue discs are of type Queue<QueueDiscItem>
-(an alias of which being InternalQueue). A number of network devices
-(SimpleNetDevice, PointToPointNetDevice, CsmaNetDevice) use a Queue<Packet>
-to store packets to be transmitted. WifiNetDevices use instead queues of
-type WifiMacQueue, which is a subclass of Queue storing objects of
+The internal queues of the queue discs are of type ``Queue<QueueDiscItem>``
+(an alias of which being ``InternalQueue``). A number of network devices
+(``SimpleNetDevice``, ``PointToPointNetDevice``, ``CsmaNetDevice``) use a ``Queue<Packet>``
+to store packets to be transmitted. ``WifiNetDevices`` use instead queues of
+type ``WifiMacQueue``, which is a subclass of ``Queue`` storing objects of
 type WifiMacQueueItem. Other devices, such as WiMax and LTE, use specialized
 queues.
 
 Design
 ======
 
-The Queue class derives from the QueueBase class, which is a non-template
+The ``Queue`` class derives from the ``QueueBase`` class, which is a non-template
 class providing all the methods that are independent of the type of the items
-stored in the queue. The Queue class provides instead all the operations that
+stored in the queue. The ``Queue`` class provides instead all the operations that
 depend on the item type, such as enqueue, dequeue, peek and remove. The Queue
 class also provides the ability to trace certain queue operations such as
 enqueuing, dequeuing, and dropping.
 
-Queue is an abstract base class and is subclassed for specific scheduling and
+``Queue`` is an abstract base class and is subclassed for specific scheduling and
 drop policies. Subclasses need to define the following public methods:
 
 * ``bool Enqueue (Ptr<Item> item)``:  Enqueue a packet
@@ -57,7 +57,7 @@ drop policies. Subclasses need to define the following public methods:
 
 The Enqueue method does not allow to store a packet if the queue capacity is exceeded.
 Subclasses may also define specialized public methods. For instance, the
-WifiMacQueue class provides a method to dequeue a packet based on its tid
+``WifiMacQueue`` class provides a method to dequeue a packet based on its tid
 and MAC address.
 
 There are five trace sources that may be hooked:
@@ -79,7 +79,7 @@ DropTail
 This is a basic first-in-first-out (FIFO) queue that performs a tail drop
 when the queue is full.
 
-The DropTailQueue class defines one attribute:
+The ``DropTailQueue`` class defines one attribute:
 
 * ``MaxSize``: the maximum queue size
 
@@ -114,7 +114,7 @@ the queue type and attributes from the helper, such as this example:
 
 Please note that the SetQueue method of the PointToPointHelper class allows
 to specify "ns3::DropTailQueue" instead of "ns3::DropTailQueue<Packet>". The
-same holds for CsmaHelper, SimpleNetDeviceHelper and TrafficControlHelper.
+same holds for ``CsmaHelper``, ``SimpleNetDeviceHelper`` and ``TrafficControlHelper``.
 
 Output
 ======
