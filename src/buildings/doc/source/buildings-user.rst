@@ -16,7 +16,7 @@ Include the headers
 
 Add this at the beginning of your simulation program::
 
-   #include <ns3/buildings-module.h>
+  #include "ns3/buildings-module.h"
 
 
 Create a building

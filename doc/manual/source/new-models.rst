@@ -398,7 +398,7 @@ An example for the ``CounterCalculator<uint32_t>``::
         extern template class CounterCalculator<uint32_t>;
     }
     //.cc file
-    #include <ns3/.h file>
+    #include "ns3/header-file-name.h"
     namespace ns3
     {
         NS_OBJECT_TEMPLATE_CLASS_DEFINE (CounterCalculator, uint32_t);
