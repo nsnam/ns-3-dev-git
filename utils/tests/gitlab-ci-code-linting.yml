@@ -107,7 +107,7 @@ spell-check:
 # Check cmake format
 cmake-format:
   extends: .code-linting-base
-  image: python:latest
+  image: python:3.12
   before_script:
     - pip install pyyaml cmake cmake-format ninja
   script:
