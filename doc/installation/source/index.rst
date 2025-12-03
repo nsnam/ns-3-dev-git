@@ -29,6 +29,7 @@ for `Sphinx <https://www.sphinx-doc.org/>`_ and is maintained in the ``doc/insta
    overview
    quick-start
    system
+   sionna-rt
    linux
    macos
    windows

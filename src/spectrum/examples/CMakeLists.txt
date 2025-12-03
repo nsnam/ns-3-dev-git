@@ -56,6 +56,23 @@ build_lib_example(
     ${libspectrum}
 )
 
+if("${sionna_deps}"
+   STREQUAL
+   ""
+   AND (NOT
+        WIN32)
+)
+  build_lib_example(
+    NAME sionna-rt-channel-example
+    SOURCE_FILES sionna-rt-channel-example.cc
+    LIBRARIES_TO_LINK
+      ${libcore}
+      ${liblte}
+      ${libmobility}
+      ${libspectrum}
+  )
+endif()
+
 build_lib_example(
   NAME three-gpp-two-ray-channel-calibration
   SOURCE_FILES three-gpp-two-ray-channel-calibration.cc

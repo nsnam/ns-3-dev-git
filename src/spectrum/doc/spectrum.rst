@@ -217,10 +217,75 @@ of the available implementations:
    self-explaining.
 
 
+Sionna RT channel model
+#######################
+
+## Overview
+
+The Sionna RT channel model as alternative to stochastic 3GPP channel models (e.g., TR 38.901) with a deterministic, geometry-based ray tracer.
+At each channel update event, ns-3 calls Sionna RT in-process through pybind11. The resulting per-path delays, Doppler shifts,
+and angles-of-arrival/departure are converted directly into ns-3's internal `ChannelMatrix` format.
 
 
+**Key properties:**
+- In-process communication — no sockets, RPC calls, or temporary files
+- Compatible with all modules that use `MatrixBasedChannelModel` (5G-LENA, LTE, etc.)
+- GPU-accelerated (NVIDIA CUDA) with CPU fallback via LLVM/Dr.Jit
+- Scenes defined in Mitsuba 3 XML format (exportable from Blender)
 
+The spectrum module also exposes an integration with the ``sionna.rt``
+ray-tracing library through two classes: ``SionnaRtChannelModel`` and
+``SionnaRtSpectrumPropagationLossModel``.
 
+``SionnaRtChannelModel`` is a ``MatrixBasedChannelModel`` implementation that
+creates frequency-selective, phase-coherent MIMO channel matrices from Sionna
+RT scenes. It loads either built-in Sionna RT scenarios or custom XML scene
+files, runs the Sionna RT path solver, extracts impulse responses, delays,
+Doppler, and angular metadata, and caches channel matrices per link.
+
+Features of ``SionnaRtChannelModel`` include:
+
+* scene selection via the ``Scenario`` attribute, supporting both built-in
+  scenario names and XML scene paths;
+* a configurable operating frequency through the ``Frequency`` attribute;
+* an update mechanism driven by ``UpdatePeriod`` to refresh cached channel
+  matrices when the channel coherence time is exceeded;
+* path-count control using ``MaxNumberOfPaths`` and recursive path solver
+  depth reduction;
+* optional path delay normalization via ``NormalizeDelays``;
+* scene image rendering support through ``IsImageRenderedEnabled``,
+  ``OutputImageDirectory`` and ``OutputImageName``;
+* shape merging for scene loading via ``IsMergeShapeEnabled``.
+
+The model also exposes an ``RtPathSolverConfig`` structure with parameters
+such as ``maxDepth``, ``los``, ``specularReflection``, ``diffuseReflection``,
+``refraction``, ``diffraction``, ``edgeDiffraction``, ``syntheticArray`` and
+``seed`` which is decoupled from ns-3 RngRun/RngSeed for fine-grained control over the ray-tracing path solver behavior.
+
+``SionnaRtSpectrumPropagationLossModel`` is a
+``PhasedArraySpectrumPropagationLossModel`` implementation that uses a
+``SionnaRtChannelModel`` instance to obtain the underlying channel matrix and
+path metadata. It computes the received power spectral density by applying
+3GPP-style fast fading and beamforming gain to the channel matrix, accounting
+for path delays and Doppler shifts.
+
+Key behaviors of ``SionnaRtSpectrumPropagationLossModel``:
+
+* it is intended for use with ``SingleModelSpectrumChannel`` or
+  ``MultiModelSpectrumChannel``;
+* it accepts a ``MatrixBasedChannelModel`` via ``SetChannelModel()``;
+* it can forward ray-tracing solver settings to the attached channel model
+  through ``SetRtPathSolverConfig()``;
+* it caches and reuses long-term beamforming components per node pair and
+  recomputes them only when the channel realization or beamforming vectors
+  change;
+* it is suitable for phased-array MIMO simulations in which frequency-dependent
+  channel effects, beamforming, and Doppler are required.
+
+The example program ``src/spectrum/examples/sionna-rt-channel-example.cc``
+illustrates how to configure the Sionna RT channel model, attach the
+spectrum propagation loss model to a channel, and compute average SNR over a
+simple two-node scenario.
 
 
 References

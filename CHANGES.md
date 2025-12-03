@@ -18,6 +18,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (wifi) Add the `PsmTimeout` attribute to `DefaultPowerSaveManager` to keep STAs in PS mode awake for extra time before going to sleep
 * (wifi) Add the `ListenAdvance` attribute to `DefaultPowerSaveManager` to make STAs in PS mode wake up some time in advance prior to the TBTT
+* (spectrum) Added the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, with scene loading, path solver configuration, delay normalization, and phased-array spectrum loss integration.
 
 ### Changes to existing API
 

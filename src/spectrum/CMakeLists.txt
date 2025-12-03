@@ -83,6 +83,78 @@ set(header_files
     utils/spectrum-test.h
 )
 
+check_deps(
+  sionna_deps
+  PYTHON_PACKAGES
+  cppyy # enables python bindings/dependencies search in venv
+  sionna.rt # main sionna package
+  pybind11 # required to call sionna from c++
+)
+if(NOT
+   ("${sionna_deps}"
+    STREQUAL
+    "")
+   OR WIN32
+)
+  message(STATUS "Sionna supports requires extra dependencies: ${sionna_deps}")
+else()
+  set(sionna_deps
+      ${sionna_deps}
+      CACHE STRING
+            ""
+            FORCE
+  )
+  set(PYBIND11_FINDPYTHON
+      ON
+  )
+  disable_cmake_warnings()
+  find_package(
+    pybind11
+    REQUIRED
+  )
+  enable_cmake_warnings()
+  link_libraries(
+    pybind11::headers
+    pybind11::embed
+    ${CMAKE_DL_LIBS}
+  )
+  message(
+    STATUS "Sionna-RT support enabled: all required dependencies were found."
+  )
+  find_program(
+    NVCC_EXECUTABLE
+    nvcc
+  )
+  if(NOT
+     NVCC_EXECUTABLE
+  )
+    message(
+      STATUS
+        "Sionna-RT: CUDA toolkit (nvcc) not found. "
+        "Dr.Jit will fall back to the CPU/LLVM backend at runtime, "
+        "which may result in significantly longer simulation times. "
+        "Install the CUDA toolkit and a compatible GPU driver to enable GPU acceleration."
+    )
+  endif()
+  list(
+    APPEND
+    source_files
+    model/sionna-rt-channel-model.cc
+    model/sionna-rt-spectrum-propagation-loss-model.cc
+  )
+  list(
+    APPEND
+    header_files
+    model/sionna-rt-channel-model.h
+    model/sionna-rt-spectrum-propagation-loss-model.h
+  )
+  add_compile_definitions(SIONNA_RT=1)
+  set(sionna_test_sources
+      test/sionna-channel-model-test.cc
+  )
+
+endif()
+
 build_lib(
   LIBNAME spectrum
   SOURCE_FILES ${source_files}
@@ -101,4 +173,5 @@ build_lib(
     test/tv-spectrum-transmitter-test.cc
     test/two-ray-splm-test-suite.cc
     test/wraparound-model-test.cc
+    ${sionna_test_sources}
 )

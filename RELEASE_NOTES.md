@@ -37,6 +37,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 ### New user-visible features
 
 - (wifi) Add support for Power Save mode.
+- (spectrum) Add the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, enabling ray-traced phased-array spectrum propagation via `sionna.rt` scenes and solver integration.
 
 ### Bugs fixed
 
