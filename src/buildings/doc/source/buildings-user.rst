@@ -40,7 +40,7 @@ As an example, let's create a residential 10 x 20 x 10 building::
 
 This building has three floors and an internal 3 x 2  grid of rooms of equal size.
 
-The helper class GridBuildingAllocator is also available to easily
+The helper class ``GridBuildingAllocator`` is also available to easily
 create a set of buildings with identical characteristics placed on a
 rectangular grid. Here's an example of how to use it::
 
@@ -133,10 +133,11 @@ place nodes manually like this::
     mm0->SetPosition(Vector(5.0, 5.0, 1.5));
     mm1->SetPosition(Vector(30.0, 40.0, 1.5));
 
-Alternatively, you could use any existing PositionAllocator
+Alternatively, you could use any existing ``PositionAllocator``
 class. The coordinates of the node will determine whether it is placed
 outdoor or indoor and, if indoor, in which building and room it is placed.
 
+.. _building-positioning-methods:
 
 Building-specific positioning methods
 -------------------------------------
@@ -144,21 +145,24 @@ Building-specific positioning methods
 The following position allocator classes are available to place node
 in special positions with respect to buildings:
 
- - ``RandomBuildingPositionAllocator``: Allocate each position by
-   randomly choosing a building from the list of all buildings, and
-   then randomly choosing a position inside the building.
+- ``RandomBuildingPositionAllocator``: Allocate each position by
+  randomly choosing a building from the list of all buildings, and
+  then randomly choosing a position inside the building.
 
- - ``RandomRoomPositionAllocator``: Allocate each position by randomly
-   choosing a room from the list of rooms in all buildings, and then
-   randomly choosing a position inside the room.
+- ``RandomRoomPositionAllocator``: Allocate each position by randomly
+  choosing a room from the list of rooms in all buildings, and then
+  randomly choosing a position inside the room.
 
- - ``SameRoomPositionAllocator``: Walks a given NodeContainer
-   sequentially, and for each node allocate a new position randomly in
-   the same room of that node.
+- ``SameRoomPositionAllocator``: Walks a given NodeContainer
+  sequentially, and for each node allocate a new position randomly in
+  the same room of that node.
 
- - ``FixedRoomPositionAllocator``: Generate a random position
-   uniformly distributed in the volume of a chosen room inside a
-   chosen building.
+- ``FixedRoomPositionAllocator``: Generate a random position
+  uniformly distributed in the volume of a chosen room inside a
+  chosen building.
+
+- ``OutdoorPositionAllocator``: Allocate positions outside of existing
+  buildings using rejection sampling.
 
 
 

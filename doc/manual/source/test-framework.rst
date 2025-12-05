@@ -155,7 +155,7 @@ nightly builds using
 
   $ ./test.py --html=nightly.html
 
-In this case, an HTML file named ''nightly.html'' would be created with a pretty
+In this case, an HTML file named ``nightly.html`` would be created with a pretty
 summary of the testing done.  A ''human readable'' format is available for users
 interested in the details.
 

@@ -804,7 +804,7 @@ of trace sources.  You will find
   * **CourseChange**: The value of the position and/or velocity vector
     changed.
 
-    Callback signature: ``ns3::MobilityModel::CourseChangeCallback``
+    Callback signature: ``ns3::MobilityModel::TracedCallback``
 
 This is exactly what you need to know.  The trace source of interest
 is found in ``ns3::MobilityModel`` (which you knew anyway).  The
@@ -855,12 +855,12 @@ Repeating the "CourseChange" trace source entry from
   * **CourseChange**: The value of the position and/or velocity vector
     changed.
 
-    Callback signature: ``ns3::MobilityModel::CourseChangeCallback``
+    Callback signature: ``ns3::MobilityModel::TracedCallback``
 
 The callback signature is given as a link to the relevant ``typedef``,
 where we find
 
-  ``typedef void (* CourseChangeCallback)(std::string context, Ptr<const MobilityModel> * model);``
+  ``typedef void (*TracedCallback)(Ptr<const MobilityModel> model);``
 
   **TracedCallback** signature for course change notifications.
 

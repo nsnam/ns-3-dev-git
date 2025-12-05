@@ -221,7 +221,7 @@ or more abstractly, using an object factory, you can create a
 :cpp:class:`Node` object without even knowing the concrete C++ type::
 
     ObjectFactory factory;
-    const std::string typeId = "ns3::Node'';
+    const std::string typeId = "ns3::Node";
     factory.SetTypeId(typeId);
     Ptr<Object> node = factory.Create <Object>();
 
@@ -440,7 +440,7 @@ The :cpp:func:`AddAttribute()` method is performing a number of things for the
 
 * Binding the (usually private) member variable :cpp:member:`m_maxSize`
   to a public string ``"MaxSize"``.
-* Providing a default value (0 packets).
+* Providing a default value (100 packets).
 * Providing some help text defining the meaning of the value.
 * Providing a "Checker" (not used in this example) that can be used to set
   bounds on the allowable range of values.

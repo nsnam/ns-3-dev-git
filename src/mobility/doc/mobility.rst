@@ -36,7 +36,7 @@ used, or it may be used to pick future mobility "waypoints" for such
 mobility models.
 
 Most users interact with the mobility system using mobility helper
-classes.  The MobilityHelper combines a mobility model and position
+classes.  The ``MobilityHelper`` combines a mobility model and position
 allocator, and can be used with a node container to install a similar
 mobility capability on a set of nodes.
 
@@ -93,7 +93,7 @@ Coordinate Systems
 At the moment, the geocentric Cartesian coordinates are adopted by the
 GeocentricConstantPositionMobilityModel only.
 This class implements the Get/SetPosition methods, which leverage the
-GeographicPosition class to offer conversions to and from Cartesian coordinates.
+``GeographicPosition`` class to offer conversions to and from Cartesian coordinates.
 Additionally, users can set the position of a node by its geographical coordinates
 via the methods Get/SetGeographicPosition.
 
@@ -190,6 +190,8 @@ This model produces more realistic mobility patterns with temporal correlation, 
 - ``RandomBoxPositionAllocator``: Uniform distribution within 3D box regions
 - ``RandomDiscPositionAllocator``: Uniform distribution within circular areas
 - ``UniformDiscPositionAllocator``: Even distribution on disc circumference
+
+Other class types are also present in the :ref:`building module<building-positioning-methods>`. They describe how positions are assigned to buildings.
 
 A position allocator is not always required, as some mobility models generate initial positions during initialization. Among the built-in ns-3 models, **SteadyStateRandomWaypointMobilityModel** is the only one with this capability.
 
