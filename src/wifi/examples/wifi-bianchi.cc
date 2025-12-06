@@ -45,6 +45,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <numbers>
 #include <vector>
 
 /**
@@ -53,9 +54,6 @@
  *
  * See the Wi-Fi Module documentation in the Models chapter.
  */
-
-/// Avoid std::numbers::pi because it's C++20
-#define PI 3.1415926535
 
 NS_LOG_COMPONENT_DEFINE("WifiBianchi");
 
@@ -2550,8 +2548,8 @@ Experiment::Run(const WifiHelper& helper,
     const auto angle = (static_cast<degree_u>(360) / (nNodes - 1));
     for (uint32_t i = 0; i < (nNodes - 1); ++i)
     {
-        positionAlloc->Add(Vector(1.0 + (distance * cos((i * angle * PI) / 180)),
-                                  1.0 + (distance * sin((i * angle * PI) / 180)),
+        positionAlloc->Add(Vector(1.0 + (distance * cos((i * angle * std::numbers::pi) / 180)),
+                                  1.0 + (distance * sin((i * angle * std::numbers::pi) / 180)),
                                   0.0));
     }
 
