@@ -737,7 +737,9 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
     RxSignalInfo rxSignalInfo;
     bool success;
 
-    if (std::count(statusPerMpdu.cbegin(), statusPerMpdu.cend(), true))
+    if (std::any_of(statusPerMpdu.cbegin(), statusPerMpdu.cend(), [](const auto status) {
+            return status;
+        }))
     {
         // At least one MPDU has been successfully received
         m_wifiPhy->NotifyMonitorSniffRx(psdu,
