@@ -715,8 +715,7 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
 {
     const auto ppdu = event->GetPpdu();
     const auto& txVector = ppdu->GetTxVector();
-    NS_LOG_FUNCTION(
-        this << *event << ppdu->GetTxDuration() - CalculatePhyPreambleAndHeaderDuration(txVector));
+    NS_LOG_FUNCTION(this << *event);
     NS_ASSERT(event->GetEndTime() == Simulator::Now());
     const auto staId = GetStaId(ppdu);
     const auto channelWidthAndBand = GetChannelWidthAndBand(txVector, staId);
