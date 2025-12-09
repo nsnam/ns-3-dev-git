@@ -80,6 +80,10 @@ class CsmaNetDevice : public NetDevice
      */
     ~CsmaNetDevice() override;
 
+    // Delete copy constructor and assignment operator to avoid misuse
+    CsmaNetDevice(const CsmaNetDevice&) = delete;
+    CsmaNetDevice& operator=(const CsmaNetDevice&) = delete;
+
     /**
      * Set the interframe gap used to separate packets.  The interframe gap
      * defines the minimum space required between packets sent by this device.
@@ -352,21 +356,6 @@ class CsmaNetDevice : public NetDevice
     void AddHeader(Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
 
   private:
-    /**
-     * Operator = is declared but not implemented.  This disables the assignment
-     * operator for CsmaNetDevice objects.
-     * @param o object to copy
-     * @returns the copied object
-     */
-    CsmaNetDevice& operator=(const CsmaNetDevice& o);
-
-    /**
-     * Copy constructor is declared but not implemented.  This disables the
-     * copy constructor for CsmaNetDevice objects.
-     * @param o object to copy
-     */
-    CsmaNetDevice(const CsmaNetDevice& o);
-
     /**
      * Initialization function used during object construction.
      * @param sendEnable if device will be allowed to send
