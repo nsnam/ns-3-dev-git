@@ -73,6 +73,7 @@ main(int argc, char* argv[])
     bool verbose = false;
     bool extended = false;
 
+    // CommandLine options are also required by PyViz visualizer
     CommandLine cmd(__FILE__);
 
     cmd.AddValue("verbose", "turn on all log components", verbose);
@@ -156,12 +157,12 @@ main(int argc, char* argv[])
     Ptr<ConstantPositionMobilityModel> sender0Mobility =
         CreateObject<ConstantPositionMobilityModel>();
     sender0Mobility->SetPosition(Vector(0, 0, 0));
-    dev0->GetPhy()->SetMobility(sender0Mobility);
+    n0->AggregateObject(sender0Mobility);
+
     Ptr<ConstantPositionMobilityModel> sender1Mobility =
         CreateObject<ConstantPositionMobilityModel>();
-    // Configure position 10 m distance
     sender1Mobility->SetPosition(Vector(0, 10, 0));
-    dev1->GetPhy()->SetMobility(sender1Mobility);
+    n1->AggregateObject(sender1Mobility);
 
     McpsDataConfirmCallback cb0;
     cb0 = MakeCallback(&DataConfirm);
@@ -224,6 +225,7 @@ main(int argc, char* argv[])
                                    params,
                                    p2);
 
+    Simulator::Stop(Seconds(10));
     Simulator::Run();
 
     Simulator::Destroy();

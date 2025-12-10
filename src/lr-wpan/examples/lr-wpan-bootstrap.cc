@@ -328,6 +328,10 @@ PollConfirm(Ptr<LrWpanNetDevice> device, MlmePollConfirmParams params)
 int
 main(int argc, char* argv[])
 {
+    // CommandLine options required by PyViz visualizer
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
+
     LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE));
 
     nodes.Create(100);
