@@ -316,47 +316,47 @@ TcpSocketBase::TcpSocketBase()
     ok = m_tcb->TraceConnectWithoutContext(
         "PacingRate",
         MakeCallback(&TcpSocketBase::UpdatePacingRateTrace, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source PacingRate");
 
     ok = m_tcb->TraceConnectWithoutContext("CongestionWindow",
                                            MakeCallback(&TcpSocketBase::UpdateCwnd, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source CongestionWindow");
 
     ok = m_tcb->TraceConnectWithoutContext("CongestionWindowInflated",
                                            MakeCallback(&TcpSocketBase::UpdateCwndInfl, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source CongestionWindowInflated");
 
     ok = m_tcb->TraceConnectWithoutContext("SlowStartThreshold",
                                            MakeCallback(&TcpSocketBase::UpdateSsThresh, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source SlowStartThreshold");
 
     ok = m_tcb->TraceConnectWithoutContext("CongState",
                                            MakeCallback(&TcpSocketBase::UpdateCongState, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source CongState");
 
     ok = m_tcb->TraceConnectWithoutContext("EcnState",
                                            MakeCallback(&TcpSocketBase::UpdateEcnState, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source EcnState");
 
     ok =
         m_tcb->TraceConnectWithoutContext("NextTxSequence",
                                           MakeCallback(&TcpSocketBase::UpdateNextTxSequence, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source NextTxSequence");
 
     ok = m_tcb->TraceConnectWithoutContext("HighestSequence",
                                            MakeCallback(&TcpSocketBase::UpdateHighTxMark, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source HighestSequence");
 
     ok = m_tcb->TraceConnectWithoutContext("BytesInFlight",
                                            MakeCallback(&TcpSocketBase::UpdateBytesInFlight, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source BytesInFlight");
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source RTT");
 
     ok = m_tcb->TraceConnectWithoutContext("LastRTT",
                                            MakeCallback(&TcpSocketBase::UpdateLastRtt, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source LastRTT");
 }
 
 void
@@ -467,46 +467,46 @@ TcpSocketBase::TcpSocketBase(const TcpSocketBase& sock)
     ok = m_tcb->TraceConnectWithoutContext(
         "PacingRate",
         MakeCallback(&TcpSocketBase::UpdatePacingRateTrace, this));
+    NS_ASSERT_MSG(ok, "Could not connect trace source PacingRate");
 
     ok = m_tcb->TraceConnectWithoutContext("CongestionWindow",
                                            MakeCallback(&TcpSocketBase::UpdateCwnd, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source CongestionWindow");
 
     ok = m_tcb->TraceConnectWithoutContext("CongestionWindowInflated",
                                            MakeCallback(&TcpSocketBase::UpdateCwndInfl, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source CongestionWindowInflated");
 
     ok = m_tcb->TraceConnectWithoutContext("SlowStartThreshold",
                                            MakeCallback(&TcpSocketBase::UpdateSsThresh, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source SlowStartThreshold");
 
     ok = m_tcb->TraceConnectWithoutContext("CongState",
                                            MakeCallback(&TcpSocketBase::UpdateCongState, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source CongState");
 
     ok = m_tcb->TraceConnectWithoutContext("EcnState",
                                            MakeCallback(&TcpSocketBase::UpdateEcnState, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source EcnState");
 
     ok =
         m_tcb->TraceConnectWithoutContext("NextTxSequence",
                                           MakeCallback(&TcpSocketBase::UpdateNextTxSequence, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source NextTxSequence");
 
     ok = m_tcb->TraceConnectWithoutContext("HighestSequence",
                                            MakeCallback(&TcpSocketBase::UpdateHighTxMark, this));
-    NS_ASSERT(ok == true);
-
+    NS_ASSERT_MSG(ok, "Could not connect trace source HighestSequence");
     ok = m_tcb->TraceConnectWithoutContext("BytesInFlight",
                                            MakeCallback(&TcpSocketBase::UpdateBytesInFlight, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source BytesInFlight");
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source RTT");
 
     ok = m_tcb->TraceConnectWithoutContext("LastRTT",
                                            MakeCallback(&TcpSocketBase::UpdateLastRtt, this));
-    NS_ASSERT(ok == true);
+    NS_ASSERT_MSG(ok, "Could not connect trace source LastRTT");
 }
 
 TcpSocketBase::~TcpSocketBase()
