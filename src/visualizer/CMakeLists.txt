@@ -20,6 +20,7 @@ build_lib(
     ${python_libraries}
     ${libinternet}
     ${libwifi}
+    ${liblr-wpan}
     ${libpoint-to-point}
 )
 

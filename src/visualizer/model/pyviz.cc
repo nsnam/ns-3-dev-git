@@ -14,6 +14,8 @@
 #include "ns3/config.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/log.h"
+#include "ns3/lr-wpan-mac-header.h"
+#include "ns3/lr-wpan-net-device.h"
 #include "ns3/node-list.h"
 #include "ns3/ppp-header.h"
 #include "ns3/simulator.h"
@@ -22,6 +24,8 @@
 
 #include <cstdlib>
 #include <sstream>
+
+using namespace ns3::lrwpan;
 
 NS_LOG_COMPONENT_DEFINE("PyViz");
 
@@ -127,6 +131,12 @@ PyViz::PyViz()
 
     Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
                             MakeCallback(&PyViz::TraceNetDevRxWifi, this));
+    // Lr-Wpan
+    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Mac/MacTx",
+                            MakeCallback(&PyViz::TraceNetDevTxLrWpan, this));
+
+    Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::lrwpan::LrWpanNetDevice/Mac/MacRx",
+                            MakeCallback(&PyViz::TraceNetDevRxLrWpan, this));
 
     // CSMA
     Config::ConnectFailSafe("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacTx",
@@ -507,9 +517,10 @@ PyViz::TraceIpv4Drop(std::string context,
 // --------- TX device tracing -------------------
 
 void
-PyViz::TraceNetDevTxCommon(const std::string& context,
-                           Ptr<const Packet> packet,
-                           const Mac48Address& destinationAddress)
+PyViz::TraceNetDevTxCommon(
+    const std::string& context,
+    Ptr<const Packet> packet,
+    const std::variant<Mac16Address, Mac48Address, Mac64Address>& destination)
 {
     NS_LOG_FUNCTION(context << packet->GetUid() << *packet);
 
@@ -534,7 +545,8 @@ PyViz::TraceNetDevTxCommon(const std::string& context,
         lastPacket.time = Simulator::Now();
         lastPacket.packet = packet->Copy();
         lastPacket.device = device;
-        lastPacket.to = destinationAddress;
+        lastPacket.to = destination;
+
         last.lastTransmittedPackets.push_back(lastPacket);
         while (last.lastTransmittedPackets.size() > captureOptions->numLastPackets)
         {
@@ -561,9 +573,29 @@ PyViz::TraceNetDevTxCommon(const std::string& context,
     }
 
     TxRecordValue record = {Simulator::Now(), node, false};
-    if (destinationAddress == device->GetBroadcast())
+
+    if (std::holds_alternative<Mac16Address>(destination))
     {
-        record.isBroadcast = true;
+        if (std::get<Mac16Address>(destination) == Mac16Address("FF:FF"))
+        {
+            record.isBroadcast = true;
+        }
+    }
+    else if (std::holds_alternative<Mac48Address>(destination))
+    {
+        if (std::get<Mac48Address>(destination) == device->GetBroadcast())
+        {
+            record.isBroadcast = true;
+        }
+    }
+    else if (std::holds_alternative<Mac64Address>(destination))
+    {
+        if (std::get<Mac64Address>(destination) == Mac64Address("FF:FF:FF:FF:FF:FF:FF:FF"))
+        {
+            // Note: A broadcast using th the MAC 64 bit address is not really used in practice.
+            // instead the 16 bit MAC address is used.
+            record.isBroadcast = true;
+        }
     }
 
     m_txRecords[TxRecordKey(device->GetChannel(), packet->GetUid())] = record;
@@ -589,7 +621,8 @@ PyViz::TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet)
      */
     WifiMacHeader hdr;
     NS_ABORT_IF(packet->PeekHeader(hdr) == 0);
-    Mac48Address destinationAddress;
+
+    std::variant<Mac16Address, Mac48Address, Mac64Address> destinationAddress;
     if (hdr.IsToDs())
     {
         destinationAddress = hdr.GetAddr3();
@@ -602,17 +635,41 @@ PyViz::TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet)
 }
 
 void
+PyViz::TraceNetDevTxLrWpan(std::string context, Ptr<const Packet> packet)
+{
+    LrWpanMacHeader hdr;
+    NS_ABORT_IF(packet->PeekHeader(hdr) == 0);
+    std::variant<Mac16Address, Mac48Address, Mac64Address> destinationAddress;
+
+    switch (hdr.GetDstAddrMode())
+    {
+    case lrwpan::AddressMode::EXT_ADDR:
+        destinationAddress = hdr.GetExtDstAddr();
+        break;
+    default:
+        destinationAddress = hdr.GetShortDstAddr();
+        break;
+    }
+
+    TraceNetDevTxCommon(context, packet, destinationAddress);
+}
+
+void
 PyViz::TraceNetDevTxCsma(std::string context, Ptr<const Packet> packet)
 {
     EthernetHeader ethernetHeader;
     NS_ABORT_IF(packet->PeekHeader(ethernetHeader) == 0);
-    TraceNetDevTxCommon(context, packet, ethernetHeader.GetDestination());
+    std::variant<Mac16Address, Mac48Address, Mac64Address> destinationAddress;
+    destinationAddress = ethernetHeader.GetDestination();
+    TraceNetDevTxCommon(context, packet, destinationAddress);
 }
 
 void
 PyViz::TraceNetDevTxPointToPoint(std::string context, Ptr<const Packet> packet)
 {
-    TraceNetDevTxCommon(context, packet, Mac48Address());
+    std::variant<Mac16Address, Mac48Address, Mac64Address> destinationAddress;
+    destinationAddress = Mac48Address();
+    TraceNetDevTxCommon(context, packet, destinationAddress);
 }
 
 // --------- RX device tracing -------------------
@@ -620,7 +677,7 @@ PyViz::TraceNetDevTxPointToPoint(std::string context, Ptr<const Packet> packet)
 void
 PyViz::TraceNetDevRxCommon(const std::string& context,
                            Ptr<const Packet> packet,
-                           const Mac48Address& from)
+                           const std::variant<Mac16Address, Mac48Address, Mac64Address>& source)
 {
     uint32_t uid;
     PyVizPacketTag tag;
@@ -658,7 +715,8 @@ PyViz::TraceNetDevRxCommon(const std::string& context,
         lastPacket.time = Simulator::Now();
         lastPacket.packet = packet->Copy();
         lastPacket.device = device;
-        lastPacket.from = from;
+        lastPacket.from = source;
+
         last.lastReceivedPackets.push_back(lastPacket);
         while (last.lastReceivedPackets.size() > captureOptions->numLastPackets)
         {
@@ -749,7 +807,7 @@ PyViz::TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet)
      */
     WifiMacHeader hdr;
     NS_ABORT_IF(packet->PeekHeader(hdr) == 0);
-    Mac48Address sourceAddress;
+    std::variant<Mac16Address, Mac48Address, Mac64Address> sourceAddress;
     if (!hdr.IsFromDs())
     {
         sourceAddress = hdr.GetAddr2();
@@ -767,17 +825,40 @@ PyViz::TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet)
 }
 
 void
+PyViz::TraceNetDevRxLrWpan(std::string context, Ptr<const Packet> packet)
+{
+    LrWpanMacHeader hdr;
+    NS_ABORT_IF(packet->PeekHeader(hdr) == 0);
+    std::variant<Mac16Address, Mac48Address, Mac64Address> sourceAddress;
+    switch (hdr.GetSrcAddrMode())
+    {
+    case lrwpan::AddressMode::EXT_ADDR:
+        sourceAddress = hdr.GetExtSrcAddr();
+        break;
+    default:
+        sourceAddress = hdr.GetShortSrcAddr();
+        break;
+    }
+
+    TraceNetDevRxCommon(context, packet, sourceAddress);
+}
+
+void
 PyViz::TraceNetDevRxCsma(std::string context, Ptr<const Packet> packet)
 {
     EthernetHeader ethernetHeader;
     NS_ABORT_IF(packet->PeekHeader(ethernetHeader) == 0);
-    TraceNetDevRxCommon(context, packet, ethernetHeader.GetSource());
+    std::variant<Mac16Address, Mac48Address, Mac64Address> sourceAddress;
+    sourceAddress = ethernetHeader.GetSource();
+    TraceNetDevRxCommon(context, packet, sourceAddress);
 }
 
 void
 PyViz::TraceNetDevRxPointToPoint(std::string context, Ptr<const Packet> packet)
 {
-    TraceNetDevRxCommon(context, packet, Mac48Address());
+    std::variant<Mac16Address, Mac48Address, Mac64Address> sourceAddress;
+    sourceAddress = Mac48Address();
+    TraceNetDevRxCommon(context, packet, sourceAddress);
 }
 
 void
@@ -792,7 +873,9 @@ PyViz::TraceNetDevPromiscRxCsma(std::string context, Ptr<const Packet> packet)
     // TraceNetDevRxCsma; we don't want to receive them twice.
     if (packetType == NetDevice::PACKET_OTHERHOST)
     {
-        TraceNetDevRxCommon(context, packet, ethernetHeader.GetDestination());
+        std::variant<Mac16Address, Mac48Address, Mac64Address> destinationAddress;
+        destinationAddress = ethernetHeader.GetDestination();
+        TraceNetDevRxCommon(context, packet, destinationAddress);
     }
 }
 
@@ -802,14 +885,18 @@ PyViz::TraceNetDevTxLte(std::string context,
                         const Mac48Address& destination)
 {
     NS_LOG_FUNCTION(context);
-    TraceNetDevTxCommon(context, packet, destination);
+    std::variant<Mac16Address, Mac48Address, Mac64Address> destinationAddress;
+    destinationAddress = destination;
+    TraceNetDevTxCommon(context, packet, destinationAddress);
 }
 
 void
 PyViz::TraceNetDevRxLte(std::string context, Ptr<const Packet> packet, const Mac48Address& source)
 {
     NS_LOG_FUNCTION(context);
-    TraceNetDevRxCommon(context, packet, source);
+    std::variant<Mac16Address, Mac48Address, Mac64Address> sourceAddress;
+    sourceAddress = source;
+    TraceNetDevRxCommon(context, packet, sourceAddress);
 }
 
 // ---------------------

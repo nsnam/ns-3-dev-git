@@ -15,13 +15,16 @@
 #include "ns3/event-id.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-l3-protocol.h"
+#include "ns3/mac16-address.h"
 #include "ns3/mac48-address.h"
+#include "ns3/mac64-address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
 
 #include <map>
 #include <set>
+#include <variant>
 
 namespace ns3
 {
@@ -119,7 +122,19 @@ class PyViz
      */
     PacketDropSampleList GetPacketDropSamples() const;
 
-    /// PacketSample structure
+    /**
+     * The MAC address mode used by a NetDevice transmissions
+     */
+    enum class MacAddressMode : std::uint8_t
+    {
+        MAC16ADDRESS = 0, //!< The mode is a Mac 16 bit address (A.K.A. Short address)
+        MAC48ADDRESS = 1, //!< The mode is a Mac 48 bit address
+        MAC64ADDRESS = 2  //!< The mode is a Mac 48 bit address (A.K.A Extended address)
+    };
+
+    /**
+     * PacketSample structure
+     */
     struct PacketSample
     {
         Time time;             ///< time
@@ -127,24 +142,31 @@ class PyViz
         Ptr<NetDevice> device; ///< device
     };
 
-    /// TxPacketSample structure
+    /**
+     * TxPacketSample structure
+     */
     struct TxPacketSample : PacketSample
     {
-        Mac48Address to; ///< to
+        std::variant<Mac16Address, Mac48Address, Mac64Address> to; //!< The destination MAC address
     };
 
-    /// RxPacketSample structure
+    /**
+     *  RxPacketSample structure
+     */
     struct RxPacketSample : PacketSample
     {
-        Mac48Address from; ///< from
+        std::variant<Mac16Address, Mac48Address, Mac64Address> from; //!< The source MAC address
     };
 
-    /// LastPacketsSample structure
+    /**
+     *  Structure to handle a sample of the last received, transmitted or drop packets
+     *  in a node.
+     */
     struct LastPacketsSample
     {
-        std::vector<RxPacketSample> lastReceivedPackets;    ///< last received packets
-        std::vector<TxPacketSample> lastTransmittedPackets; ///< last transmitted packets
-        std::vector<PacketSample> lastDroppedPackets;       ///< last dropped packets
+        std::vector<RxPacketSample> lastReceivedPackets;    //!< Last received packets
+        std::vector<TxPacketSample> lastTransmittedPackets; //!< Last transmitted packets
+        std::vector<PacketSample> lastDroppedPackets;       //!< Last dropped packets
     };
 
     /**
@@ -318,9 +340,11 @@ class PyViz
      * @param packet the packet
      * @param destination the destination MAC address
      */
-    void TraceNetDevTxCommon(const std::string& context,
-                             Ptr<const Packet> packet,
-                             const Mac48Address& destination);
+    void TraceNetDevTxCommon(
+        const std::string& context,
+        Ptr<const Packet> packet,
+        const std::variant<Mac16Address, Mac48Address, Mac64Address>& destination);
+
     /**
      * Network receive common trace callback function
      * @param context the context
@@ -329,7 +353,7 @@ class PyViz
      */
     void TraceNetDevRxCommon(const std::string& context,
                              Ptr<const Packet> packet,
-                             const Mac48Address& source);
+                             const std::variant<Mac16Address, Mac48Address, Mac64Address>& source);
 
     /**
      * Wi-Fi transmit trace callback function
@@ -337,6 +361,7 @@ class PyViz
      * @param packet the packet
      */
     void TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet);
+
     /**
      * Wi-Fi receive trace callback function
      * @param context the context
@@ -345,11 +370,26 @@ class PyViz
     void TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet);
 
     /**
+     * Lr-Wpan transmit trace callback function
+     * @param context the context
+     * @param packet the packet
+     */
+    void TraceNetDevTxLrWpan(std::string context, Ptr<const Packet> packet);
+
+    /**
+     * Lr-Wpan receive trace callback function
+     * @param context the context
+     * @param packet the packet
+     */
+    void TraceNetDevRxLrWpan(std::string context, Ptr<const Packet> packet);
+
+    /**
      * Queue drop trace callback function
      * @param context the context
      * @param packet the packet
      */
     void TraceDevQueueDrop(std::string context, Ptr<const Packet> packet);
+
     /**
      * Ipv4 drop trace callback function
      * @param context the context
@@ -372,12 +412,14 @@ class PyViz
      * @param packet the packet
      */
     void TraceNetDevTxCsma(std::string context, Ptr<const Packet> packet);
+
     /**
      * CSMA receive trace callback function
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevRxCsma(std::string context, Ptr<const Packet> packet);
+
     /**
      * CSMA promiscuous receive function
      * @param context the context
@@ -391,6 +433,7 @@ class PyViz
      * @param packet the packet
      */
     void TraceNetDevTxPointToPoint(std::string context, Ptr<const Packet> packet);
+
     /**
      * Point to point receive trace callback function
      * @param context the context
