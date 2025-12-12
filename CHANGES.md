@@ -16,6 +16,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
+* (internet) Added support for TCP FACK (Forward Acknowledgement).
 * (applications) New trace sources `SourceApplication::ConnectionSucceeded` and `SourceApplication::ConnectionFailed` have been added to report connection success/failure events.
 * (visualizer) Add support to `LrWpanNetDevice` in the PyViz visualizer.
 

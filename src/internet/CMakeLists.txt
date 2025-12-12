@@ -302,6 +302,7 @@ set(test_sources
     test/tcp-ecn-test.cc
     test/tcp-endpoint-bug2211.cc
     test/tcp-error-model.cc
+    test/tcp-fack-test.cc
     test/tcp-fast-retr-test.cc
     test/tcp-general-test.cc
     test/tcp-header-test.cc

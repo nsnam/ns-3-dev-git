@@ -365,7 +365,7 @@ TcpSocketBase::TcpSocketBase()
 
     ok = m_tcb->TraceConnectWithoutContext("FackAwnd",
                                            MakeCallback(&TcpSocketBase::UpdateFackAwnd, this));
-    NS_ASSERT_MSG(ok == true, "Could not connect trace source FackAwnd");
+    NS_ASSERT_MSG(ok, "Could not connect trace source FackAwnd");
 
     ok = m_tcb->TraceConnectWithoutContext("RTT", MakeCallback(&TcpSocketBase::UpdateRtt, this));
     NS_ASSERT_MSG(ok, "Could not connect trace source RTT");
