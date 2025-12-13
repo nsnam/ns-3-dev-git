@@ -177,7 +177,7 @@ main(int argc, char* argv[])
     long n = 1000000;
     bool disableAnti = false;
     bool single = false;
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.AddValue("count", "how many draws to make from the rng", n);
     cmd.AddValue("antithetic", "disable antithetic sampling", disableAnti);
     cmd.AddValue("single", "sample a single time", single);

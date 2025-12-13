@@ -26,7 +26,7 @@ main(int argc, char* argv[])
 {
     std::string path = "/usr/share/dict/";
 
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.Usage("SystemPath examples.\n");
 
     cmd.AddValue("path", "Path to demonstrate SystemPath functions.", path);

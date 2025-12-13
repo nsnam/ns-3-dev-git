@@ -96,7 +96,7 @@ NS_OBJECT_ENSURE_REGISTERED(MyEventObject);
 int
 main(int argc, char** argv)
 {
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.Parse(argc, argv);
 
     NS_LOG_DEBUG("Creating a Node");
