@@ -6,7 +6,8 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "ns3/core-module.h"
+#include "ns3/command-line.h"
+#include "ns3/system-path.h"
 
 #include <iostream>
 #include <string>
@@ -24,7 +25,7 @@ using namespace ns3::SystemPath;
 int
 main(int argc, char* argv[])
 {
-    std::string path = "/usr/share/dict/";
+    std::string path = FindSelfDirectory();
 
     CommandLine cmd(__FILE__);
     cmd.Usage("SystemPath examples.\n");
@@ -32,18 +33,22 @@ main(int argc, char* argv[])
     cmd.AddValue("path", "Path to demonstrate SystemPath functions.", path);
     cmd.Parse(argc, argv);
 
-    // Show initial values:
-    std::cout << std::endl;
-    std::cout << cmd.GetName() << ":" << std::endl;
+    // Print system path information
+    std::cout << "Example name             : " << cmd.GetName() << "\n";
+    std::cout << "FindSelf                 : " << FindSelf() << "\n";
+    std::cout << "FindSelfDirectory        : " << FindSelfDirectory() << "\n";
+    std::cout << "Temporary directory name : " << MakeTemporaryDirectoryName() << "\n";
+    std::cout << "\n";
 
-    std::cout << "FindSelfDirectory:   " << FindSelfDirectory() << std::endl;
+    std::cout << "Path                     : " << path << "\n";
+    std::cout << "Exists                   : " << std::boolalpha << Exists(path) << "\n";
+    std::cout << "Valid system path        : " << CreateValidSystemPath(path) << "\n";
+    std::cout << "\n";
 
-    std::cout << "Demonstration path:  " << path << std::endl;
-    std::cout << "Exists?              " << (Exists(path) ? "yes" : "no") << std::endl;
-
-    auto foo = Append(path, "foo");
-    std::cout << "Append 'foo':        " << foo << std::endl;
-    std::cout << "Exists?              " << (Exists(foo) ? "yes" : "no") << std::endl;
+    auto pathFoo = Append(path, "foo");
+    std::cout << "Append 'foo' to path     : " << pathFoo << "\n";
+    std::cout << "Exists                   : " << std::boolalpha << Exists(pathFoo) << "\n";
+    std::cout << "\n";
 
     std::cout << "Split path:\n";
     auto items = Split(path);
@@ -51,16 +56,17 @@ main(int argc, char* argv[])
     {
         std::cout << "    '" << item << "'\n";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 
-    std::cout << "Successive Joins: \n";
+    std::cout << "Successive joins of the split path:\n";
     for (auto it = items.begin(); it != items.end(); ++it)
     {
         auto partial = Join(items.begin(), it);
         std::cout << "    '" << partial << "'\n";
     }
+    std::cout << "\n";
 
-    std::cout << "Files in the directory: \n";
+    std::cout << "Files in the path directory:\n";
     auto files = ReadFiles(path);
     for (const auto& item : files)
     {
