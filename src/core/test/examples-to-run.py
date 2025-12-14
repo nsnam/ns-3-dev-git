@@ -13,6 +13,7 @@ cpp_examples = [
     ("main-ptr", "True", "True"),
     ("main-random-variable", "True", "False"),
     ("sample-random-variable", "True", "True"),
+    ("system-path-examples", "True", "True"),
     ("test-string-value-formatting", "True", "True"),
 ]
 
