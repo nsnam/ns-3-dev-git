@@ -19,6 +19,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (internet) Added support for TCP FACK (Forward Acknowledgement).
 * (applications) New trace sources `SourceApplication::ConnectionSucceeded` and `SourceApplication::ConnectionFailed` have been added to report connection success/failure events.
 * (visualizer) Add support to `LrWpanNetDevice` in the PyViz visualizer.
+* (internet): Added attribute `TcpLedbat::AllowedIncrease` to control the ALLOWED_INCREASE parameter defined in RFC 6817.
 
 ### Changes to existing API
 
@@ -49,6 +50,7 @@ fixes, use `./ns3 run "clang-tidy -fix"`.
 ### Changed behavior
 
 * (wifi) `CcaEdThreshold` can be changed at run-time.
+* (internet): Updated `TcpLedbat::CongestionAvoidance()` to compute `max_cwnd` as `flightsize + AllowedIncrease × MSS` by adding `m_allowedIncrease * tcb->m_segmentSize`, in accordance with RFC 6817.
 
 ## Changes from ns-3.46 to ns-3.46.1
 
