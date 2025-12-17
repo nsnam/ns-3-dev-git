@@ -8,7 +8,7 @@
 
 #include "pyviz.h"
 
-#include "fastClipping.h"
+#include "fast-clipping.h"
 #include "visual-simulator-impl.h"
 
 #include "ns3/abort.h"
@@ -380,7 +380,7 @@ PyViz::TransmissionSampleKey::operator==(const PyViz::TransmissionSampleKey& oth
     return retval;
 }
 
-PyViz::NetDeviceStatistics&
+NetDeviceStatistics&
 PyViz::FindNetDeviceStatistics(int node, int interface)
 {
     auto nodeStatsIter = m_nodesStatistics.find(node);
@@ -902,7 +902,7 @@ PyViz::TraceNetDevRxLte(std::string context, Ptr<const Packet> packet, const Mac
 
 // ---------------------
 
-PyViz::TransmissionSampleList
+TransmissionSampleList
 PyViz::GetTransmissionSamples() const
 {
     NS_LOG_DEBUG("GetTransmissionSamples BEGIN");
@@ -922,7 +922,7 @@ PyViz::GetTransmissionSamples() const
     return list;
 }
 
-PyViz::PacketDropSampleList
+PacketDropSampleList
 PyViz::GetPacketDropSamples() const
 {
     NS_LOG_DEBUG("GetPacketDropSamples BEGIN");
@@ -946,10 +946,10 @@ PyViz::SetNodesOfInterest(std::set<uint32_t> nodes)
     m_nodesOfInterest = nodes;
 }
 
-std::vector<PyViz::NodeStatistics>
+std::vector<NodeStatistics>
 PyViz::GetNodesStatistics() const
 {
-    std::vector<PyViz::NodeStatistics> retval;
+    std::vector<NodeStatistics> retval;
     for (auto iter = m_nodesStatistics.begin(); iter != m_nodesStatistics.end(); iter++)
     {
         NodeStatistics stats = {iter->first, iter->second};
@@ -958,7 +958,7 @@ PyViz::GetNodesStatistics() const
     return retval;
 }
 
-PyViz::LastPacketsSample
+LastPacketsSample
 PyViz::GetLastPackets(uint32_t nodeId) const
 {
     NS_LOG_DEBUG("GetLastPackets: " << nodeId);

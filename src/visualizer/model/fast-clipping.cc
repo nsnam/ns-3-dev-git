@@ -6,7 +6,7 @@
  * Author: Gustavo Carneiro  <gjc@inescporto.pt>
  */
 
-#include "fastClipping.h"
+#include "fast-clipping.h"
 
 namespace ns3
 {

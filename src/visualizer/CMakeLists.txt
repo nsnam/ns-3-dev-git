@@ -14,10 +14,10 @@ endif()
 build_lib(
   LIBNAME visualizer
   SOURCE_FILES
-    model/fastClipping.cc
+    model/fast-clipping.cc
     model/pyviz.cc
     model/visual-simulator-impl.cc
-  HEADER_FILES model/fastClipping.h
+  HEADER_FILES model/fast-clipping.h
                model/pyviz.h
   LIBRARIES_TO_LINK
     ${python_libraries}

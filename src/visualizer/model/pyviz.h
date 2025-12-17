@@ -30,6 +30,116 @@ namespace ns3
 {
 
 /**
+ * TransmissionSample structure
+ */
+struct TransmissionSample
+{
+    Ptr<Node> transmitter; //!< The source node of the transmission
+    Ptr<Node> receiver;    //!< The destination node of the transmission (Null if broadcast)
+    Ptr<Channel> channel;  //!< The channel reference used for the transmission
+    uint32_t bytes;        //!< The number of bytes transmitted
+};
+
+/**
+ * PacketDropSample structure
+ */
+struct PacketDropSample
+{
+    Ptr<Node> transmitter; //!< The transmitter node where the drop was registered
+    uint32_t bytes;        //!< The number of bytes dropped
+};
+
+/**
+ * PacketSample structure.
+ */
+struct PacketSample
+{
+    Time time;             //!< The received or transmitted time of the sample.
+    Ptr<Packet> packet;    //!< The packet reference
+    Ptr<NetDevice> device; //!< The NetDevice reference
+};
+
+/**
+ * TxPacketSample structure
+ */
+struct TxPacketSample : PacketSample
+{
+    std::variant<Mac16Address, Mac48Address, Mac64Address> to; //!< The destination MAC address
+};
+
+/**
+ *  RxPacketSample structure
+ */
+struct RxPacketSample : PacketSample
+{
+    std::variant<Mac16Address, Mac48Address, Mac64Address> from; //!< The source MAC address
+};
+
+/**
+ *  Structure to handle a sample of the last received, transmitted or drop packets
+ *  in a node.
+ */
+struct LastPacketsSample
+{
+    std::vector<RxPacketSample> lastReceivedPackets;    //!< Last received packets
+    std::vector<TxPacketSample> lastTransmittedPackets; //!< Last transmitted packets
+    std::vector<PacketSample> lastDroppedPackets;       //!< Last dropped packets
+};
+
+/**
+ * The NetDeviceStatistics structure
+ */
+struct NetDeviceStatistics
+{
+    NetDeviceStatistics()
+        : transmittedBytes(0),
+          receivedBytes(0),
+          transmittedPackets(0),
+          receivedPackets(0)
+    {
+    }
+
+    uint64_t transmittedBytes;   //!< Transmitted bytes
+    uint64_t receivedBytes;      //!< Received bytes
+    uint32_t transmittedPackets; //!< Transmitted packets
+    uint32_t receivedPackets;    //!< Received packets
+};
+
+/**
+ * The NodeStatistics structure
+ */
+struct NodeStatistics
+{
+    uint32_t nodeId;                             //!<  Node ID
+    std::vector<NetDeviceStatistics> statistics; //!<  Statistics
+};
+
+/**
+ * The PacketCaptureMode enumeration
+ */
+enum PacketCaptureMode
+{
+    PACKET_CAPTURE_DISABLED = 1,       //!< Packet capture is disabled
+    PACKET_CAPTURE_FILTER_HEADERS_OR,  //!< Packet capture if any of the indicated headers is
+                                       //!< present
+    PACKET_CAPTURE_FILTER_HEADERS_AND, //!< Packet capture if all of the indicated headers are
+                                       //!< present
+};
+
+/**
+ * The PacketCaptureOptions structure
+ */
+struct PacketCaptureOptions
+{
+    std::set<TypeId> headers; //!< The headers
+    uint32_t numLastPackets;  //!< Number of last packets
+    PacketCaptureMode mode;   //!< The packet capture node
+};
+
+using TransmissionSampleList = std::vector<TransmissionSample>; //!< The transmission sample list
+using PacketDropSampleList = std::vector<PacketDropSample>; //!< The packet drop list
+
+/**
  * @ingroup visualizer
  *
  * @brief helper class to be used by the visualizer
@@ -47,196 +157,104 @@ class PyViz
     ~PyViz();
 
     /**
-     * Register drop trace path function
-     * @param tracePath the path to trace
-     */
-    void RegisterDropTracePath(const std::string& tracePath);
-
-    /**
-     * Register CSMA like device function
-     * @param deviceTypeName the device type name
-     */
-    void RegisterCsmaLikeDevice(const std::string& deviceTypeName);
-    /**
-     * Register WIFI like device function
-     * @param deviceTypeName the device type name
-     */
-    void RegisterWifiLikeDevice(const std::string& deviceTypeName);
-    /**
-     * Register point to point like device function
-     * @param deviceTypeName the device type name
-     */
-    void RegisterPointToPointLikeDevice(const std::string& deviceTypeName);
-
-    /**
-     * Run simulation until a given (simulated, absolute) time is reached
+     * Run simulation until a given (simulated, absolute) time is reached.
+     *
      * @param time the run time
      */
     void SimulatorRunUntil(Time time);
 
     /**
      * Get the stop time of the underlying visual simulator implementation.
+     *
      * @return The stop time of the visual simulator implementation.
      */
     Time GetSimulatorStopTime();
 
     /**
-     * Pause function
+     * Pause function.
+     *
      * @param message the pause message
      */
     static void Pause(const std::string& message);
+
     /**
-     * Get pause message function
+     * Get pause message function.
+     *
      * @returns the pause message
      */
     std::vector<std::string> GetPauseMessages() const;
 
-    /// TransmissionSample structure
-    struct TransmissionSample
-    {
-        Ptr<Node> transmitter; ///< transmitter
-        Ptr<Node> receiver;    ///< NULL if broadcast
-        Ptr<Channel> channel;  ///< channel
-        uint32_t bytes;        ///< bytes
-    };
-
-    typedef std::vector<TransmissionSample>
-        TransmissionSampleList; ///< TransmissionSampleList typedef
     /**
-     * Get transmission samples
+     * Get transmission samples.
+     *
      * @returns the transmission sample list
      */
     TransmissionSampleList GetTransmissionSamples() const;
 
-    /// PacketDropSample structure
-    struct PacketDropSample
-    {
-        Ptr<Node> transmitter; ///< transmitter
-        uint32_t bytes;        ///< bytes
-    };
-
-    typedef std::vector<PacketDropSample> PacketDropSampleList; ///< PacketDropSampleList typedef
     /**
-     * Get packet drop samples
+     * Get packet drop samples.
+     *
      * @returns the packet drop sample list
      */
     PacketDropSampleList GetPacketDropSamples() const;
 
     /**
-     * The MAC address mode used by a NetDevice transmissions
-     */
-    enum class MacAddressMode : std::uint8_t
-    {
-        MAC16ADDRESS = 0, //!< The mode is a Mac 16 bit address (A.K.A. Short address)
-        MAC48ADDRESS = 1, //!< The mode is a Mac 48 bit address
-        MAC64ADDRESS = 2  //!< The mode is a Mac 48 bit address (A.K.A Extended address)
-    };
-
-    /**
-     * PacketSample structure
-     */
-    struct PacketSample
-    {
-        Time time;             ///< time
-        Ptr<Packet> packet;    ///< packet
-        Ptr<NetDevice> device; ///< device
-    };
-
-    /**
-     * TxPacketSample structure
-     */
-    struct TxPacketSample : PacketSample
-    {
-        std::variant<Mac16Address, Mac48Address, Mac64Address> to; //!< The destination MAC address
-    };
-
-    /**
-     *  RxPacketSample structure
-     */
-    struct RxPacketSample : PacketSample
-    {
-        std::variant<Mac16Address, Mac48Address, Mac64Address> from; //!< The source MAC address
-    };
-
-    /**
-     *  Structure to handle a sample of the last received, transmitted or drop packets
-     *  in a node.
-     */
-    struct LastPacketsSample
-    {
-        std::vector<RxPacketSample> lastReceivedPackets;    //!< Last received packets
-        std::vector<TxPacketSample> lastTransmittedPackets; //!< Last transmitted packets
-        std::vector<PacketSample> lastDroppedPackets;       //!< Last dropped packets
-    };
-
-    /**
-     * Get last packets function
+     * Get last packets function.
+     *
      * @param nodeId the node ID
      * @returns the last packets
      */
     LastPacketsSample GetLastPackets(uint32_t nodeId) const;
 
     /**
-     * Set nodes of interest function
+     * Set nodes of interest function.
+     *
      * @param nodes the collection of nodes
      */
     void SetNodesOfInterest(std::set<uint32_t> nodes);
 
-    /// NetDeviceStatistics structure
-    struct NetDeviceStatistics
-    {
-        /// constructor
-        NetDeviceStatistics()
-            : transmittedBytes(0),
-              receivedBytes(0),
-              transmittedPackets(0),
-              receivedPackets(0)
-        {
-        }
-
-        uint64_t transmittedBytes;   ///< transmitted bytes
-        uint64_t receivedBytes;      ///< received bytes
-        uint32_t transmittedPackets; ///< transmitted packets
-        uint32_t receivedPackets;    ///< received packets
-    };
-
-    /// NodeStatistics structure
-    struct NodeStatistics
-    {
-        uint32_t nodeId;                             ///< node ID
-        std::vector<NetDeviceStatistics> statistics; ///< statistics
-    };
-
     /**
-     * Get node statistics
+     * Get node statistics.
+     *
      * @returns the node statistics
      */
     std::vector<NodeStatistics> GetNodesStatistics() const;
 
-    /// PacketCaptureMode enumeration
-    enum PacketCaptureMode
-    {
-        PACKET_CAPTURE_DISABLED = 1,       // packet capture is disabled
-        PACKET_CAPTURE_FILTER_HEADERS_OR,  // packet capture if any of the indicated headers is
-                                           // present
-        PACKET_CAPTURE_FILTER_HEADERS_AND, // packet capture if all of the indicated headers are
-                                           // present
-    };
-
-    /// PacketCaptureOptions structure
-    struct PacketCaptureOptions
-    {
-        std::set<TypeId> headers; ///< headers
-        uint32_t numLastPackets;  ///< num last packets
-        PacketCaptureMode mode;   ///< mode
-    };
-
     /**
-     * Set packet capture options function
+     * Set packet capture options function.
+     *
      * @param nodeId the node ID
      * @param options the capture options
      */
     void SetPacketCaptureOptions(uint32_t nodeId, PacketCaptureOptions options);
+
+    /**
+     * Register drop trace path function.
+     *
+     * @param tracePath the path to trace
+     */
+    void RegisterDropTracePath(const std::string& tracePath);
+
+    /**
+     * Register CSMA like device function.
+     *
+     * @param deviceTypeName the device type name
+     */
+    void RegisterCsmaLikeDevice(const std::string& deviceTypeName);
+
+    /**
+     * Register WIFI like device function.
+     *
+     * @param deviceTypeName the device type name
+     */
+    void RegisterWifiLikeDevice(const std::string& deviceTypeName);
+
+    /**
+     * Register point to point like device function.
+     *
+     * @param deviceTypeName the device type name
+     */
+    void RegisterPointToPointLikeDevice(const std::string& deviceTypeName);
 
     // Yes, I know, this is just a utility function, not really related to the class in any way.
     /**
@@ -264,78 +282,54 @@ class PyViz
                              double& lineY1,
                              double& lineX2,
                              double& lineY2);
-    // Don't break the above line or pybindgen will not be able to pick up the above annotation :(
 
   private:
     /**
-     * Get packet capture options function
-     * @param nodeId the node ID
-     * @param outOptions the packet capture options
-     * @returns true if successful
+     * Get packet capture options function.
+     *
+     * @param nodeId The node ID
+     * @param outOptions The packet capture options
+     * @returns True if successful
      */
     bool GetPacketCaptureOptions(uint32_t nodeId, const PacketCaptureOptions** outOptions) const;
+
     /**
-     * Filter packet function
-     * @param packet the packet
-     * @param options the capture options
-     * @returns true if successful
+     * Filter packet function.
+     *
+     * @param packet The packet
+     * @param options The capture options
+     * @returns True if successful
      */
     static bool FilterPacket(Ptr<const Packet> packet, const PacketCaptureOptions& options);
 
-    typedef std::pair<Ptr<Channel>, uint32_t> TxRecordKey; ///< TxRecordKey typedef
-
-    /// TxRecordValue structure
-    struct TxRecordValue
-    {
-        Time time;         ///< time
-        Ptr<Node> srcNode; ///< source node
-        bool isBroadcast;  ///< is broadcast?
-    };
-
-    /// TransmissionSampleKey structure
-    struct TransmissionSampleKey
-    {
-        /**
-         * Less than operator
-         *
-         * @param other object to compare
-         * @return true if less than
-         */
-        bool operator<(const TransmissionSampleKey& other) const;
-        /**
-         * Equality operator
-         *
-         * @param other object to compare
-         * @return true if equal
-         */
-        bool operator==(const TransmissionSampleKey& other) const;
-        Ptr<Node> transmitter; ///< transmitter
-        Ptr<Node> receiver;    ///< NULL if broadcast
-        Ptr<Channel> channel;  ///< channel
-    };
-
-    /// TransmissionSampleValue structure
-    struct TransmissionSampleValue
-    {
-        uint32_t bytes; ///< bytes
-    };
-
-    // Data
-    std::map<uint32_t, PacketCaptureOptions> m_packetCaptureOptions; ///< packet capture options
-    std::vector<std::string> m_pauseMessages;                        ///< pause message
-    std::map<TxRecordKey, TxRecordValue> m_txRecords;                ///< transmit records
-    std::map<TransmissionSampleKey, TransmissionSampleValue>
-        m_transmissionSamples;                   ///< transmission samples
-    std::map<Ptr<Node>, uint32_t> m_packetDrops; ///< packet drops
-    std::set<uint32_t>
-        m_nodesOfInterest; ///< list of node IDs whose transmissions will be monitored
-    std::map<uint32_t, Time> m_packetsOfInterest; ///< list of packet UIDs that will be monitored
-    std::map<uint32_t, LastPacketsSample> m_lastPackets;                    ///< last packets
-    std::map<uint32_t, std::vector<NetDeviceStatistics>> m_nodesStatistics; ///< node statistics
-
-    // Trace callbacks
     /**
-     * Network transmit common trace callback function
+     * Find net device statistics function.
+     *
+     * @param node The node
+     * @param interface The interface number
+     * @returns The device statistics
+     */
+    inline NetDeviceStatistics& FindNetDeviceStatistics(int node, int interface);
+
+    /**
+     * Do pause function.
+     *
+     * @param message the pause message
+     */
+    void DoPause(const std::string& message);
+
+    /**
+     * Stop simulation callback function.
+     */
+    void CallbackStopSimulation();
+
+    /////////////////////
+    // Trace callbacks //
+    /////////////////////
+
+    /**
+     * Network transmit common trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      * @param destination the destination MAC address
@@ -346,7 +340,8 @@ class PyViz
         const std::variant<Mac16Address, Mac48Address, Mac64Address>& destination);
 
     /**
-     * Network receive common trace callback function
+     * Network receive common trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      * @param source the source MAC address
@@ -356,42 +351,48 @@ class PyViz
                              const std::variant<Mac16Address, Mac48Address, Mac64Address>& source);
 
     /**
-     * Wi-Fi transmit trace callback function
+     * Wi-Fi transmit trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Wi-Fi receive trace callback function
+     * Wi-Fi receive trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Lr-Wpan transmit trace callback function
+     * Lr-Wpan transmit trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevTxLrWpan(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Lr-Wpan receive trace callback function
+     * Lr-Wpan receive trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevRxLrWpan(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Queue drop trace callback function
+     * Queue drop trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceDevQueueDrop(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Ipv4 drop trace callback function
+     * Ipv4 drop trace callback function.
+     *
      * @param context the context
      * @param hdr the header
      * @param packet the packet
@@ -407,42 +408,48 @@ class PyViz
                        uint32_t interface);
 
     /**
-     * CSMA transmit trace callback function
+     * CSMA transmit trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevTxCsma(std::string context, Ptr<const Packet> packet);
 
     /**
-     * CSMA receive trace callback function
+     * CSMA receive trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevRxCsma(std::string context, Ptr<const Packet> packet);
 
     /**
-     * CSMA promiscuous receive function
+     * CSMA promiscuous receive function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevPromiscRxCsma(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Point to point transmit trace callback function
+     * Point to point transmit trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevTxPointToPoint(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Point to point receive trace callback function
+     * Point to point receive trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      */
     void TraceNetDevRxPointToPoint(std::string context, Ptr<const Packet> packet);
 
     /**
-     * LTE transmit trace callback function
+     * LTE transmit trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      * @param destination the destination MAC address
@@ -451,7 +458,8 @@ class PyViz
                           Ptr<const Packet> packet,
                           const Mac48Address& destination);
     /**
-     * LTE receive trace callback function
+     * LTE receive trace callback function.
+     *
      * @param context the context
      * @param packet the packet
      * @param source the MAC address of the source
@@ -461,24 +469,63 @@ class PyViz
                           const Mac48Address& source);
 
     /**
-     * Find net device statistics function
-     * @param node the node
-     * @param interface the interface number
-     * @returns the device statistics
+     * The TxRecordValue structure
      */
-    inline NetDeviceStatistics& FindNetDeviceStatistics(int node, int interface);
+    struct TxRecordValue
+    {
+        Time time;         //!< The transmission time
+        Ptr<Node> srcNode; //!< The source node of the transmission
+        bool isBroadcast;  //!< Broadcast flag
+    };
 
     /**
-     * Do pause function
-     * @param message the pause message
+     * The TransmissionSampleKey structure
      */
-    void DoPause(const std::string& message);
+    struct TransmissionSampleKey
+    {
+        /**
+         * Less than operator
+         *
+         * @param other Object to compare
+         * @return True if less than
+         */
+        bool operator<(const TransmissionSampleKey& other) const;
+        /**
+         * Equality operator
+         *
+         * @param other Object to compare
+         * @return True if equal
+         */
+        bool operator==(const TransmissionSampleKey& other) const;
+        Ptr<Node> transmitter; //!< transmitter
+        Ptr<Node> receiver;    //!< NULL if broadcast
+        Ptr<Channel> channel;  //!< channel
+    };
 
-    bool m_stop;     ///< stop?
-    Time m_runUntil; ///< run until time
+    /**
+     * The TransmissionSampleValue structure
+     */
+    struct TransmissionSampleValue
+    {
+        uint32_t bytes; //!< The nuumber of bytes of the transmission sample
+    };
 
-    /// Stop simulation callback function
-    void CallbackStopSimulation();
+    using TxRecordKey = std::pair<Ptr<Channel>, uint32_t>; //!< TxRecordKey type definition
+
+    std::map<uint32_t, PacketCaptureOptions> m_packetCaptureOptions; //!< Packet capture options
+    std::vector<std::string> m_pauseMessages;                        //!< Pause message
+    std::map<TxRecordKey, TxRecordValue> m_txRecords;                //!< Transmit records
+    std::map<TransmissionSampleKey,
+             TransmissionSampleValue>
+        m_transmissionSamples;                    //!< Transmission samples
+    std::map<Ptr<Node>, uint32_t> m_packetDrops;  //!< Packet drops
+    std::set<uint32_t> m_nodesOfInterest;         //!< List of node IDs whose transmissions
+                                                  //!< will be monitored
+    std::map<uint32_t, Time> m_packetsOfInterest; //!< List of packet UIDs that will be monitored
+    std::map<uint32_t, LastPacketsSample> m_lastPackets;                    //!< Last packets
+    std::map<uint32_t, std::vector<NetDeviceStatistics>> m_nodesStatistics; //!< Node statistics
+    bool m_stop;     //!< Stop simulation flag
+    Time m_runUntil; //!< Indicates until when the simulation should run for its next step
 };
 
 } // namespace ns3
