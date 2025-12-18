@@ -28,6 +28,8 @@
 
 namespace ns3
 {
+namespace visualizer
+{
 
 /**
  * TransmissionSample structure
@@ -137,7 +139,7 @@ struct PacketCaptureOptions
 };
 
 using TransmissionSampleList = std::vector<TransmissionSample>; //!< The transmission sample list
-using PacketDropSampleList = std::vector<PacketDropSample>; //!< The packet drop list
+using PacketDropSampleList = std::vector<PacketDropSample>;     //!< The packet drop list
 
 /**
  * @ingroup visualizer
@@ -528,6 +530,7 @@ class PyViz
     Time m_runUntil; //!< Indicates until when the simulation should run for its next step
 };
 
+} // namespace visualizer
 } // namespace ns3
 
 #endif /* NS3_PYVIZ_H */

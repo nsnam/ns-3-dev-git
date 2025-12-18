@@ -33,6 +33,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (network): The address class comparison is now based on std::strong_ordering operator<=> comparison operator.
 * (network): An empty (uninitialized) Address is now printed as "00-00:00".
 * (internet): The function `Ipv4InterfaceAddress::SetBroadcast` has been removed from the codebase because the broadcast address must be built from the IP address and mask.
+* (visualizer): The namespace `visualizer` is now used for PyViz related classes.
+* (visualizer): ``PyViz`` has been reformatted and modernized to current ns-3 standards.
 
 ### Changes to build system
 

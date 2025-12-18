@@ -9,8 +9,10 @@
 namespace ns3
 {
 
+namespace visualizer
+{
 /**
- * @ingroup visualizer
+ * @ingroup Visualizer
  *
  * This class is used by the visualizer for the process of removing lines or portions of
  * lines outside of an area of interest.
@@ -23,7 +25,7 @@ class FastClipping
 {
   public:
     /**
-     * @ingroup visualizer
+     * @ingroup Visualizer
      *
      * The Vector 2 struct
      */
@@ -34,7 +36,7 @@ class FastClipping
     };
 
     /**
-     * @ingroup visualizer
+     * @ingroup Visualizer
      *
      * The line struct
      */
@@ -122,4 +124,6 @@ class FastClipping
     Vector2 m_clipMin; //!< The minimum point of the bounding area required clipping.
     Vector2 m_clipMax; //!< The maximum point of the bounding area required clipping.
 };
+
+} // namespace visualizer
 } // namespace ns3

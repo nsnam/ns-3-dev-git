@@ -10,6 +10,8 @@
 
 namespace ns3
 {
+namespace visualizer
+{
 
 FastClipping::FastClipping(Vector2 clipMin, Vector2 clipMax)
     : m_clipMin(clipMin),
@@ -621,4 +623,5 @@ FastClipping::ClipLine(Line& line)
     return false;
 }
 
+} // namespace visualizer
 } // namespace ns3

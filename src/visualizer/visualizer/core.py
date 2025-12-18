@@ -693,7 +693,7 @@ class SimulationThread(threading.Thread):
         self.go.clear()
         self.target_time = 0  # in seconds
         self.quit = False
-        self.sim_helper = ns.PyViz()
+        self.sim_helper = ns.visualizer.PyViz()
         self.pause_messages = []
 
     def set_nodes_of_interest(self, nodes):
@@ -1404,7 +1404,7 @@ class Visualizer(GObject.GObject):
         bounds_x2, bounds_y2 = self.canvas.convert_from_pixels(
             hadj.get_value() + hadj.get_page_size(), vadj.get_value() + vadj.get_page_size()
         )
-        ns.PyViz.LineClipping(
+        ns.visualizer.PyViz.LineClipping(
             bounds_x1, bounds_y1, bounds_x2, bounds_y2, pos1_x, pos1_y, pos2_x, pos2_y
         )
         return (pos1_x.value + pos2_x.value) / 2, (pos1_y.value + pos2_y.value) / 2

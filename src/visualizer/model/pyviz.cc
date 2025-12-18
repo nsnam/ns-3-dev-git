@@ -53,6 +53,9 @@ PathSplit(std::string str)
 namespace ns3
 {
 
+namespace visualizer
+{
+
 static PyViz* g_visualizer = nullptr; ///< the visualizer
 
 /**
@@ -78,7 +81,8 @@ struct PyVizPacketTag : public Tag
 TypeId
 PyVizPacketTag::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::PyVizPacketTag")
+    static TypeId tid = TypeId("ns3::visualizer::PyVizPacketTag")
+                            .AddDeprecatedName("ns3::PyVizPacketTag")
                             .SetParent<Tag>()
                             .SetGroupName("Visualizer")
                             .AddConstructor<PyVizPacketTag>();
@@ -999,4 +1003,5 @@ PyViz::LineClipping(double boundsX1,
     lineY2 = line.end.y;
 }
 
+} // namespace visualizer
 } // namespace ns3
