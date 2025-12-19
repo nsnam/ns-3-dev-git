@@ -231,6 +231,11 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
             NS_ASSERT(fe); // should always exist in the demux
             currentStream += demux->AssignStreams(currentStream);
         }
+        Ptr<Ipv6ExtensionRoutingDemux> demuxRouter = node->GetObject<Ipv6ExtensionRoutingDemux>();
+        if (demuxRouter)
+        {
+            currentStream += demuxRouter->AssignStreams(currentStream);
+        }
         Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
         if (ipv4)
         {

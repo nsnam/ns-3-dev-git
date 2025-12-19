@@ -1026,6 +1026,17 @@ Ipv6ExtensionRoutingDemux::Remove(Ptr<Ipv6ExtensionRouting> extensionRouting)
     m_extensionsRouting.remove(extensionRouting);
 }
 
+int64_t
+Ipv6ExtensionRoutingDemux::AssignStreams(int64_t stream)
+{
+    int64_t currentStream = stream;
+    for (auto& extension : m_extensionsRouting)
+    {
+        currentStream += extension->AssignStreams(currentStream);
+    }
+    return currentStream - stream;
+}
+
 NS_OBJECT_ENSURE_REGISTERED(Ipv6ExtensionLooseRouting);
 
 TypeId

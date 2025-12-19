@@ -579,6 +579,14 @@ class Ipv6ExtensionRoutingDemux : public Object
      */
     void Remove(Ptr<Ipv6ExtensionRouting> extensionRouting);
 
+    /**
+     * Assigns stream numbers to the registered extensions of this IPv6 routing demux object
+     *
+     * @param stream the first stream number to assign
+     * @returns the number of assigned streams
+     */
+    int64_t AssignStreams(int64_t stream);
+
   protected:
     /**
      * @brief Dispose this object.
