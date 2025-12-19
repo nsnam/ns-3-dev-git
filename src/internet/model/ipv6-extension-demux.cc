@@ -88,4 +88,14 @@ Ipv6ExtensionDemux::Remove(Ptr<Ipv6Extension> extension)
     m_extensions.remove(extension);
 }
 
+int64_t
+Ipv6ExtensionDemux::AssignStreams(int64_t stream)
+{
+    int64_t currentStream = stream;
+    for (auto& extension : m_extensions)
+    {
+        currentStream += extension->AssignStreams(currentStream);
+    }
+    return currentStream - stream;
+}
 } /* namespace ns3 */

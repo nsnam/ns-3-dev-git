@@ -229,7 +229,7 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
         {
             Ptr<Ipv6Extension> fe = demux->GetExtension(Ipv6ExtensionFragment::EXT_NUMBER);
             NS_ASSERT(fe); // should always exist in the demux
-            currentStream += fe->AssignStreams(currentStream);
+            currentStream += demux->AssignStreams(currentStream);
         }
         Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
         if (ipv4)
