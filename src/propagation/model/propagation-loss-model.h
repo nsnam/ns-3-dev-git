@@ -296,20 +296,6 @@ class FriisPropagationLossModel : public PropagationLossModel
                          Ptr<MobilityModel> b) const override;
     int64_t DoAssignStreams(int64_t stream) override;
 
-    /**
-     * Transforms a Dbm value to Watt
-     * @param dbm the Dbm value
-     * @return the Watts
-     */
-    double DbmToW(double dbm) const;
-
-    /**
-     * Transforms a Watt value to Dbm
-     * @param w the Watt value
-     * @return the Dbm
-     */
-    double DbmFromW(double w) const;
-
     double m_lambda;     //!< the carrier wavelength
     double m_frequency;  //!< the carrier frequency
     double m_systemLoss; //!< the system loss (linear factor)
@@ -407,20 +393,6 @@ class TwoRayGroundPropagationLossModel : public PropagationLossModel
                          Ptr<MobilityModel> a,
                          Ptr<MobilityModel> b) const override;
     int64_t DoAssignStreams(int64_t stream) override;
-
-    /**
-     * Transforms a Dbm value to Watt
-     * @param dbm the Dbm value
-     * @return the Watts
-     */
-    double DbmToW(double dbm) const;
-
-    /**
-     * Transforms a Watt value to Dbm
-     * @param w the Watt value
-     * @return the Dbm
-     */
-    double DbmFromW(double w) const;
 
     double m_lambda;       //!< the carrier wavelength
     double m_frequency;    //!< the carrier frequency
