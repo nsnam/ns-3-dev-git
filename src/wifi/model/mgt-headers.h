@@ -33,6 +33,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/mu-edca-parameter-set.h"
 #include "ns3/multi-link-element.h"
+#include "ns3/smd-information.h"
 #include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/uhr-capabilities.h"
 #include "ns3/uhr-operation.h"
@@ -111,7 +112,8 @@ using BeaconElems = std::tuple<Ssid,
                                std::optional<EhtOperation>,
                                std::vector<TidToLinkMapping>,
                                std::optional<UhrCapabilities>,
-                               std::optional<UhrOperation>>;
+                               std::optional<UhrOperation>,
+                               std::optional<SmdInformation>>;
 
 /// List of Information Elements included in Probe Request frames
 using ProbeRequestElems = std::tuple<Ssid,
@@ -149,7 +151,8 @@ using ProbeResponseElems = std::tuple<Ssid,
                                       std::optional<EhtOperation>,
                                       std::vector<TidToLinkMapping>,
                                       std::optional<UhrCapabilities>,
-                                      std::optional<UhrOperation>>;
+                                      std::optional<UhrOperation>,
+                                      std::optional<SmdInformation>>;
 
 /// List of Information Elements included in Association Request frames
 using AssocRequestElems = std::tuple<Ssid,
