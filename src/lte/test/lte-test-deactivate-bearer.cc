@@ -234,6 +234,9 @@ LenaDeactivateBearerTestCase::DoRun()
 
     // Install the IP stack on the UEs
     internet.Install(ueNodes);
+    stream += internet.AssignStreams(ueNodes, stream);
+    stream += internet.AssignStreams(remoteHostContainer, stream);
+
     Ipv4InterfaceContainer ueIpIface;
     ueIpIface = epcHelper->AssignUeIpv4Address(NetDeviceContainer(ueDevs));
 
