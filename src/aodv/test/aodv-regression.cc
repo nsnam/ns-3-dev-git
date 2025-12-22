@@ -182,12 +182,17 @@ ChainRegressionTest::CreateDevices()
     NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, *m_nodes);
 
     // Assign fixed stream numbers to wifi and channel random variables
+    constexpr int expectedWifiStreamsPerDevice = 2;
     streamsUsed += WifiHelper::AssignStreams(devices, streamsUsed);
-    // Assign 6 streams per device
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (devices.GetN() * 2), "Stream assignment mismatch");
+    // Assign 2 streams per device
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed,
+                          (devices.GetN() * expectedWifiStreamsPerDevice),
+                          "Stream assignment mismatch");
     streamsUsed += wifiChannel.AssignStreams(chan, streamsUsed);
     // Assign 0 streams per channel for this configuration
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (devices.GetN() * 2), "Stream assignment mismatch");
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed,
+                          (devices.GetN() * expectedWifiStreamsPerDevice),
+                          "Stream assignment mismatch");
 
     // 2. Setup TCP/IP & AODV
     AodvHelper aodv; // Use default parameters here
@@ -195,13 +200,27 @@ ChainRegressionTest::CreateDevices()
     internetStack.SetRoutingHelper(aodv);
     internetStack.Install(*m_nodes);
     streamsUsed += internetStack.AssignStreams(*m_nodes, streamsUsed);
-    // InternetStack uses m_size more streams
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (devices.GetN() * 5) + m_size, "Stream assignment mismatch");
+    constexpr int expectedIpv6ExtensionDemuxStreams = 4;
+    constexpr int expectedIpv6ExtensionRoutingDemuxStreams = 1;
+    constexpr int expectedArpL3ProtocolStreams = 1;
+    constexpr int expectedIcmpv6L4ProtocolStreams = 2;
+    constexpr int expectedInternetStreamsPerDevice =
+        expectedIpv6ExtensionDemuxStreams + expectedIpv6ExtensionRoutingDemuxStreams +
+        expectedArpL3ProtocolStreams + expectedIcmpv6L4ProtocolStreams;
+    constexpr int expectedAodvStreamsPerDevice = 1;
+
+    // InternetStack uses numDevices * expectedInternetStreamsPerDevice more streams
+    NS_TEST_ASSERT_MSG_EQ(
+        streamsUsed,
+        (devices.GetN() * (expectedWifiStreamsPerDevice + expectedInternetStreamsPerDevice)),
+        "Stream assignment mismatch");
     streamsUsed += aodv.AssignStreams(*m_nodes, streamsUsed);
-    // AODV uses m_size more streams
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed,
-                          ((devices.GetN() * 5) + (2 * m_size)),
-                          "Stream assignment mismatch");
+    // AODV uses numDevices * expectedAodvStreamsPerDevice
+    NS_TEST_ASSERT_MSG_EQ(
+        streamsUsed,
+        (devices.GetN() * (expectedWifiStreamsPerDevice + expectedInternetStreamsPerDevice +
+                           expectedAodvStreamsPerDevice)),
+        "Stream assignment mismatch");
 
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
