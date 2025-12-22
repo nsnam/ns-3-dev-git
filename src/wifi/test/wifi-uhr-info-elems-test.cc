@@ -8,10 +8,13 @@
 
 #include "ns3/header-serialization-test.h"
 #include "ns3/log.h"
+#include "ns3/mac48-address.h"
 #include "ns3/simulator.h"
+#include "ns3/smd-information.h"
 #include "ns3/uhr-capabilities.h"
 #include "ns3/uhr-mode-change.h"
 #include "ns3/uhr-operation.h"
+#include "ns3/wifi-standard-constants.h"
 
 #include <optional>
 
@@ -310,6 +313,75 @@ UhrModeChangeElementTest::DoRun()
             break;
         }
     }
+}
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test SMD Information element serialization and deserialization
+ */
+class SmdInformationElementTest : public HeaderSerializationTestCase
+{
+  public:
+    /**
+     * Parameters for SmdInformationElementTest
+     */
+    struct TestParams
+    {
+        std::string name;                                ///< Test case name
+        Mac48Address smdIdentifier;                      ///< SMD Identifier field
+        SmdInformation::SmdCapabilities smdCapabilities; ///< SMD Capabilities field
+        Time preparationTimeout;                         ///< Preparation timeout field
+    };
+
+    /**
+     * Constructor
+     *
+     * @param params Test parameters
+     */
+    SmdInformationElementTest(const TestParams& params);
+
+  private:
+    void DoRun() override;
+
+    SmdInformation m_smdInformation; ///< SMD Information element
+};
+
+SmdInformationElementTest::SmdInformationElementTest(const TestParams& params)
+    : HeaderSerializationTestCase(
+          "Check serialization and deserialization of SMD Information elements: " + params.name)
+{
+    m_smdInformation.m_smdIdentifier = params.smdIdentifier;
+    m_smdInformation.m_smdCapabilities = params.smdCapabilities;
+    m_smdInformation.SetPrepTimeout(params.preparationTimeout);
+}
+
+void
+SmdInformationElementTest::DoRun()
+{
+    auto deserIe = TestHeaderSerialization(m_smdInformation);
+    NS_TEST_EXPECT_MSG_EQ(deserIe.m_smdIdentifier,
+                          m_smdInformation.m_smdIdentifier,
+                          "SMD Identifier field differs after serialization and deserialization");
+    NS_TEST_EXPECT_MSG_EQ(
+        deserIe.m_smdCapabilities.dlDataForwarding,
+        m_smdInformation.m_smdCapabilities.dlDataForwarding,
+        "DL Data Forwarding field differs after serialization and deserialization");
+    NS_TEST_EXPECT_MSG_EQ(deserIe.m_smdCapabilities.maxNumOfPrepTargetApMlds,
+                          m_smdInformation.m_smdCapabilities.maxNumOfPrepTargetApMlds,
+                          "Max Number of Prepared Target AP MLDs field differs after serialization "
+                          "and deserialization");
+    NS_TEST_EXPECT_MSG_EQ(deserIe.m_smdCapabilities.smdType,
+                          m_smdInformation.m_smdCapabilities.smdType,
+                          "SMD Type field differs after serialization and deserialization");
+    NS_TEST_EXPECT_MSG_EQ(deserIe.m_smdCapabilities.ptkMode,
+                          m_smdInformation.m_smdCapabilities.ptkMode,
+                          "PTK Mode field differs after serialization and deserialization");
+    NS_TEST_EXPECT_MSG_EQ(deserIe.GetPrepTimeout(),
+                          m_smdInformation.GetPrepTimeout(),
+                          "Preparation timeout field differs after serialization and "
+                          "deserialization");
 }
 
 /**
@@ -633,6 +705,18 @@ WifiUhrInfoElemsTestSuite::WifiUhrInfoElemsTestSuite()
                                 .modeEnable = 0,
                             },
                         },
+                }),
+                TestCase::Duration::QUICK);
+    AddTestCase(new SmdInformationElementTest({
+                    .name = "SMD Information element test",
+                    .smdIdentifier = Mac48Address("AA:BB:CC:DD:EE:FF"),
+                    .smdCapabilities =
+                        SmdInformation::SmdCapabilities{
+                            .dlDataForwarding = 1,
+                            .maxNumOfPrepTargetApMlds = 2,
+                            .neighboringApProbingSupport = 1,
+                        },
+                    .preparationTimeout = 200 * 64 * WIFI_TU,
                 }),
                 TestCase::Duration::QUICK);
 }
