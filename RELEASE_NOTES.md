@@ -61,6 +61,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) Fix hardcoded threshold value in EHT PHY to determine per-20MHz CCA indication.
 - (wifi) #1295 - Avoid floating point precision issues in wifi-error-rate-models-test.cc
 - (internet) !2624 - Fix TCP LEDBAT congestion window growth calculation
+- (wifi) #1284 - Fix radiotap for received packets
 
 ## Release 3.46.1
 

@@ -354,12 +354,6 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
 
     header.SetWifiHeader(IsEht(preamble) ? 2 : 1);
 
-    if (signalNoise)
-    {
-        header.SetAntennaSignalPower(signalNoise->signal);
-        header.SetAntennaNoisePower(signalNoise->noise);
-    }
-
     header.SetTsft(Simulator::Now().GetMicroSeconds());
 
     uint8_t frameFlags = RadiotapHeader::FRAME_FLAG_NONE;
@@ -411,6 +405,12 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         channelFields.flags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ;
     }
     header.SetChannelFields(channelFields);
+
+    if (signalNoise)
+    {
+        header.SetAntennaSignalPower(signalNoise->signal);
+        header.SetAntennaNoisePower(signalNoise->noise);
+    }
 
     if (modClass == WIFI_MOD_CLASS_HT)
     {
