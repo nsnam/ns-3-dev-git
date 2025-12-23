@@ -242,6 +242,7 @@ typedef uint8_t WifiInformationElementId;
 #define IE_EXT_UHR_OPERATION ((WifiInformationElementId)151)
 #define IE_EXT_UHR_CAPABILITIES ((WifiInformationElementId)152)
 #define IE_EXT_SMD_INFORMATION ((WifiInformationElementId)154)
+#define IE_EXT_SMD_BSS_TRANSITION_PARAMETERS ((WifiInformationElementId)155)
 
 #define IE_EXT_UHR_MODE_CHANGE_ELEMENT ((WifiInformationElementId)157)
 
