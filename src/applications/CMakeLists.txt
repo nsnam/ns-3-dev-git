@@ -59,4 +59,5 @@ build_lib(
     test/three-gpp-http-client-server-test.cc
     test/bulk-send-application-test-suite.cc
     test/udp-client-server-test.cc
+    test/tgax-video-traffic-test-suite.cc
 )
