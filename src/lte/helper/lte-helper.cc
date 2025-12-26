@@ -130,7 +130,8 @@ LteHelper::GetTypeId()
             .AddAttribute("PathlossModel",
                           "The type of pathloss model to be used. "
                           "The allowed values for this attributes are the type names "
-                          "of any class inheriting from ns3::PropagationLossModel.",
+                          "of any class inheriting from ns3::PropagationLossModel "
+                          "or ns3::SpectrumPropagationLossModel.",
                           TypeIdValue(FriisPropagationLossModel::GetTypeId()),
                           MakeTypeIdAccessor(&LteHelper::SetPathlossModelType),
                           MakeTypeIdChecker())
