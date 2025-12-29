@@ -12,6 +12,7 @@ build_lib(
     model/onoff-application.cc
     model/packet-loss-counter.cc
     model/packet-sink.cc
+    model/rta-tig-mobile-gaming.cc
     model/seq-ts-echo-header.cc
     model/seq-ts-header.cc
     model/seq-ts-size-header.cc
@@ -41,6 +42,7 @@ build_lib(
     model/onoff-application.h
     model/packet-loss-counter.h
     model/packet-sink.h
+    model/rta-tig-mobile-gaming.h
     model/seq-ts-echo-header.h
     model/seq-ts-header.h
     model/seq-ts-size-header.h
