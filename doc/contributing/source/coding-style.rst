@@ -877,21 +877,52 @@ file (``*.cc``).
   constexpr uint8_t STATUS_PDU{0};
 
 When declaring variables that are easily deducible from context, prefer to declare them
-with ``auto`` instead of repeating the type name. Not only does this improve code readability,
-by making lines shorter, but it also facilitates future code refactoring.
+with ``auto`` instead of repeating the type name. Not only does this improve code readability
+(by reducing redundancy), but it also facilitates future code refactoring.
 
 .. sourcecode:: cpp
 
-  // Avoid repeating the type name when declaring iterators or pointers, and casting variables
-  std::map<uint32_t, std::string>::const_iterator it = myMap.find(key);
+  // Avoid repeating the type name when declaring variables if the type is obvious from the context
   int* ptr = new int[10];
   uint8_t m = static_cast<uint8_t>(97 + (i % 26));
 
   // Prefer to declare them with auto
-  auto it = myMap.find(key);
   auto* ptr = new int[10];
   auto m = static_cast<uint8_t>(97 + (i % 26));
 
+Containers (maps, sets, vectors) and iterators require understanding how C++ type deduction
+works.  Suppose that you want a const iterator when using ``std::map::find()``, matching the
+below declaration:
+
+.. sourcecode:: cpp
+
+  std::map<uint32_t, std::string>::const_iterator it = myMap.find(key);
+
+If ``myMap`` has been declared as a non-const map (which is the typical case in |ns3|), then the
+following will not result in a ``const_iterator`` because ``find()`` returns a non-const iterator
+on a non-const map:
+
+.. sourcecode:: cpp
+
+  auto it = myMap.find(key);
+
+Instead, if you would like auto to deduce a const iterator from ``find()``, you need to make
+``myMap`` into a const lvalue reference, such as:
+
+.. sourcecode:: cpp
+
+  auto it = std::as_const(myMap).find(key);
+
+Note that ``std::map::begin()`` and ``std::map::end()`` have ``cbegin()`` and ``cend()`` variants
+that explicitly return const iterators, but ``std::map::find()`` and some other methods lack
+such variants, requiring use of ``std::as_const()`` as shown above.
+
+.. sourcecode:: cpp
+
+  auto it = myMap.begin();  // declares a non-const iterator
+  auto cit = myMap.cbegin();  // declares a const iterator
+
+If the iterator is a const iterator, prefixing the name ``it`` with ``c`` can improve readability.
 
 Initialization
 ==============
