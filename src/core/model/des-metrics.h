@@ -85,7 +85,7 @@ namespace ns3
  * Some useful shell pipelines:
  *
  * \li Run everything, retaining the results directory: <br/>
- *   @code  ./test.py --nobuild --retain \endcode
+ *   @code  ./test.py --no-build --retain \endcode
  * \li Example traces end up in \c testpy-output/, so move there: <br/>
  *   @code cd testpy-output/$(date +"%F")*_/  \endcode
  *   (Remove the `_', which is to work around a Doxygen limitation.)
