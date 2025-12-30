@@ -195,13 +195,6 @@ class IdealWifiManagerForGcrTest : public IdealWifiManager
                                uint8_t dataNss) override
     {
         m_blockAckSenders.insert(station->m_state->m_address);
-        IdealWifiManager::DoReportAmpduTxStatus(station,
-                                                nSuccessfulMpdus,
-                                                nFailedMpdus,
-                                                rxSnr,
-                                                dataSnr,
-                                                dataChannelWidth,
-                                                dataNss);
     }
 
     WifiTxVector DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth) override
