@@ -30,7 +30,6 @@ namespace ns3
 class RadiotapHeader : public Header
 {
   public:
-    RadiotapHeader();
     /**
      * @brief Get the type ID.
      * @returns the object TypeId
@@ -784,6 +783,13 @@ class RadiotapHeader : public Header
     static constexpr int MIN_HEADER_SIZE{8}; //!< the minimum size of the radiotap header
 
     /**
+     * Update a present field.
+     *
+     * @param field The field to set in a present bitmask.
+     */
+    void UpdatePresentField(uint32_t field);
+
+    /**
      * Serialize the TSFT radiotap header.
      *
      * @param start An iterator which points to where the header should be written.
@@ -1017,45 +1023,26 @@ class RadiotapHeader : public Header
     void PrintEht(std::ostream& os) const;
 
     /**
-     * @brief Radiotap flags.
+     * @brief Radiotap fields.
      */
-    enum RadiotapFlags : uint32_t
+    enum RadiotapFields : uint32_t
     {
-        RADIOTAP_TSFT = 0x00000001,
-        RADIOTAP_FLAGS = 0x00000002,
-        RADIOTAP_RATE = 0x00000004,
-        RADIOTAP_CHANNEL = 0x00000008,
-        RADIOTAP_FHSS = 0x00000010,
-        RADIOTAP_DBM_ANTSIGNAL = 0x00000020,
-        RADIOTAP_DBM_ANTNOISE = 0x00000040,
-        RADIOTAP_LOCK_QUALITY = 0x00000080,
-        RADIOTAP_TX_ATTENUATION = 0x00000100,
-        RADIOTAP_DB_TX_ATTENUATION = 0x00000200,
-        RADIOTAP_DBM_TX_POWER = 0x00000400,
-        RADIOTAP_ANTENNA = 0x00000800,
-        RADIOTAP_DB_ANTSIGNAL = 0x00001000,
-        RADIOTAP_DB_ANTNOISE = 0x00002000,
-        RADIOTAP_RX_FLAGS = 0x00004000,
-        RADIOTAP_MCS = 0x00080000,
-        RADIOTAP_AMPDU_STATUS = 0x00100000,
-        RADIOTAP_VHT = 0x00200000,
-        RADIOTAP_HE = 0x00800000,
-        RADIOTAP_HE_MU = 0x01000000,
-        RADIOTAP_HE_MU_OTHER_USER = 0x02000000,
-        RADIOTAP_ZERO_LEN_PSDU = 0x04000000,
-        RADIOTAP_LSIG = 0x08000000,
-        RADIOTAP_TLV = 0x10000000,
-        RADIOTAP_EXT = 0x80000000
-    };
-
-    /**
-     * @brief Radiotap extended flags.
-     */
-    enum RadiotapExtFlags : uint32_t
-    {
-        RADIOTAP_S1G = 0x00000001,
-        RADIOTAP_USIG = 0x00000002,
-        RADIOTAP_EHT_SIG = 0x00000004
+        RADIOTAP_TSFT = 0,
+        RADIOTAP_FLAGS = 1,
+        RADIOTAP_RATE = 2,
+        RADIOTAP_CHANNEL = 3,
+        RADIOTAP_DBM_ANTSIGNAL = 5,
+        RADIOTAP_DBM_ANTNOISE = 6,
+        RADIOTAP_MCS = 19,
+        RADIOTAP_AMPDU_STATUS = 20,
+        RADIOTAP_VHT = 21,
+        RADIOTAP_HE = 23,
+        RADIOTAP_HE_MU = 24,
+        RADIOTAP_HE_MU_OTHER_USER = 25,
+        RADIOTAP_TLV = 28,
+        RADIOTAP_MORE_PRESENT = 31, // indicates that another 32 bits of present flags follow
+        RADIOTAP_USIG = 33,
+        RADIOTAP_EHT = 34,
     };
 
     uint16_t m_length{MIN_HEADER_SIZE}; //!< entire length of radiotap data + header

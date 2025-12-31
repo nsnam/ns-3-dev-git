@@ -11,21 +11,107 @@
 
 #include "ns3/log.h"
 
-#include <bit>
+#include <bitset>
 #include <cmath>
 #include <iomanip>
 
 namespace ns3
 {
 
+namespace
+{
+/// Number of bits per "present" field in the radiotap header
+constexpr std::size_t RADIOTAP_BITS_PER_PRESENT_FIELD{32};
+/// Size in bytes of the TSFT field in the radiotap header
+constexpr uint16_t RADIOTAP_TSFT_SIZE_B = 8;
+/// Alignment in bytes of the TSFT field in the radiotap header
+constexpr uint16_t RADIOTAP_TSFT_ALIGNMENT_B = 8;
+/// Size in bytes of the Flags field in the radiotap header
+constexpr uint16_t RADIOTAP_FLAGS_SIZE_B = 1;
+/// Size in bytes of the Rate field in the radiotap header
+constexpr uint16_t RADIOTAP_RATE_SIZE_B = 1;
+/// Size in bytes of the Channel field in the radiotap header
+constexpr uint16_t RADIOTAP_CHANNEL_SIZE_B = 4;
+/// Alignment in bytes of the Channel field in the radiotap header
+constexpr uint16_t RADIOTAP_CHANNEL_ALIGNMENT_B = 2;
+/// Size in bytes of the Antenna Signal field in the radiotap header
+constexpr uint16_t RADIOTAP_ANTENNA_SIGNAL_SIZE_B = 1;
+/// Size in bytes of the Antenna Noise field in the radiotap header
+constexpr uint16_t RADIOTAP_ANTENNA_NOISE_SIZE_B = 1;
+/// Size in bytes of the MCS field in the radiotap header
+constexpr uint16_t RADIOTAP_MCS_SIZE_B = 3;
+/// Alignment in bytes of the MCS field in the radiotap header
+constexpr uint16_t RADIOTAP_MCS_ALIGNMENT_B = 1;
+/// Size in bytes of the A-MPDU status field in the radiotap header
+constexpr uint16_t RADIOTAP_AMPDU_STATUS_SIZE_B = 8;
+/// Alignment in bytes of the A-MPDU status field in the radiotap header
+constexpr uint16_t RADIOTAP_AMPDU_STATUS_ALIGNMENT_B = 4;
+/// Size in bytes of the VHT field in the radiotap header
+constexpr uint16_t RADIOTAP_VHT_SIZE_B = 12;
+/// Alignment in bytes of the VHT field in the radiotap header
+constexpr uint16_t RADIOTAP_VHT_ALIGNMENT_B = 2;
+/// Size in bytes of the HE field in the radiotap header
+constexpr uint16_t RADIOTAP_HE_SIZE_B = 12;
+/// Alignment in bytes of the HE field in the radiotap header
+constexpr uint16_t RADIOTAP_HE_ALIGNMENT_B = 2;
+/// Size in bytes of the HE MU field in the radiotap header
+constexpr uint16_t RADIOTAP_HE_MU_SIZE_B = 12;
+/// Alignment in bytes of the HE MU field in the radiotap header
+constexpr uint16_t RADIOTAP_HE_MU_ALIGNMENT_B = 2;
+/// Size in bytes of the HE MU Other User field in the radiotap header
+constexpr uint16_t RADIOTAP_HE_MU_OTHER_USER_SIZE_B = 6;
+/// Alignment in bytes of the HE MU Other User field in the radiotap header
+constexpr uint16_t RADIOTAP_HE_MU_OTHER_USER_ALIGNMENT_B = 2;
+/// Size in bytes of the TLV fields (without data) in the radiotap header
+constexpr uint16_t RADIOTAP_TLV_HEADER_SIZE_B = 4;
+/// Alignment in bytes of the TLV fields in the radiotap header
+constexpr uint16_t RADIOTAP_TLV_ALIGNMENT_B = 4;
+/// Size in bytes of the U-SIG field in the radiotap header
+constexpr uint16_t RADIOTAP_USIG_SIZE_B = 12;
+/// Alignment in bytes of the U-SIG field in the radiotap header
+constexpr uint16_t RADIOTAP_USIG_ALIGNMENT_B = 4;
+/// Size in bytes of the known subfield of the EHT field in the radiotap header
+constexpr uint16_t RADIOTAP_EHT_KNOWN_SIZE_B = 4;
+/// Size in bytes of a data subfield of the EHT field in the radiotap header
+constexpr uint16_t RADIOTAP_EHT_DATA_SIZE_B = 4;
+/// Size in bytes of a user info subfield of the EHT field in the radiotap header
+constexpr uint16_t RADIOTAP_EHT_USER_INFO_SIZE_B = 4;
+/// Alignment in bytes of the EHT field in the radiotap header
+constexpr uint16_t RADIOTAP_EHT_ALIGNMENT_B = 4;
+
+/**
+ * @brief Calculate the padding needed to align a field
+ * @param offset Current offset in bytes
+ * @param alignment Alignment requirement in bytes
+ * @return Number of padding bytes needed
+ */
+uint8_t
+GetPadding(uint32_t offset, uint32_t alignment)
+{
+    uint8_t padding = (alignment - (offset % alignment)) % alignment;
+    return padding;
+}
+
+/**
+ * @brief Check if a specific field is present in the radiotap header
+ * @param presentBits Vector of bitsets representing the present fields
+ * @param field Field to check
+ * @return true if the field is present, false otherwise
+ */
+bool
+IsPresent(const std::vector<std::bitset<RADIOTAP_BITS_PER_PRESENT_FIELD>>& presentBits,
+          uint32_t field)
+{
+    const std::size_t bitmaskIdx = field / RADIOTAP_BITS_PER_PRESENT_FIELD;
+    const std::size_t bitIdx = field % RADIOTAP_BITS_PER_PRESENT_FIELD;
+    return (presentBits.size() > bitmaskIdx) && presentBits.at(bitmaskIdx).test(bitIdx);
+}
+
+} // namespace
+
 NS_LOG_COMPONENT_DEFINE("RadiotapHeader");
 
 NS_OBJECT_ENSURE_REGISTERED(RadiotapHeader);
-
-RadiotapHeader::RadiotapHeader()
-{
-    NS_LOG_FUNCTION(this);
-}
 
 TypeId
 RadiotapHeader::GetTypeId()
@@ -47,7 +133,6 @@ RadiotapHeader::GetInstanceTypeId() const
 uint32_t
 RadiotapHeader::GetSerializedSize() const
 {
-    NS_LOG_FUNCTION(this);
     return m_length;
 }
 
@@ -60,9 +145,11 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     start.WriteU8(0);         // pad field
     start.WriteU16(m_length); // entire length of radiotap data + header
     NS_ASSERT(!m_present.empty());
+    std::vector<std::bitset<RADIOTAP_BITS_PER_PRESENT_FIELD>> presentBits;
     for (const auto present : m_present)
     {
         start.WriteU32(present); // bits describing which fields follow header
+        presentBits.emplace_back(present);
     }
 
     //
@@ -70,7 +157,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // arrived at the MAC)
     // Reference: https://www.radiotap.org/fields/TSFT.html
     //
-    if (m_present.at(0) & RADIOTAP_TSFT) // bit 0
+    if (IsPresent(presentBits, RADIOTAP_TSFT))
     {
         SerializeTsft(start);
     }
@@ -79,7 +166,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // Properties of transmitted and received frames.
     // Reference: https://www.radiotap.org/fields/Flags.html
     //
-    if (m_present.at(0) & RADIOTAP_FLAGS) // bit 1
+    if (IsPresent(presentBits, RADIOTAP_FLAGS))
     {
         start.WriteU8(m_flags);
     }
@@ -88,7 +175,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // TX/RX data rate in units of 500 kbps
     // Reference: https://www.radiotap.org/fields/Rate.html
     //
-    if (m_present.at(0) & RADIOTAP_RATE) // bit 2
+    if (IsPresent(presentBits, RADIOTAP_RATE))
     {
         start.WriteU8(m_rate);
     }
@@ -97,19 +184,9 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // Tx/Rx frequency in MHz, followed by flags.
     // Reference: https://www.radiotap.org/fields/Channel.html
     //
-    if (m_present.at(0) & RADIOTAP_CHANNEL) // bit 3
+    if (IsPresent(presentBits, RADIOTAP_CHANNEL))
     {
         SerializeChannel(start);
-    }
-
-    //
-    // The hop set and pattern for frequency-hopping radios.  We don't need it but
-    // still need to account for it.
-    // Reference: https://www.radiotap.org/fields/FHSS.html
-    //
-    if (m_present.at(0) & RADIOTAP_FHSS) // bit 4
-    {
-        NS_ASSERT(false); // not yet implemented
     }
 
     //
@@ -117,7 +194,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // reference.
     // Reference: https://www.radiotap.org/fields/Antenna%20signal.html
     //
-    if (m_present.at(0) & RADIOTAP_DBM_ANTSIGNAL) // bit 5
+    if (IsPresent(presentBits, RADIOTAP_DBM_ANTSIGNAL))
     {
         start.WriteU8(m_antennaSignal);
     }
@@ -127,92 +204,16 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // reference.
     // Reference: https://www.radiotap.org/fields/Antenna%20noise.html
     //
-    if (m_present.at(0) & RADIOTAP_DBM_ANTNOISE) // bit 6
+    if (IsPresent(presentBits, RADIOTAP_DBM_ANTNOISE))
     {
         start.WriteU8(m_antennaNoise);
-    }
-
-    //
-    // Quality of Barker code lock.
-    // Reference: https://www.radiotap.org/fields/Lock%20quality.html
-    //
-    if (m_present.at(0) & RADIOTAP_LOCK_QUALITY) // bit 7
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Transmit power expressed as unitless distance from max power
-    // set at factory calibration (0 is max power).
-    // Reference: https://www.radiotap.org/fields/TX%20attenuation.html
-    //
-    if (m_present.at(0) & RADIOTAP_TX_ATTENUATION) // bit 8
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Transmit power expressed as decibel distance from max power
-    // set at factory calibration (0 is max power).
-    // Reference: https://www.radiotap.org/fields/dB%20TX%20attenuation.html
-    //
-    if (m_present.at(0) & RADIOTAP_DB_TX_ATTENUATION) // bit 9
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Transmit power expressed as dBm (decibels from a 1 milliwatt reference).
-    // This is the absolute power level measured at the antenna port.
-    // Reference: https://www.radiotap.org/fields/dBm%20TX%20power.html
-    //
-    if (m_present.at(0) & RADIOTAP_DBM_TX_POWER) // bit 10
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Unitless indication of the Rx/Tx antenna for this packet.
-    // The first antenna is antenna 0.
-    // Reference: https://www.radiotap.org/fields/Antenna.html
-    //
-    if (m_present.at(0) & RADIOTAP_ANTENNA) // bit 11
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // RF signal power at the antenna (decibel difference from an arbitrary fixed reference).
-    // Reference: https://www.radiotap.org/fields/dB%20antenna%20signal.html
-    //
-    if (m_present.at(0) & RADIOTAP_DB_ANTSIGNAL) // bit 12
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // RF noise power at the antenna (decibel difference from an arbitrary fixed reference).
-    // Reference: https://www.radiotap.org/fields/dB%20antenna%20noise.html
-    //
-    if (m_present.at(0) & RADIOTAP_DB_ANTNOISE) // bit 13
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Properties of received frames.
-    // Reference: https://www.radiotap.org/fields/RX%20flags.html
-    //
-    if (m_present.at(0) & RADIOTAP_RX_FLAGS) // bit 14
-    {
-        NS_ASSERT(false); // not yet implemented
     }
 
     //
     // MCS field.
     // Reference: https://www.radiotap.org/fields/MCS.html
     //
-    if (m_present.at(0) & RADIOTAP_MCS) // bit 19
+    if (IsPresent(presentBits, RADIOTAP_MCS))
     {
         SerializeMcs(start);
     }
@@ -221,7 +222,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // A-MPDU Status, information about the received or transmitted A-MPDU.
     // Reference: https://www.radiotap.org/fields/A-MPDU%20status.html
     //
-    if (m_present.at(0) & RADIOTAP_AMPDU_STATUS) // bit 20
+    if (IsPresent(presentBits, RADIOTAP_AMPDU_STATUS))
     {
         SerializeAmpduStatus(start);
     }
@@ -230,7 +231,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // Information about the received or transmitted VHT frame.
     // Reference: https://www.radiotap.org/fields/VHT.html
     //
-    if (m_present.at(0) & RADIOTAP_VHT) // bit 21
+    if (IsPresent(presentBits, RADIOTAP_VHT))
     {
         SerializeVht(start);
     }
@@ -239,7 +240,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // HE field.
     // Reference: https://www.radiotap.org/fields/HE.html
     //
-    if (m_present.at(0) & RADIOTAP_HE) // bit 23
+    if (IsPresent(presentBits, RADIOTAP_HE))
     {
         SerializeHe(start);
     }
@@ -248,7 +249,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // HE MU field.
     // Reference: https://www.radiotap.org/fields/HE-MU.html
     //
-    if (m_present.at(0) & RADIOTAP_HE_MU) // bit 24
+    if (IsPresent(presentBits, RADIOTAP_HE_MU))
     {
         SerializeHeMu(start);
     }
@@ -257,7 +258,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // HE MU other user field.
     // Reference: https://www.radiotap.org/fields/HE-MU-other-user.html
     //
-    if (m_present.at(0) & RADIOTAP_HE_MU_OTHER_USER) // bit 25
+    if (IsPresent(presentBits, RADIOTAP_HE_MU_OTHER_USER))
     {
         SerializeHeMuOtherUser(start);
     }
@@ -266,7 +267,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // U-SIG field.
     // Reference: https://www.radiotap.org/fields/U-SIG.html
     //
-    if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_USIG) // bit 33
+    if (IsPresent(presentBits, RADIOTAP_USIG))
     {
         SerializeUsig(start);
     }
@@ -275,7 +276,7 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     // EHT field.
     // Reference: https://www.radiotap.org/fields/EHT.html
     //
-    if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_EHT_SIG) // bit 34
+    if (IsPresent(presentBits, RADIOTAP_EHT))
     {
         SerializeEht(start);
     }
@@ -287,7 +288,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     NS_LOG_FUNCTION(this << &start);
     m_present.clear();
 
-    uint8_t tmp = start.ReadU8(); // major version of radiotap header
+    auto tmp = start.ReadU8(); // major version of radiotap header
     NS_ASSERT_MSG(tmp == 0x00, "RadiotapHeader::Deserialize(): Unexpected major version");
     start.ReadU8(); // pad field
 
@@ -296,18 +297,21 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     uint32_t bytesRead = MIN_HEADER_SIZE;
 
     std::size_t index{0};
-    while (m_present.at(index++) & RADIOTAP_EXT)
+    std::vector<std::bitset<RADIOTAP_BITS_PER_PRESENT_FIELD>> presentBits;
+    presentBits.emplace_back(m_present.at(0));
+    while (presentBits.at(index++).test(RADIOTAP_MORE_PRESENT))
     {
         // If bit 31 of the it_present field is set, another it_present bitmask is present.
         m_present.emplace_back(start.ReadU32());
-        bytesRead += 4;
+        bytesRead += (RADIOTAP_BITS_PER_PRESENT_FIELD / 8);
+        presentBits.emplace_back(m_present.at(index));
     }
 
     //
     // Time Synchronization Function Timer (when the first bit of the MPDU arrived at the MAC)
     // Reference: https://www.radiotap.org/fields/TSFT.html
     //
-    if (m_present.at(0) & RADIOTAP_TSFT) // bit 0
+    if (IsPresent(presentBits, RADIOTAP_TSFT))
     {
         const auto size = DeserializeTsft(start, bytesRead);
         start.Next(size);
@@ -318,7 +322,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // Properties of transmitted and received frames.
     // Reference: https://www.radiotap.org/fields/Flags.html
     //
-    if (m_present.at(0) & RADIOTAP_FLAGS) // bit 1
+    if (IsPresent(presentBits, RADIOTAP_FLAGS))
     {
         m_flags = start.ReadU8();
         ++bytesRead;
@@ -328,7 +332,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // TX/RX data rate in units of 500 kbps
     // Reference: https://www.radiotap.org/fields/Rate.html
     //
-    if (m_present.at(0) & RADIOTAP_RATE) // bit 2
+    if (IsPresent(presentBits, RADIOTAP_RATE))
     {
         m_rate = start.ReadU8();
         ++bytesRead;
@@ -338,7 +342,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // Tx/Rx frequency in MHz, followed by flags.
     // Reference: https://www.radiotap.org/fields/Channel.html
     //
-    if (m_present.at(0) & RADIOTAP_CHANNEL) // bit 3
+    if (IsPresent(presentBits, RADIOTAP_CHANNEL))
     {
         const auto size = DeserializeChannel(start, bytesRead);
         start.Next(size);
@@ -346,21 +350,11 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     }
 
     //
-    // The hop set and pattern for frequency-hopping radios.  We don't need it but
-    // still need to account for it.
-    // Reference: https://www.radiotap.org/fields/FHSS.html
-    //
-    if (m_present.at(0) & RADIOTAP_FHSS) // bit 4
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
     // RF signal power at the antenna, decibel difference from an arbitrary, fixed
     // reference.
     // Reference: https://www.radiotap.org/fields/Antenna%20signal.html
     //
-    if (m_present.at(0) & RADIOTAP_DBM_ANTSIGNAL) // bit 5
+    if (IsPresent(presentBits, RADIOTAP_DBM_ANTSIGNAL))
     {
         m_antennaSignal = start.ReadU8();
         ++bytesRead;
@@ -371,93 +365,17 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // reference.
     // Reference: https://www.radiotap.org/fields/Antenna%20noise.html
     //
-    if (m_present.at(0) & RADIOTAP_DBM_ANTNOISE) // bit 6
+    if (IsPresent(presentBits, RADIOTAP_DBM_ANTNOISE))
     {
         m_antennaNoise = start.ReadU8();
         ++bytesRead;
     }
 
     //
-    // Quality of Barker code lock.
-    // Reference: https://www.radiotap.org/fields/Lock%20quality.html
-    //
-    if (m_present.at(0) & RADIOTAP_LOCK_QUALITY) // bit 7
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Transmit power expressed as unitless distance from max power
-    // set at factory calibration (0 is max power).
-    // Reference: https://www.radiotap.org/fields/TX%20attenuation.html
-    //
-    if (m_present.at(0) & RADIOTAP_TX_ATTENUATION) // bit 8
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Transmit power expressed as decibel distance from max power
-    // set at factory calibration (0 is max power).
-    // Reference: https://www.radiotap.org/fields/dB%20TX%20attenuation.html
-    //
-    if (m_present.at(0) & RADIOTAP_DB_TX_ATTENUATION) // bit 9
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Transmit power expressed as dBm (decibels from a 1 milliwatt reference).
-    // This is the absolute power level measured at the antenna port.
-    // Reference: https://www.radiotap.org/fields/dBm%20TX%20power.html
-    //
-    if (m_present.at(0) & RADIOTAP_DBM_TX_POWER) // bit 10
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Unitless indication of the Rx/Tx antenna for this packet.
-    // The first antenna is antenna 0.
-    // Reference: https://www.radiotap.org/fields/Antenna.html
-    //
-    if (m_present.at(0) & RADIOTAP_ANTENNA) // bit 11
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // RF signal power at the antenna (decibel difference from an arbitrary fixed reference).
-    // Reference: https://www.radiotap.org/fields/dB%20antenna%20signal.html
-    //
-    if (m_present.at(0) & RADIOTAP_DB_ANTSIGNAL) // bit 12
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // RF noise power at the antenna (decibel difference from an arbitrary fixed reference).
-    // Reference: https://www.radiotap.org/fields/dB%20antenna%20noise.html
-    //
-    if (m_present.at(0) & RADIOTAP_DB_ANTNOISE) // bit 13
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
-    // Properties of received frames.
-    // Reference: https://www.radiotap.org/fields/RX%20flags.html
-    //
-    if (m_present.at(0) & RADIOTAP_RX_FLAGS) // bit 14
-    {
-        NS_ASSERT(false); // not yet implemented
-    }
-
-    //
     // MCS field.
     // Reference: https://www.radiotap.org/fields/MCS.html
     //
-    if (m_present.at(0) & RADIOTAP_MCS) // bit 19
+    if (IsPresent(presentBits, RADIOTAP_MCS))
     {
         const auto size = DeserializeMcs(start, bytesRead);
         start.Next(size);
@@ -468,7 +386,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // A-MPDU Status, information about the received or transmitted A-MPDU.
     // Reference: https://www.radiotap.org/fields/A-MPDU%20status.html
     //
-    if (m_present.at(0) & RADIOTAP_AMPDU_STATUS)
+    if (IsPresent(presentBits, RADIOTAP_AMPDU_STATUS))
     {
         const auto size = DeserializeAmpduStatus(start, bytesRead);
         start.Next(size);
@@ -479,7 +397,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // Information about the received or transmitted VHT frame.
     // Reference: https://www.radiotap.org/fields/VHT.html
     //
-    if (m_present.at(0) & RADIOTAP_VHT) // bit 21
+    if (IsPresent(presentBits, RADIOTAP_VHT))
     {
         const auto size = DeserializeVht(start, bytesRead);
         start.Next(size);
@@ -490,7 +408,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // HE field.
     // Reference: https://www.radiotap.org/fields/HE.html
     //
-    if (m_present.at(0) & RADIOTAP_HE) // bit 23
+    if (IsPresent(presentBits, RADIOTAP_HE))
     {
         const auto size = DeserializeHe(start, bytesRead);
         start.Next(size);
@@ -501,7 +419,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // HE MU field.
     // Reference: https://www.radiotap.org/fields/HE-MU.html
     //
-    if (m_present.at(0) & RADIOTAP_HE_MU) // bit 24
+    if (IsPresent(presentBits, RADIOTAP_HE_MU))
     {
         const auto size = DeserializeHeMu(start, bytesRead);
         start.Next(size);
@@ -511,8 +429,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     // HE MU other user field.
     // Reference: https://www.radiotap.org/fields/HE-MU-other-user.html
-    //
-    if (m_present.at(0) & RADIOTAP_HE_MU_OTHER_USER) // bit 25
+    if (IsPresent(presentBits, RADIOTAP_HE_MU_OTHER_USER))
     {
         const auto size = DeserializeHeMuOtherUser(start, bytesRead);
         start.Next(size);
@@ -523,7 +440,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // U-SIG field.
     // Reference: https://www.radiotap.org/fields/U-SIG.html
     //
-    if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_USIG) // bit 33
+    if (IsPresent(presentBits, RADIOTAP_USIG))
     {
         const auto size = DeserializeUsig(start, bytesRead);
         start.Next(size);
@@ -534,7 +451,7 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     // EHT field.
     // Reference: https://www.radiotap.org/fields/EHT.html
     //
-    if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_EHT_SIG) // bit 34
+    if (IsPresent(presentBits, RADIOTAP_EHT))
     {
         const auto size = DeserializeEht(start, bytesRead);
         start.Next(size);
@@ -542,14 +459,14 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     }
 
     NS_ASSERT_MSG(m_length == bytesRead,
-                  "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
+                  "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent ("
+                      << m_length << " != " << bytesRead << ")");
     return bytesRead;
 }
 
 void
 RadiotapHeader::Print(std::ostream& os) const
 {
-    NS_LOG_FUNCTION(this << &os);
     os << " tsft=" << m_tsft << " flags=" << std::hex << m_flags << std::dec << " rate=" << +m_rate;
     if (m_present.at(0) & RADIOTAP_CHANNEL)
     {
@@ -584,10 +501,34 @@ RadiotapHeader::Print(std::ostream& os) const
     {
         PrintUsig(os);
     }
-    if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_EHT_SIG)
+    if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_EHT)
     {
         PrintEht(os);
     }
+}
+
+void
+RadiotapHeader::UpdatePresentField(uint32_t field)
+{
+    NS_LOG_FUNCTION(this << field);
+    const std::size_t bitmaskIdx = field / RADIOTAP_BITS_PER_PRESENT_FIELD;
+    NS_ASSERT_MSG(bitmaskIdx < m_present.size(),
+                  "Number of it_present words (" << m_present.size()
+                                                 << ") less than expected index " << bitmaskIdx);
+    const std::size_t fieldIdx = field % RADIOTAP_BITS_PER_PRESENT_FIELD;
+    const uint32_t flag = (1 << fieldIdx);
+    if (field != RADIOTAP_TLV)
+    {
+        NS_ASSERT_MSG(!(m_present.at(bitmaskIdx) & flag),
+                      "Radiotap field " << field << " already set in present field at index "
+                                        << bitmaskIdx);
+    }
+    if (const uint32_t morePresentWordFlag = (1 << RADIOTAP_MORE_PRESENT); bitmaskIdx > 0)
+    {
+        // Ensure that the bit indicating more present words is set in the previous word
+        m_present.at(bitmaskIdx - 1) |= morePresentWordFlag;
+    }
+    m_present.at(bitmaskIdx) |= flag;
 }
 
 void
@@ -601,9 +542,8 @@ RadiotapHeader::SetWifiHeader(std::size_t numPresentWords)
     NS_ASSERT_MSG(m_present.size() == 1, "RadiotapHeader::SetWifiHeader() should be called once");
     for (std::size_t i = 0; i < (numPresentWords - 1); ++i)
     {
-        m_present.at(i) |= RADIOTAP_EXT;
         m_present.emplace_back(0);
-        m_length += sizeof(RadiotapExtFlags);
+        m_length += (RADIOTAP_BITS_PER_PRESENT_FIELD / 8);
     }
 }
 
@@ -612,19 +552,19 @@ RadiotapHeader::SetTsft(uint64_t value)
 {
     NS_LOG_FUNCTION(this << value);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_TSFT), "TSFT radiotap field already present");
-    m_tsftPad = ((8 - m_length % 8) % 8);
-    m_present.at(0) |= RADIOTAP_TSFT;
-    m_length += 8 + m_tsftPad;
+    UpdatePresentField(RADIOTAP_TSFT);
+    m_tsftPad = GetPadding(m_length, RADIOTAP_TSFT_ALIGNMENT_B);
+    m_length += RADIOTAP_TSFT_SIZE_B + m_tsftPad;
     m_tsft = value;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeTsft(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_tsftPad);
     start.WriteU64(m_tsft);
 }
@@ -632,38 +572,37 @@ RadiotapHeader::SerializeTsft(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeTsft(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_tsftPad = ((8 - bytesRead % 8) % 8);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_tsftPad = GetPadding(bytesRead, RADIOTAP_TSFT_ALIGNMENT_B);
     start.Next(m_tsftPad);
     m_tsft = start.ReadU64();
-    return sizeof(m_tsft) + m_tsftPad;
+    return RADIOTAP_TSFT_SIZE_B + m_tsftPad;
 }
 
 void
 RadiotapHeader::SetFrameFlags(uint8_t flags)
 {
-    NS_LOG_FUNCTION(this << +flags);
+    NS_LOG_FUNCTION(this << flags);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_FLAGS), "Flags radiotap field already present");
-    m_present.at(0) |= RADIOTAP_FLAGS;
-    m_length += 1;
+    UpdatePresentField(RADIOTAP_FLAGS);
+    m_length += RADIOTAP_FLAGS_SIZE_B;
     m_flags = flags;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SetRate(uint8_t rate)
 {
-    NS_LOG_FUNCTION(this << +rate);
+    NS_LOG_FUNCTION(this << rate);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_RATE), "Rate radiotap field already present");
-    m_present.at(0) |= RADIOTAP_RATE;
-    m_length += 1;
+    UpdatePresentField(RADIOTAP_RATE);
+    m_length += RADIOTAP_RATE_SIZE_B;
     m_rate = rate;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
@@ -671,19 +610,19 @@ RadiotapHeader::SetChannelFields(const ChannelFields& channelFields)
 {
     NS_LOG_FUNCTION(this << channelFields.frequency << channelFields.flags);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_CHANNEL), "Channel radiotap field already present");
-    m_channelPad = ((2 - m_length % 2) % 2);
-    m_present.at(0) |= RADIOTAP_CHANNEL;
-    m_length += (sizeof(ChannelFields) + m_channelPad);
+    UpdatePresentField(RADIOTAP_CHANNEL);
+    m_channelPad = GetPadding(m_length, RADIOTAP_CHANNEL_ALIGNMENT_B);
+    m_length += RADIOTAP_CHANNEL_SIZE_B + m_channelPad;
     m_channelFields = channelFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeChannel(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_channelPad);
     start.WriteU16(m_channelFields.frequency);
     start.WriteU16(m_channelFields.flags);
@@ -692,11 +631,12 @@ RadiotapHeader::SerializeChannel(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeChannel(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_channelPad = ((2 - bytesRead % 2) % 2);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_channelPad = GetPadding(bytesRead, RADIOTAP_CHANNEL_ALIGNMENT_B);
     start.Next(m_channelPad);
     m_channelFields.frequency = start.ReadU16();
     m_channelFields.flags = start.ReadU16();
-    return sizeof(ChannelFields) + m_channelPad;
+    return RADIOTAP_CHANNEL_SIZE_B + m_channelPad;
 }
 
 void
@@ -711,10 +651,8 @@ RadiotapHeader::SetAntennaSignalPower(double signal)
 {
     NS_LOG_FUNCTION(this << signal);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_DBM_ANTSIGNAL),
-                  "Antenna signal radiotap field already present");
-    m_present.at(0) |= RADIOTAP_DBM_ANTSIGNAL;
-    m_length += 1;
+    UpdatePresentField(RADIOTAP_DBM_ANTSIGNAL);
+    m_length += RADIOTAP_ANTENNA_SIGNAL_SIZE_B;
 
     if (signal > 127)
     {
@@ -729,8 +667,8 @@ RadiotapHeader::SetAntennaSignalPower(double signal)
         m_antennaSignal = static_cast<int8_t>(floor(signal + 0.5));
     }
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
@@ -738,10 +676,8 @@ RadiotapHeader::SetAntennaNoisePower(double noise)
 {
     NS_LOG_FUNCTION(this << noise);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_DBM_ANTNOISE),
-                  "Antenna noise radiotap field already present");
-    m_present.at(0) |= RADIOTAP_DBM_ANTNOISE;
-    m_length += 1;
+    UpdatePresentField(RADIOTAP_DBM_ANTNOISE);
+    m_length += RADIOTAP_ANTENNA_NOISE_SIZE_B;
 
     if (noise > 127.0)
     {
@@ -756,28 +692,28 @@ RadiotapHeader::SetAntennaNoisePower(double noise)
         m_antennaNoise = static_cast<int8_t>(floor(noise + 0.5));
     }
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SetMcsFields(const McsFields& mcsFields)
 {
-    NS_LOG_FUNCTION(this << +mcsFields.known << +mcsFields.flags << +mcsFields.mcs);
+    NS_LOG_FUNCTION(this << mcsFields.known << mcsFields.flags << mcsFields.mcs);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_MCS), "MCS radiotap field already present");
-    m_mcsPad = ((1 - m_length % 1) % 1);
-    m_present.at(0) |= RADIOTAP_MCS;
-    m_length += sizeof(McsFields) + m_mcsPad;
+    UpdatePresentField(RADIOTAP_MCS);
+    m_mcsPad = GetPadding(m_length, RADIOTAP_MCS_ALIGNMENT_B);
+    m_length += RADIOTAP_MCS_SIZE_B + m_mcsPad;
     m_mcsFields = mcsFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeMcs(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_mcsPad);
     start.WriteU8(m_mcsFields.known);
     start.WriteU8(m_mcsFields.flags);
@@ -787,12 +723,13 @@ RadiotapHeader::SerializeMcs(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeMcs(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_mcsPad = ((1 - bytesRead % 1) % 1);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_mcsPad = GetPadding(bytesRead, RADIOTAP_MCS_ALIGNMENT_B);
     start.Next(m_mcsPad);
     m_mcsFields.known = start.ReadU8();
     m_mcsFields.flags = start.ReadU8();
     m_mcsFields.mcs = start.ReadU8();
-    return sizeof(McsFields) + m_mcsPad;
+    return RADIOTAP_MCS_SIZE_B + m_mcsPad;
 }
 
 void
@@ -807,20 +744,19 @@ RadiotapHeader::SetAmpduStatus(const AmpduStatusFields& ampduStatusFields)
 {
     NS_LOG_FUNCTION(this << ampduStatusFields.referenceNumber << ampduStatusFields.flags);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_AMPDU_STATUS),
-                  "A-MPDU status radiotap field already present");
-    m_ampduStatusPad = ((4 - m_length % 4) % 4);
-    m_present.at(0) |= RADIOTAP_AMPDU_STATUS;
-    m_length += (sizeof(ampduStatusFields) + m_ampduStatusPad);
+    UpdatePresentField(RADIOTAP_AMPDU_STATUS);
+    m_ampduStatusPad = GetPadding(m_length, RADIOTAP_AMPDU_STATUS_ALIGNMENT_B);
+    m_length += RADIOTAP_AMPDU_STATUS_SIZE_B + m_ampduStatusPad;
     m_ampduStatusFields = ampduStatusFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeAmpduStatus(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_ampduStatusPad);
     start.WriteU32(m_ampduStatusFields.referenceNumber);
     start.WriteU16(m_ampduStatusFields.flags);
@@ -831,13 +767,14 @@ RadiotapHeader::SerializeAmpduStatus(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeAmpduStatus(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_ampduStatusPad = ((4 - bytesRead % 4) % 4);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_ampduStatusPad = GetPadding(bytesRead, RADIOTAP_AMPDU_STATUS_ALIGNMENT_B);
     start.Next(m_ampduStatusPad);
     m_ampduStatusFields.referenceNumber = start.ReadU32();
     m_ampduStatusFields.flags = start.ReadU16();
     m_ampduStatusFields.crc = start.ReadU8();
     m_ampduStatusFields.reserved = start.ReadU8();
-    return sizeof(AmpduStatusFields) + m_ampduStatusPad;
+    return RADIOTAP_AMPDU_STATUS_SIZE_B + m_ampduStatusPad;
 }
 
 void
@@ -849,24 +786,24 @@ RadiotapHeader::PrintAmpduStatus(std::ostream& os) const
 void
 RadiotapHeader::SetVhtFields(const VhtFields& vhtFields)
 {
-    NS_LOG_FUNCTION(this << vhtFields.known << vhtFields.flags << +vhtFields.mcsNss.at(0)
-                         << +vhtFields.mcsNss.at(1) << +vhtFields.mcsNss.at(2)
-                         << +vhtFields.mcsNss.at(3) << +vhtFields.coding << +vhtFields.groupId
-                         << +vhtFields.partialAid);
+    NS_LOG_FUNCTION(this << vhtFields.known << vhtFields.flags << vhtFields.mcsNss.at(0)
+                         << vhtFields.mcsNss.at(1) << vhtFields.mcsNss.at(2)
+                         << vhtFields.mcsNss.at(3) << vhtFields.coding << vhtFields.groupId
+                         << vhtFields.partialAid);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_VHT), "VHT radiotap field already present");
-    m_vhtPad = ((2 - m_length % 2) % 2);
-    m_present.at(0) |= RADIOTAP_VHT;
-    m_length += (sizeof(VhtFields) + m_vhtPad);
+    UpdatePresentField(RADIOTAP_VHT);
+    m_vhtPad = GetPadding(m_length, RADIOTAP_VHT_ALIGNMENT_B);
+    m_length += RADIOTAP_VHT_SIZE_B + m_vhtPad;
     m_vhtFields = vhtFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeVht(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_vhtPad);
     start.WriteU16(m_vhtFields.known);
     start.WriteU8(m_vhtFields.flags);
@@ -883,7 +820,8 @@ RadiotapHeader::SerializeVht(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeVht(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_vhtPad = ((2 - bytesRead % 2) % 2);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_vhtPad = GetPadding(bytesRead, RADIOTAP_VHT_ALIGNMENT_B);
     start.Next(m_vhtPad);
     m_vhtFields.known = start.ReadU16();
     m_vhtFields.flags = start.ReadU8();
@@ -895,19 +833,20 @@ RadiotapHeader::DeserializeVht(Buffer::Iterator start, uint32_t bytesRead)
     m_vhtFields.coding = start.ReadU8();
     m_vhtFields.groupId = start.ReadU8();
     m_vhtFields.partialAid = start.ReadU16();
-    return sizeof(VhtFields) + m_vhtPad;
+    return RADIOTAP_VHT_SIZE_B + m_vhtPad;
 }
 
 void
 RadiotapHeader::PrintVht(std::ostream& os) const
 {
     os << " vht.known=0x" << m_vhtFields.known << " vht.flags=0x" << m_vhtFields.flags
-       << " vht.bandwidth=" << std::dec << m_vhtFields.bandwidth
-       << " vht.mcsNss[0]=" << +m_vhtFields.mcsNss.at(0)
-       << " vht.mcsNss[1]=" << +m_vhtFields.mcsNss.at(1)
-       << " vht.mcsNss[2]=" << +m_vhtFields.mcsNss.at(2)
-       << " vht.mcsNss[3]=" << +m_vhtFields.mcsNss.at(3) << " vht.coding=" << m_vhtFields.coding
-       << " vht.groupId=" << m_vhtFields.groupId << " vht.partialAid=" << m_vhtFields.partialAid;
+       << " vht.bandwidth=" << std::dec << m_vhtFields.bandwidth;
+    for (std::size_t i = 0; i < m_vhtFields.mcsNss.size(); ++i)
+    {
+        os << " vht.mcsNss[" << i << "]=" << +m_vhtFields.mcsNss.at(i);
+    }
+    os << " vht.coding=" << m_vhtFields.coding << " vht.groupId=" << m_vhtFields.groupId
+       << " vht.partialAid=" << m_vhtFields.partialAid;
 }
 
 void
@@ -916,19 +855,19 @@ RadiotapHeader::SetHeFields(const HeFields& heFields)
     NS_LOG_FUNCTION(this << heFields.data1 << heFields.data2 << heFields.data3 << heFields.data4
                          << heFields.data5 << heFields.data6);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_HE), "HE radiotap field already present");
-    m_hePad = ((2 - m_length % 2) % 2);
-    m_present.at(0) |= RADIOTAP_HE;
-    m_length += (sizeof(heFields) + m_hePad);
+    UpdatePresentField(RADIOTAP_HE);
+    m_hePad = GetPadding(m_length, RADIOTAP_HE_ALIGNMENT_B);
+    m_length += RADIOTAP_HE_SIZE_B + m_hePad;
     m_heFields = heFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeHe(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_hePad);
     start.WriteU16(m_heFields.data1);
     start.WriteU16(m_heFields.data2);
@@ -941,7 +880,8 @@ RadiotapHeader::SerializeHe(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeHe(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_hePad = ((2 - bytesRead % 2) % 2);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_hePad = GetPadding(bytesRead, RADIOTAP_HE_ALIGNMENT_B);
     start.Next(m_hePad);
     m_heFields.data1 = start.ReadU16();
     m_heFields.data2 = start.ReadU16();
@@ -949,7 +889,7 @@ RadiotapHeader::DeserializeHe(Buffer::Iterator start, uint32_t bytesRead)
     m_heFields.data4 = start.ReadU16();
     m_heFields.data5 = start.ReadU16();
     m_heFields.data6 = start.ReadU16();
-    return sizeof(HeFields) + m_hePad;
+    return RADIOTAP_HE_SIZE_B + m_hePad;
 }
 
 void
@@ -966,19 +906,19 @@ RadiotapHeader::SetHeMuFields(const HeMuFields& heMuFields)
 {
     NS_LOG_FUNCTION(this << heMuFields.flags1 << heMuFields.flags2);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_HE_MU), "HE-MU radiotap field already present");
-    m_heMuPad = ((2 - m_length % 2) % 2);
-    m_present.at(0) |= RADIOTAP_HE_MU;
-    m_length += (sizeof(heMuFields) + m_heMuPad);
+    UpdatePresentField(RADIOTAP_HE_MU);
+    m_heMuPad = GetPadding(m_length, RADIOTAP_HE_MU_ALIGNMENT_B);
+    m_length += RADIOTAP_HE_MU_SIZE_B + m_heMuPad;
     m_heMuFields = heMuFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
 }
 
 void
 RadiotapHeader::SerializeHeMu(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_heMuPad);
     start.WriteU16(m_heMuFields.flags1);
     start.WriteU16(m_heMuFields.flags2);
@@ -995,7 +935,8 @@ RadiotapHeader::SerializeHeMu(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeHeMu(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_heMuPad = ((2 - bytesRead % 2) % 2);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_heMuPad = GetPadding(bytesRead, RADIOTAP_HE_MU_ALIGNMENT_B);
     start.Next(m_heMuPad);
     m_heMuFields.flags1 = start.ReadU16();
     m_heMuFields.flags2 = start.ReadU16();
@@ -1007,7 +948,7 @@ RadiotapHeader::DeserializeHeMu(Buffer::Iterator start, uint32_t bytesRead)
     {
         ruChannel = start.ReadU8();
     }
-    return sizeof(HeMuFields) + m_heMuPad;
+    return RADIOTAP_HE_MU_SIZE_B + m_heMuPad;
 }
 
 void
@@ -1021,23 +962,22 @@ void
 RadiotapHeader::SetHeMuOtherUserFields(const HeMuOtherUserFields& heMuOtherUserFields)
 {
     NS_LOG_FUNCTION(this << heMuOtherUserFields.perUser1 << heMuOtherUserFields.perUser2
-                         << +heMuOtherUserFields.perUserPosition
-                         << +heMuOtherUserFields.perUserKnown);
+                         << heMuOtherUserFields.perUserPosition
+                         << heMuOtherUserFields.perUserKnown);
 
-    NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_HE_MU_OTHER_USER),
-                  "HE-MU-other-user radiotap field already present");
-    m_heMuOtherUserPad = ((2 - m_length % 2) % 2);
-    m_present.at(0) |= RADIOTAP_HE_MU_OTHER_USER;
-    m_length += (sizeof(HeMuOtherUserFields) + m_heMuOtherUserPad);
+    UpdatePresentField(RADIOTAP_HE_MU_OTHER_USER);
+    m_heMuOtherUserPad = GetPadding(m_length, RADIOTAP_HE_MU_OTHER_USER_ALIGNMENT_B);
+    m_length += RADIOTAP_HE_MU_OTHER_USER_SIZE_B + m_heMuOtherUserPad;
     m_heMuOtherUserFields = heMuOtherUserFields;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
-                      << std::dec);
+    NS_LOG_LOGIC(" m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                              << std::dec);
 }
 
 void
 RadiotapHeader::SerializeHeMuOtherUser(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_heMuOtherUserPad);
     start.WriteU16(m_heMuOtherUserFields.perUser1);
     start.WriteU16(m_heMuOtherUserFields.perUser2);
@@ -1048,13 +988,14 @@ RadiotapHeader::SerializeHeMuOtherUser(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeHeMuOtherUser(Buffer::Iterator start, uint32_t bytesRead)
 {
-    m_heMuOtherUserPad = ((2 - bytesRead % 2) % 2);
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_heMuOtherUserPad = GetPadding(bytesRead, RADIOTAP_HE_MU_OTHER_USER_ALIGNMENT_B);
     start.Next(m_heMuOtherUserPad);
     m_heMuOtherUserFields.perUser1 = start.ReadU16();
     m_heMuOtherUserFields.perUser2 = start.ReadU16();
     m_heMuOtherUserFields.perUserPosition = start.ReadU8();
     m_heMuOtherUserFields.perUserKnown = start.ReadU8();
-    return sizeof(HeMuOtherUserFields) + m_heMuOtherUserPad;
+    return RADIOTAP_HE_MU_OTHER_USER_SIZE_B + m_heMuOtherUserPad;
 }
 
 void
@@ -1071,29 +1012,26 @@ void
 RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
 {
     NS_LOG_FUNCTION(this << usigFields.common << usigFields.mask << usigFields.value);
-    NS_ASSERT_MSG(m_present.size() >= 2,
-                  "Number of it_present words (" << m_present.size() << ") is incorrect");
-    m_present.at(0) |= RADIOTAP_TLV;
 
-    NS_ASSERT_MSG(!(m_present.at(1) & RADIOTAP_USIG), "U-SIG radiotap field already present");
-    m_present.at(1) |= RADIOTAP_USIG;
+    UpdatePresentField(RADIOTAP_TLV);
+    m_usigTlvPad = GetPadding(m_length, RADIOTAP_TLV_ALIGNMENT_B);
+    m_usigTlv.type = RADIOTAP_USIG;
+    m_usigTlv.length = RADIOTAP_USIG_SIZE_B;
+    m_length += RADIOTAP_TLV_HEADER_SIZE_B + m_usigTlvPad;
 
-    m_usigTlvPad = ((4 - m_length % 4) % 4);
-    m_usigTlv.type = 32 + std::countr_zero<uint16_t>(RADIOTAP_USIG);
-    m_usigTlv.length = sizeof(UsigFields);
-    m_length += sizeof(TlvFields) + m_usigTlvPad;
-
-    m_usigPad = ((4 - m_length % 4) % 4);
+    UpdatePresentField(RADIOTAP_USIG);
+    m_usigPad = GetPadding(m_length, RADIOTAP_USIG_ALIGNMENT_B);
     m_usigFields = usigFields;
     m_length += m_usigTlv.length + m_usigPad;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present[0]=0x" << std::hex
-                      << m_present.at(0) << " m_present[1]=0x" << m_present.at(1) << std::dec);
+    NS_LOG_LOGIC(" m_length=" << m_length << " m_present[0]=0x" << std::hex << m_present.at(0)
+                              << " m_present[1]=0x" << m_present.at(1) << std::dec);
 }
 
 void
 RadiotapHeader::SerializeUsig(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_usigTlvPad);
     start.WriteU16(m_usigTlv.type);
     start.WriteU16(m_usigTlv.length);
@@ -1106,20 +1044,21 @@ RadiotapHeader::SerializeUsig(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeUsig(Buffer::Iterator start, uint32_t bytesRead)
 {
+    NS_LOG_FUNCTION(this << &start << bytesRead);
     const auto startBytesRead = bytesRead;
-    m_usigTlvPad = ((4 - bytesRead % 4) % 4);
+    m_usigTlvPad = GetPadding(bytesRead, RADIOTAP_TLV_ALIGNMENT_B);
     start.Next(m_usigTlvPad);
     bytesRead += m_usigTlvPad;
     m_usigTlv.type = start.ReadU16();
     m_usigTlv.length = start.ReadU16();
-    bytesRead += sizeof(TlvFields);
-    m_usigPad = ((4 - bytesRead % 4) % 4);
+    bytesRead += RADIOTAP_TLV_HEADER_SIZE_B;
+    m_usigPad = GetPadding(bytesRead, RADIOTAP_USIG_ALIGNMENT_B);
     start.Next(m_usigPad);
     bytesRead += m_usigPad;
     m_usigFields.common = start.ReadU32();
     m_usigFields.value = start.ReadU32();
     m_usigFields.mask = start.ReadU32();
-    bytesRead += sizeof(UsigFields);
+    bytesRead += RADIOTAP_USIG_SIZE_B;
     return bytesRead - startBytesRead;
 }
 
@@ -1134,29 +1073,28 @@ void
 RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
 {
     NS_LOG_FUNCTION(this << ehtFields.known);
-    NS_ASSERT_MSG(m_present.size() >= 2,
-                  "Number of it_present words (" << m_present.size() << ") is incorrect");
-    m_present.at(0) |= RADIOTAP_TLV;
 
-    NS_ASSERT_MSG(!(m_present.at(1) & RADIOTAP_EHT_SIG), "EHT radiotap field already present");
-    m_present.at(1) |= RADIOTAP_EHT_SIG;
+    UpdatePresentField(RADIOTAP_TLV);
+    m_ehtTlvPad = GetPadding(m_length, RADIOTAP_TLV_ALIGNMENT_B);
+    m_ehtTlv.type = RADIOTAP_EHT;
+    m_ehtTlv.length = RADIOTAP_EHT_KNOWN_SIZE_B +
+                      (RADIOTAP_EHT_DATA_SIZE_B * ehtFields.data.size()) +
+                      (ehtFields.userInfo.size() * RADIOTAP_EHT_USER_INFO_SIZE_B);
+    m_length += RADIOTAP_TLV_HEADER_SIZE_B + m_ehtTlvPad;
 
-    m_ehtTlvPad = ((4 - m_length % 4) % 4);
-    m_ehtTlv.type = 32 + std::countr_zero<uint16_t>(RADIOTAP_EHT_SIG);
-    m_ehtTlv.length = (40 + ehtFields.userInfo.size() * 4);
-    m_length += sizeof(TlvFields) + m_ehtTlvPad;
-
-    m_ehtPad = ((4 - m_length % 4) % 4);
+    UpdatePresentField(RADIOTAP_EHT);
+    m_ehtPad = GetPadding(m_length, RADIOTAP_EHT_ALIGNMENT_B);
     m_ehtFields = ehtFields;
     m_length += m_ehtTlv.length + m_ehtPad;
 
-    NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present[0]=0x" << std::hex
-                      << m_present.at(0) << " m_present[1]=0x" << m_present.at(1) << std::dec);
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present[0]=0x" << std::hex << m_present.at(0)
+                             << " m_present[1]=0x" << m_present.at(1) << std::dec);
 }
 
 void
 RadiotapHeader::SerializeEht(Buffer::Iterator& start) const
 {
+    NS_LOG_FUNCTION(this << &start);
     start.WriteU8(0, m_ehtTlvPad);
     start.WriteU16(m_ehtTlv.type);
     start.WriteU16(m_ehtTlv.length);
@@ -1175,32 +1113,34 @@ RadiotapHeader::SerializeEht(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeEht(Buffer::Iterator start, uint32_t bytesRead)
 {
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+
     const auto startBytesRead = bytesRead;
 
-    m_ehtTlvPad = ((4 - bytesRead % 4) % 4);
+    m_ehtTlvPad = GetPadding(bytesRead, RADIOTAP_TLV_ALIGNMENT_B);
     start.Next(m_ehtTlvPad);
     bytesRead += m_ehtTlvPad;
     m_ehtTlv.type = start.ReadU16();
     m_ehtTlv.length = start.ReadU16();
-    bytesRead += sizeof(TlvFields);
+    bytesRead += RADIOTAP_TLV_HEADER_SIZE_B;
 
-    m_ehtPad = ((4 - bytesRead % 4) % 4);
+    m_ehtPad = GetPadding(bytesRead, RADIOTAP_EHT_ALIGNMENT_B);
     start.Next(m_ehtPad);
     bytesRead += m_ehtPad;
     m_ehtFields.known = start.ReadU32();
-    bytesRead += 4;
+    bytesRead += RADIOTAP_EHT_KNOWN_SIZE_B;
     for (auto& dataField : m_ehtFields.data)
     {
         dataField = start.ReadU32();
-        bytesRead += 4;
+        bytesRead += RADIOTAP_EHT_DATA_SIZE_B;
     }
     const auto userInfosBytes = m_ehtTlv.length - bytesRead - m_ehtTlvPad;
-    NS_ASSERT(userInfosBytes % 4 == 0);
-    const std::size_t numUsers = userInfosBytes / 4;
+    NS_ASSERT(userInfosBytes % RADIOTAP_EHT_USER_INFO_SIZE_B == 0);
+    const std::size_t numUsers = userInfosBytes / RADIOTAP_EHT_USER_INFO_SIZE_B;
     for (std::size_t i = 0; i < numUsers; ++i)
     {
         m_ehtFields.userInfo.push_back(start.ReadU32());
-        bytesRead += 4;
+        bytesRead += RADIOTAP_EHT_USER_INFO_SIZE_B;
     }
 
     return bytesRead - startBytesRead;
