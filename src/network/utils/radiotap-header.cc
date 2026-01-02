@@ -1057,7 +1057,7 @@ RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
     NS_ASSERT_MSG(!(m_present.at(1) & RADIOTAP_USIG), "U-SIG radiotap field already present");
     m_present.at(1) |= RADIOTAP_USIG;
 
-    m_usigTlvPad = ((8 - m_length % 8) % 8);
+    m_usigTlvPad = ((4 - m_length % 4) % 4);
     m_usigTlv.type = 32 + std::countr_zero<uint16_t>(RADIOTAP_USIG);
     m_usigTlv.length = sizeof(UsigFields);
     m_length += sizeof(TlvFields) + m_usigTlvPad;
@@ -1086,7 +1086,7 @@ uint32_t
 RadiotapHeader::DeserializeUsig(Buffer::Iterator start, uint32_t bytesRead)
 {
     const auto startBytesRead = bytesRead;
-    m_usigTlvPad = ((8 - bytesRead % 8) % 8);
+    m_usigTlvPad = ((4 - bytesRead % 4) % 4);
     start.Next(m_usigTlvPad);
     bytesRead += m_usigTlvPad;
     m_usigTlv.type = start.ReadU16();
@@ -1120,7 +1120,7 @@ RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
     NS_ASSERT_MSG(!(m_present.at(1) & RADIOTAP_EHT_SIG), "EHT radiotap field already present");
     m_present.at(1) |= RADIOTAP_EHT_SIG;
 
-    m_ehtTlvPad = ((8 - m_length % 8) % 8);
+    m_ehtTlvPad = ((4 - m_length % 4) % 4);
     m_ehtTlv.type = 32 + std::countr_zero<uint16_t>(RADIOTAP_EHT_SIG);
     m_ehtTlv.length = (40 + ehtFields.userInfo.size() * 4);
     m_length += sizeof(TlvFields) + m_ehtTlvPad;
@@ -1156,7 +1156,7 @@ RadiotapHeader::DeserializeEht(Buffer::Iterator start, uint32_t bytesRead)
 {
     const auto startBytesRead = bytesRead;
 
-    m_ehtTlvPad = ((8 - bytesRead % 8) % 8);
+    m_ehtTlvPad = ((4 - bytesRead % 4) % 4);
     start.Next(m_ehtTlvPad);
     bytesRead += m_ehtTlvPad;
     m_ehtTlv.type = start.ReadU16();
