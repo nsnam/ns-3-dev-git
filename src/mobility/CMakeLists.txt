@@ -12,6 +12,7 @@ build_lib(
     model/constant-velocity-mobility-model.cc
     model/gauss-markov-mobility-model.cc
     model/geocentric-constant-position-mobility-model.cc
+    model/geocentric-ecef-mobility-model.cc
     model/geographic-positions.cc
     model/hierarchical-mobility-model.cc
     model/leo-circular-orbit-mobility-model.cc
@@ -38,6 +39,7 @@ build_lib(
     model/constant-velocity-mobility-model.h
     model/gauss-markov-mobility-model.h
     model/geocentric-constant-position-mobility-model.h
+    model/geocentric-ecef-mobility-model.h
     model/geographic-positions.h
     model/hierarchical-mobility-model.h
     model/leo-circular-orbit-mobility-model.h

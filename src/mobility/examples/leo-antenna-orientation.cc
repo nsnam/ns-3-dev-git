@@ -9,6 +9,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/geocentric-constant-position-mobility-model.h"
+#include "ns3/geocentric-ecef-mobility-model.h"
 #include "ns3/geographic-positions.h"
 #include "ns3/isotropic-antenna-model.h"
 #include "ns3/leo-orbit-node-helper.h"
@@ -163,8 +164,9 @@ main(int argc, char* argv[])
 
     // create node on the ground, create mobility, set position and aggregate mobility
     Ptr<Node> groundNode = CreateObject<Node>();
-    Ptr<GeocentricConstantPositionMobilityModel> groundNodeMobility =
-        CreateObject<GeocentricConstantPositionMobilityModel>();
+    Ptr<GeocentricEcefMobilityModel> groundNodeMobility =
+        CreateObject<GeocentricEcefMobilityModel>();
+
     groundNodeMobility->SetGeographicPosition(
         Vector(41.27522532634883, 1.9876349942412692, 14)); // CTTC LatLon
 
