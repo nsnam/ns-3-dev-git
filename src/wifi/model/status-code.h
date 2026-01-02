@@ -3,7 +3,8 @@
  *
  * SPDX-License-Identifier: GPL-2.0-only
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
 #ifndef STATUS_CODE_H
@@ -15,26 +16,63 @@
 namespace ns3
 {
 
-/**
- * Status code for association response.
- */
-class WIFI_EXPORT StatusCode
+/// Size in bytes of Status Code field, IEEE 802.11-2024 Figure 9-147
+constexpr uint32_t WIFI_STATUS_CODE_SIZE_B = 2;
+
+/// Status codes as defined in 802.11-2024, Table 9-80
+enum class StatusCodeValue : uint16_t
 {
-  public:
-    StatusCode();
+    SUCCESS = 0,
+    REFUSED_REASON_UNSPECIFIED = 1,
+    REQUEST_DECLINED = 37,                             // IEEE 802.11-2024 Table 9-80
+    REJECTED_ST_PREP_MAX_PREP_EXCEEDED = 154,          // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_ST_EXEC_EXCEEDED_PREP_TIMEOUT = 155,      // IEEE 802.11bn D2.0 Table 9-96
+    DENIED_UHR_NOT_SUPPORTED = 157,                    // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_ST_EXEC_TARGET_NOT_PREPARED = 158,        // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_INVALID_SECURITY_PROFILE = 159,           // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_TARGET_AP_UNKNOWN = 160,                  // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_TARGET_AP_NOT_IN_SAME_SMD = 161,          // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_NEIGHBOR_AP_INFO_NOT_AVAILABLE = 162,     // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_ST_PREP_NO_LINK_ACCEPTED = 163,           // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_ST_PREP_TARGET_AP_ALREADY_PREPARED = 164, // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_ST_EXEC_ALREADY_PERFORMED = 165,          // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_ST_PREP_MISSING_PTK_GEN_PARAMETERS = 171, // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_MAPC_SCHEME_AP_PARAMETERS = 172,          // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_MAPC_AGREEMENT_LIMIT_EXCEEDED = 173,      // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_UNSATISFACTORY_COORDINATION = 174,        // IEEE 802.11bn D2.0 Table 9-96
+    REJECTED_WITH_SUGGESTED_MAPC_PARAMETERS = 175,     // IEEE 802.11bn D2.0 Table 9-96
+
+    // Other status codes currently not implemented
+};
+
+/**
+ * Status code representation
+ */
+struct WIFI_EXPORT StatusCode
+{
     /**
-     * Set success bit to 0 (success).
+     * Constructor
+     * @param code initial status code value
      */
-    void SetSuccess();
-    /**
-     * Set success bit to 1 (failure).
-     */
-    void SetFailure();
+    explicit StatusCode(StatusCodeValue code);
+    StatusCode() = default;
+    ~StatusCode() = default;
 
     /**
-     * Return whether the status code is success.
+     * Set status code to SUCCESS
+     */
+    void SetSuccess();
+
+    /**
+     * Set status code to a failure value
+     * @param code status code value, if not provided REFUSED_REASON_UNSPECIFIED is used
+     */
+    void SetFailure(StatusCodeValue code = StatusCodeValue::REFUSED_REASON_UNSPECIFIED);
+
+    /**
+     * Return whether the status code is SUCCESS.
      *
-     * @return true if success,
+     * @return true if status code is SUCCESS,
      *         false otherwise
      */
     bool IsSuccess() const;
@@ -46,6 +84,7 @@ class WIFI_EXPORT StatusCode
      * the status code data by Serialize.
      */
     uint32_t GetSerializedSize() const;
+
     /**
      * @param start an iterator which points to where the status code should be written
      *
@@ -56,6 +95,7 @@ class WIFI_EXPORT StatusCode
      * header in a real network.
      */
     Buffer::Iterator Serialize(Buffer::Iterator start) const;
+
     /**
      * @param start an iterator which points to where the status code should be read.
      *
@@ -67,8 +107,7 @@ class WIFI_EXPORT StatusCode
      */
     Buffer::Iterator Deserialize(Buffer::Iterator start);
 
-  private:
-    uint16_t m_code; ///< status code
+    StatusCodeValue m_code{StatusCodeValue::SUCCESS}; ///< status code
 };
 
 /**

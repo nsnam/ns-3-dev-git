@@ -11,60 +11,54 @@
 namespace ns3
 {
 
-StatusCode::StatusCode()
+StatusCode::StatusCode(StatusCodeValue code)
+    : m_code(code)
 {
 }
 
 void
 StatusCode::SetSuccess()
 {
-    m_code = 0;
+    m_code = StatusCodeValue::SUCCESS;
 }
 
 void
-StatusCode::SetFailure()
+StatusCode::SetFailure(StatusCodeValue code)
 {
-    m_code = 1;
+    m_code = code;
 }
 
 bool
 StatusCode::IsSuccess() const
 {
-    return (m_code == 0);
+    return (m_code == StatusCodeValue::SUCCESS);
 }
 
 uint32_t
 StatusCode::GetSerializedSize() const
 {
-    return 2;
+    return WIFI_STATUS_CODE_SIZE_B;
 }
 
 Buffer::Iterator
 StatusCode::Serialize(Buffer::Iterator start) const
 {
-    start.WriteU16(m_code);
+    start.WriteU16(static_cast<uint16_t>(m_code));
     return start;
 }
 
 Buffer::Iterator
 StatusCode::Deserialize(Buffer::Iterator start)
 {
-    m_code = start.ReadU16();
+    m_code = static_cast<StatusCodeValue>(start.ReadU16());
     return start;
 }
 
 std::ostream&
 operator<<(std::ostream& os, const StatusCode& code)
 {
-    if (code.IsSuccess())
-    {
-        os << "success";
-    }
-    else
-    {
-        os << "failure";
-    }
-    return os;
+    return (code.IsSuccess()) ? os << "success"
+                              : os << "failure: " << static_cast<uint16_t>(code.m_code);
 }
 
 } // namespace ns3
