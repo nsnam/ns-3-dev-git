@@ -522,6 +522,12 @@ RadiotapHeader::UpdatePresentField(uint32_t field)
         NS_ASSERT_MSG(!(m_present.at(bitmaskIdx) & flag),
                       "Radiotap field " << field << " already set in present field at index "
                                         << bitmaskIdx);
+        NS_ASSERT_MSG((m_present.at(bitmaskIdx) < flag) &&
+                          ((m_present.size() == (bitmaskIdx + 1)) ||
+                           std::all_of(m_present.begin() + bitmaskIdx + 1,
+                                       m_present.end(),
+                                       [](uint32_t present) { return present == 0; })),
+                      "Radiotap fields not set in correct order");
     }
     if (const uint32_t morePresentWordFlag = (1 << RADIOTAP_MORE_PRESENT); bitmaskIdx > 0)
     {
