@@ -1077,6 +1077,7 @@ class RadiotapHeader : public Header
     int8_t m_antennaNoise{
         0}; //!< RF noise power at the antenna, dB difference from an arbitrary, fixed reference.
 
+    uint8_t m_mcsPad{0};     //!< MCS padding.
     McsFields m_mcsFields{}; //!< MCS fields.
 
     uint8_t m_ampduStatusPad{0}; //!< A-MPDU Status Flags, padding before A-MPDU Status Field.

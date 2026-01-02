@@ -745,8 +745,9 @@ RadiotapHeader::SetMcsFields(const McsFields& mcsFields)
     NS_LOG_FUNCTION(this << +mcsFields.known << +mcsFields.flags << +mcsFields.mcs);
 
     NS_ASSERT_MSG(!(m_present.at(0) & RADIOTAP_MCS), "MCS radiotap field already present");
+    m_mcsPad = ((1 - m_length % 1) % 1);
     m_present.at(0) |= RADIOTAP_MCS;
-    m_length += sizeof(McsFields);
+    m_length += sizeof(McsFields) + m_mcsPad;
     m_mcsFields = mcsFields;
 
     NS_LOG_LOGIC(this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
@@ -756,6 +757,7 @@ RadiotapHeader::SetMcsFields(const McsFields& mcsFields)
 void
 RadiotapHeader::SerializeMcs(Buffer::Iterator& start) const
 {
+    start.WriteU8(0, m_mcsPad);
     start.WriteU8(m_mcsFields.known);
     start.WriteU8(m_mcsFields.flags);
     start.WriteU8(m_mcsFields.mcs);
@@ -764,10 +766,12 @@ RadiotapHeader::SerializeMcs(Buffer::Iterator& start) const
 uint32_t
 RadiotapHeader::DeserializeMcs(Buffer::Iterator start, uint32_t bytesRead)
 {
+    m_mcsPad = ((1 - bytesRead % 1) % 1);
+    start.Next(m_mcsPad);
     m_mcsFields.known = start.ReadU8();
     m_mcsFields.flags = start.ReadU8();
     m_mcsFields.mcs = start.ReadU8();
-    return sizeof(McsFields);
+    return sizeof(McsFields) + m_mcsPad;
 }
 
 void
