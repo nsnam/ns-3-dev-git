@@ -158,7 +158,7 @@ class WifiTxStatsHelper
         template <typename Tuple, size_t Index = 0>
         size_t tuple_hash(const Tuple& tuple) const
         {
-            if constexpr (Index < std::tuple_size<Tuple>::value)
+            if constexpr (Index < std::tuple_size_v<Tuple>)
             {
                 size_t seed = tuple_hash<Tuple, Index + 1>(tuple);
                 hash_combine(seed, std::get<Index>(tuple));
