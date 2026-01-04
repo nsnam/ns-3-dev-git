@@ -1,16 +1,16 @@
 .. include:: replace.txt
 
+Applications
+============
+
 3GPP HTTP applications
 ----------------------
-
-Model Description
-*****************
 
 The model is a part of the applications library. The HTTP model is based on a commonly
 used 3GPP model in standardization `[4]`_.
 
 Design
-======
+~~~~~~
 
 This traffic generator simulates web browsing traffic using the Hypertext
 Transfer Protocol (HTTP). It consists of one or more ``ThreeGppHttpClient``
@@ -61,7 +61,7 @@ generate any significant traffic in the system. Reading time is illustrated in
 
 
 3GPP HTTP server description
-############################
+****************************
 
 3GPP HTTP server is a model application which simulates the traffic of a web server. This
 application works in conjunction with ``ThreeGppHttpClient`` applications.
@@ -91,7 +91,7 @@ affects all TCP sockets after the server application has started. It is mainly v
 packets received by ``ThreeGppHttpClient`` applications.
 
 3GPP HTTP client description
-############################
+****************************
 
 3GPP HTTP client is a model application which simulates the traffic of a web browser. This
 application works in conjunction with an ThreeGppHttpServer application.
@@ -147,7 +147,7 @@ compute the delay and RTT of the packet).
 
 
 References
-==========
+~~~~~~~~~~
 
 Many aspects of the traffic are randomly determined by ``ThreeGppHttpVariables``.
 A separate instance of this object is used by the HTTP server and client applications.
@@ -181,7 +181,7 @@ can be found in the following references:
 \
 
 Usage
-*****
+~~~~~
 
 The three-gpp-http-example can be referenced to see basic usage of the HTTP applications.
 In summary, using the ``ThreeGppHttpServerHelper`` and ``ThreeGppHttpClientHelper`` allow the
@@ -198,15 +198,8 @@ number on the client side ("ConnectionEstablished",
 "RxMainObjectPacket", "RxMainObject", "RxEmbeddedObjectPacket",
 "RxEmbeddedObject", "Rx", "RxDelay", "RxRtt", "StateTransition").
 
-
-Building the 3GPP HTTP applications
-===================================
-
-Building the applications does not require any special steps to be taken. It suffices to enable
-the applications module.
-
 Examples
-========
+~~~~~~~~
 
 For an example demonstrating HTTP applications
 run::
@@ -217,7 +210,7 @@ By default, the example will print out the web page requests of the client and r
 server and client receiving content packets by using LOG_INFO of ``ThreeGppHttpServer`` and ``ThreeGppHttpClient``.
 
 Tests
-=====
+~~~~~
 
 For testing HTTP applications, three-gpp-http-client-server-test is provided. Run::
 
@@ -231,5 +224,17 @@ these parameters is run multiple times to verify functionality with different ra
 Test cases themselves are rather simple: test verifies that HTTP object packet bytes sent match
 total bytes received by the client, and that ``ThreeGppHttpHeader`` matches the expected packet.
 
+.. include:: tgax-voip-traffic.inc
 
+.. include:: tgax-video-traffic.inc
 
+.. include:: tgax-virtual-desktop-traffic.inc
+
+.. include:: rta-tig-mobile-gaming-traffic.inc
+
+References
+~~~~~~~~~~
+
+.. [TGAX_EVAL] `IEEE 802.11-14/0571r12, "11ax Evaluation Methodology," IEEE 802.11 TGAX <https://mentor.ieee.org/802.11/dcn/14/11-14-0571-02-00ax-evaluation-methodology.docx>`_.
+
+.. [RTA-TIG] `IEEE 802.11-18/2009r6, "Real Time Applications TIG Report," IEEE 802.11 RTA TIG, Section 4.1: Real-time Mobile Gaming <https://mentor.ieee.org/802.11/dcn/18/11-18-2009-06-0rta-rta-report-draft.docx>`_.

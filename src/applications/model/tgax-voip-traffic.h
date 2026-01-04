@@ -29,7 +29,7 @@ class LaplacianRandomVariable;
  * @brief Generate VoIP traffic.
  *
  * This voip traffic generator follows requirements from IEEE 802.11-14/0571r12 - 11ax Evaluation
- * Methodology.
+ * Methodology (see applications documentation for full citation).
  *
  * The VoIP traffic alternates between periods of active talking and silence,
  * with given probabilities to transition from one state to another.

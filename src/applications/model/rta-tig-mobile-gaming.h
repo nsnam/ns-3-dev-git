@@ -26,7 +26,8 @@ class LargestExtremeValueRandomVariable;
  * @brief Generate RT mobile gaming traffic.
  *
  * This RT mobile gaming traffic generator follows requirements from IEEE 802.11 Real Time
- * Applications TIG Report (Section 4.1.4: Traffic model).
+ * Applications TIG Report (Section 4.1.4: Traffic model) (see applications documentation for
+ * full citation).
  *
  * RT mobile gaming traffic typically consists in small packets (between 30 and 500 Bytes) for both
  * uplink and downlink, where usually downlink packets are bigger than uplink ones. Packets are

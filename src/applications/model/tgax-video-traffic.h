@@ -30,7 +30,8 @@ class GammaRandomVariable;
  * @brief Generate video traffic.
  *
  * This video traffic generator implements the Buffered Video Steaming model from IEEE
- * 802.11-14/0571r12 - 11ax Evaluation Methodology.
+ * 802.11-14/0571r12 - 11ax Evaluation Methodology (see applications documentation for
+ * full citation).
  */
 class TgaxVideoTraffic : public SourceApplication
 {

@@ -32,7 +32,7 @@ class NormalRandomVariable;
  *
  * This VDI traffic generator follows requirements from IEEE 802.11-14/0571r12 - 11ax Evaluation
  * Methodology (Appendix 2 – Traffic model descriptions: Virtual Desktop Infrastructure Traffic
- * Model).
+ * Model) (see applications documentation for full citation).
  *
  * In this model, desktop application packet arrival interval obeys an exponential distribution and
  * packet size obeys a normal distribution.
