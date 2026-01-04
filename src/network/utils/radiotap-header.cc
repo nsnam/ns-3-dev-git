@@ -285,6 +285,7 @@ uint32_t
 RadiotapHeader::Deserialize(Buffer::Iterator start)
 {
     NS_LOG_FUNCTION(this << &start);
+    m_present.clear();
 
     uint8_t tmp = start.ReadU8(); // major version of radiotap header
     NS_ASSERT_MSG(tmp == 0x00, "RadiotapHeader::Deserialize(): Unexpected major version");
@@ -308,7 +309,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_TSFT) // bit 0
     {
-        bytesRead += DeserializeTsft(start, bytesRead);
+        const auto size = DeserializeTsft(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -337,7 +340,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_CHANNEL) // bit 3
     {
-        bytesRead += DeserializeChannel(start, bytesRead);
+        const auto size = DeserializeChannel(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -454,7 +459,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_MCS) // bit 19
     {
-        bytesRead += DeserializeMcs(start, bytesRead);
+        const auto size = DeserializeMcs(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -463,7 +470,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_AMPDU_STATUS)
     {
-        bytesRead += DeserializeAmpduStatus(start, bytesRead);
+        const auto size = DeserializeAmpduStatus(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -472,7 +481,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_VHT) // bit 21
     {
-        bytesRead += DeserializeVht(start, bytesRead);
+        const auto size = DeserializeVht(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -481,7 +492,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_HE) // bit 23
     {
-        bytesRead += DeserializeHe(start, bytesRead);
+        const auto size = DeserializeHe(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -490,7 +503,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_HE_MU) // bit 24
     {
-        bytesRead += DeserializeHeMu(start, bytesRead);
+        const auto size = DeserializeHeMu(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -499,7 +514,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if (m_present.at(0) & RADIOTAP_HE_MU_OTHER_USER) // bit 25
     {
-        bytesRead += DeserializeHeMuOtherUser(start, bytesRead);
+        const auto size = DeserializeHeMuOtherUser(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -508,7 +525,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_USIG) // bit 33
     {
-        bytesRead += DeserializeUsig(start, bytesRead);
+        const auto size = DeserializeUsig(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     //
@@ -517,7 +536,9 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     //
     if ((m_present.size() > 1) && m_present.at(1) & RADIOTAP_EHT_SIG) // bit 34
     {
-        bytesRead += DeserializeEht(start, bytesRead);
+        const auto size = DeserializeEht(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
     }
 
     NS_ASSERT_MSG(m_length == bytesRead,
