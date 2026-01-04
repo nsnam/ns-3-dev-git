@@ -132,6 +132,11 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate()
     m_helper.Pause();
 
     // calculate the steady-state probability that a node is initially paused
+    // See the discussion in MR 2675 and
+    // Mathai, Moschopoulos and Pederzoli, Rendiconti Del Circolo Matematico Di Palermo,
+    // Serie II, Tomo XLVIII (1999), p. 163.
+    // https://www.researchgate.net/publication/250677777_Random_points_associated_with_rectangles
+
     double expectedPauseTime = (m_minPause + m_maxPause) / 2;
     double a = m_maxX - m_minX;
     double b = m_maxY - m_minY;
@@ -142,7 +147,7 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate()
     double expectedTravelTime = 1.0 / 6.0 * (log1 + log2);
     expectedTravelTime +=
         1.0 / 15.0 * ((a * a * a) / (b * b) + (b * b * b) / (a * a)) -
-        1.0 / 15.0 * std::sqrt(a * a + b * b) * ((a * a) / (b * b) + (b * b) / (a * a) - 3);
+        1.0 / 15.0 * std::hypot(a, b) * ((a * a) / (b * b) + (b * b) / (a * a) - 3);
     if (v0 == v1)
     {
         expectedTravelTime /= v0;
@@ -198,7 +203,7 @@ SteadyStateRandomWaypointMobilityModel::DoInitializePrivate()
             x2 = m_x2_r->GetValue(0, a);
             y2 = m_y2_r->GetValue(0, b);
             u1 = m_u_r->GetValue(0, 1);
-            r = std::sqrt(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / (a * a + b * b));
+            r = std::hypot((x2 - x1), (y2 - y1)) / std::hypot(a, b);
             NS_ASSERT(r <= 1);
         }
         double u2 = m_u_r->GetValue(0, 1);
@@ -224,12 +229,9 @@ SteadyStateRandomWaypointMobilityModel::SteadyStateBeginWalk(const Vector& desti
     NS_ASSERT(m_minY <= destination.y && destination.y <= m_maxY);
     double u = m_u_r->GetValue(0, 1);
     double speed = std::pow(m_maxSpeed, u) / std::pow(m_minSpeed, u - 1);
-    double dx = (destination.x - m_current.x);
-    double dy = (destination.y - m_current.y);
-    double dz = (destination.z - m_current.z);
-    double k = speed / std::sqrt(dx * dx + dy * dy + dz * dz);
-
-    m_helper.SetVelocity(Vector(k * dx, k * dy, k * dz));
+    Vector deltaPos = destination - m_current;
+    double rate = speed / deltaPos.GetLength();
+    m_helper.SetVelocity(rate * deltaPos);
     m_helper.Unpause();
     Time travelDelay = Seconds(CalculateDistance(destination, m_current) / speed);
     m_event =
@@ -246,12 +248,9 @@ SteadyStateRandomWaypointMobilityModel::BeginWalk()
     NS_ASSERT(m_minY <= m_current.y && m_current.y <= m_maxY);
     Vector destination = m_position->GetNext();
     double speed = m_speed->GetValue();
-    double dx = (destination.x - m_current.x);
-    double dy = (destination.y - m_current.y);
-    double dz = (destination.z - m_current.z);
-    double k = speed / std::sqrt(dx * dx + dy * dy + dz * dz);
-
-    m_helper.SetVelocity(Vector(k * dx, k * dy, k * dz));
+    Vector deltaPos = destination - m_current;
+    double rate = speed / deltaPos.GetLength();
+    m_helper.SetVelocity(rate * deltaPos);
     m_helper.Unpause();
     Time travelDelay = Seconds(CalculateDistance(destination, m_current) / speed);
     m_event =

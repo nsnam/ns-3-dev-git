@@ -26,7 +26,7 @@ class SteadyStateRandomWaypointTest : public TestCase
 {
   public:
     SteadyStateRandomWaypointTest()
-        : TestCase("Check steady-state rwp mobility model velocity and position distributions")
+        : TestCase("Check steady-state rwp mobility model speed and position distributions")
     {
     }
 
@@ -91,18 +91,17 @@ SteadyStateRandomWaypointTest::DoRun()
 void
 SteadyStateRandomWaypointTest::DistribCompare()
 {
-    double velocity;
+    double speed;
     double sum_x = 0;
     double sum_y = 0;
     double sum_v = 0;
     for (auto i = mobilityStack.begin(); i != mobilityStack.end(); ++i)
     {
         auto model = (*i);
-        velocity =
-            std::sqrt(std::pow(model->GetVelocity().x, 2) + std::pow(model->GetVelocity().y, 2));
+        speed = model->GetVelocity().GetLength();
         sum_x += model->GetPosition().x;
         sum_y += model->GetPosition().y;
-        sum_v += velocity;
+        sum_v += speed;
     }
     double mean_x = sum_x / count;
     double mean_y = sum_y / count;
@@ -110,7 +109,7 @@ SteadyStateRandomWaypointTest::DistribCompare()
 
     NS_TEST_EXPECT_MSG_EQ_TOL(mean_x, 500, 25.0, "Got unexpected x-position mean value");
     NS_TEST_EXPECT_MSG_EQ_TOL(mean_y, 300, 15.0, "Got unexpected y-position mean value");
-    NS_TEST_EXPECT_MSG_EQ_TOL(mean_v, 2.6, 0.13, "Got unexpected velocity mean value");
+    NS_TEST_EXPECT_MSG_EQ_TOL(mean_v, 2.6, 0.13, "Got unexpected speed mean value");
 
     sum_x = 0;
     sum_y = 0;
@@ -119,13 +118,12 @@ SteadyStateRandomWaypointTest::DistribCompare()
     for (auto i = mobilityStack.begin(); i != mobilityStack.end(); ++i)
     {
         auto model = (*i);
-        velocity =
-            std::sqrt(std::pow(model->GetVelocity().x, 2) + std::pow(model->GetVelocity().y, 2));
+        speed = model->GetVelocity().GetLength();
         tmp = model->GetPosition().x - mean_x;
         sum_x += tmp * tmp;
         tmp = model->GetPosition().y - mean_y;
         sum_y += tmp * tmp;
-        tmp = velocity - mean_v;
+        tmp = speed - mean_v;
         sum_v += tmp * tmp;
     }
     double dev_x = std::sqrt(sum_x / (count - 1));
@@ -134,7 +132,7 @@ SteadyStateRandomWaypointTest::DistribCompare()
 
     NS_TEST_EXPECT_MSG_EQ_TOL(dev_x, 230, 10.0, "Got unexpected x-position standard deviation");
     NS_TEST_EXPECT_MSG_EQ_TOL(dev_y, 140, 7.0, "Got unexpected y-position standard deviation");
-    NS_TEST_EXPECT_MSG_EQ_TOL(dev_v, 4.4, 0.22, "Got unexpected velocity standard deviation");
+    NS_TEST_EXPECT_MSG_EQ_TOL(dev_v, 4.4, 0.22, "Got unexpected speed standard deviation");
 }
 
 /**

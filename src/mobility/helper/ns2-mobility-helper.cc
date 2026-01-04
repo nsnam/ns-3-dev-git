@@ -781,8 +781,8 @@ SetMovement(Ptr<ConstantVelocityMobilityModel> model,
     if (speed > 0)
     {
         // first calculate the time; time = distance / speed
-        double time = std::sqrt(std::pow(xFinalPosition - retval.m_finalPosition.x, 2) +
-                                std::pow(yFinalPosition - retval.m_finalPosition.y, 2)) /
+        double time = std::hypot(xFinalPosition - retval.m_finalPosition.x,
+                                 yFinalPosition - retval.m_finalPosition.y) /
                       speed;
         NS_LOG_DEBUG("at=" << at << " time=" << time);
         if (time == 0)
