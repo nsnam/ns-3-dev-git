@@ -193,8 +193,7 @@ BuildingsPropagationLossModel::EvaluateSigma(Ptr<MobilityBuildingInfo> a,
         }
         else
         {
-            double sigma = std::sqrt((m_shadowingSigmaOutdoor * m_shadowingSigmaOutdoor) +
-                                     (m_shadowingSigmaExtWalls * m_shadowingSigmaExtWalls));
+            double sigma = std::hypot(m_shadowingSigmaOutdoor, m_shadowingSigmaExtWalls);
             return sigma;
         }
     }
@@ -204,8 +203,7 @@ BuildingsPropagationLossModel::EvaluateSigma(Ptr<MobilityBuildingInfo> a,
     }
     else
     {
-        double sigma = std::sqrt((m_shadowingSigmaOutdoor * m_shadowingSigmaOutdoor) +
-                                 (m_shadowingSigmaExtWalls * m_shadowingSigmaExtWalls));
+        double sigma = std::hypot(m_shadowingSigmaOutdoor, m_shadowingSigmaExtWalls);
         return sigma;
     }
 }
