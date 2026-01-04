@@ -68,14 +68,14 @@ double
 Vector3D::GetLength() const
 {
     NS_LOG_FUNCTION(this);
-    return std::sqrt(x * x + y * y + z * z);
+    return std::hypot(x, y, z);
 }
 
 double
 Vector2D::GetLength() const
 {
     NS_LOG_FUNCTION(this);
-    return std::sqrt(x * x + y * y);
+    return std::hypot(x, y);
 }
 
 double
