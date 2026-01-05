@@ -8,6 +8,7 @@
 #include "steady-state-random-waypoint-mobility-model.h"
 
 #include "ns3/double.h"
+#include "ns3/event-id.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 

@@ -13,6 +13,7 @@
 #include "attribute.h"
 #include "callback.h"
 #include "deprecated.h"
+#include "event-id.h"
 #include "hash.h"
 #include "trace-source-accessor.h"
 

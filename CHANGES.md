@@ -35,6 +35,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (internet): The function `Ipv4InterfaceAddress::SetBroadcast` has been removed from the codebase because the broadcast address must be built from the IP address and mask.
 * (visualizer): The namespace `visualizer` is now used for PyViz related classes.
 * (visualizer): ``PyViz`` has been reformatted and modernized to current ns-3 standards.
+* (core): The `nstime.h` header does not include anymore `event-id.h`. It is possible that
+code might fail to compile due to this change. Adding an include to `event-id.h` fixes the issue.
 
 ### Changes to build system
 
