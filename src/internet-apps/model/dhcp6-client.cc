@@ -213,8 +213,6 @@ Dhcp6Client::InterfaceConfig::InterfaceConfig()
 
 Dhcp6Client::InterfaceConfig::~InterfaceConfig()
 {
-    std::cout << "InterfaceConfig::~InterfaceConfig" << std::endl;
-
     m_socket = nullptr;
     m_client = nullptr;
 
@@ -253,7 +251,6 @@ Dhcp6Client::InterfaceConfig::AcceptedAddress(const Ipv6Address& offeredAddress)
 
         // Notify the new lease.
         m_client->m_newLease(offeredAddress);
-        std::cerr << "* got a new lease " << offeredAddress << std::endl;
     }
 }
 

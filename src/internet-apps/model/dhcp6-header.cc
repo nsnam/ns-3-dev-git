@@ -142,8 +142,22 @@ Dhcp6Header::AddIdentifierOption(IdentifierOption& identifier,
                                  Options::OptionType optionType,
                                  Duid duid)
 {
-    // DUID type (2 bytes) + hw type (2 bytes) + Link-layer Address (variable)
-    uint16_t duidLength = 2 + 2 + duid.GetLength();
+    uint16_t duidLength = 0;
+    switch (duid.GetDuidType())
+    {
+    case Duid::Type::LL:
+        // DUID type (2 bytes) + hw type (2 bytes) + Link-layer Address (variable)
+        duidLength = 2 + 2 + duid.GetLength();
+        break;
+    case Duid::Type::LLT:
+        // DUID type (2 bytes) + hw type (2 bytes) + time (4 bytes) + Link-layer Address (variable)
+        duidLength = 2 + 2 + 4 + duid.GetLength();
+        break;
+    case Duid::Type::EN:
+    case Duid::Type::UUID:
+        NS_ASSERT_MSG(false, "Duid: Unsupported DUID type.");
+        break;
+    }
 
     // Set the option code, length, hardware type, link layer address.
     identifier.SetOptionCode(optionType);
@@ -513,7 +527,7 @@ Dhcp6Header::Deserialize(Buffer::Iterator start)
 
                     // Read DUID.
                     Duid duid;
-                    uint32_t read = duid.Deserialize(i, duidLength - 4);
+                    uint32_t read = duid.Deserialize(i, duidLength);
                     i.Next(read);
                     m_clientIdentifier.SetDuid(duid);
                     len += m_clientIdentifier.GetOptionLength();
@@ -535,7 +549,7 @@ Dhcp6Header::Deserialize(Buffer::Iterator start)
 
                 // Read DUID.
                 Duid duid;
-                uint32_t read = duid.Deserialize(i, duidLength - 4);
+                uint32_t read = duid.Deserialize(i, duidLength);
                 i.Next(read);
                 m_serverIdentifier.SetDuid(duid);
                 len += m_serverIdentifier.GetOptionLength();

@@ -26,11 +26,6 @@ namespace ns3
 class Duid
 {
   public:
-    /**
-     * @brief Default constructor.
-     */
-    Duid();
-
     /// DUID type.
     enum class Type
     {
@@ -115,6 +110,12 @@ class Duid
     uint8_t GetLength() const;
 
     /**
+     * @brief Return the identifier of the node.
+     * @return the identifier.
+     */
+    std::vector<uint8_t> GetIdentifier() const;
+
+    /**
      * @brief Set the time at which DUID is generated.
      * @param time the timestamp.
      */
@@ -141,43 +142,24 @@ class Duid
     uint32_t Deserialize(Buffer::Iterator start, uint32_t len);
 
     /**
-     * @brief Comparison operator
-     * @param duid header to compare
-     * @return true if the headers are equal
-     */
-    bool operator==(const Duid& duid) const;
-
-    /**
-     * @brief Less than operator.
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
      *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operand a is less than operand b
+     * @param other DUID to compare to this one
+     * @returns The result of the comparison.
      */
-    friend bool operator<(const Duid& a, const Duid& b);
-
-    // TypeId GetInstanceTypeId() const override;
-    // void Print(std::ostream& os) const override;
-    // uint32_t GetSerializedSize() const override;
-    // void Serialize(Buffer::Iterator start) const override;
-    // uint32_t Deserialize(Buffer::Iterator start) override;
+    std::strong_ordering operator<=>(const Duid& other) const = default;
 
   private:
-    /**
-     * @brief Return the identifier of the node.
-     * @return the identifier.
-     */
-    std::vector<uint8_t> GetIdentifier() const;
-
     /**
      * Type of the DUID.
      * We currently use only DUID-LL, based on the link-layer address.
      */
-    Type m_duidType;
+    Type m_duidType{Duid::Type::LL};
 
-    uint16_t m_hardwareType;           //!< Valid hardware type assigned by IANA.
-    Time m_time;                       //!< Time at which the DUID is generated. Used in DUID-LLT.
-    std::vector<uint8_t> m_identifier; //!< Identifier of the node in bytes.
+    uint16_t m_hardwareType{0};          //!< Valid hardware type assigned by IANA.
+    uint32_t m_time{0};                  //!< Time at which the DUID is generated. Used in DUID-LLT.
+    std::vector<uint8_t> m_identifier{}; //!< Identifier of the node in bytes.
 };
 
 /**

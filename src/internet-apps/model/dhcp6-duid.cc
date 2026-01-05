@@ -21,44 +21,6 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("Dhcp6Duid");
 
-Duid::Duid()
-{
-    m_duidType = Duid::Type::LL;
-    m_hardwareType = 0;
-    m_time = Time();
-    m_identifier = std::vector<uint8_t>();
-}
-
-bool
-Duid::operator==(const Duid& o) const
-{
-    return (m_duidType == o.m_duidType && m_hardwareType == o.m_hardwareType &&
-            m_identifier == o.m_identifier);
-}
-
-bool
-operator<(const Duid& a, const Duid& b)
-{
-    if (a.m_duidType < b.m_duidType)
-    {
-        return true;
-    }
-    else if (a.m_duidType > b.m_duidType)
-    {
-        return false;
-    }
-    if (a.m_hardwareType < b.m_hardwareType)
-    {
-        return true;
-    }
-    else if (a.m_hardwareType > b.m_hardwareType)
-    {
-        return false;
-    }
-    NS_ASSERT(a.GetLength() == b.GetLength());
-    return a.m_identifier < b.m_identifier;
-}
-
 bool
 Duid::IsInvalid() const
 {
@@ -86,6 +48,8 @@ Duid::GetDuidType() const
 void
 Duid::SetDuidType(Duid::Type duidType)
 {
+    NS_ASSERT_MSG(m_duidType == Type::LLT || m_duidType == Type::LL,
+                  "Duid: Unsupported DUID type.");
     m_duidType = duidType;
 }
 
@@ -176,19 +140,30 @@ Duid::Initialize(Ptr<Node> node)
 Time
 Duid::GetTime() const
 {
-    return m_time;
+    // This should be (according to RFC 8415)
+    // seconds since midnight (UTC), January 1, 2000, modulo 2 ^ 32
+    // We do not have an (easy) way to measure the difference.
+    return Seconds(m_time);
 }
 
 void
 Duid::SetTime(Time time)
 {
     NS_LOG_FUNCTION(this << time);
-    m_time = time;
+    // This should be (according to RFC 8415)
+    // seconds since midnight (UTC), January 1, 2000, modulo 2 ^ 32
+    // We do not have an (easy) way to measure the difference.
+
+    m_time = std::floor(std::fmod(time.GetSeconds(), std::pow(2, 32)));
 }
 
 uint32_t
 Duid::GetSerializedSize() const
 {
+    if (m_duidType == Type::LLT)
+    {
+        return 8 + m_identifier.size();
+    }
     return 4 + m_identifier.size();
 }
 
@@ -197,8 +172,12 @@ Duid::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
     i.WriteHtonU16(static_cast<std::underlying_type_t<Duid::Type>>(m_duidType));
-    i.WriteHtonU16(m_hardwareType);
 
+    i.WriteHtonU16(m_hardwareType);
+    if (m_duidType == Type::LLT)
+    {
+        i.WriteHtonU32(m_time);
+    }
     for (const auto& byte : m_identifier)
     {
         i.WriteU8(byte);
@@ -211,7 +190,19 @@ Duid::Deserialize(Buffer::Iterator start, uint32_t len)
     Buffer::Iterator i = start;
 
     m_duidType = static_cast<Duid::Type>(i.ReadNtohU16());
+
+    NS_ASSERT_MSG(m_duidType == Type::LLT || m_duidType == Type::LL,
+                  "Duid: Unsupported DUID type.");
+
     m_hardwareType = i.ReadNtohU16();
+    len -= 4;
+
+    if (m_duidType == Type::LLT)
+    {
+        m_time = i.ReadNtohU32();
+        len -= 4;
+    }
+
     m_identifier.resize(len);
 
     for (uint32_t j = 0; j < len; j++)
@@ -219,7 +210,7 @@ Duid::Deserialize(Buffer::Iterator start, uint32_t len)
         m_identifier[j] = i.ReadU8();
     }
 
-    return 4 + m_identifier.size();
+    return GetSerializedSize();
 }
 
 size_t
