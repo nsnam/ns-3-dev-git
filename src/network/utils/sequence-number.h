@@ -261,7 +261,7 @@ class SequenceNumber
      * @param other sequence number to compare to this sequence number
      * @returns true if the sequence numbers are equal
      */
-    bool operator==(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
+    constexpr bool operator==(const SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE>& other) const
     {
         return m_value == other.m_value;
     }

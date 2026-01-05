@@ -230,7 +230,7 @@ class Ipv4Address
      * @param other the other address to compare with
      * @returns comparison result
      */
-    std::strong_ordering operator<=>(const Ipv4Address& other) const = default;
+    constexpr std::strong_ordering operator<=>(const Ipv4Address& other) const = default;
 
   private:
     /**
@@ -322,7 +322,7 @@ class Ipv4Mask
      * @param a the other mask to compare with
      * @returns comparison result
      */
-    std::strong_ordering operator<=>(const Ipv4Mask& a) const = default;
+    constexpr std::strong_ordering operator<=>(const Ipv4Mask& a) const = default;
 
   private:
     uint32_t m_mask{0}; //!< IP mask

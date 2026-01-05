@@ -181,7 +181,7 @@ class LollipopCounter
      * @param [in] rhs Right hand argument
      * @return The result of the operator.
      */
-    friend bool operator==(const LollipopCounter& lhs, const LollipopCounter& rhs)
+    friend constexpr bool operator==(const LollipopCounter& lhs, const LollipopCounter& rhs)
     {
         NS_ABORT_MSG_IF(lhs.m_sequenceWindow != rhs.m_sequenceWindow,
                         "Can not compare two Lollipop Counters with different sequence windows");

@@ -408,7 +408,7 @@ class Ipv6Address
      * @param other the other address to compare with
      * @returns comparison result
      */
-    inline std::strong_ordering operator<=>(const Ipv6Address& other) const
+    inline constexpr std::strong_ordering operator<=>(const Ipv6Address& other) const
     {
         return m_address <=> other.m_address;
     }
@@ -419,7 +419,7 @@ class Ipv6Address
      * @param other the other address to compare with
      * @returns true if the operands are equal.
      */
-    inline bool operator==(const Ipv6Address& other) const
+    inline constexpr bool operator==(const Ipv6Address& other) const
     {
         return m_address == other.m_address;
     }
@@ -594,7 +594,7 @@ class Ipv6Prefix
      * @param other the other prefix to compare with
      * @returns comparison result
      */
-    std::strong_ordering operator<=>(const Ipv6Prefix& other) const = default;
+    constexpr std::strong_ordering operator<=>(const Ipv6Prefix& other) const = default;
 
   private:
     /**
