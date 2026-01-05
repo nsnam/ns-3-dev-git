@@ -117,13 +117,6 @@ class EventId
      */
     friend bool operator==(const EventId& a, const EventId& b);
     /**
-     * Test if two EventId's are not equal.
-     * @param [in] a The first EventId.
-     * @param [in] b The second EventId.
-     * @return \c true if the \pname{a} and \pname{b} are not the same event.
-     */
-    friend bool operator!=(const EventId& a, const EventId& b);
-    /**
      * Less than operator for two EventId's, based on time stamps.
      * @param [in] a The first EventId.
      * @param [in] b The second EventId.
@@ -147,12 +140,6 @@ operator==(const EventId& a, const EventId& b)
 {
     return a.m_uid == b.m_uid && a.m_context == b.m_context && a.m_ts == b.m_ts &&
            a.m_eventImpl == b.m_eventImpl;
-}
-
-inline bool
-operator!=(const EventId& a, const EventId& b)
-{
-    return !(a == b);
 }
 
 inline bool
