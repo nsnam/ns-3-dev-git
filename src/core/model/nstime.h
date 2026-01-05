@@ -778,6 +778,49 @@ class CORE_EXPORT Time
      */
     static bool StaticInit();
 
+    /**
+     * @name Comparison operators
+     * @{
+     */
+
+    /**
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * @param other Time to compare to this one
+     * @returns The result of the comparison.
+     */
+    constexpr std::strong_ordering operator<=>(const Time& other) const = default;
+
+    /**
+     * Compare a Time to an EventId.
+     *
+     * This is useful when you have cached a previously scheduled event:
+     *
+     *     m_event = Schedule (...);
+     *
+     * and later you want to know the relationship between that event
+     * and some other Time `when`:
+     *
+     *     if (when < m_event) ...
+     *
+     * @param [in] event The EventId
+     * @returns \c true if \p time is before (less than) the
+     *          time stamp of the EventId.
+     */
+    constexpr bool operator<(const EventId& event)
+    {
+        // Negative Time is less than any possible EventId, which are all >= 0.
+        if (m_data < 0)
+        {
+            return true;
+        }
+        // Time must be >= 0 so casting to unsigned is safe.
+        return static_cast<uint64_t>(m_data) < event.GetTs();
+    }
+
+    /**@}*/ // Comparison operators
+
   private:
     /**
      * @cond HIDE_FROM_DOXYGEN
@@ -811,21 +854,6 @@ class CORE_EXPORT Time
      *  @param [in] unit The Unit to convert existing Times to.
      */
     static void ConvertTimes(const Unit unit);
-
-    // Operator and related functions which need access
-
-    /**
-     * @name Comparison operators
-     * @{
-     */
-    friend bool operator==(const Time& lhs, const Time& rhs);
-    friend bool operator!=(const Time& lhs, const Time& rhs);
-    friend bool operator<=(const Time& lhs, const Time& rhs);
-    friend bool operator>=(const Time& lhs, const Time& rhs);
-    friend bool operator<(const Time& lhs, const Time& rhs);
-    friend bool operator>(const Time& lhs, const Time& rhs);
-    friend bool operator<(const Time& time, const EventId& event);
-    /**@}*/ // Comparison operators
 
     /**
      * @name Arithmetic operators
@@ -896,107 +924,6 @@ typedef void (*Time)(Time oldValue, Time newValue);
  * @relates Time
  */
 static bool g_TimeStaticInit [[maybe_unused]] = Time::StaticInit();
-
-/**
- * Equality operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the two input values are equal.
- */
-inline bool
-operator==(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data == rhs.m_data;
-}
-
-/**
- * Inequality operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the two input values not are equal.
- */
-inline bool
-operator!=(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data != rhs.m_data;
-}
-
-/**
- * Less than or equal operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is less than or equal to the second input value.
- */
-inline bool
-operator<=(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data <= rhs.m_data;
-}
-
-/**
- * Greater than or equal operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is greater than or equal to the second input value.
- */
-inline bool
-operator>=(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data >= rhs.m_data;
-}
-
-/**
- * Less than operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is less than the second input value.
- */
-inline bool
-operator<(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data < rhs.m_data;
-}
-
-/**
- * Greater than operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is greater than the second input value.
- */
-inline bool
-operator>(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data > rhs.m_data;
-}
-
-/**
- * Compare a Time to an EventId.
- *
- * This is useful when you have cached a previously scheduled event:
- *
- *     m_event = Schedule (...);
- *
- * and later you want to know the relationship between that event
- * and some other Time `when`:
- *
- *     if (when < m_event) ...
- *
- * @param [in] time The Time operand.
- * @param [in] event The EventId
- * @returns \c true if \p time is before (less than) the
- *          time stamp of the EventId.
- */
-inline bool
-operator<(const Time& time, const EventId& event)
-{
-    // Negative Time is less than any possible EventId, which are all >= 0.
-    if (time.m_data < 0)
-    {
-        return true;
-    }
-    // Time must be >= 0 so casting to unsigned is safe.
-    return static_cast<uint64_t>(time.m_data) < event.GetTs();
-}
 
 /**
  * Addition operator for Time.
