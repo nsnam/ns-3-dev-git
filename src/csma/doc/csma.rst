@@ -193,7 +193,7 @@ mode for correct results. The encapsulation mode is not sensed at the receiver.
 
 The CsmaNetDevice implements a random exponential backoff algorithm that is
 executed if the channel is determined to be busy (``TRANSMITTING`` or
-``PPROPAGATING``) when the device wants to start propagating. This results in a
+``PROPAGATING``) when the device wants to start propagating. This results in a
 random delay of up to pow (2, retries) - 1 microseconds before a retry is
 attempted. The default maximum number of retries is 1000.
 

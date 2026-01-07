@@ -72,7 +72,7 @@ class Ipv4InterfaceAddress
      * @brief Set local address
      * @param address the address
      *
-     * @note Functially identical to `Ipv4InterfaceAddress::SetLocal`.
+     * @note Functionally identical to `Ipv4InterfaceAddress::SetLocal`.
      *       This function is consistent with `Ipv6InterfaceAddress::SetAddress`.
      */
     void SetAddress(Ipv4Address address);

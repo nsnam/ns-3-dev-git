@@ -123,7 +123,7 @@ class EnvironmentVariable
          * \p delim character.  Keys may be assigned values by following
          * the key with the `=` character; any remaining text up to the next
          * delimiter will be taken as the value.  If no `=`
-         * is given the enpty string will be stored as the value.
+         * is given the empty string will be stored as the value.
          *
          * @param [in] envvar The environment variable.
          * @param [in] delim The delimiter between key,value pairs.
