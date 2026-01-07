@@ -63,25 +63,25 @@ Network Animator nam.  It is not possible to run a simulation
  * Copyright (c) 2024 Universita' degli Studi di Napoli Federico II
  * Copyright (c) 2025 Universita' degli Studi di Napoli Federico II
 
-./src/core/examples/hash-example.cc
+#./src/core/examples/hash-example.cc
 6ed21de2  brand-newness       peripherial
 
-./RELEASE_NOTES.md:1087
+#./RELEASE_NOTES.md:1087
 - Bug 2530 - aodv: Rename aodv::SetBalckListTimeout to aodv::SetBlackListTimeout
 
-./doc/installation/source/linux.rst:122
+#./doc/installation/source/linux.rst:122
   apt install gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3
 
-./src/lte/model/lte-mi-error-model.h:23:
+#./src/lte/model/lte-mi-error-model.h:23:
  *      for mobIlE Video AppLications) project, which is a
 
-./src/traffic-control/doc/tbf.rst:84:
+#./src/traffic-control/doc/tbf.rst:84:
 .. [Ref2] J. Vehent; Journey to the Center of the Linux Kernel: Traffic Control, Shaping and QoS; Available online at `<https://web.archive.org/web/20190930031243/http://wiki.linuxwall.info/doku.php/en:ressources:dossiers:networking:traffic_control#tbf_-_token_bucket_filter>`_.
 
-./src/traffic-control/model/codel-queue-disc.h:17:
+#./src/traffic-control/model/codel-queue-disc.h:17:
  * Codel, the COntrolled DELay Queueing discipline
 
-./CHANGES.md:
+#./CHANGES.md:
   * (dsr) Class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was renamed `DsrOptionRerrUnsupportedHeader`.
   * (internet) Enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was renamed `IPV6_EXT_AUTHENTICATION`.
   * (lr-wpan) Constant `aMaxBeaconPayloadLenght` from `lr-wpan-constants.h` was renamed `aMaxBeaconPayloadLength`.
@@ -109,13 +109,13 @@ Network Animator nam.  It is not possible to run a simulation
 * The spelling of the attribute `IntialCellVoltage` from `LiIonEnergySource` was corrected to `InitialCellVoltage`; this will affect existing users who were using the attribute with the misspelling.
 * The attribute `Recievers` in class `YansWifiPhy` was misspelled, so this has been corrected to `Receivers`.
 
-./doc/manual/source/working-with-docker.rst
+#./doc/manual/source/working-with-docker.rst
     067a8b748816715d93ede9099132d943c04b13fcc23b3b8a7e21d23c1096cc2a
 
-./src/lte/model/cqa-ff-mac-scheduler.cc
+#./src/lte/model/cqa-ff-mac-scheduler.cc
     std::map<LteFlowId_t, int> UEtoHOL;
         UEtoHOL.insert(std::pair<LteFlowId_t, int>(itLogicalChannels->first, delay));
                 int hol = UEtoHOL.find(flowId)->second;
 
-./src/mobility/model/steady-state-random-waypoint-mobility-model.cc
+#./src/mobility/model/steady-state-random-waypoint-mobility-model.cc
     // Serie II, Tomo XLVIII (1999), p. 163.
