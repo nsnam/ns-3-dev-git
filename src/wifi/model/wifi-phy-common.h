@@ -738,25 +738,6 @@ struct SnrPer
 {
     double snr{0.0}; ///< SNR in linear scale
     double per{1.0}; ///< PER
-
-    /**
-     * Default constructor.
-     */
-    SnrPer()
-    {
-    }
-
-    /**
-     * Constructor for SnrPer.
-     *
-     * @param s the SNR in linear scale
-     * @param p the PER
-     */
-    SnrPer(double s, double p)
-        : snr(s),
-          per(p)
-    {
-    }
 };
 
 /**
