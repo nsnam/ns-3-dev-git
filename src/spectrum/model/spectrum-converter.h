@@ -51,17 +51,6 @@ class SpectrumConverter : public SimpleRefCount<SpectrumConverter>
     Ptr<SpectrumValue> Convert(Ptr<const SpectrumValue> vvf) const;
 
   private:
-    /**
-     * Calculate the coefficient for value conversion between elements
-     *
-     * @param from BandInfo to convert from
-     * @param to  BandInfo to convert to
-     *
-     * @return the fraction of the value of the "from" BandInfos that is
-     * mapped to the "to" BandInfo
-     */
-    double GetCoefficient(const BandInfo& from, const BandInfo& to) const;
-
     std::vector<double> m_conversionMatrix; //!< matrix of conversion coefficients stored in
                                             //!< Compressed Row Storage format
     std::vector<size_t> m_conversionRowPtr; //!< offset of rows in m_conversionMatrix

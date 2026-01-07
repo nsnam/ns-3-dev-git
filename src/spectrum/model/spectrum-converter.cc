@@ -32,9 +32,18 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
     for (auto toit = toSpectrumModel->Begin(); toit != toSpectrumModel->End(); ++toit)
     {
         size_t colInd = 0;
+        auto bandInv = 1.0 / (toit->fh - toit->fl);
         for (auto fromit = fromSpectrumModel->Begin(); fromit != fromSpectrumModel->End(); ++fromit)
         {
-            double c = GetCoefficient(*fromit, *toit);
+            if (fromit->fh <= toit->fl || toit->fh <= fromit->fl)
+            {
+                ++colInd;
+                continue;
+            }
+            const auto maxLow = (fromit->fl > toit->fl) ? fromit->fl : toit->fl;
+            const auto minHigh = (fromit->fh < toit->fh) ? fromit->fh : toit->fh;
+            const auto coeff = (minHigh - maxLow) * bandInv;
+            const auto c = (coeff > 1.0) ? 1.0 : coeff;
             NS_LOG_LOGIC("(" << fromit->fl << "," << fromit->fh << ")"
                              << " --> "
                              << "(" << toit->fl << "," << toit->fh << ")"
@@ -49,20 +58,6 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
         }
         m_conversionRowPtr.push_back(rowPtr);
     }
-}
-
-double
-SpectrumConverter::GetCoefficient(const BandInfo& from, const BandInfo& to) const
-{
-    NS_LOG_FUNCTION(this);
-    if (from.fh <= to.fl || to.fh <= from.fl)
-    {
-        return 0.0;
-    }
-    const auto maxLow = (from.fl > to.fl) ? from.fl : to.fl;
-    const auto minHigh = (from.fh < to.fh) ? from.fh : to.fh;
-    const auto coeff = (minHigh - maxLow) / (to.fh - to.fl);
-    return (coeff > 1.0) ? 1.0 : coeff;
 }
 
 Ptr<SpectrumValue>

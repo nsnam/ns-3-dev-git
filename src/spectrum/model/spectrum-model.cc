@@ -103,7 +103,7 @@ SpectrumModel::IsOrthogonal(const SpectrumModel& other) const
     {
         for (auto otherIt = other.Begin(); otherIt != other.End(); ++otherIt)
         {
-            if (std::max(myIt->fl, otherIt->fl) < std::min(myIt->fh, otherIt->fh))
+            if (!(myIt->fh <= otherIt->fl || otherIt->fh <= myIt->fl))
             {
                 return false;
             }
