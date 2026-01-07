@@ -93,7 +93,6 @@ class MatrixArrayTestCase : public TestCase
      */
     MatrixArrayTestCase<T>& operator=(MatrixArrayTestCase<T>&&) = default;
 
-  protected:
   private:
     void DoRun() override;
 };

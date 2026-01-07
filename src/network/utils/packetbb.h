@@ -653,7 +653,6 @@ class PbbPacket : public SimpleRefCount<PbbPacket, Header>
      */
     bool operator==(const PbbPacket& other) const;
 
-  protected:
   private:
     PbbTlvBlock m_tlvList;                    //!< PbbTlv container
     std::list<Ptr<PbbMessage>> m_messageList; //!< PbbTlvBlock container

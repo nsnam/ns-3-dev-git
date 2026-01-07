@@ -129,7 +129,6 @@ class TcpYeah : public TcpNewReno
 
     Ptr<TcpCongestionOps> Fork() override;
 
-  protected:
   private:
     /**
      * @brief Enable YeAH algorithm to start taking YeAH samples

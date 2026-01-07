@@ -156,7 +156,6 @@ class TcpIllinois : public TcpNewReno
      */
     void PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt) override;
 
-  protected:
   private:
     /**
      * @brief Recalculate alpha and beta every RTT

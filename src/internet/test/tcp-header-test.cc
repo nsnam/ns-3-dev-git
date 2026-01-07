@@ -42,7 +42,6 @@ class TcpHeaderGetSetTestCase : public TestCase
      */
     TcpHeaderGetSetTestCase(std::string name);
 
-  protected:
   private:
     void DoRun() override;
     void DoTeardown() override;
