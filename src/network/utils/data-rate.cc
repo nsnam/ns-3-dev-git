@@ -180,42 +180,6 @@ DataRate::operator*=(uint64_t rhs)
     return *this;
 }
 
-bool
-DataRate::operator<(const DataRate& rhs) const
-{
-    return m_bps < rhs.m_bps;
-}
-
-bool
-DataRate::operator<=(const DataRate& rhs) const
-{
-    return m_bps <= rhs.m_bps;
-}
-
-bool
-DataRate::operator>(const DataRate& rhs) const
-{
-    return m_bps > rhs.m_bps;
-}
-
-bool
-DataRate::operator>=(const DataRate& rhs) const
-{
-    return m_bps >= rhs.m_bps;
-}
-
-bool
-DataRate::operator==(const DataRate& rhs) const
-{
-    return m_bps == rhs.m_bps;
-}
-
-bool
-DataRate::operator!=(const DataRate& rhs) const
-{
-    return m_bps != rhs.m_bps;
-}
-
 Time
 DataRate::CalculateBytesTxTime(uint32_t bytes) const
 {

@@ -281,12 +281,6 @@ PbbTlvBlock::operator==(const PbbTlvBlock& other) const
     return true;
 }
 
-bool
-PbbTlvBlock::operator!=(const PbbTlvBlock& other) const
-{
-    return !(*this == other);
-}
-
 /* End PbbTlvBlock class */
 
 PbbAddressTlvBlock::PbbAddressTlvBlock()
@@ -518,12 +512,6 @@ PbbAddressTlvBlock::operator==(const PbbAddressTlvBlock& other) const
         }
     }
     return true;
-}
-
-bool
-PbbAddressTlvBlock::operator!=(const PbbAddressTlvBlock& other) const
-{
-    return !(*this == other);
 }
 
 /* End PbbAddressTlvBlock Class */
@@ -999,12 +987,6 @@ PbbPacket::operator==(const PbbPacket& other) const
         }
     }
     return true;
-}
-
-bool
-PbbPacket::operator!=(const PbbPacket& other) const
-{
-    return !(*this == other);
 }
 
 /* End PbbPacket class */
@@ -1692,12 +1674,6 @@ PbbMessage::operator==(const PbbMessage& other) const
         }
     }
     return true;
-}
-
-bool
-PbbMessage::operator!=(const PbbMessage& other) const
-{
-    return !(*this == other);
 }
 
 /* End PbbMessage Class */
@@ -2415,12 +2391,6 @@ PbbAddressBlock::operator==(const PbbAddressBlock& other) const
     return m_addressTlvList == other.m_addressTlvList;
 }
 
-bool
-PbbAddressBlock::operator!=(const PbbAddressBlock& other) const
-{
-    return !(*this == other);
-}
-
 uint8_t
 PbbAddressBlock::GetPrefixFlags() const
 {
@@ -2970,12 +2940,6 @@ PbbTlv::operator==(const PbbTlv& other) const
         }
     }
     return true;
-}
-
-bool
-PbbTlv::operator!=(const PbbTlv& other) const
-{
-    return !(*this == other);
 }
 
 /* End PbbTlv Class */

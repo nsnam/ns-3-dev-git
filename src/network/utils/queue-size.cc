@@ -113,54 +113,6 @@ QueueSize::QueueSize(QueueSizeUnit unit, uint32_t value)
     NS_LOG_FUNCTION(this << static_cast<uint16_t>(unit) << value);
 }
 
-bool
-QueueSize::operator<(const QueueSize& rhs) const
-{
-    NS_ABORT_MSG_IF(m_unit != rhs.GetUnit(), "Cannot compare heterogeneous sizes");
-
-    return m_value < rhs.m_value;
-}
-
-bool
-QueueSize::operator<=(const QueueSize& rhs) const
-{
-    NS_ABORT_MSG_IF(m_unit != rhs.GetUnit(), "Cannot compare heterogeneous sizes");
-
-    return m_value <= rhs.m_value;
-}
-
-bool
-QueueSize::operator>(const QueueSize& rhs) const
-{
-    NS_ABORT_MSG_IF(m_unit != rhs.GetUnit(), "Cannot compare heterogeneous sizes");
-
-    return m_value > rhs.m_value;
-}
-
-bool
-QueueSize::operator>=(const QueueSize& rhs) const
-{
-    NS_ABORT_MSG_IF(m_unit != rhs.GetUnit(), "Cannot compare heterogeneous sizes");
-
-    return m_value >= rhs.m_value;
-}
-
-bool
-QueueSize::operator==(const QueueSize& rhs) const
-{
-    NS_ABORT_MSG_IF(m_unit != rhs.GetUnit(), "Cannot compare heterogeneous sizes");
-
-    return m_value == rhs.m_value;
-}
-
-bool
-QueueSize::operator!=(const QueueSize& rhs) const
-{
-    NS_ABORT_MSG_IF(m_unit != rhs.GetUnit(), "Cannot compare heterogeneous sizes");
-
-    return m_value != rhs.m_value;
-}
-
 QueueSizeUnit
 QueueSize::GetUnit() const
 {

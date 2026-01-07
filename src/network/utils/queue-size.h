@@ -113,46 +113,26 @@ class QueueSize
     QueueSize(std::string size);
 
     /**
-     * @return true if this size is less than rhs
-     *
+     * @brief Equality operator.
      * @param rhs the queue size to compare to this queue size
+     * @returns true if this size is equal to rhs
      */
-    bool operator<(const QueueSize& rhs) const;
+    inline bool operator==(const QueueSize& rhs) const
+    {
+        NS_ABORT_MSG_IF(m_unit != rhs.m_unit, "Cannot compare heterogeneous sizes");
+        return m_value == rhs.m_value;
+    }
 
     /**
-     * @return true if this size is less than or equal to rhs
-     *
+     * @brief Three-way comparison operator.
      * @param rhs the queue size to compare to this queue size
+     * @returns The result of the comparison.
      */
-    bool operator<=(const QueueSize& rhs) const;
-
-    /**
-     * @return true if this size is greater than rhs
-     *
-     * @param rhs the queue size to compare to this queue size
-     */
-    bool operator>(const QueueSize& rhs) const;
-
-    /**
-     * @return true if this size is greater than or equal to rhs
-     *
-     * @param rhs the queue size to compare to this queue size
-     */
-    bool operator>=(const QueueSize& rhs) const;
-
-    /**
-     * @return true if this size is equal to rhs
-     *
-     * @param rhs the queue size to compare to this queue size
-     */
-    bool operator==(const QueueSize& rhs) const;
-
-    /**
-     * @return true if this size is not equal to rhs
-     *
-     * @param rhs the queue size to compare to this queue size
-     */
-    bool operator!=(const QueueSize& rhs) const;
+    inline std::strong_ordering operator<=>(const QueueSize& rhs) const
+    {
+        NS_ABORT_MSG_IF(m_unit != rhs.m_unit, "Cannot compare heterogeneous sizes");
+        return m_value <=> rhs.m_value;
+    }
 
     /**
      * Get the underlying unit

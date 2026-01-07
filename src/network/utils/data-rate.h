@@ -176,46 +176,13 @@ class DataRate
     DataRate& operator*=(uint64_t rhs);
 
     /**
-     * @return true if this rate is less than rhs
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
      *
      * @param rhs the datarate to compare to this datarate
+     * @returns The result of the comparison.
      */
-    bool operator<(const DataRate& rhs) const;
-
-    /**
-     * @return true if this rate is less than or equal to rhs
-     *
-     * @param rhs the datarate to compare to this datarate
-     */
-    bool operator<=(const DataRate& rhs) const;
-
-    /**
-     * @return true if this rate is greater than rhs
-     *
-     * @param rhs the datarate to compare to this datarate
-     */
-    bool operator>(const DataRate& rhs) const;
-
-    /**
-     * @return true if this rate is greater than or equal to rhs
-     *
-     * @param rhs the datarate to compare to this datarate
-     */
-    bool operator>=(const DataRate& rhs) const;
-
-    /**
-     * @return true if this rate is equal to rhs
-     *
-     * @param rhs the datarate to compare to this datarate
-     */
-    bool operator==(const DataRate& rhs) const;
-
-    /**
-     * @return true if this rate is not equal to rhs
-     *
-     * @param rhs the datarate to compare to this datarate
-     */
-    bool operator!=(const DataRate& rhs) const;
+    auto operator<=>(const DataRate& rhs) const = default;
 
     /**
      * @brief Calculate transmission time
