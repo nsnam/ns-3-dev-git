@@ -55,10 +55,14 @@ double
 SpectrumConverter::GetCoefficient(const BandInfo& from, const BandInfo& to) const
 {
     NS_LOG_FUNCTION(this);
-    double coeff = std::min(from.fh, to.fh) - std::max(from.fl, to.fl);
-    coeff = std::max(0.0, coeff);
-    coeff = std::min(1.0, coeff / (to.fh - to.fl));
-    return coeff;
+    if (from.fh <= to.fl || to.fh <= from.fl)
+    {
+        return 0.0;
+    }
+    const auto maxLow = (from.fl > to.fl) ? from.fl : to.fl;
+    const auto minHigh = (from.fh < to.fh) ? from.fh : to.fh;
+    const auto coeff = (minHigh - maxLow) / (to.fh - to.fl);
+    return (coeff > 1.0) ? 1.0 : coeff;
 }
 
 Ptr<SpectrumValue>
