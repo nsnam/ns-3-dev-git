@@ -61,20 +61,11 @@ class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<FcfsPrio>
 
     FcfsWifiQueueScheduler();
 
-    /// drop policy
-    enum DropPolicy
-    {
-        DROP_NEWEST,
-        DROP_OLDEST
-    };
-
   private:
-    Ptr<WifiMpdu> HasToDropBeforeEnqueuePriv(AcIndex ac, Ptr<WifiMpdu> mpdu) override;
     void DoNotifyEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) override;
     void DoNotifyDequeue(AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) override;
     void DoNotifyRemove(AcIndex ac, const std::list<Ptr<WifiMpdu>>& mpdus) override;
 
-    DropPolicy m_dropPolicy; //!< Drop behavior of queue
     NS_LOG_TEMPLATE_DECLARE; //!< redefinition of the log component
 };
 

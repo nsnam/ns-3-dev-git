@@ -59,6 +59,13 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
      */
     WifiMacQueueSchedulerImpl();
 
+    /// drop policy
+    enum DropPolicy
+    {
+        DROP_NEWEST,
+        DROP_OLDEST
+    };
+
     /** @copydoc ns3::WifiMacQueueScheduler::SetWifiMac */
     void SetWifiMac(Ptr<WifiMac> mac) final;
     /** @copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,std::optional<uint8_t>,bool) */
@@ -110,7 +117,7 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                                          const WifiContainerQueueId& queueId,
                                          uint8_t linkId) final;
     /** @copydoc ns3::WifiMacQueueScheduler::HasToDropBeforeEnqueue */
-    Ptr<WifiMpdu> HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) final;
+    Ptr<WifiMpdu> HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) override;
     /** @copydoc ns3::WifiMacQueueScheduler::NotifyEnqueue */
     void NotifyEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu) final;
     /** @copydoc ns3::WifiMacQueueScheduler::NotifyDequeue */
@@ -231,14 +238,6 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
                                                   bool skipBlockedQueues);
 
     /**
-     * Check whether an MPDU has to be dropped before enqueuing the given MPDU.
-     *
-     * @param ac the Access Category of the MPDU being enqueued
-     * @param mpdu the MPDU to enqueue
-     * @return a pointer to the MPDU to drop, if any, or a null pointer, otherwise
-     */
-    virtual Ptr<WifiMpdu> HasToDropBeforeEnqueuePriv(AcIndex ac, Ptr<WifiMpdu> mpdu) = 0;
-    /**
      * Notify the scheduler that the given MPDU has been enqueued by the given Access
      * Category. The container queue in which the MPDU has been enqueued must be
      * assigned a priority value.
@@ -315,6 +314,7 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
     std::array<ReasonLinksMap, static_cast<std::size_t>(WifiRcvAddr::COUNT)> m_blockAllInfo;
 
     std::vector<PerAcInfo> m_perAcInfo{AC_UNDEF}; //!< vector of per-AC information
+    DropPolicy m_dropPolicy;                      //!< Drop behavior of queue
     NS_LOG_TEMPLATE_DECLARE;                      //!< the log component
 };
 
@@ -332,9 +332,17 @@ template <class Priority, class Compare>
 TypeId
 WifiMacQueueSchedulerImpl<Priority, Compare>::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::WifiMacQueueSchedulerImpl")
-                            .SetParent<WifiMacQueueScheduler>()
-                            .SetGroupName("Wifi");
+    static TypeId tid =
+        TypeId("ns3::WifiMacQueueSchedulerImpl")
+            .SetParent<WifiMacQueueScheduler>()
+            .SetGroupName("Wifi")
+            .AddAttribute("DropPolicy",
+                          "Upon enqueue with full queue, drop oldest (DropOldest) "
+                          "or newest (DropNewest) packet",
+                          EnumValue(DROP_NEWEST),
+                          MakeEnumAccessor<DropPolicy>(
+                              &WifiMacQueueSchedulerImpl<Priority, Compare>::m_dropPolicy),
+                          MakeEnumChecker(DROP_OLDEST, "DropOldest", DROP_NEWEST, "DropNewest"));
     return tid;
 }
 
@@ -865,7 +873,39 @@ Ptr<WifiMpdu>
 WifiMacQueueSchedulerImpl<Priority, Compare>::HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
     NS_LOG_FUNCTION(this << +ac << *mpdu);
-    return HasToDropBeforeEnqueuePriv(ac, mpdu);
+    auto queue = GetWifiMacQueue(ac);
+    if (queue->QueueBase::GetNPackets() < queue->GetMaxSize().GetValue())
+    {
+        // the queue is not full, do not drop anything
+        return nullptr;
+    }
+
+    // Control and management frames should be prioritized
+    if (m_dropPolicy == DROP_OLDEST || mpdu->GetHeader().IsCtl() || mpdu->GetHeader().IsMgt())
+    {
+        for (const auto& [priority, queueInfo] : GetSortedQueues(ac))
+        {
+            if (queueInfo.get().first.type == WIFI_MGT_QUEUE ||
+                queueInfo.get().first.type == WIFI_CTL_QUEUE)
+            {
+                // do not drop control or management frames
+                continue;
+            }
+
+            // do not drop frames that are inflight or to be retransmitted
+            Ptr<WifiMpdu> item;
+            while ((item = queue->PeekByQueueId(queueInfo.get().first, item)))
+            {
+                if (!item->IsInFlight() && !item->GetHeader().IsRetry())
+                {
+                    NS_LOG_DEBUG("Dropping " << *item);
+                    return item;
+                }
+            }
+        }
+    }
+    NS_LOG_DEBUG("Dropping received MPDU: " << *mpdu);
+    return mpdu;
 }
 
 template <class Priority, class Compare>

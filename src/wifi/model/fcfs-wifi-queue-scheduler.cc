@@ -10,7 +10,6 @@
 
 #include "wifi-mac-queue.h"
 
-#include "ns3/enum.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -55,64 +54,16 @@ NS_OBJECT_ENSURE_REGISTERED(FcfsWifiQueueScheduler);
 TypeId
 FcfsWifiQueueScheduler::GetTypeId()
 {
-    static TypeId tid =
-        TypeId("ns3::FcfsWifiQueueScheduler")
-            .SetParent<WifiMacQueueSchedulerImpl<Time>>()
-            .SetGroupName("Wifi")
-            .AddConstructor<FcfsWifiQueueScheduler>()
-            .AddAttribute("DropPolicy",
-                          "Upon enqueue with full queue, drop oldest (DropOldest) "
-                          "or newest (DropNewest) packet",
-                          EnumValue(DROP_NEWEST),
-                          MakeEnumAccessor<DropPolicy>(&FcfsWifiQueueScheduler::m_dropPolicy),
-                          MakeEnumChecker(FcfsWifiQueueScheduler::DROP_OLDEST,
-                                          "DropOldest",
-                                          FcfsWifiQueueScheduler::DROP_NEWEST,
-                                          "DropNewest"));
+    static TypeId tid = TypeId("ns3::FcfsWifiQueueScheduler")
+                            .SetParent<WifiMacQueueSchedulerImpl<FcfsPrio>>()
+                            .SetGroupName("Wifi")
+                            .AddConstructor<FcfsWifiQueueScheduler>();
     return tid;
 }
 
 FcfsWifiQueueScheduler::FcfsWifiQueueScheduler()
     : NS_LOG_TEMPLATE_DEFINE("FcfsWifiQueueScheduler")
 {
-}
-
-Ptr<WifiMpdu>
-FcfsWifiQueueScheduler::HasToDropBeforeEnqueuePriv(AcIndex ac, Ptr<WifiMpdu> mpdu)
-{
-    auto queue = GetWifiMacQueue(ac);
-    if (queue->QueueBase::GetNPackets() < queue->GetMaxSize().GetValue())
-    {
-        // the queue is not full, do not drop anything
-        return nullptr;
-    }
-
-    // Control and management frames should be prioritized
-    if (m_dropPolicy == DROP_OLDEST || mpdu->GetHeader().IsCtl() || mpdu->GetHeader().IsMgt())
-    {
-        for (const auto& [priority, queueInfo] : GetSortedQueues(ac))
-        {
-            if (queueInfo.get().first.type == WIFI_MGT_QUEUE ||
-                queueInfo.get().first.type == WIFI_CTL_QUEUE)
-            {
-                // do not drop control or management frames
-                continue;
-            }
-
-            // do not drop frames that are inflight or to be retransmitted
-            Ptr<WifiMpdu> item;
-            while ((item = queue->PeekByQueueId(queueInfo.get().first, item)))
-            {
-                if (!item->IsInFlight() && !item->GetHeader().IsRetry())
-                {
-                    NS_LOG_DEBUG("Dropping " << *item);
-                    return item;
-                }
-            }
-        }
-    }
-    NS_LOG_DEBUG("Dropping received MPDU: " << *mpdu);
-    return mpdu;
 }
 
 void
