@@ -119,6 +119,7 @@ set(source_files
     model/recipient-block-ack-agreement.cc
     model/reduced-neighbor-report.cc
     model/reference/error-rate-tables.cc
+    model/rr-wifi-queue-scheduler.cc
     model/simple-frame-capture-model.cc
     model/snr-tag.cc
     model/spectrum-wifi-phy.cc
@@ -297,6 +298,7 @@ set(header_files
     model/recipient-block-ack-agreement.h
     model/reduced-neighbor-report.h
     model/reference/error-rate-tables.h
+    model/rr-wifi-queue-scheduler.h
     model/simple-frame-capture-model.h
     model/snr-tag.h
     model/spectrum-wifi-phy.h

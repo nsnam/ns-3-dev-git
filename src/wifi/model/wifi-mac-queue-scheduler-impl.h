@@ -101,7 +101,7 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
     };
 
     /** @copydoc ns3::WifiMacQueueScheduler::SetWifiMac */
-    void SetWifiMac(Ptr<WifiMac> mac) final;
+    void SetWifiMac(Ptr<WifiMac> mac) override;
     /** @copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,std::optional<uint8_t>,bool) */
     std::optional<WifiContainerQueueId> GetNext(AcIndex ac,
                                                 std::optional<uint8_t> linkId,
