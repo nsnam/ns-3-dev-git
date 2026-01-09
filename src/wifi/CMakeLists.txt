@@ -149,6 +149,7 @@ set(source_files
     model/wifi-mac-queue-container.cc
     model/wifi-mac-queue-elem.cc
     model/wifi-mac-queue-scheduler.cc
+    model/wifi-mac-queue-scheduler-impl.cc
     model/wifi-mac-queue.cc
     model/wifi-mac-trailer.cc
     model/wifi-mac.cc

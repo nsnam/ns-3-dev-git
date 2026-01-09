@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <array>
+#include <compare>
 #include <functional>
 #include <iterator>
 #include <list>
@@ -32,6 +33,39 @@ namespace ns3
 
 class WifiMpdu;
 class WifiMacQueue;
+
+/**
+ * @ingroup wifi
+ *
+ * Definition of priority for container queues that can be specialized by subclasses by providing
+ * the type of the priority field. This definition gives precedence to control frames over frames
+ * of the other types, and to management frames over data frames. In case multiple container queues
+ * have precedence over others, the one with the highest priority is served.
+ *
+ * @tparam Prio \explicit Priority type (must provide the spaceship operator)
+ */
+template <class Prio>
+struct WifiSchedPrecedence
+{
+    Prio priority;               ///< priority
+    WifiContainerQueueType type; ///< type of container queue
+
+    /**
+     * Spaceship comparison operator.
+     *
+     * @param other WifiSchedPrecedence object to compare to this one
+     * @return the result of the comparison
+     */
+    std::weak_ordering operator<=>(const WifiSchedPrecedence<Prio>& other) const;
+
+    /**
+     * Equality operator, needed because equality testing never invokes the spaceship operator
+     * and the spaceship operator is non-defaulted.
+     *
+     * @return whether this object is equal to the given one
+     */
+    bool operator==(const WifiSchedPrecedence<Prio>&) const = default;
+};
 
 /**
  * @ingroup wifi
@@ -322,6 +356,33 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
  * Implementation of the templates declared above.
  */
 
+template <class Prio>
+std::weak_ordering
+WifiSchedPrecedence<Prio>::operator<=>(const WifiSchedPrecedence<Prio>& other) const
+{
+    // Control queues have the highest precedence
+    if (type == WIFI_CTL_QUEUE && other.type != WIFI_CTL_QUEUE)
+    {
+        return std::weak_ordering::less;
+    }
+    if (type != WIFI_CTL_QUEUE && other.type == WIFI_CTL_QUEUE)
+    {
+        return std::weak_ordering::greater;
+    }
+    // Management queues have the second highest precedence
+    if (type == WIFI_MGT_QUEUE && other.type != WIFI_MGT_QUEUE)
+    {
+        return std::weak_ordering::less;
+    }
+    if (type != WIFI_MGT_QUEUE && other.type == WIFI_MGT_QUEUE)
+    {
+        return std::weak_ordering::greater;
+    }
+    // we get here if both priority values refer to container queues of the same type,
+    // hence we can compare the time values.
+    return priority <=> other.priority;
+}
+
 template <class Priority, class Compare>
 WifiMacQueueSchedulerImpl<Priority, Compare>::WifiMacQueueSchedulerImpl()
     : NS_LOG_TEMPLATE_DEFINE("WifiMacQueueScheduler")
@@ -333,7 +394,7 @@ TypeId
 WifiMacQueueSchedulerImpl<Priority, Compare>::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::WifiMacQueueSchedulerImpl")
+        TypeId(GetTemplateClassName<WifiMacQueueSchedulerImpl<Priority, Compare>>())
             .SetParent<WifiMacQueueScheduler>()
             .SetGroupName("Wifi")
             .AddAttribute("DropPolicy",

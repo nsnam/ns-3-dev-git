@@ -17,45 +17,13 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("FcfsWifiQueueScheduler");
 
-bool
-operator==(const FcfsPrio& lhs, const FcfsPrio& rhs)
-{
-    return lhs.priority == rhs.priority && lhs.type == rhs.type;
-}
-
-bool
-operator<(const FcfsPrio& lhs, const FcfsPrio& rhs)
-{
-    // Control queues have the highest priority
-    if (lhs.type == WIFI_CTL_QUEUE && rhs.type != WIFI_CTL_QUEUE)
-    {
-        return true;
-    }
-    if (lhs.type != WIFI_CTL_QUEUE && rhs.type == WIFI_CTL_QUEUE)
-    {
-        return false;
-    }
-    // Management queues have the second highest priority
-    if (lhs.type == WIFI_MGT_QUEUE && rhs.type != WIFI_MGT_QUEUE)
-    {
-        return true;
-    }
-    if (lhs.type != WIFI_MGT_QUEUE && rhs.type == WIFI_MGT_QUEUE)
-    {
-        return false;
-    }
-    // we get here if both priority values refer to container queues of the same type,
-    // hence we can compare the time values.
-    return lhs.priority < rhs.priority;
-}
-
 NS_OBJECT_ENSURE_REGISTERED(FcfsWifiQueueScheduler);
 
 TypeId
 FcfsWifiQueueScheduler::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::FcfsWifiQueueScheduler")
-                            .SetParent<WifiMacQueueSchedulerImpl<FcfsPrio>>()
+                            .SetParent<WifiMacQueueSchedulerImpl<WifiSchedPrecedence<Time>>>()
                             .SetGroupName("Wifi")
                             .AddConstructor<FcfsWifiQueueScheduler>();
     return tid;
