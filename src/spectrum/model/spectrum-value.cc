@@ -29,13 +29,13 @@ SpectrumValue::SpectrumValue(Ptr<const SpectrumModel> sof)
 double&
 SpectrumValue::operator[](size_t index)
 {
-    return m_values.at(index);
+    return m_values[index];
 }
 
 const double&
 SpectrumValue::operator[](size_t index) const
 {
-    return m_values.at(index);
+    return m_values[index];
 }
 
 SpectrumModelUid_t
