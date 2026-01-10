@@ -26,6 +26,9 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
     m_toSpectrumModel = toSpectrumModel;
 
     size_t rowPtr = 0;
+    m_conversionMatrix.reserve(fromSpectrumModel->GetNumBands() * toSpectrumModel->GetNumBands());
+    m_conversionColInd.reserve(fromSpectrumModel->GetNumBands() * toSpectrumModel->GetNumBands());
+    m_conversionRowPtr.reserve(toSpectrumModel->GetNumBands());
     for (auto toit = toSpectrumModel->Begin(); toit != toSpectrumModel->End(); ++toit)
     {
         size_t colInd = 0;

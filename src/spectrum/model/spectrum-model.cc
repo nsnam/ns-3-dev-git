@@ -31,6 +31,7 @@ SpectrumModel::SpectrumModel(const std::vector<double>& centerFreqs)
 {
     NS_ASSERT(centerFreqs.size() > 1);
     m_uid = ++m_uidCount;
+    m_bands.reserve(centerFreqs.size());
 
     for (auto it = centerFreqs.begin(); it != centerFreqs.end(); ++it)
     {
