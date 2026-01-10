@@ -553,7 +553,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::SetPriority(AcIndex ac,
                                                           const WifiContainerQueueId& queueId,
                                                           const Priority& priority)
 {
-    NS_LOG_FUNCTION(this << +ac);
+    NS_LOG_FUNCTION(this << ac);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
     NS_ABORT_MSG_IF(GetWifiMacQueue(ac)->GetNBytes(queueId) == 0,
@@ -828,7 +828,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetQueueLinkMask(AcIndex ac,
                                                                const WifiContainerQueueId& queueId,
                                                                uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << +ac << +linkId);
+    NS_LOG_FUNCTION(this << ac << linkId);
 
     const auto queueInfoIt = m_perAcInfo[ac].queueInfoMap.find(queueId);
 
@@ -853,7 +853,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetNext(AcIndex ac,
                                                       std::optional<uint8_t> linkId,
                                                       bool skipBlockedQueues)
 {
-    NS_LOG_FUNCTION(this << +ac << linkId.has_value() << skipBlockedQueues);
+    NS_LOG_FUNCTION(this << ac << linkId.has_value() << skipBlockedQueues);
     return DoGetNext(ac, linkId, m_perAcInfo[ac].sortedQueues.begin(), skipBlockedQueues);
 }
 
@@ -864,7 +864,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::GetNext(AcIndex ac,
                                                       const WifiContainerQueueId& prevQueueId,
                                                       bool skipBlockedQueues)
 {
-    NS_LOG_FUNCTION(this << +ac << linkId.has_value() << skipBlockedQueues);
+    NS_LOG_FUNCTION(this << ac << linkId.has_value() << skipBlockedQueues);
 
     auto queueInfoIt = m_perAcInfo[ac].queueInfoMap.find(prevQueueId);
     NS_ABORT_IF(queueInfoIt == m_perAcInfo[ac].queueInfoMap.end() ||
@@ -884,7 +884,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoGetNext(
     typename SortedQueues::iterator sortedQueuesIt,
     bool skipBlockedQueues)
 {
-    NS_LOG_FUNCTION(this << +ac << linkId.has_value() << skipBlockedQueues);
+    NS_LOG_FUNCTION(this << ac << linkId.has_value() << skipBlockedQueues);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
     while (sortedQueuesIt != m_perAcInfo[ac].sortedQueues.end())
@@ -944,7 +944,7 @@ template <class Priority, class Compare>
 Ptr<WifiMpdu>
 WifiMacQueueSchedulerImpl<Priority, Compare>::HasToDropBeforeEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this << +ac << *mpdu);
+    NS_LOG_FUNCTION(this << ac << *mpdu);
     auto queue = GetWifiMacQueue(ac);
     if (queue->QueueBase::GetNPackets() < queue->GetMaxSize().GetValue())
     {
@@ -984,7 +984,7 @@ template <class Priority, class Compare>
 void
 WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu)
 {
-    NS_LOG_FUNCTION(this << +ac << *mpdu);
+    NS_LOG_FUNCTION(this << ac << *mpdu);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
     // add information for the queue storing the MPDU to the queue info map, if not present yet
@@ -1004,7 +1004,7 @@ void
 WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyDequeue(AcIndex ac,
                                                             const std::list<Ptr<WifiMpdu>>& mpdus)
 {
-    NS_LOG_FUNCTION(this << +ac);
+    NS_LOG_FUNCTION(this << ac);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
     DoNotifyDequeue(ac, mpdus);
@@ -1038,7 +1038,7 @@ void
 WifiMacQueueSchedulerImpl<Priority, Compare>::NotifyRemove(AcIndex ac,
                                                            const std::list<Ptr<WifiMpdu>>& mpdus)
 {
-    NS_LOG_FUNCTION(this << +ac);
+    NS_LOG_FUNCTION(this << ac);
     NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
 
     DoNotifyRemove(ac, mpdus);
