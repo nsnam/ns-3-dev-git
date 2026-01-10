@@ -68,7 +68,9 @@ WifiMacQueueContainer::GetItem(const const_iterator it) const
 WifiContainerQueueId
 WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
 {
-    const WifiMacHeader& hdr = mpdu->GetHeader();
+    // the given MPDU may be an alias and we need its original version to correctly identify the
+    // container queue in which the MPDU is enqueued
+    const auto& hdr = mpdu->GetOriginal()->GetHeader();
 
     WifiRcvAddr addrType;
     std::optional<Mac48Address> addr1;
