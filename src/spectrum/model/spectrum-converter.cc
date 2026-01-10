@@ -75,7 +75,7 @@ SpectrumConverter::Convert(Ptr<const SpectrumValue> fvvf) const
         double sum = 0;
         while (i < *convIt)
         {
-            sum += (*fvvf)[m_conversionColInd.at(i)] * m_conversionMatrix.at(i);
+            sum += (*fvvf)[m_conversionColInd[i]] * m_conversionMatrix[i];
             ++i;
         }
         *tvit = sum;
