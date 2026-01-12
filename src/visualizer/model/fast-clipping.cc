@@ -8,6 +8,8 @@
 
 #include "fast-clipping.h"
 
+#include <cstdint>
+
 namespace ns3
 {
 namespace visualizer
