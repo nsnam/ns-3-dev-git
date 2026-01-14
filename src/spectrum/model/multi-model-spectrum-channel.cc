@@ -246,6 +246,10 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
          rxInfoIterator != m_rxSpectrumModelInfoMap.end();
          ++rxInfoIterator)
     {
+        if (rxInfoIterator->second.m_rxPhys.empty())
+        {
+            continue;
+        }
         const auto rxSpectrumModelUid = rxInfoIterator->second.m_rxSpectrumModel->GetUid();
         NS_LOG_LOGIC("rxSpectrumModelUids " << rxSpectrumModelUid);
 
@@ -275,6 +279,11 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
          rxInfoIterator != m_rxSpectrumModelInfoMap.end();
          ++rxInfoIterator)
     {
+        if (rxInfoIterator->second.m_rxPhys.empty())
+        {
+            continue;
+        }
+
         const auto rxSpectrumModelUid = rxInfoIterator->second.m_rxSpectrumModel->GetUid();
 
         if ((txSpectrumModelUid != rxSpectrumModelUid) &&
