@@ -15,6 +15,15 @@
 *.plt
 *.routes
 *.tr
+*.txt
+*.xml
+*.csv
+*.json
+*.sqlite
+*.db
+*.png
+*.out
+*.gnuplot
 [D|U]l[A-Z][a-z]*Stats.txt
 
 \#*#
