@@ -28,7 +28,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 The version of clang-format enforced by the check-style-clang-format.py script for
 this release is version 20 only.
 
-Version 20 of the clang-tidy linter is now supported and recommended, although versions 15-19
+Version 21 of the clang-tidy linter is now supported and recommended, although versions 15-20
 are still compatible.
 
 Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
