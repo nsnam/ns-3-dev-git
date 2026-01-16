@@ -66,28 +66,6 @@ IdentifierOption::IdentifierOption()
 {
 }
 
-IdentifierOption::IdentifierOption(uint16_t hardwareType, Address linkLayerAddress, Time time)
-{
-    NS_LOG_FUNCTION(this << hardwareType << linkLayerAddress);
-    if (time.IsZero())
-    {
-        m_duid.SetDuidType(Duid::Type::LL);
-    }
-    else
-    {
-        m_duid.SetDuidType(Duid::Type::LLT);
-    }
-
-    m_duid.SetHardwareType(hardwareType);
-
-    uint8_t buffer[16];
-    linkLayerAddress.CopyTo(buffer);
-
-    std::vector<uint8_t> identifier;
-    std::copy(buffer, buffer + linkLayerAddress.GetLength(), identifier.begin());
-    m_duid.SetDuid(identifier);
-}
-
 void
 IdentifierOption::SetDuid(Duid duid)
 {

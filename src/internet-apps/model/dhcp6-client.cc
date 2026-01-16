@@ -12,6 +12,7 @@
 #include "dhcp6-duid.h"
 
 #include "ns3/address-utils.h"
+#include "ns3/enum.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/ipv6-interface.h"
 #include "ns3/ipv6-l3-protocol.h"
@@ -71,6 +72,23 @@ Dhcp6Client::GetTypeId()
                           TimeValue(Seconds(100)),
                           MakeTimeAccessor(&Dhcp6Client::m_solicitInterval),
                           MakeTimeChecker())
+            .AddAttribute("DuidType",
+                          "Configure the type of DUID used by the client.",
+                          EnumValue(Duid::Type::LL),
+                          MakeEnumAccessor<Duid::Type>(&Dhcp6Client::m_duidType),
+                          MakeEnumChecker(Duid::Type::LLT,
+                                          "LLT",
+                                          Duid::Type::EN,
+                                          "EN",
+                                          Duid::Type::LL,
+                                          "LL",
+                                          Duid::Type::UUID,
+                                          "UUID"))
+            .AddAttribute("DuidEnIdentifierLength",
+                          "Length of the identifier of the DUID-EN.",
+                          IntegerValue(8),
+                          MakeIntegerAccessor(&Dhcp6Client::m_DuidEnIdentifierLength),
+                          MakeIntegerChecker<uint16_t>(4, 65529))
             .AddTraceSource("NewLease",
                             "The client has obtained a lease",
                             MakeTraceSourceAccessor(&Dhcp6Client::m_newLease),
@@ -870,10 +888,17 @@ Dhcp6Client::Boot(Ptr<NetDevice> device)
     int32_t ifIndex = ipv6->GetInterfaceForDevice(device);
     Ptr<InterfaceConfig> dhcpInterface = m_interfaces[ifIndex];
 
-    Ptr<Node> node = GetNode();
     if (m_clientDuid.IsInvalid())
     {
-        m_clientDuid.Initialize(node);
+        Ptr<Node> node = GetNode();
+        // We use enterprise-number 0xf00dcafe (totally arbitrary)
+        // The current largest enterprise number is less than 0xffff, which means
+        // we use an unused number.
+        // The list of numbers is at
+        // https://www.iana.org/assignments/enterprise-numbers/
+
+        m_clientDuid.Initialize(m_duidType, node, m_DuidEnIdentifierLength);
+        NS_LOG_INFO("DHCPv6 client DUID created: " << m_clientDuid);
     }
 
     Dhcp6Header header;

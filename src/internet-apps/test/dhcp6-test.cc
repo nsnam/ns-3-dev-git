@@ -179,6 +179,104 @@ Dhcp6TestCase::DoRun()
  * @ingroup dhcp6-test
  * @ingroup tests
  *
+ * @brief DHCPv6 DUID tests
+ */
+class Dhcp6DuidTestCase : public TestCase
+{
+  public:
+    Dhcp6DuidTestCase();
+    ~Dhcp6DuidTestCase() override;
+
+  private:
+    void DoRun() override;
+};
+
+Dhcp6DuidTestCase::Dhcp6DuidTestCase()
+    : TestCase("Dhcp6 DUID test case ")
+{
+}
+
+Dhcp6DuidTestCase::~Dhcp6DuidTestCase()
+{
+}
+
+void
+Dhcp6DuidTestCase::DoRun()
+{
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    SimpleNetDeviceHelper simpleNetDevice;
+    simpleNetDevice.SetChannelAttribute("Delay", TimeValue(MilliSeconds(2)));
+    simpleNetDevice.SetDeviceAttribute("DataRate", DataRateValue(DataRate("5Mbps")));
+    NetDeviceContainer devices = simpleNetDevice.Install(nodes);
+
+    InternetStackHelper internetv6;
+    internetv6.Install(nodes);
+
+    Ipv6AddressHelper ipv6;
+    ipv6.SetBase(Ipv6Address("2001:cafe::"), Ipv6Prefix(64));
+    Ipv6InterfaceContainer i = ipv6.AssignWithoutAddress(devices);
+
+    Dhcp6Helper dhcp6Helper;
+    ApplicationContainer dhcpClients = dhcp6Helper.InstallDhcp6Client(nodes);
+
+    // DUID-LL
+    {
+        Duid duidTest;
+        duidTest.InitializeLL(nodes.Get(1));
+        std::ostringstream buffer;
+        buffer << duidTest;
+        NS_TEST_ASSERT_MSG_EQ(duidTest.GetSerializedSize(), 10, "Unexpected DUID-LL length.");
+        std::string reference{"DUID-LL HWtype: 1 Identifier: 0x000000000002"};
+        NS_TEST_ASSERT_MSG_EQ(buffer.str(), reference, "Unexpected DUID-LL.");
+    }
+
+    // DUID-LLT
+    {
+        Duid duidTest;
+        duidTest.InitializeLLT(nodes.Get(1));
+        std::ostringstream buffer;
+        buffer << duidTest;
+        NS_TEST_ASSERT_MSG_EQ(duidTest.GetSerializedSize(), 14, "Unexpected DUID-LLT length.");
+        std::string reference{"DUID-LLT HWtype: 1 Time: 0 Identifier: 0x000000000002"};
+        NS_TEST_ASSERT_MSG_EQ(buffer.str(), reference, "Unexpected DUID-LLT.");
+    }
+
+    // DUID-EN
+    {
+        Duid duidTest;
+        std::vector<uint8_t> identifier(32);
+        std::iota(identifier.begin(), identifier.end(), 0);
+
+        duidTest.InitializeEN(0xf00dcafe, identifier);
+        std::ostringstream buffer;
+        buffer << duidTest;
+        NS_TEST_ASSERT_MSG_EQ(duidTest.GetSerializedSize(), 38, "Unexpected DUID-EN length.");
+        std::string reference{"DUID-EN EnNumber: 0xf00dcafe Identifier: "
+                              "0x000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"};
+        NS_TEST_ASSERT_MSG_EQ(buffer.str(), reference, "Unexpected DUID-EN.");
+    }
+
+    // DUID-UUID
+    {
+        Duid duidTest;
+        std::vector<uint8_t> identifier(16);
+        std::iota(identifier.begin(), identifier.end(), 0);
+
+        duidTest.InitializeUUID(identifier);
+        std::ostringstream buffer;
+        buffer << duidTest;
+        NS_TEST_ASSERT_MSG_EQ(duidTest.GetSerializedSize(), 18, "Unexpected DUID-UUID length.");
+        std::string reference{"DUID-UUID UUID: 0x000102030405060708090a0b0c0d0e0f"};
+        NS_TEST_ASSERT_MSG_EQ(buffer.str(), reference, "Unexpected DUID-UUID.");
+    }
+}
+
+/**
+ * @ingroup dhcp6-test
+ * @ingroup tests
+ *
  * @brief DHCPv6 TestSuite
  */
 class Dhcp6TestSuite : public TestSuite
@@ -191,6 +289,7 @@ Dhcp6TestSuite::Dhcp6TestSuite()
     : TestSuite("dhcp6", Type::UNIT)
 {
     AddTestCase(new Dhcp6TestCase, TestCase::Duration::QUICK);
+    AddTestCase(new Dhcp6DuidTestCase, TestCase::Duration::QUICK);
 }
 
 static Dhcp6TestSuite dhcp6TestSuite; //!< Static variable for test initialization

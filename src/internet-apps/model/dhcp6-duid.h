@@ -47,7 +47,7 @@ class Duid
         /**
          * @brief Returns the hash of a DUID.
          * @param x the DUID
-         * @return the hash
+         * @returns the hash
          *
          * This method uses std::hash rather than class Hash
          * as speed is more important than cryptographic robustness.
@@ -56,74 +56,75 @@ class Duid
     };
 
     /**
-     * @brief Initialize the DUID for a client or server.
+     * Initialize a DUID.
+     *
+     * The DUID initialization logic is the following:
+     *   - DUID-LLT and DUID-LL: the identifier is created by selecting
+     *     the NetDevices with the longest MAC address length, and among
+     *     them, the one with the smallest index.
+     *   - DUID-LLT: the creation time is taken from the simulation time.
+     *   - DUID-EN: the Enterprise number is 0xf00dcafe (arbitrary number,
+     *     currently unused), and the identifier is based on the Node ID.
+     *   - DUID-UUID: the UUID is based on the Node ID.
+     *
+     * @param duidType the DUID type.
+     * @param node the node this DUID refers to
+     * @param enIdentifierLength the DUID-EN identifier length (unused in other DUID types)
+     */
+    void Initialize(Type duidType, Ptr<Node> node, uint32_t enIdentifierLength);
+
+    /**
+     * @brief Initialize the DUID-LL for a client or server.
      * @param node The node for which the DUID is to be generated.
      */
-    void Initialize(Ptr<Node> node);
+    void InitializeLL(Ptr<Node> node);
+
+    /**
+     * @brief Initialize the DUID-LLT for a client or server.
+     * @param node The node for which the DUID is to be generated.
+     */
+    void InitializeLLT(Ptr<Node> node);
+
+    /**
+     * @brief Initialize the DUID-EN for a client or server.
+     * @param enNumber The Enterprise Number.
+     * @param identifier The device Identifier.
+     */
+    void InitializeEN(uint32_t enNumber, const std::vector<uint8_t>& identifier);
+
+    /**
+     * @brief Initialize the DUID-EN for a client or server.
+     * @param uuid The UUID.
+     */
+    void InitializeUUID(const std::vector<uint8_t>& uuid);
 
     /**
      * @brief Check if the DUID is invalid.
-     * @return true if the DUID is invalid.
+     * @returns true if the DUID is invalid.
      */
     bool IsInvalid() const;
 
     /**
      * @brief Get the DUID type
-     * @return the DUID type.
+     * @returns the DUID type.
      */
     Type GetDuidType() const;
 
     /**
-     * @brief Set the DUID type
-     * @param duidType the DUID type.
-     */
-    void SetDuidType(Type duidType);
-
-    /**
-     * @brief Get the hardware type.
-     * @return the hardware type
-     */
-    uint16_t GetHardwareType() const;
-
-    /**
-     * @brief Set the hardware type.
-     * @param hardwareType the hardware type.
-     */
-    void SetHardwareType(uint16_t hardwareType);
-
-    /**
-     * @brief Set the identifier as the DUID.
-     * @param identifier the identifier of the node.
-     */
-    void SetDuid(std::vector<uint8_t> identifier);
-
-    /**
-     * @brief Get the time at which the DUID is generated.
-     * @return the timestamp.
-     */
-    Time GetTime() const;
-
-    /**
      * @brief Get the length of the DUID.
-     * @return the DUID length.
+     * @returns the DUID length.
      */
     uint8_t GetLength() const;
 
     /**
      * @brief Return the identifier of the node.
-     * @return the identifier.
+     * @returns the identifier.
      */
     std::vector<uint8_t> GetIdentifier() const;
 
     /**
-     * @brief Set the time at which DUID is generated.
-     * @param time the timestamp.
-     */
-    void SetTime(Time time);
-
-    /**
      * @brief Get the DUID serialized size.
-     * @return The DUID serialized sized in bytes.
+     * @returns The DUID serialized sized in bytes.
      */
     uint32_t GetSerializedSize() const;
 
@@ -137,46 +138,88 @@ class Duid
      * @brief Deserialize the DUID.
      * @param start The buffer iterator.
      * @param len The number of bytes to be read.
-     * @return The number of bytes read.
+     * @returns The number of bytes read.
      */
     uint32_t Deserialize(Buffer::Iterator start, uint32_t len);
+
+    /**
+     * @brief Comparison operator.
+     *
+     * @note Defined because gcc-13.3 raises an error in optimized builds.
+     * Other than that, the comparison is semantically identical to the default one.
+     *
+     * @param other DUID to compare to this one.
+     * @return true if the duids are equal.
+     */
+    bool operator==(const Duid& other) const;
 
     /**
      * Spaceship comparison operator. All the other comparison operators
      * are automatically generated from this one.
      *
-     * @param other DUID to compare to this one
+     * @note Defined because gcc-13.3 raises an error in optimized builds.
+     * Other than that, the comparison is semantically identical to the default one.
+     *
+     * @param a left operand DUID to compare.
+     * @param b right operand DUID to compare.
      * @returns The result of the comparison.
      */
-    std::strong_ordering operator<=>(const Duid& other) const = default;
+    friend std::strong_ordering operator<=>(const Duid& a, const Duid& b);
+
+    /**
+     * @brief Stream output operator.
+     *
+     * The DUID is printed according to its type, e.g.:
+     *   - DUID-LL HWtype: 1 Identifier: 0x000000000002
+     *   - DUID-LLT HWtype: 1 Time: 0 Identifier: 0x000000000002
+     *   - DUID-EN EnNumber: 0xf00dcafe Identifier: 0x000102030405060708090a
+     *   - DUID-UUID UUID: 0x000102030405060708090a0b0c0d0e0f
+     *
+     * @param os output stream
+     * @param duid The reference to the DUID object.
+     * @returns updated stream
+     */
+    friend std::ostream& operator<<(std::ostream& os, const Duid& duid);
 
   private:
     /**
-     * Type of the DUID.
-     * We currently use only DUID-LL, based on the link-layer address.
+     * DUID data offset.
+     *
+     * Each DUID has some fixed-length fields (e.g., Hardware Type), and a
+     * variable length part. This is the offset to the variable length part.
      */
-    Type m_duidType{Duid::Type::LL};
+    enum Offset
+    {
+        LLT = 6,
+        EN = 4,
+        LL = 2,
+        UUID = 0
+    };
 
-    uint16_t m_hardwareType{0};          //!< Valid hardware type assigned by IANA.
-    uint32_t m_time{0};                  //!< Time at which the DUID is generated. Used in DUID-LLT.
-    std::vector<uint8_t> m_identifier{}; //!< Identifier of the node in bytes.
+    /**
+     * Find a suitable NetDevice address to create a DUID-LL or DUID-LLT.
+     *
+     * We select the NetDevices with the longest MAC address length,
+     * and among them, the one with the smallest index.
+     *
+     * @param node The node for which the DUID is to be generated.
+     * @returns the L2 address for the DUID Hardware Identifier.
+     */
+    Address FindSuitableNetDeviceAddress(Ptr<Node> node);
+
+    /**
+     * Utility function to convert a 32-bit number to
+     * an array with its bytes in network order.
+     *
+     * @param[in] source the number to convert.
+     * @param[out] dest the converted number.
+     */
+    void HtoN(uint32_t source, std::vector<uint8_t>::iterator dest);
+
+    Type m_duidType{Duid::Type::LL}; //!< DUID type.
+
+    std::vector<uint8_t> m_blob{}; //!< DUID data, content depending on the DUID type.
 };
-
-/**
- * @brief Stream output operator
- * @param os output stream
- * @param duid The reference to the DUID object.
- * @return updated stream
- */
-std::ostream& operator<<(std::ostream& os, const Duid& duid);
-
-/**
- * Stream extraction operator
- * @param is input stream
- * @param duid The reference to the DUID object.
- * @return std::istream
- */
-std::istream& operator>>(std::istream& is, Duid& duid);
 
 } // namespace ns3
 

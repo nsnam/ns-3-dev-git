@@ -12,7 +12,9 @@
 #include "dhcp6-duid.h"
 
 #include "ns3/address-utils.h"
+#include "ns3/enum.h"
 #include "ns3/icmpv6-l4-protocol.h"
+#include "ns3/integer.h"
 #include "ns3/ipv6-interface.h"
 #include "ns3/ipv6-l3-protocol.h"
 #include "ns3/ipv6-packet-info-tag.h"
@@ -61,7 +63,24 @@ Dhcp6Server::GetTypeId()
                           "4000 seconds by default in Linux.",
                           TimeValue(Seconds(4000)),
                           MakeTimeAccessor(&Dhcp6Server::m_validLifetime),
-                          MakeTimeChecker());
+                          MakeTimeChecker())
+            .AddAttribute("DuidType",
+                          "Configure the type of DUID used by the server.",
+                          EnumValue(Duid::Type::LL),
+                          MakeEnumAccessor<Duid::Type>(&Dhcp6Server::m_duidType),
+                          MakeEnumChecker(Duid::Type::LLT,
+                                          "LLT",
+                                          Duid::Type::EN,
+                                          "EN",
+                                          Duid::Type::LL,
+                                          "LL",
+                                          Duid::Type::UUID,
+                                          "UUID"))
+            .AddAttribute("DuidEnIdentifierLength",
+                          "Length of the identifier of the DUID-EN.",
+                          IntegerValue(8),
+                          MakeIntegerAccessor(&Dhcp6Server::m_DuidEnIdentifierLength),
+                          MakeIntegerChecker<uint16_t>(4, 65529));
 
     return tid;
 }
@@ -663,10 +682,6 @@ Dhcp6Server::NetHandler(Ptr<Socket> socket)
         return;
     }
 
-    // Initialize the DUID before responding to the client.
-    Ptr<Node> node = GetNode();
-    m_serverDuid.Initialize(node);
-
     if (header.GetMessageType() == Dhcp6Header::MessageType::SOLICIT)
     {
         ProcessSolicit(iDev, header, senderAddr);
@@ -772,6 +787,19 @@ Dhcp6Server::StartApplication()
             ipv6->GetProtocol(Icmpv6L4Protocol::GetStaticProtocolNumber(), ifIndex));
 
         icmpv6->SetDhcpv6Callback(MakeCallback(&Dhcp6Server::ReceiveMflag, this));
+    }
+
+    // Initialize the DUID before responding to the client.
+    if (m_serverDuid.IsInvalid())
+    {
+        Ptr<Node> node = GetNode();
+        // We use enterprise-number 0xf00dcafe (totally arbitrary)
+        // The current largest enterprise number is less than 0xffff, which means
+        // we use an unused number.
+        // The list of numbers is at
+        // https://www.iana.org/assignments/enterprise-numbers/
+        m_serverDuid.Initialize(m_duidType, node, m_DuidEnIdentifierLength);
+        NS_LOG_INFO("DHCPv6 server DUID created: " << m_serverDuid);
     }
 
     m_leaseCleanupEvent = Simulator::Schedule(m_leaseCleanup, &Dhcp6Server::CleanLeases, this);

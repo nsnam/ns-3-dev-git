@@ -221,7 +221,6 @@ class Dhcp6Server : public Application
     void CleanLeases();
 
     Ptr<Socket> m_recvSocket;            //!< Socket bound to port 547.
-    Duid m_serverDuid;                   //!< Server DUID
     std::vector<LeaseInfo> m_subnets;    //!< List of managed subnets.
     Time m_leaseCleanup = Seconds(10.0); //!< Lease cleanup time
     EventId m_leaseCleanupEvent;         //!< Event ID for lease cleanup
@@ -260,6 +259,14 @@ class Dhcp6Server : public Application
      * Maximum value is REB_MAX_RT (RFC 8415, Section 7.6).
      */
     Time m_rebind;
+
+    Duid::Type m_duidType;             //!< DUID type.
+    uint16_t m_DuidEnIdentifierLength; //!< DUID-EN identifier length.
+
+    /**
+     * The server DUID, built by StartApplication() on fist usage.
+     */
+    Duid m_serverDuid;
 };
 } // namespace ns3
 

@@ -69,6 +69,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
+#include "ns3/enum.h"
 #include "ns3/internet-apps-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
@@ -169,6 +170,13 @@ main(int argc, char* argv[])
     dhcp6Helper.SetServerAttribute("RebindTime", StringValue("16s"));
     dhcp6Helper.SetServerAttribute("PreferredLifetime", StringValue("18s"));
     dhcp6Helper.SetServerAttribute("ValidLifetime", StringValue("20s"));
+    // We set an arbitrary DUID type for the server.
+    // There is no universal standard for the server's DUID type.
+    dhcp6Helper.SetServerAttribute("DuidType", StringValue("LLT"));
+    // We set an arbitrary DUID type for the client.
+    // There is no universal standard for the client's DUID type,
+    // but usually OSes setup the DUID during the OS installation.
+    dhcp6Helper.SetClientAttribute("DuidType", StringValue("UUID"));
 
     // DHCPv6 clients
     NodeContainer nodes = NodeContainer(nonRouterNodes.Get(1), nonRouterNodes.Get(2));

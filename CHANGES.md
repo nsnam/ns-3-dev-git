@@ -24,10 +24,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### Changes to existing API
 
 * Address type 0 was previously used as a wildcard. Type 0 is now disallowd for any practical use. In order to create an Address from raw bytes, you must now set the Address type beforehand. An example is in ArpHeader::Deserialize.
-* (applications) The trace source `UdpServer::Rx` has a changed trace signature as a result of the
-  move of this trace to the `SinkApplication` class.  Client code using this trace can either update
-  to the new `Rx` trace signature or instead use the same trace sink function or method with the
-  the `SinkApplication::RxWithoutAddress` trace.
+* (applications) The trace source `UdpServer::Rx` has a changed trace signature as a result of the move of this trace to the `SinkApplication` class.  Client code using this trace can either update to the new `Rx` trace signature or instead use the same trace sink function or method with the `SinkApplication::RxWithoutAddress` trace.
 * Initializing a Ipv[4,6]Address from a string using the constructor or the `Set` function will result in a crash if the string can not be parsed as an IPv4 or IPv6 address.
 * The `Ipv[4,6]Address::IsInitialized()` function has been deprecated and returns always `true`. The default value of Ipv4Address created with the constructor that takes no arguments is 0.0.0.0 (previously, it was 102.102.102.102), and an Ipv4Address instance can be checked against that unspecified address value (or use std::optional to denote an address that has not been set yet).
 * A new static function `Ipv[4,6]Address::CheckCompatible()` has been added to safely check if a string can be parsed as an IPv4 or IPv6 address.
@@ -38,6 +35,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (visualizer): ``PyViz`` has been reformatted and modernized to current ns-3 standards.
 * (core): The `nstime.h` header does not include anymore `event-id.h`. It is possible that
 code might fail to compile due to this change. Adding an include to `event-id.h` fixes the issue.
+* (internet-apps): The DHCPv6 model has been refactored, and now supports all the DUID types.
 
 ### Changes to build system
 

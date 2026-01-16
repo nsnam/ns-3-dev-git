@@ -142,22 +142,7 @@ Dhcp6Header::AddIdentifierOption(IdentifierOption& identifier,
                                  Options::OptionType optionType,
                                  Duid duid)
 {
-    uint16_t duidLength = 0;
-    switch (duid.GetDuidType())
-    {
-    case Duid::Type::LL:
-        // DUID type (2 bytes) + hw type (2 bytes) + Link-layer Address (variable)
-        duidLength = 2 + 2 + duid.GetLength();
-        break;
-    case Duid::Type::LLT:
-        // DUID type (2 bytes) + hw type (2 bytes) + time (4 bytes) + Link-layer Address (variable)
-        duidLength = 2 + 2 + 4 + duid.GetLength();
-        break;
-    case Duid::Type::EN:
-    case Duid::Type::UUID:
-        NS_ASSERT_MSG(false, "Duid: Unsupported DUID type.");
-        break;
-    }
+    uint16_t duidLength = duid.GetSerializedSize();
 
     // Set the option code, length, hardware type, link layer address.
     identifier.SetOptionCode(optionType);

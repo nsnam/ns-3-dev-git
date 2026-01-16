@@ -68,6 +68,7 @@ class Dhcp6Client : public Application
     void StartApplication() override;
     void StopApplication() override;
 
+  private:
     /**
      * @ingroup dhcp6
      *
@@ -232,6 +233,9 @@ class Dhcp6Client : public Application
 
     /**
      * @brief Used to send the Solicit message and start the DHCPv6 client.
+     *
+     * This function also builds the client's DUID on first invocation.
+     *
      * @param device The client interface.
      */
     void Boot(Ptr<NetDevice> device);
@@ -245,7 +249,6 @@ class Dhcp6Client : public Application
     /// Map each interface to its corresponding configuration details.
     std::unordered_map<uint32_t, Ptr<InterfaceConfig>> m_interfaces;
 
-    Duid m_clientDuid;                             //!< The client DUID.
     TracedCallback<const Ipv6Address&> m_newLease; //!< Trace the new lease.
 
     /// Track the IPv6 Address - IAID association.
@@ -264,6 +267,16 @@ class Dhcp6Client : public Application
 
     /// Random variable used to create the IAID.
     Ptr<RandomVariableStream> m_iaidStream;
+
+    Duid::Type m_duidType;             //!< DUID type.
+    uint16_t m_DuidEnIdentifierLength; //!< DUID-EN identifier length.
+
+    /**
+     * The client DUID, built on first usage in the Boot() function.
+     * We avoid to use `StartApplication()` to randomize the time
+     * of DUID-LLT.
+     */
+    Duid m_clientDuid;
 };
 
 /**

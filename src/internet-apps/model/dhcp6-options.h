@@ -139,14 +139,6 @@ class IdentifierOption : public Options
     IdentifierOption();
 
     /**
-     * @brief Constructor.
-     * @param hardwareType The hardware type.
-     * @param linkLayerAddress The link-layer address.
-     * @param time The time at which the DUID is generated.
-     */
-    IdentifierOption(uint16_t hardwareType, Address linkLayerAddress, Time time = Time());
-
-    /**
      * @brief Set the DUID.
      * @param duid The DUID.
      */
