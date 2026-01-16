@@ -161,9 +161,9 @@ WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity(MHz_u centerFrequency,
                                                           Watt_u txPower,
                                                           MHz_u guardBandwidth)
 {
-    NS_LOG_FUNCTION(centerFrequency << txPower << +guardBandwidth);
+    NS_LOG_FUNCTION(centerFrequency << txPower << guardBandwidth);
     MHz_u channelWidth{22}; // DSSS channels are 22 MHz wide
-    Hz_u carrierSpacing{312500};
+    auto carrierSpacing{SUBCARRIER_FREQUENCY_SPACING};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel({centerFrequency}, channelWidth, carrierSpacing, guardBandwidth));
     auto vit = c->ValuesBegin();
@@ -201,17 +201,17 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity(MHz_u centerFrequency,
     switch (static_cast<uint16_t>(channelWidth))
     {
     case 20:
-        carrierSpacing = Hz_u{312500};
+        carrierSpacing = SUBCARRIER_FREQUENCY_SPACING;
         innerSlopeWidth =
             static_cast<uint32_t>((Hz_u{2e6} / carrierSpacing) + 0.5); // [-11;-9] & [9;11]
         break;
     case 10:
-        carrierSpacing = Hz_u{156250};
+        carrierSpacing = SUBCARRIER_FREQUENCY_SPACING / 2;
         innerSlopeWidth =
             static_cast<uint32_t>((Hz_u{1e6} / carrierSpacing) + 0.5); // [-5.5;-4.5] & [4.5;5.5]
         break;
     case 5:
-        carrierSpacing = Hz_u{78125};
+        carrierSpacing = SUBCARRIER_FREQUENCY_SPACING / 4;
         innerSlopeWidth =
             static_cast<uint32_t>((Hz_u{5e5} / carrierSpacing) + 0.5); // [-2.75;-2.5] & [2.5;2.75]
         break;
@@ -276,7 +276,7 @@ WifiSpectrumValueHelper::CreateDuplicated20MhzTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
-    const Hz_u carrierSpacing{312500};
+    const auto carrierSpacing{SUBCARRIER_FREQUENCY_SPACING};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
     // assume all frequency segments have the same width, hence split the guard bandwidth
@@ -381,7 +381,7 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
-    const Hz_u carrierSpacing{312500};
+    const auto carrierSpacing{SUBCARRIER_FREQUENCY_SPACING};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
     // assume all frequency segments have the same width, hence split the guard bandwidth
@@ -495,7 +495,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity(
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << minInnerBand << minOuterBand
                     << lowestPoint);
-    const Hz_u carrierSpacing{78125};
+    const auto carrierSpacing{SUBCARRIER_FREQUENCY_SPACING_HE};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
     // assume all frequency segments have the same width, hence split the guard bandwidth
@@ -649,7 +649,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     };
     NS_LOG_FUNCTION(printFrequencies(centerFrequencies)
                     << channelWidth << txPower << guardBandwidth << printRuIndices(ru));
-    const Hz_u carrierSpacing{78125};
+    const auto carrierSpacing{SUBCARRIER_FREQUENCY_SPACING_HE};
     Ptr<SpectrumValue> c = Create<SpectrumValue>(
         GetSpectrumModel(centerFrequencies, channelWidth, carrierSpacing, guardBandwidth));
 
