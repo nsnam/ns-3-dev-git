@@ -17,6 +17,7 @@
 #include "ns3/ptr.h"
 #include "ns3/simulator.h"
 
+#include <algorithm>
 #include <iomanip>
 
 namespace ns3
