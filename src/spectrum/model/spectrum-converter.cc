@@ -18,10 +18,6 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("SpectrumConverter");
 
-SpectrumConverter::SpectrumConverter()
-{
-}
-
 SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
                                      Ptr<const SpectrumModel> toSpectrumModel)
 {
@@ -44,9 +40,9 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
             {
                 m_conversionMatrix.push_back(c);
                 m_conversionColInd.push_back(colInd);
-                rowPtr++;
+                ++rowPtr;
             }
-            colInd++;
+            ++colInd;
         }
         m_conversionRowPtr.push_back(rowPtr);
     }
@@ -67,7 +63,7 @@ SpectrumConverter::Convert(Ptr<const SpectrumValue> fvvf) const
 {
     NS_ASSERT(*(fvvf->GetSpectrumModel()) == *m_fromSpectrumModel);
 
-    Ptr<SpectrumValue> tvvf = Create<SpectrumValue>(m_toSpectrumModel);
+    auto tvvf = Create<SpectrumValue>(m_toSpectrumModel);
 
     auto tvit = tvvf->ValuesBegin();
     size_t i = 0; // Index of conversion coefficient
@@ -78,7 +74,7 @@ SpectrumConverter::Convert(Ptr<const SpectrumValue> fvvf) const
         while (i < *convIt)
         {
             sum += (*fvvf)[m_conversionColInd.at(i)] * m_conversionMatrix.at(i);
-            i++;
+            ++i;
         }
         *tvit = sum;
         ++tvit;

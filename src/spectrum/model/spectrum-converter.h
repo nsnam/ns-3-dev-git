@@ -41,8 +41,6 @@ class SpectrumConverter : public SimpleRefCount<SpectrumConverter>
     SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
                       Ptr<const SpectrumModel> toSpectrumModel);
 
-    SpectrumConverter();
-
     /**
      * Convert a particular ValueVsFreq instance to
      *
