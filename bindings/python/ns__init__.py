@@ -543,8 +543,7 @@ def load_modules():
     setattr(cppyy.gbl.ns3, "cppyy", cppyy)
 
     # Set up a few tricks
-    cppyy.cppdef(
-        """
+    cppyy.cppdef("""
         using namespace ns3;
         bool Time_ge(Time& a, Time& b){ return a >= b;}
         bool Time_eq(Time& a, Time& b){ return a == b;}
@@ -552,8 +551,7 @@ def load_modules():
         bool Time_le(Time& a, Time& b){ return a <= b;}
         bool Time_gt(Time& a, Time& b){ return a > b;}
         bool Time_lt(Time& a, Time& b){ return a < b;}
-    """
-    )
+    """)
     cppyy.gbl.ns3.Time.__ge__ = cppyy.gbl.Time_ge
     cppyy.gbl.ns3.Time.__eq__ = cppyy.gbl.Time_eq
     cppyy.gbl.ns3.Time.__ne__ = cppyy.gbl.Time_ne
@@ -574,8 +572,7 @@ def load_modules():
 
     cppyy.gbl.ns3.Node.__del__ = Node_del
 
-    cppyy.cppdef(
-        """
+    cppyy.cppdef("""
         using namespace ns3;
         std::tuple<bool, TypeId> LookupByNameFailSafe(std::string name)
         {
@@ -583,8 +580,7 @@ def load_modules():
             bool ok = TypeId::LookupByNameFailSafe(name, &id);
             return std::make_tuple(ok, id);
         }
-    """
-    )
+    """)
     setattr(cppyy.gbl.ns3, "LookupByNameFailSafe", cppyy.gbl.LookupByNameFailSafe)
 
     return cppyy.gbl.ns3

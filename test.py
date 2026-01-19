@@ -322,7 +322,7 @@ def read_test(test):
 # expected that this output will be fine for developers looking for problems.
 #
 def node_to_text(test, f, test_type="Suite"):
-    (result, name, reason, time_real) = read_test(test)
+    result, name, reason, time_real = read_test(test)
     if reason:
         reason = " (%s)" % reason
 
@@ -390,7 +390,7 @@ def translate_to_html(results_file, html_file):
             #
             # For each test suite, get its name, result and execution time info
             #
-            (result, name, reason, time) = read_test(suite)
+            result, name, reason, time = read_test(suite)
 
             #
             # Print a level three header with the result, name and time.  If the
@@ -470,7 +470,7 @@ def translate_to_html(results_file, html_file):
                 # Get the name, result and timing information from xml to use in
                 # printing table below.
                 #
-                (result, name, reason, time) = read_test(case)
+                result, name, reason, time = read_test(case)
 
                 #
                 # If the test case failed, we iterate through possibly multiple
@@ -583,7 +583,7 @@ def translate_to_html(results_file, html_file):
             #
             # Get the result and name of the example in question
             #
-            (result, name, reason, time) = read_test(example)
+            result, name, reason, time = read_test(example)
 
             #
             # If the example either failed or crashed, print its result status
@@ -1372,7 +1372,7 @@ def run_tests():
     #
     if args.kinds:
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-type-list")
-        (rc, standard_out, standard_err, et) = run_job_synchronously(
+        rc, standard_out, standard_err, et = run_job_synchronously(
             path_cmd, os.getcwd(), False, False
         )
         print(standard_out)
@@ -1390,7 +1390,7 @@ def run_tests():
                 path_cmd = os.path.join(
                     "utils", test_runner_name + " --print-test-name-list --print-test-types"
                 )
-            (rc, standard_out, standard_err, et) = run_job_synchronously(
+            rc, standard_out, standard_err, et = run_job_synchronously(
                 path_cmd, os.getcwd(), False, False
             )
             if rc != 0:
@@ -1508,7 +1508,7 @@ def run_tests():
     if len(args.suite):
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
-        (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        rc, suites, standard_err, et = run_job_synchronously(path_cmd, os.getcwd(), False, False)
 
         if isinstance(suites, bytes):
             suites = suites.decode()
@@ -1533,12 +1533,12 @@ def run_tests():
                 "utils",
                 test_runner_name + " --print-test-name-list --test-type=%s" % args.constrain,
             )
-            (rc, suites, standard_err, et) = run_job_synchronously(
+            rc, suites, standard_err, et = run_job_synchronously(
                 path_cmd, os.getcwd(), False, False
             )
         else:
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
-            (rc, suites, standard_err, et) = run_job_synchronously(
+            rc, suites, standard_err, et = run_job_synchronously(
                 path_cmd, os.getcwd(), False, False
             )
     else:
@@ -1566,7 +1566,7 @@ def run_tests():
         path_cmd = os.path.join(
             "utils", test_runner_name + " --print-test-name-list --test-type=%s" % "performance"
         )
-        (rc, performance_tests, standard_err, et) = run_job_synchronously(
+        rc, performance_tests, standard_err, et = run_job_synchronously(
             path_cmd, os.getcwd(), False, False
         )
         if isinstance(performance_tests, bytes):

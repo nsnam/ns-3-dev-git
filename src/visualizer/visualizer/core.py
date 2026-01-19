@@ -475,7 +475,7 @@ class Node(PyVizObject):
         try:
             bounds = self.visualizer.canvas.get_bounds()
 
-            (min_x, min_y, max_x, max_y) = bounds
+            min_x, min_y, max_x, max_y = bounds
 
             min_x = min(x, min_x)
             min_y = min(y, min_y)

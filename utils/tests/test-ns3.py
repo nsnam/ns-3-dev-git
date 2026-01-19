@@ -1255,15 +1255,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Cause a sigsegv
         sigsegv_example = os.path.join(ns3_path, "scratch", "sigsegv.cc")
         with open(sigsegv_example, "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                     int main (int argc, char *argv[])
                     {
                       char *s = "hello world"; *s = 'H';
                       return 0;
                     }
-                    """
-            )
+                    """)
         return_code, stdout, stderr = run_ns3("run sigsegv")
         if win32:
             self.assertEqual(return_code, 4294967295)  # unsigned -1
@@ -1275,8 +1273,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Cause an abort
         abort_example = os.path.join(ns3_path, "scratch", "abort.cc")
         with open(abort_example, "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                     #include "ns3/core-module.h"
 
                     using namespace ns3;
@@ -1285,8 +1282,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                       NS_ABORT_IF(true);
                       return 0;
                     }
-                    """
-            )
+                    """)
         return_code, stdout, stderr = run_ns3("run abort")
         if win32:
             self.assertNotEqual(return_code, 0)
@@ -1511,16 +1507,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             f.write("")
         for invalid_or_nonexistent_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/CMakeLists.txt", "w", encoding="utf-8") as f:
-                f.write(
-                    """
+                f.write("""
                         build_lib(
                             LIBNAME borked
                             SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                             LIBRARIES_TO_LINK ${libcore} %s
                         )
-                        """
-                    % invalid_or_nonexistent_library
-                )
+                        """ % invalid_or_nonexistent_library)
 
             return_code, stdout, stderr = run_ns3('configure -G "{generator}" --enable-examples')
             if invalid_or_nonexistent_library in ["", "gsd", "libfi", "calibre"]:
@@ -1559,27 +1552,22 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # - invalid library names (should fail to configure)
         # - valid library names but nonexistent libraries (should not create a target)
         with open("contrib/borked/CMakeLists.txt", "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                     build_lib(
                         LIBNAME borked
                         SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                         LIBRARIES_TO_LINK ${libcore}
                     )
-                    """
-            )
+                    """)
         for invalid_or_nonexistent_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/examples/CMakeLists.txt", "w", encoding="utf-8") as f:
-                f.write(
-                    """
+                f.write("""
                         build_lib_example(
                             NAME borked-example
                             SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
                             LIBRARIES_TO_LINK ${libborked} %s
                         )
-                        """
-                    % invalid_or_nonexistent_library
-                )
+                        """ % invalid_or_nonexistent_library)
 
             return_code, stdout, stderr = run_ns3('configure -G "{generator}"')
             if invalid_or_nonexistent_library in ["", "gsd", "libfi", "calibre"]:
@@ -1618,15 +1606,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         with open("contrib/calibre/examples/CMakeLists.txt", "w", encoding="utf-8") as f:
             f.write("")
         with open("contrib/calibre/CMakeLists.txt", "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                 build_lib(
                     LIBNAME calibre
                     SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                     LIBRARIES_TO_LINK ${libcore}
                 )
-                """
-            )
+                """)
 
         return_code, stdout, stderr = run_ns3('configure -G "{generator}"')
 
@@ -2320,8 +2306,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Now create a test CMake project and try to find_package ns-3.
         test_main_file = os.sep.join([install_prefix, "main.cpp"])
         with open(test_main_file, "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
             #include <ns3/core-module.h>
             using namespace ns3;
             int main ()
@@ -2331,8 +2316,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                 Simulator::Destroy ();
                 return 0;
             }
-            """
-            )
+            """)
 
         # We try to use this library without specifying a version,
         # specifying ns3-01 (text version with 'dev' is not supported)
@@ -2345,9 +2329,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                   list(APPEND CMAKE_PREFIX_PATH ./{lib}/cmake/ns3)
                                   find_package(ns3 {version} COMPONENTS core)
                                   target_link_libraries(test PRIVATE ns3::core)
-                                  """.format(
-                lib=("lib64" if lib64 else "lib"), version=version
-            )
+                                  """.format(lib=("lib64" if lib64 else "lib"), version=version)
             ns3_import_methods.append(cmake_find_package_import)
 
             # Import ns-3 as pkg-config libraries
@@ -2364,16 +2346,13 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
             # Test the multiple ways of importing ns-3 libraries
             for import_method in ns3_import_methods:
-                test_cmake_project = (
-                    """
+                test_cmake_project = """
                                      cmake_minimum_required(VERSION 3.20..3.20)
                                      project(ns3_consumer CXX)
                                      set(CMAKE_CXX_STANDARD 23)
                                      set(CMAKE_CXX_STANDARD_REQUIRED ON)
                                      add_executable(test main.cpp)
-                                     """
-                    + import_method
-                )
+                                     """ + import_method
 
                 test_cmake_project_file = os.sep.join([install_prefix, "CMakeLists.txt"])
                 with open(test_cmake_project_file, "w", encoding="utf-8") as f:

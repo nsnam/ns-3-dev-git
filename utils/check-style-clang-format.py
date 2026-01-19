@@ -659,7 +659,7 @@ def check_manually_file(
                 continue
 
         # Check if the line is compliant with the style and fix it
-        (is_line_compliant, line_fixed, line_verbose_infos) = check_style_line_function(
+        is_line_compliant, line_fixed, line_verbose_infos = check_style_line_function(
             line, filename, i
         )
 

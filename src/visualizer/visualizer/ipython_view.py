@@ -203,7 +203,7 @@ class IterableIPShell:
         else:
             if self.no_input_splitter:
                 self.lines.append(line)
-                (status, self.indent_spaces) = self.IP.check_complete("\n".join(self.lines))
+                status, self.indent_spaces = self.IP.check_complete("\n".join(self.lines))
                 self.iter_more = status == "incomplete"
             else:
                 self.IP.input_splitter.push(line)

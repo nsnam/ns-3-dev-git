@@ -36,8 +36,7 @@ def CancelledEvent():
     print("I should never be called... ")
 
 
-ns.cppyy.cppdef(
-    """
+ns.cppyy.cppdef("""
     #include "CPyCppyy/API.h"
 
     using namespace ns3;
@@ -99,8 +98,7 @@ ns.cppyy.cppdef(
     {
         return MakeEvent(&CancelledFunctionCpp);
     }
-   """
-)
+   """)
 
 
 def main(argv):
