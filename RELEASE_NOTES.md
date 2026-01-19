@@ -27,6 +27,10 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 This release of ns-3 updated the minimum supported version of Python from 3.8 to 3.10.
 
+Contributors or maintainers who require the use of cmake-format (CMake formatting utility) to pass
+the ns-3 CI checks should note that only Python 3.12 is currently supported for cmake-format.
+Outside of this utility, Python 3.10 through 3.14 should work with this release.
+
 The version of clang-format enforced by the check-style-clang-format.py script for
 this release is version 20 only.
 
