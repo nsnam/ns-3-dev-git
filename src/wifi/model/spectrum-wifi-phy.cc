@@ -498,9 +498,11 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     Ptr<SpectrumValue> receivedSignalPsd = rxParams->psd;
     if (interface)
     {
-        NS_ASSERT_MSG(receivedSignalPsd->GetValuesN() ==
-                          interface->GetRxSpectrumModel()->GetNumBands(),
-                      "Incorrect spectrum conversion or multi model spectrum channel is not used!");
+        NS_ASSERT_MSG(
+            receivedSignalPsd->GetValuesN() == interface->GetRxSpectrumModel()->GetNumBands(),
+            "Incorrect spectrum conversion or multi model spectrum channel is not used! Expected "
+                << interface->GetRxSpectrumModel()->GetNumBands() << " values, got "
+                << receivedSignalPsd->GetValuesN());
     }
     NS_LOG_DEBUG("Received signal with PSD " << *receivedSignalPsd << " and duration "
                                              << rxDuration.As(Time::NS));
