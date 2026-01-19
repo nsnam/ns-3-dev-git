@@ -126,21 +126,14 @@ cmake-format:
       fi
 
 # Check Python format
-.python-format:
+python-format-latest:
   extends: .code-linting-base
+  image: python:latest
   before_script:
     - pip install black isort
   script:
     - black --check .
     - isort --check .
-
-python-format-latest:
-  extends: .python-format
-  image: python:latest
-
-python-format-3.8:
-  extends: .python-format
-  image: python:3.8
 
 # Markdown lint
 markdown-lint:
