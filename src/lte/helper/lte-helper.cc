@@ -215,6 +215,12 @@ LteHelper::GetDownlinkSpectrumChannel() const
     return m_downlinkChannel;
 }
 
+Ptr<EpcHelper>
+LteHelper::GetEpcHelper() const
+{
+    return m_epcHelper;
+}
+
 void
 LteHelper::ChannelModelInitialization()
 {
@@ -1553,8 +1559,9 @@ LteHelper::EnableRlcTraces()
 }
 
 int64_t
-LteHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
+LteHelper::AssignStreams(NetDeviceContainer c, int64_t stream, bool assignEpcStreams)
 {
+    NS_LOG_FUNCTION(this << stream << assignEpcStreams);
     int64_t currentStream = stream;
     if (m_fadingModel && !m_fadingStreamsAssigned)
     {
@@ -1594,7 +1601,7 @@ LteHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
             currentStream += ueMac->AssignStreams(currentStream);
         }
     }
-    if (m_epcHelper)
+    if (m_epcHelper && assignEpcStreams)
     {
         currentStream += m_epcHelper->AssignStreams(currentStream);
     }

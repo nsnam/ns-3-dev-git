@@ -648,15 +648,16 @@ class LteHelper : public Object
      * If TraceFadingLossModel has been set as the fading model type, this method
      * will also assign a stream number to it, if none has been assigned before.
      *
-     * If an EPC has been configured, streams will be assigned on the EPC
-     * nodes as well via EpcHelper::AssignStreams ().
+     * If an EPC has been configured, streams will be assigned on the internet stack
+     * of EPC nodes, by calling EpcHelper::AssignStreams(), if assignEpcStreams is true.
      *
      * @param c NetDeviceContainer of the set of net devices for which the
      *          LteNetDevice should be modified to use a fixed stream
      * @param stream first stream index to use
+     * @param assignEpcStreams Whether to call AssignStreams on the associated EpcHelper
      * @return the number of stream indices (possibly zero) that have been assigned
      */
-    int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
+    int64_t AssignStreams(NetDeviceContainer c, int64_t stream, bool assignEpcStreams = true);
 
     /**
      * @return a pointer to the SpectrumChannel instance used for the uplink
@@ -667,6 +668,11 @@ class LteHelper : public Object
      * @return a pointer to the SpectrumChannel instance used for the downlink
      */
     Ptr<SpectrumChannel> GetDownlinkSpectrumChannel() const;
+
+    /**
+     * @return a pointer to the EpcHelper instance used, if any
+     */
+    Ptr<EpcHelper> GetEpcHelper() const;
 
   protected:
     // inherited from Object
