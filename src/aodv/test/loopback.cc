@@ -139,6 +139,7 @@ LoopbackTestCase::DoRun()
     // Setup TCP/IP & AODV
     AodvHelper aodv; // Use default parameters here
     InternetStackHelper internetStack;
+    internetStack.SetIpv6StackInstall(false);
     internetStack.SetRoutingHelper(aodv);
     internetStack.Install(nodes);
     Ipv4AddressHelper address;
