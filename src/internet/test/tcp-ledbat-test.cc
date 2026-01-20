@@ -99,6 +99,8 @@ TcpLedbatToNewReno::DoRun()
     NS_TEST_ASSERT_MSG_EQ(m_state->m_cWnd.Get(),
                           state->m_cWnd.Get(),
                           "cWnd has not updated correctly");
+
+    Simulator::Destroy();
 }
 
 /**
@@ -350,6 +352,8 @@ TcpLedbatCongestionAvoidanceTest::DoRun()
         NS_FATAL_ERROR("Unknown Test Type");
         break;
     }
+
+    Simulator::Destroy();
 }
 
 /**
