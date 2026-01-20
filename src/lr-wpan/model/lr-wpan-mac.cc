@@ -242,8 +242,6 @@ LrWpanMac::LrWpanMac()
     m_maxIndTxQueueSize = m_indTxQueue.max_size();
 
     m_uniformVar = CreateObject<UniformRandomVariable>();
-    m_macDsn = SequenceNumber8(m_uniformVar->GetInteger(0, 255));
-    m_macBsn = SequenceNumber8(m_uniformVar->GetInteger(0, 255));
     m_macBeaconPayload = {};
     m_macBeaconPayloadLength = 0;
     m_shortAddress = Mac16Address("FF:FF"); // FF:FF = The address is not assigned.
@@ -259,6 +257,8 @@ LrWpanMac::DoInitialize()
 {
     NS_LOG_FUNCTION(this);
 
+    m_macDsn = SequenceNumber8(m_uniformVar->GetInteger(0, 255));
+    m_macBsn = SequenceNumber8(m_uniformVar->GetInteger(0, 255));
     if (m_macRxOnWhenIdle)
     {
         m_phy->PlmeSetTRXStateRequest(IEEE_802_15_4_PHY_RX_ON);

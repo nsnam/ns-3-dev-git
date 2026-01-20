@@ -80,6 +80,10 @@ LrWpanNetDevice::LrWpanNetDevice()
     m_phy = CreateObject<LrWpanPhy>();
     m_csmaca = CreateObject<LrWpanCsmaCa>();
     m_mac = CreateObject<LrWpanMac>();
+
+    m_mac->SetPhy(m_phy);
+    m_mac->SetCsmaCa(m_csmaca);
+    m_csmaca->SetMac(m_mac);
 }
 
 LrWpanNetDevice::~LrWpanNetDevice()
@@ -122,10 +126,7 @@ LrWpanNetDevice::CompleteConfig()
     }
 
     NS_LOG_FUNCTION(this);
-    m_mac->SetPhy(m_phy);
-    m_mac->SetCsmaCa(m_csmaca);
     m_mac->SetMcpsDataIndicationCallback(MakeCallback(&LrWpanNetDevice::McpsDataIndication, this));
-    m_csmaca->SetMac(m_mac);
 
     Ptr<LrWpanErrorModel> model = CreateObject<LrWpanErrorModel>();
     m_phy->SetErrorModel(model);
@@ -540,6 +541,7 @@ LrWpanNetDevice::AssignStreams(int64_t stream)
     int64_t streamIndex = stream;
     streamIndex += m_csmaca->AssignStreams(stream);
     streamIndex += m_phy->AssignStreams(stream);
+    streamIndex += m_mac->AssignStreams(stream);
     NS_LOG_DEBUG("Number of assigned RV streams:  " << (streamIndex - stream));
     return (streamIndex - stream);
 }
