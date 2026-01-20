@@ -210,10 +210,17 @@ LenaDeactivateBearerTestCase::DoRun()
 
     lteHelper->SetSchedulerType("ns3::PssFfMacScheduler");
     enbDevs = lteHelper->InstallEnbDevice(enbNodes);
-    stream += lteHelper->AssignStreams(enbDevs, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    lteHelper->AssignStreams(enbDevs, stream, false);
+    stream += 1000;
 
     ueDevs = lteHelper->InstallUeDevice(ueNodes);
-    stream += lteHelper->AssignStreams(ueDevs, stream);
+    lteHelper->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
 
     Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get(0)->GetObject<LteEnbNetDevice>();
     Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy();
@@ -234,8 +241,10 @@ LenaDeactivateBearerTestCase::DoRun()
 
     // Install the IP stack on the UEs
     internet.Install(ueNodes);
-    stream += internet.AssignStreams(ueNodes, stream);
-    stream += internet.AssignStreams(remoteHostContainer, stream);
+    internet.AssignStreams(ueNodes, stream);
+    stream += 1000;
+    internet.AssignStreams(remoteHostContainer, stream);
+    stream += 1000;
 
     Ipv4InterfaceContainer ueIpIface;
     ueIpIface = epcHelper->AssignUeIpv4Address(NetDeviceContainer(ueDevs));

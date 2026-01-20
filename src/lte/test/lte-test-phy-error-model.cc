@@ -200,9 +200,16 @@ LenaDataPhyErrorModelTestCase::DoRun()
     lena->SetSchedulerAttribute("UlCqiFilter", EnumValue(FfMacScheduler::PUSCH_UL_CQI));
 
     enbDevs = lena->InstallEnbDevice(enbNodes);
-    stream += lena->AssignStreams(enbDevs, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    lena->AssignStreams(enbDevs, stream, false);
+    stream += 1000;
     ueDevs = lena->InstallUeDevice(ueNodes);
-    stream += lena->AssignStreams(ueDevs, stream);
+    lena->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
 
     // Attach a UE to a eNB
     lena->Attach(ueDevs, enbDevs.Get(0));
@@ -363,9 +370,16 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
     lena->SetSchedulerAttribute("UlCqiFilter", EnumValue(FfMacScheduler::PUSCH_UL_CQI));
 
     enbDevs = lena->InstallEnbDevice(enbNodes);
-    stream += lena->AssignStreams(enbDevs, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    lena->AssignStreams(enbDevs, stream, false);
+    stream += 1000;
     ueDevs = lena->InstallUeDevice(ueNodes);
-    stream += lena->AssignStreams(ueDevs, stream);
+    lena->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
 
     // Attach a UE to one eNB (the others are interfering ones)
     lena->Attach(ueDevs, enbDevs.Get(0));

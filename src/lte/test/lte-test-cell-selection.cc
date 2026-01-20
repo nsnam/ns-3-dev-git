@@ -259,8 +259,15 @@ LteCellSelectionTestCase::DoRun()
         }
     }
 
-    stream += lteHelper->AssignStreams(enbDevs, stream);
-    stream += lteHelper->AssignStreams(ueDevs, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    lteHelper->AssignStreams(enbDevs, stream, false);
+    stream += 1000;
+    lteHelper->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
 
     // Tests
     NS_ASSERT(m_ueSetupList.size() == ueDevs.GetN());
