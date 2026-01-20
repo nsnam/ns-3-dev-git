@@ -271,6 +271,8 @@ Dhcp6DuidTestCase::DoRun()
         std::string reference{"DUID-UUID UUID: 0x000102030405060708090a0b0c0d0e0f"};
         NS_TEST_ASSERT_MSG_EQ(buffer.str(), reference, "Unexpected DUID-UUID.");
     }
+
+    Simulator::Destroy();
 }
 
 /**
