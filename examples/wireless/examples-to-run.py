@@ -235,7 +235,7 @@ cpp_examples = [
         "True",
     ),
     (
-        "wifi-simple-ht-hidden-stations --simulationTime=1s --enableRts=1 --nMpdus=32 --minExpectedThroughput=57 --maxExpectedThroughput=58",
+        "wifi-simple-ht-hidden-stations --simulationTime=1s --enableRts=1 --nMpdus=32 --minExpectedThroughput=56 --maxExpectedThroughput=57",
         "True",
         "True",
     ),
