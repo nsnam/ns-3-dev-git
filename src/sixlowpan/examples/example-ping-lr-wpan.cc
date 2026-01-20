@@ -19,6 +19,8 @@
 
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE("ExamplePingLrWpan");
+
 int
 main(int argc, char** argv)
 {
@@ -26,6 +28,7 @@ main(int argc, char** argv)
     bool disablePcap = false;
     bool disableAsciiTrace = false;
     bool enableLSixlowLogLevelInfo = false;
+    int64_t streamNumber = 1;
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("verbose", "turn on log components", verbose);
@@ -71,6 +74,12 @@ main(int argc, char** argv)
     lrWpanHelper.AddPropagationLossModel("ns3::LogDistancePropagationLossModel");
     // Add and install the LrWpanNetDevice for each node
     NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
+    auto streamsUsed = lrWpanHelper.AssignStreams(lrwpanDevices, streamNumber);
+    NS_LOG_DEBUG("Random variable streams used by lrWpanHelper: " << streamsUsed);
+    streamNumber += 1000; // Increment the stream number without chaining the output
+    streamsUsed = lrWpanHelper.GetChannel()->AssignStreams(streamNumber);
+    NS_LOG_DEBUG("Random variable streams used by spectrum channel: " << streamsUsed);
+    streamNumber += 1000;
 
     // Manual PAN association and extended and short address assignment.
     // Association using the MAC functions can also be used instead of this step.
@@ -78,9 +87,15 @@ main(int argc, char** argv)
 
     InternetStackHelper internetv6;
     internetv6.Install(nodes);
+    streamsUsed = internetv6.AssignStreams(nodes, streamNumber);
+    NS_LOG_DEBUG("Random variable streams used by internetv6: " << streamsUsed);
+    streamNumber += 1000;
 
     SixLowPanHelper sixlowpan;
     NetDeviceContainer devices = sixlowpan.Install(lrwpanDevices);
+    streamsUsed = sixlowpan.AssignStreams(devices, streamNumber);
+    NS_LOG_DEBUG("Random variable streams used by sixlowpan: " << streamsUsed);
+    streamNumber += 1000;
 
     Ipv6AddressHelper ipv6;
     ipv6.SetBase(Ipv6Address("2001:2::"), Ipv6Prefix(64));
