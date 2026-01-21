@@ -38,6 +38,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 - (wifi) Add support for Power Save mode.
 - (spectrum) Add the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, enabling ray-traced phased-array spectrum propagation via `sionna.rt` scenes and solver integration.
+- (network) The `SequenceNumber` template class has been changed to allow sequence numbers with an arbitrary number of bits (e.g., 10 bits).
 
 ### Bugs fixed
 
@@ -47,6 +48,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) APs unblock transmissions to stations that are in power save mode when they disassociate, otherwise they will not be able to associate again
 - (wifi) APs record disassociation on all links setup with a non-AP MLD
 - (wifi) Prevent AP's counter of STAs in PS mode from being updated incorrectly
+- (network) #1300 Fixed an integer overflow in SequenceNumbers, so that the sign of the difference and the direct comparison would not match.
 
 ## Release 3.47
 
