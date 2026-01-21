@@ -100,7 +100,6 @@ TcpTxBufferTestCase::TestIsLost()
     txBuf->SetRWndCallback(MakeCallback(&TcpTxBufferTestCase::GetRWnd, this));
     SequenceNumber32 head(1);
     txBuf->SetHeadSequence(head);
-    SequenceNumber32 ret;
     Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack>();
     txBuf->SetSegmentSize(1000);
     txBuf->SetDupAckThresh(3);

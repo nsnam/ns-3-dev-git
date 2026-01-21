@@ -510,7 +510,6 @@ TcpRateLinuxWithBufferTest::TestWithSackBlocks()
 {
     SequenceNumber32 head(1);
     m_txBuf.SetHeadSequence(head);
-    SequenceNumber32 ret;
     Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack>();
     m_txBuf.SetSegmentSize(m_segmentSize);
     m_txBuf.SetDupAckThresh(3);
