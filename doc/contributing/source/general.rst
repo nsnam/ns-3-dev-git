@@ -24,6 +24,16 @@ license if necessary.  GNU GPLv3 is not accepted in the |ns3| mainline.
 Note that the Free Software Foundation maintains
 `a list <https://www.gnu.org/licenses/license-list.en.html#GPLCompatibleLicenses>`_ of GPLv2-compatible licenses.
 
+There are two variants of GNU GPLv2: GNU GPLv2-only, and GNU GPLv2-or-later.
+Most of the ns-3 codebase is licensed under GNU GPLv2-only; a few files
+are licensed as GNU GPLv2-or-later or other compatible licenses (see
+the `LICENSES` directory for a listing of all licenses in the main
+tree). Strictly speaking, ns-3 as an aggregate is licensed as GNU GPLv2-only
+and cannot be redistributed either as GNU GPLv2-or-later or as GNU GPLv3.
+
+ns-3 cannot accept GNU GPLv3 or Apache licensed code into the mainline
+because those licenses are not compatible with GNU GPLv2-only.
+
 If a contribution is based upon or contains copied code that itself
 uses GNU GPLv2, then the author should in most cases retain the GPLv2 and
 optionally extend the copyright and/or the author (or 'Modified by')

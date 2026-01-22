@@ -167,6 +167,19 @@ page.  Contributors can then log in and work with the app store
 maintainer to finalize the page, and then make it active (visible) to
 other users when ready.
 
+Licensing for app store modules
+*******************************
+
+The project recommends the use of GPLv2-compatible licenses for modules
+listed in the ns-3 app store. However, this is not strictly required;
+it is possible for contributors to post and advertise modules that are
+licensed with a non-GPLv2-compatible license, such as GPLv3. An example
+of an advertised extension with a non-compatible license is the
+`EMPIRE shim <https://apps.nsnam.org/app/empire/>`_ module. Please note,
+however, that the project can only distribute modules in its ns-allinone
+releases that are GPLv2-compatible.  A module licensed as GPLv2-or-later
+is compatible for inclusion with the ns-allinone releases.
+
 Code review for apps
 ********************
 
