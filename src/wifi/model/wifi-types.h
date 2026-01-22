@@ -76,8 +76,8 @@ struct WIFI_EXPORT SignalNoiseDbm
 /// MpduInfo structure
 struct WIFI_EXPORT MpduInfo
 {
-    MpduType type;          ///< type of MPDU
-    uint32_t mpduRefNumber; ///< MPDU ref number
+    MpduType type{};          ///< type of MPDU
+    uint32_t mpduRefNumber{}; ///< MPDU ref number
 };
 
 /// RxSignalInfo structure containing info on the received signal
