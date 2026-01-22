@@ -11,6 +11,7 @@
 #define RADIOTAP_HEADER_H
 
 #include "ns3/header.h"
+#include "ns3/nstime.h"
 
 #include <array>
 #include <optional>
@@ -326,6 +327,111 @@ class RadiotapHeader : public Header
      * @param vhtFields The subfields of the VHT field.
      */
     void SetVhtFields(const VhtFields& vhtFields);
+
+    /**
+     * @brief Timestamp flags.
+     */
+    enum TimestampFlags : uint8_t
+    {
+        TIMESTAMP_FLAG_NONE = 0x00,           /**< No flags set */
+        TIMESTAMP_FLAG_32BIT_COUNTER = 0x01,  /**< Timestamp is a 32-bit counter */
+        TIMESTAMP_FLAG_ACCURACY_KNOWN = 0x02, /**< Accuracy field is known */
+    };
+
+    /**
+     * structure that contains the subfields of the Timestamp field.
+     */
+    struct Timestamp
+    {
+        /**
+         * Sampling position stored in bits 4-7 of the unit/position byte.
+         */
+        enum class Position : uint8_t
+        {
+            FIRST_MPDU_BIT = 0,     //!< first bit of the MPDU (same instant as TSFT)
+            SIGNAL_ACQUISITION = 1, //!< start of the PLCP
+            END_OF_PPDU = 2,        //!< end of the PPDU
+            END_OF_MPDU = 3,        //!< end of the MPDU
+            UNKNOWN = 15            //!< sampling position unknown
+        };
+
+        /**
+         * Set the timestamp.
+         *
+         * The time unit is selected from @p time: milliseconds when @p time is a whole number of
+         * milliseconds, microseconds when it is a whole number of microseconds, and nanoseconds
+         * otherwise. When @p precision is present, it is stored in that same unit.
+         *
+         * @param time the timestamp
+         * @param position sampling position
+         * @param precision optional timestamp precision
+         */
+        void Set(const Time& time,
+                 Position position = Position::UNKNOWN,
+                 const std::optional<Time>& precision = std::nullopt);
+
+        /**
+         * @brief Get the timestamp as a Time object.
+         *
+         * @return The timestamp as a Time object.
+         */
+        Time Get() const;
+
+        /**
+         * Get the sampling position.
+         *
+         * @return the sampling position
+         */
+        Position GetPosition() const;
+
+        /**
+         * Get the timestamp precision.
+         *
+         * @return the precision when known, otherwise std::nullopt
+         */
+        std::optional<Time> GetPrecision() const;
+
+        /**
+         * @brief Serialize the Timestamp field into a buffer.
+         *
+         * @param it Buffer iterator pointing to where the Timestamp field should be written.
+         */
+        void Serialize(Buffer::Iterator& it) const;
+
+        /**
+         * @brief Deserialize the Timestamp field from a buffer.
+         *
+         * @param it Buffer iterator pointing to the start of the Timestamp field.
+         */
+        void Deserialize(Buffer::Iterator& it);
+
+        /**
+         * @brief Print the Timestamp field to an output stream.
+         *
+         * @param os The output stream to print to.
+         */
+        void Print(std::ostream& os) const;
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const Timestamp& rhs) const = default;
+
+      private:
+        uint64_t timestamp{0};              //!< timestamp field
+        uint16_t accuracy{0};               //!< accuracy field
+        uint8_t unitPosition{0};            //!< unit/position field
+        uint8_t flags{TIMESTAMP_FLAG_NONE}; //!< flags field (@see TimestampFlags)
+    };
+
+    /**
+     * @brief Set the subfields of the Timestamp field
+     *
+     * @param timestamp The subfields of the Timestamp field.
+     */
+    void SetTimestamp(const Timestamp& timestamp);
 
     /**
      * @brief bits of the HE data fields.
@@ -905,6 +1011,29 @@ class RadiotapHeader : public Header
     void PrintVht(std::ostream& os) const;
 
     /**
+     * Serialize the Timestamp radiotap header.
+     *
+     * @param start An iterator which points to where the header should be written.
+     */
+    void SerializeTimestamp(Buffer::Iterator& start) const;
+
+    /**
+     * Deserialize the Timestamp radiotap header.
+     *
+     * @param start An iterator which points to where the header should be read.
+     * @param bytesRead the number of bytes already read.
+     * @returns The number of bytes read.
+     */
+    uint32_t DeserializeTimestamp(Buffer::Iterator start, uint32_t bytesRead);
+
+    /**
+     * Add Timestamp subfield/value pairs to the output stream.
+     *
+     * @param os The output stream
+     */
+    void PrintTimestamp(std::ostream& os) const;
+
+    /**
      * Serialize the HE radiotap header.
      *
      * @param start An iterator which points to where the header should be written.
@@ -1038,6 +1167,7 @@ class RadiotapHeader : public Header
         RADIOTAP_MCS = 19,
         RADIOTAP_AMPDU_STATUS = 20,
         RADIOTAP_VHT = 21,
+        RADIOTAP_TIMESTAMP = 22,
         RADIOTAP_HE = 23,
         RADIOTAP_HE_MU = 24,
         RADIOTAP_HE_MU_OTHER_USER = 25,
@@ -1075,6 +1205,9 @@ class RadiotapHeader : public Header
     uint8_t m_vhtPad{0};     //!< VHT padding.
     VhtFields m_vhtFields{}; //!< VHT fields.
 
+    uint8_t m_timestampPad{0}; //!< Timestamp padding.
+    Timestamp m_timestamp{};   //!< Timestamp field.
+
     uint8_t m_hePad{0};    //!< HE padding.
     HeFields m_heFields{}; //!< HE fields.
 
@@ -1094,6 +1227,26 @@ class RadiotapHeader : public Header
     uint8_t m_ehtPad{0};     //!< EHT padding.
     EhtFields m_ehtFields{}; //!< EHT fields.
 };
+
+/**
+ * Serialize Timestamp sampling position to the given ostream.
+ *
+ * @param os the output stream
+ * @param position the sampling position to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, RadiotapHeader::Timestamp::Position position);
+
+/**
+ * Serialize Timestamp to the given ostream.
+ *
+ * @param os the output stream
+ * @param timestamp the Timestamp to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::Timestamp& timestamp);
 
 } // namespace ns3
 

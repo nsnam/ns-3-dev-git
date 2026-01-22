@@ -15,6 +15,7 @@
 #include <bitset>
 #include <cmath>
 #include <iomanip>
+#include <limits>
 
 namespace ns3
 {
@@ -51,6 +52,10 @@ constexpr uint16_t RADIOTAP_AMPDU_STATUS_ALIGNMENT_B = 4;
 constexpr uint16_t RADIOTAP_VHT_SIZE_B = 12;
 /// Alignment in bytes of the VHT field in the radiotap header
 constexpr uint16_t RADIOTAP_VHT_ALIGNMENT_B = 2;
+/// Size in bytes of the Timestamp field in the radiotap header
+constexpr uint16_t RADIOTAP_TIMESTAMP_SIZE_B = 12;
+/// Alignment in bytes of the Timestamp field in the radiotap header
+constexpr uint16_t RADIOTAP_TIMESTAMP_ALIGNMENT_B = 8;
 /// Size in bytes of the HE field in the radiotap header
 constexpr uint16_t RADIOTAP_HE_SIZE_B = 12;
 /// Alignment in bytes of the HE field in the radiotap header
@@ -238,6 +243,15 @@ RadiotapHeader::Serialize(Buffer::Iterator start) const
     }
 
     //
+    // Timestamp field.
+    // Reference: https://www.radiotap.org/fields/timestamp.html
+    //
+    if (IsPresent(presentBits, RADIOTAP_TIMESTAMP))
+    {
+        SerializeTimestamp(start);
+    }
+
+    //
     // HE field.
     // Reference: https://www.radiotap.org/fields/HE.html
     //
@@ -406,6 +420,17 @@ RadiotapHeader::Deserialize(Buffer::Iterator start)
     }
 
     //
+    // Timestamp field.
+    // Reference: https://www.radiotap.org/fields/timestamp.html
+    //
+    if (IsPresent(presentBits, RADIOTAP_TIMESTAMP))
+    {
+        const auto size = DeserializeTimestamp(start, bytesRead);
+        start.Next(size);
+        bytesRead += size;
+    }
+
+    //
     // HE field.
     // Reference: https://www.radiotap.org/fields/HE.html
     //
@@ -485,6 +510,10 @@ RadiotapHeader::Print(std::ostream& os) const
     if (m_present.at(0) & RADIOTAP_VHT)
     {
         PrintVht(os);
+    }
+    if (m_present.at(0) & RADIOTAP_TIMESTAMP)
+    {
+        PrintTimestamp(os);
     }
     if (m_present.at(0) & RADIOTAP_HE)
     {
@@ -854,6 +883,201 @@ RadiotapHeader::PrintVht(std::ostream& os) const
     }
     os << " vht.coding=" << m_vhtFields.coding << " vht.groupId=" << m_vhtFields.groupId
        << " vht.partialAid=" << m_vhtFields.partialAid;
+}
+
+void
+RadiotapHeader::SetTimestamp(const Timestamp& timestamp)
+{
+    NS_LOG_FUNCTION(this << timestamp);
+
+    UpdatePresentField(RADIOTAP_TIMESTAMP);
+    m_timestampPad = GetPadding(m_length, RADIOTAP_TIMESTAMP_ALIGNMENT_B);
+    m_length += RADIOTAP_TIMESTAMP_SIZE_B + m_timestampPad;
+    m_timestamp = timestamp;
+
+    NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
+                             << std::dec);
+}
+
+void
+RadiotapHeader::Timestamp::Set(const Time& time,
+                               Position position,
+                               const std::optional<Time>& precision)
+{
+    NS_LOG_FUNCTION(this << time << position << precision);
+    uint8_t unit;
+    if (time.RoundTo(Time::MS) == time)
+    {
+        // Timestamp unit is millisecond
+        timestamp = static_cast<uint64_t>(time.GetMilliSeconds());
+        unit = 0;
+    }
+    else if (time.RoundTo(Time::US) == time)
+    {
+        // Timestamp unit is microsecond
+        timestamp = static_cast<uint64_t>(time.GetMicroSeconds());
+        unit = 1;
+    }
+    else
+    {
+        // Timestamp unit is nanosecond
+        timestamp = static_cast<uint64_t>(time.GetNanoSeconds());
+        unit = 2;
+    }
+    flags = 0;
+    accuracy = 0;
+    if (precision)
+    {
+        uint64_t precisionValue;
+        switch (unit)
+        {
+        case 0:
+            precisionValue = static_cast<uint64_t>(precision->GetMilliSeconds());
+            break;
+        case 1:
+            precisionValue = static_cast<uint64_t>(precision->GetMicroSeconds());
+            break;
+        default:
+            precisionValue = static_cast<uint64_t>(precision->GetNanoSeconds());
+            break;
+        }
+        NS_ASSERT_MSG(precisionValue <= std::numeric_limits<uint16_t>::max(),
+                      "Timestamp precision does not fit in 16 bits: " << precisionValue);
+        accuracy = static_cast<uint16_t>(precisionValue);
+        flags |= TIMESTAMP_FLAG_ACCURACY_KNOWN;
+    }
+    unitPosition = unit | (static_cast<uint8_t>(position) << 4);
+}
+
+Time
+RadiotapHeader::Timestamp::Get() const
+{
+    switch (unitPosition & 0x0f)
+    {
+    case 0:
+        // Timestamp unit is millisecond
+        return MilliSeconds(timestamp);
+    case 1:
+        // Timestamp unit is microsecond
+        return MicroSeconds(timestamp);
+    case 2:
+        // Timestamp unit is nanosecond
+        return NanoSeconds(timestamp);
+    default:
+        NS_ASSERT_MSG(false, "Invalid timestamp unit: " << +(unitPosition & 0x0f));
+    }
+    return Time();
+}
+
+RadiotapHeader::Timestamp::Position
+RadiotapHeader::Timestamp::GetPosition() const
+{
+    return static_cast<Position>((unitPosition & 0xf0) >> 4);
+}
+
+std::optional<Time>
+RadiotapHeader::Timestamp::GetPrecision() const
+{
+    if (!(flags & TIMESTAMP_FLAG_ACCURACY_KNOWN))
+    {
+        return std::nullopt;
+    }
+    switch (unitPosition & 0x0f)
+    {
+    case 0:
+        // Timestamp unit is millisecond
+        return MilliSeconds(accuracy);
+    case 1:
+        // Timestamp unit is microsecond
+        return MicroSeconds(accuracy);
+    case 2:
+        // Timestamp unit is nanosecond
+        return NanoSeconds(accuracy);
+    default:
+        NS_ASSERT_MSG(false, "Invalid timestamp unit: " << +(unitPosition & 0x0f));
+    }
+    return std::nullopt;
+}
+
+void
+RadiotapHeader::Timestamp::Serialize(Buffer::Iterator& start) const
+{
+    start.WriteU64(timestamp);
+    start.WriteU16(accuracy);
+    start.WriteU8(unitPosition);
+    start.WriteU8(flags);
+}
+
+void
+RadiotapHeader::Timestamp::Deserialize(Buffer::Iterator& start)
+{
+    timestamp = start.ReadU64();
+    accuracy = start.ReadU16();
+    unitPosition = start.ReadU8();
+    flags = start.ReadU8();
+}
+
+void
+RadiotapHeader::Timestamp::Print(std::ostream& os) const
+{
+    const auto unit = unitPosition & 0x0f;
+    const auto position = GetPosition();
+    os << "timestamp.timestamp=" << timestamp << " timestamp.accuracy=" << accuracy
+       << " timestamp.unit=" << unit << " timestamp.position=" << position << " timestamp.flags=0x"
+       << std::hex << +flags << std::dec;
+}
+
+void
+RadiotapHeader::SerializeTimestamp(Buffer::Iterator& start) const
+{
+    NS_LOG_FUNCTION(this << &start);
+    start.WriteU8(0, m_timestampPad);
+    m_timestamp.Serialize(start);
+}
+
+uint32_t
+RadiotapHeader::DeserializeTimestamp(Buffer::Iterator start, uint32_t bytesRead)
+{
+    NS_LOG_FUNCTION(this << &start << bytesRead);
+    m_timestampPad = GetPadding(bytesRead, RADIOTAP_TIMESTAMP_ALIGNMENT_B);
+    start.Next(m_timestampPad);
+    m_timestamp.Deserialize(start);
+    return RADIOTAP_TIMESTAMP_SIZE_B + m_timestampPad;
+}
+
+void
+RadiotapHeader::PrintTimestamp(std::ostream& os) const
+{
+    os << " " << m_timestamp;
+}
+
+std::ostream&
+operator<<(std::ostream& os, RadiotapHeader::Timestamp::Position position)
+{
+    switch (position)
+    {
+    case RadiotapHeader::Timestamp::Position::FIRST_MPDU_BIT:
+        return (os << "FIRST_MPDU_BIT");
+    case RadiotapHeader::Timestamp::Position::SIGNAL_ACQUISITION:
+        return (os << "SIGNAL_ACQUISITION");
+    case RadiotapHeader::Timestamp::Position::END_OF_PPDU:
+        return (os << "END_OF_PPDU");
+    case RadiotapHeader::Timestamp::Position::END_OF_MPDU:
+        return (os << "END_OF_MPDU");
+    case RadiotapHeader::Timestamp::Position::UNKNOWN:
+        return (os << "UNKNOWN");
+    default:
+        NS_ASSERT_MSG(false,
+                      "Invalid timestamp sampling position: " << +static_cast<uint8_t>(position));
+        return (os << "INVALID");
+    }
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::Timestamp& timestamp)
+{
+    timestamp.Print(os);
+    return os;
 }
 
 void
