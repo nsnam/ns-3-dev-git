@@ -782,6 +782,47 @@ class WIFI_EXPORT WifiPhy : public Object
                                                     Time psduDuration);
 
     /**
+     * TracedCallback signature for monitor mode receive events.
+     *
+     * @param packet the packet being received
+     * @param channelFreq the frequency at which the packet is received. Note that in real devices
+     * this is normally the frequency to which the receiver is tuned, and this can be different than
+     * the frequency at which the packet was originally transmitted. This is because it is possible
+     * to have the receiver tuned on a given channel and still to be able to receive packets on a
+     * nearby channel.
+     * @param txVector the TXVECTOR that holds RX parameters
+     * @param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU
+     * and 2 is the last MPDU in an A-MPDU) and the A-MPDU reference number (must be a different
+     * value for each A-MPDU but the same for each subframe within one A-MPDU)
+     * @param signalNoise signal power and noise power
+     * @param staId the STA-ID
+     */
+    typedef void (*MonitorSnifferRxTracedCallback)(Ptr<const Packet> packet,
+                                                   uint16_t channelFreqMhz,
+                                                   WifiTxVector txVector,
+                                                   MpduInfo aMpdu,
+                                                   SignalNoiseDbm signalNoise,
+                                                   uint16_t staId);
+
+    /**
+     * TracedCallback signature for monitor mode transmit events.
+     *
+     * @param packet the packet being transmitted
+     * @param channelFreqMhz the frequency in MHz at which the packet is
+     *        transmitted.
+     * @param txVector the TXVECTOR that holds TX parameters
+     * @param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU
+     * and 2 is the last MPDU in an A-MPDU) and the A-MPDU reference number (must be a different
+     * value for each A-MPDU but the same for each subframe within one A-MPDU)
+     * @param staId the STA-ID
+     */
+    typedef void (*MonitorSnifferTxTracedCallback)(const Ptr<const Packet> packet,
+                                                   uint16_t channelFreqMhz,
+                                                   WifiTxVector txVector,
+                                                   MpduInfo aMpdu,
+                                                   uint16_t staId);
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model. Return the number of streams (possibly zero) that
      * have been assigned.
