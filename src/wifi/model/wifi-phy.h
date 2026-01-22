@@ -28,6 +28,7 @@
 #include "ns3/wifi-export.h"
 
 #include <limits>
+#include <optional>
 #include <vector>
 
 #define WIFI_PHY_NS_LOG_APPEND_CONTEXT(phy)                                                        \
@@ -626,6 +627,24 @@ class WIFI_EXPORT WifiPhy : public Object
      * @param reason the reason the packet was dropped
      */
     void NotifyRxPpduDrop(Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason);
+
+    /**
+     * Information provided to monitor mode sniffers.
+     */
+    struct SniffInfo
+    {
+        MHz_u channelFreq{};   //!< channel frequency
+        uint8_t p20Index{0};   //!< Primary 20 MHz index within the channel bandwidth
+        WifiTxVector txVector; //!< TXVECTOR
+        MpduInfo mpduInfo;     //!< per-MPDU information filled by NotifyMonitorSniffRx and
+                               //!< NotifyMonitorSniffTx
+        std::optional<SignalNoiseDbm>
+            signalNoise; //!< Signal and noise. If present, it means this information corresponds to
+                         //!< a received packet; if not present, it means this information
+                         //!< corresponds to a transmitted packet.
+        uint16_t staId{SU_STA_ID}; //!< STA-ID (only for MU PPDU)
+    };
+
     /**
      * Public method used to fire a MonitorSniffer trace for a wifi PSDU being received.
      * Implemented for encapsulation purposes.
@@ -634,23 +653,13 @@ class WIFI_EXPORT WifiPhy : public Object
      * for each A-MPDU but the same for each subframe within one A-MPDU.
      *
      * @param psdu the PSDU being received
-     * @param channelFreq the frequency at which the packet is received. Note that in real devices
-     * this is normally the frequency to which the receiver is tuned, and this can be different than
-     * the frequency at which the packet was originally transmitted. This is because it is possible
-     * to have the receiver tuned on a given channel and still to be able to receive packets on a
-     * nearby channel.
-     * @param txVector the TXVECTOR that holds RX parameters
-     * @param signalNoise signal power and noise power in dBm (noise power includes the noise
-     * figure)
      * @param statusPerMpdu reception status per MPDU
-     * @param staId the STA-ID
+     * @param info sniffing information captured by the caller. @p info.mpduInfo is ignored and
+     * replaced for each MPDU.
      */
     void NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
-                              MHz_u channelFreq,
-                              const WifiTxVector& txVector,
-                              SignalNoiseDbm signalNoise,
                               const std::vector<bool>& statusPerMpdu,
-                              uint16_t staId = SU_STA_ID);
+                              const SniffInfo& info);
 
     /**
      * TracedCallback signature for monitor mode receive events.
@@ -685,16 +694,11 @@ class WIFI_EXPORT WifiPhy : public Object
      * The A-MPDU reference number (RX side) is set within the method. It must be a different value
      * for each A-MPDU but the same for each subframe within one A-MPDU.
      *
-     * @param psdu the PSDU being received
-     * @param channelFreq the frequency at which the packet is
-     *        transmitted.
-     * @param txVector the TXVECTOR that holds TX parameters
-     * @param staId the STA-ID
+     * @param psdu the PSDU being transmitted
+     * @param info sniffing information captured by the caller. @p info.mpduInfo is ignored and
+     * replaced for each MPDU.
      */
-    void NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu,
-                              MHz_u channelFreq,
-                              const WifiTxVector& txVector,
-                              uint16_t staId = SU_STA_ID);
+    void NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu, const SniffInfo& info);
 
     /**
      * TracedCallback signature for monitor mode transmit events.
@@ -821,6 +825,14 @@ class WIFI_EXPORT WifiPhy : public Object
                                                    WifiTxVector txVector,
                                                    MpduInfo aMpdu,
                                                    uint16_t staId);
+
+    /**
+     * TracedCallback signature for monitor mode sniffed events.
+     *
+     * @param packet the packet being received
+     * @param info the sniffing information
+     */
+    typedef void (*MonitorSnifferTracedCallback)(Ptr<const Packet> packet, const SniffInfo& info);
 
     /**
      * Assign a fixed random variable stream number to the random variables
@@ -1683,6 +1695,12 @@ class WIFI_EXPORT WifiPhy : public Object
                    MpduInfo,
                    uint16_t /* STA-ID*/>
         m_phyMonitorSniffTxTrace;
+
+    /**
+     * A trace source that emulates a Wi-Fi device in monitor mode
+     * sniffing a packet being received or transmitted.
+     */
+    TracedCallback<Ptr<const Packet>, const SniffInfo&> m_phyMonSniffTrace;
 
     /**
      * @return the map of __implemented__ PHY entities.

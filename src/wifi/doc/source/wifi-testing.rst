@@ -162,7 +162,7 @@ Packet error rate performance
 The program ``examples/wireless/wifi-spectrum-per-example.cc`` allows users
 to select either `SpectrumWifiPhy` or `YansWifiPhy`, as above, and select
 the distance between the nodes, and to log the reception statistics and
-received SNR (as observed by the WifiPhy::MonitorSnifferRx trace source), using a
+received SNR (as observed by the WifiPhy::MonitorSniffer trace source), using a
 Friis propagation loss model.  The transmit power is lowered from the default
 of 40 mW (16 dBm) to 1 dBm to lower the baseline SNR; the distance between
 the nodes can be changed to further change the SNR.  By default, it steps

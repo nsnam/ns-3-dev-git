@@ -27,6 +27,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (internet) The `Ipv[4,6]AddressGenerator` classes are now deprecated in favor of `Ipv[4,6]AddressHelper`.
 * (internet-apps) The `LeaseInfo` class in DHCPv6 has been moved from the `ns3` namespace to become a private inner class of `Dhcp6Server` (`Dhcp6Server::LeaseInfo`), as it is an internal data structure not used in any public interface.
 * (mesh) `dot11s::IePreq::GetDestinationList()` is now a const method.
+* (wifi) The `MonitorSnifferRx` and `MonitorSnifferTx` trace sources of the `WifiPhy` class have been deprecated in favor of a new `MonitorSniffer` trace source of the `WifiPhy` class. If the trace contains information about the signal and noise, it is equivalent to `MonitorSnifferRx`; otherwise it is equivalent to `MonitorSnifferTx`.
+* (wifi) `WifiPhy::NotifyMonitorSniffRx` and `WifiPhy::NotifyMonitorSniffTx` take a `WifiPhy::SniffInfo` instead of separate channel frequency, TXVECTOR, signal and noise, and STA-ID arguments.
 
 ### Changes to build system
 

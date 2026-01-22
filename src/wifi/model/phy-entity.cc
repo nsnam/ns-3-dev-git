@@ -742,12 +742,17 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
         }))
     {
         // At least one MPDU has been successfully received
+        const auto channelFreq = m_wifiPhy->GetFrequency();
+        const auto p20Index = (static_cast<uint16_t>(m_wifiPhy->GetChannelWidth()) % 20 == 0)
+                                  ? m_wifiPhy->GetPrimary20Index()
+                                  : uint8_t{0};
         m_wifiPhy->NotifyMonitorSniffRx(psdu,
-                                        m_wifiPhy->GetFrequency(),
-                                        txVector,
-                                        signalNoiseIt->second,
                                         statusPerMpdu,
-                                        staId);
+                                        {.channelFreq = channelFreq,
+                                         .p20Index = p20Index,
+                                         .txVector = txVector,
+                                         .signalNoise = signalNoiseIt->second,
+                                         .staId = staId});
         rxSignalInfo.snr = snr;
         rxSignalInfo.rssi = signalNoiseIt->second.signal; // same information for all MPDUs
         RxPayloadSucceeded(psdu, rxSignalInfo, txVector, staId, statusPerMpdu);
