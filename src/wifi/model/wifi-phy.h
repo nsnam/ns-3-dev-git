@@ -28,6 +28,7 @@
 #include "ns3/wifi-export.h"
 
 #include <limits>
+#include <vector>
 
 #define WIFI_PHY_NS_LOG_APPEND_CONTEXT(phy)                                                        \
     {                                                                                              \
@@ -1399,8 +1400,9 @@ class WIFI_EXPORT WifiPhy : public Object
     uint32_t m_rxMpduReferenceNumber; //!< A-MPDU reference number to identify all received
                                       //!< subframes belonging to the same received A-MPDU
 
-    EventId m_endPhyRxEvent; //!< the end of PHY receive event
-    EventId m_endTxEvent;    //!< the end of transmit event
+    EventId m_endPhyRxEvent;                 //!< the end of PHY receive event
+    EventId m_endTxEvent;                    //!< the end of transmit event
+    std::vector<EventId> m_endTxSniffEvents; //!< sniffer events scheduled for the end of a TX PPDU
 
     Ptr<Event> m_currentEvent; //!< Hold the current event
     std::map<std::pair<uint64_t /* UID*/, WifiPreamble>, Ptr<Event>>

@@ -1915,9 +1915,16 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
     {
         m_phyTxPsduBeginTrace(psdus, txVector, txPower);
     }
+    const auto channelFreq = GetFrequency();
     for (const auto& psdu : psdus)
     {
-        NotifyMonitorSniffTx(psdu.second, GetFrequency(), txVector, psdu.first);
+        m_endTxSniffEvents.push_back(Simulator::Schedule(txDuration,
+                                                         &WifiPhy::NotifyMonitorSniffTx,
+                                                         this,
+                                                         psdu.second,
+                                                         channelFreq,
+                                                         txVector,
+                                                         psdu.first));
     }
     m_state->SwitchToTx(txDuration, psdus, GetPower(txVector.GetTxPowerLevel()), txVector);
 
@@ -1976,6 +1983,11 @@ WifiPhy::Reset()
         phyEntity.second->CancelAllEvents();
     }
     m_endPhyRxEvent.Cancel();
+    for (auto& event : m_endTxSniffEvents)
+    {
+        event.Cancel();
+    }
+    m_endTxSniffEvents.clear();
     m_endTxEvent.Cancel();
 }
 

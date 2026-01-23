@@ -32,6 +32,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changed behavior
 
+* (wifi) Monitor sniffer events for a transmitted frame (`MonitorSniffer` and the deprecated `MonitorSnifferTx`) are raised when the PPDU transmission completes. The PCAP record time and the radiotap TSFT of a transmitted frame are therefore the end of the PPDU.
+
 ## Changes from ns-3.48 to ns-3.49
 
 ### New API
