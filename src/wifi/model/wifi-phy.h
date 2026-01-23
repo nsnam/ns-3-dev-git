@@ -638,6 +638,8 @@ class WIFI_EXPORT WifiPhy : public Object
         WifiTxVector txVector; //!< TXVECTOR
         MpduInfo mpduInfo;     //!< per-MPDU information filled by NotifyMonitorSniffRx and
                                //!< NotifyMonitorSniffTx
+        Time ppduStart;        //!< start of the PPDU
+        Time ppduDuration;     //!< PPDU duration
         std::optional<SignalNoiseDbm>
             signalNoise; //!< Signal and noise. If present, it means this information corresponds to
                          //!< a received packet; if not present, it means this information

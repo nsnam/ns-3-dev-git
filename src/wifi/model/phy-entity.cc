@@ -751,6 +751,8 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
                                         {.channelFreq = channelFreq,
                                          .p20Index = p20Index,
                                          .txVector = txVector,
+                                         .ppduStart = event->GetStartTime(),
+                                         .ppduDuration = event->GetDuration(),
                                          .signalNoise = signalNoiseIt->second,
                                          .staId = staId});
         rxSignalInfo.snr = snr;

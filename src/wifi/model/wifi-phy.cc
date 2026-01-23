@@ -1739,6 +1739,8 @@ WifiPhy::NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                                             .p20Index = info.p20Index,
                                             .txVector = info.txVector,
                                             .mpduInfo = aMpdu,
+                                            .ppduStart = info.ppduStart,
+                                            .ppduDuration = info.ppduDuration,
                                             .signalNoise = info.signalNoise,
                                             .staId = info.staId});
                     }
@@ -1770,6 +1772,8 @@ WifiPhy::NotifyMonitorSniffRx(Ptr<const WifiPsdu> psdu,
                                 .p20Index = info.p20Index,
                                 .txVector = info.txVector,
                                 .mpduInfo = aMpdu,
+                                .ppduStart = info.ppduStart,
+                                .ppduDuration = info.ppduDuration,
                                 .signalNoise = info.signalNoise,
                                 .staId = info.staId});
         }
@@ -1807,6 +1811,8 @@ WifiPhy::NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu, const SniffInfo& info)
                                         .p20Index = info.p20Index,
                                         .txVector = info.txVector,
                                         .mpduInfo = aMpdu,
+                                        .ppduStart = info.ppduStart,
+                                        .ppduDuration = info.ppduDuration,
                                         .staId = info.staId});
                 }
                 ++i;
@@ -1833,6 +1839,8 @@ WifiPhy::NotifyMonitorSniffTx(Ptr<const WifiPsdu> psdu, const SniffInfo& info)
                                 .p20Index = info.p20Index,
                                 .txVector = info.txVector,
                                 .mpduInfo = aMpdu,
+                                .ppduStart = info.ppduStart,
+                                .ppduDuration = info.ppduDuration,
                                 .staId = info.staId});
         }
     }
@@ -1970,6 +1978,7 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
     const auto channelFreq = GetFrequency();
     const auto p20Index =
         (static_cast<uint16_t>(GetChannelWidth()) % 20 == 0) ? GetPrimary20Index() : uint8_t{0};
+    const auto ppduStart = Simulator::Now();
     for (const auto& psdu : psdus)
     {
         m_endTxSniffEvents.push_back(Simulator::Schedule(txDuration,
@@ -1979,6 +1988,8 @@ WifiPhy::Send(const WifiConstPsduMap& psdus, const WifiTxVector& txVector)
                                                          SniffInfo{.channelFreq = channelFreq,
                                                                    .p20Index = p20Index,
                                                                    .txVector = txVector,
+                                                                   .ppduStart = ppduStart,
+                                                                   .ppduDuration = txDuration,
                                                                    .staId = psdu.first}));
     }
     m_state->SwitchToTx(txDuration, psdus, GetPower(txVector.GetTxPowerLevel()), txVector);
