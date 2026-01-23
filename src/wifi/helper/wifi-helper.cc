@@ -25,6 +25,7 @@
 #include "ns3/names.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/obss-pd-algorithm.h"
+#include "ns3/pcap-configuration.h"
 #include "ns3/pointer.h"
 #include "ns3/preamble-detection-model.h"
 #include "ns3/qos-txop.h"
@@ -277,7 +278,7 @@ WifiPhyHelper::PcapSniffEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     case iana::linktype::IEEE802_11_RADIOTAP: {
         Ptr<Packet> p = packet->Copy();
-        const auto header = GetRadiotapHeader(p, sniffInfo);
+        const auto header = GetRadiotapHeader(p, sniffInfo, info->device);
         p->AddHeader(header);
         file->Write(Simulator::Now(), p);
         return;
@@ -288,10 +289,13 @@ WifiPhyHelper::PcapSniffEvent(const std::shared_ptr<PcapFilesInfo>& info,
 }
 
 RadiotapHeader
-WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet, const WifiPhy::SniffInfo& sniffInfo)
+WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
+                                 const WifiPhy::SniffInfo& sniffInfo,
+                                 Ptr<WifiNetDevice> device)
 {
     RadiotapHeader header;
 
+    const auto now = Simulator::Now();
     const auto& txVector = sniffInfo.txVector;
     const auto preamble = txVector.GetPreambleType();
     const auto modClass = txVector.GetModulationClass();
@@ -301,7 +305,7 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet, const WifiPhy::SniffInfo& s
 
     header.SetWifiHeader(IsEht(preamble) ? 2 : 1);
 
-    header.SetTsft(Simulator::Now().GetMicroSeconds());
+    header.SetTsft(now.GetMicroSeconds());
 
     uint8_t frameFlags = RadiotapHeader::FRAME_FLAG_NONE;
     // Our capture includes the FCS, so we set the flag to say so.
@@ -451,6 +455,14 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet, const WifiPhy::SniffInfo& s
         vhtFields.mcsNss.at(0) |= (nss & 0x0f) | ((mcs << 4) & 0xf0);
 
         header.SetVhtFields(vhtFields);
+    }
+
+    if (const auto pcapConfig = device->GetPcapConfiguration();
+        pcapConfig && pcapConfig->GetRadiotapTs())
+    {
+        RadiotapHeader::Timestamp timestamp{};
+        timestamp.Set(sniffInfo.ppduStart, RadiotapHeader::Timestamp::Position::SIGNAL_ACQUISITION);
+        header.SetTimestamp(timestamp);
     }
 
     if (modClass == WIFI_MOD_CLASS_HE)
@@ -951,6 +963,7 @@ WifiHelper::WifiHelper()
       m_enableFlowControl(true)
 {
     SetRemoteStationManager("ns3::IdealWifiManager");
+    m_pcapConfig.SetTypeId("ns3::PcapConfiguration");
     m_htConfig.SetTypeId("ns3::HtConfiguration");
     m_vhtConfig.SetTypeId("ns3::VhtConfiguration");
     m_heConfig.SetTypeId("ns3::HeConfiguration");
@@ -1040,6 +1053,7 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
             NS_FATAL_ERROR("No standard specified!");
             return devices;
         }
+        device->SetPcapConfiguration(m_pcapConfig.Create<PcapConfiguration>());
         if (m_standard >= WIFI_STANDARD_80211n)
         {
             auto htConfiguration = m_htConfig.Create<HtConfiguration>();

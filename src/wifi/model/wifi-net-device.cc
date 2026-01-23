@@ -9,6 +9,7 @@
 #include "wifi-net-device.h"
 
 #include "frame-exchange-manager.h"
+#include "pcap-configuration.h"
 #include "sta-wifi-mac.h"
 #include "wifi-phy.h"
 
@@ -78,6 +79,11 @@ WifiNetDevice::GetTypeId()
                           MakeObjectVectorAccessor(&WifiNetDevice::GetRemoteStationManager,
                                                    &WifiNetDevice::GetNRemoteStationManagers),
                           MakeObjectVectorChecker<WifiRemoteStationManager>())
+            .AddAttribute("PcapConfiguration",
+                          "The PcapConfiguration object.",
+                          PointerValue(),
+                          MakePointerAccessor(&WifiNetDevice::GetPcapConfiguration),
+                          MakePointerChecker<PcapConfiguration>())
             .AddAttribute("HtConfiguration",
                           "The HtConfiguration object.",
                           PointerValue(),
@@ -145,6 +151,11 @@ WifiNetDevice::DoDispose()
         }
     }
     m_stationManagers.clear();
+    if (m_pcapConfiguration)
+    {
+        m_pcapConfiguration->Dispose();
+        m_pcapConfiguration = nullptr;
+    }
     if (m_htConfiguration)
     {
         m_htConfiguration->Dispose();
@@ -626,6 +637,18 @@ bool
 WifiNetDevice::SupportsSendFrom() const
 {
     return m_mac->SupportsSendFrom();
+}
+
+void
+WifiNetDevice::SetPcapConfiguration(Ptr<PcapConfiguration> pcapConfiguration)
+{
+    m_pcapConfiguration = pcapConfiguration;
+}
+
+Ptr<PcapConfiguration>
+WifiNetDevice::GetPcapConfiguration() const
+{
+    return m_pcapConfiguration;
 }
 
 void

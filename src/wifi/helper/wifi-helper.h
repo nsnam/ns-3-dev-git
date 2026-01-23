@@ -287,14 +287,16 @@ class WIFI_EXPORT WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceH
                                                     uint8_t phyId);
 
     /**
-     * Get the Radiotap header for a received packet.
+     * Get the Radiotap header for a received or transmitted packet.
      *
      * @param packet the packet
      * @param sniffInfo the sniffing information
+     * @param device the WifiNetDevice that received or transmitted the packet
      * @return the radiotap header
      */
     static RadiotapHeader GetRadiotapHeader(Ptr<Packet> packet,
-                                            const WifiPhy::SniffInfo& sniffInfo);
+                                            const WifiPhy::SniffInfo& sniffInfo,
+                                            Ptr<WifiNetDevice> device);
 
     /**
      * @brief Enable pcap output the indicated net device.
@@ -487,6 +489,16 @@ class WIFI_EXPORT WifiHelper
     void SetStandard(const std::string& standard);
 
     /**
+     * Helper function used to configure the PCAP options listed as attributes of
+     * the PcapConfiguration class.
+     *
+     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @param args A sequence of name-value pairs of the attributes to set.
+     */
+    template <typename... Args>
+    void ConfigPcapOptions(Args&&... args);
+
+    /**
      * Helper function used to configure the HT options listed as attributes of
      * the HtConfiguration class.
      *
@@ -551,6 +563,7 @@ class WIFI_EXPORT WifiHelper
   protected:
     mutable std::vector<ObjectFactory> m_stationManager; ///< station manager
     WifiStandard m_standard;                             ///< wifi standard
+    ObjectFactory m_pcapConfig;                          ///< PCAP configuration
     ObjectFactory m_htConfig;                            ///< HT configuration
     ObjectFactory m_vhtConfig;                           ///< VHT configuration
     ObjectFactory m_heConfig;                            ///< HE configuration
@@ -686,6 +699,13 @@ void
 WifiHelper::ConfigEhtOptions(Args&&... args)
 {
     m_ehtConfig.Set(args...);
+}
+
+template <typename... Args>
+void
+WifiHelper::ConfigPcapOptions(Args&&... args)
+{
+    m_pcapConfig.Set(args...);
 }
 
 } // namespace ns3

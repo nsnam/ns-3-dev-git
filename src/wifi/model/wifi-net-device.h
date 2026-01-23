@@ -24,6 +24,7 @@ namespace ns3
 class WifiRemoteStationManager;
 class WifiPhy;
 class WifiMac;
+class PcapConfiguration;
 class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
@@ -136,6 +137,16 @@ class WIFI_EXPORT WifiNetDevice : public NetDevice
      * @returns the number of remote station managers
      */
     uint8_t GetNRemoteStationManagers() const;
+
+    /**
+     * @param pcapConfiguration pointer to PcapConfiguration
+     */
+    void SetPcapConfiguration(Ptr<PcapConfiguration> pcapConfiguration);
+
+    /**
+     * @return pointer to PcapConfiguration if it exists
+     */
+    Ptr<PcapConfiguration> GetPcapConfiguration() const;
 
     /**
      * @param htConfiguration pointer to HtConfiguration
@@ -251,6 +262,7 @@ class WIFI_EXPORT WifiNetDevice : public NetDevice
     std::vector<Ptr<WifiPhy>> m_phys;                             //!< the phy objects
     Ptr<WifiMac> m_mac;                                           //!< the MAC
     std::vector<Ptr<WifiRemoteStationManager>> m_stationManagers; //!< the station managers
+    Ptr<PcapConfiguration> m_pcapConfiguration;                   //!< the PcapConfiguration
     Ptr<HtConfiguration> m_htConfiguration;                       //!< the HtConfiguration
     Ptr<VhtConfiguration> m_vhtConfiguration;                     //!< the VhtConfiguration
     Ptr<HeConfiguration> m_heConfiguration;                       //!< the HeConfiguration
