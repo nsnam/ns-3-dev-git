@@ -25,14 +25,12 @@
 #include "ns3/eht-phy.h" //also includes OFDM, HT, VHT and HE
 #include "ns3/erp-ofdm-phy.h"
 #include "ns3/error-model.h"
-#include "ns3/ht-configuration.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
-#include "ns3/vht-configuration.h"
 
 #include <algorithm>
 #include <numeric>
