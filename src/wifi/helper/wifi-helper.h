@@ -258,40 +258,14 @@ class WIFI_EXPORT WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceH
      * @param info the information needed to write to the correct PCAP file
      * @param phyId the ID of the PHY that raised the event
      * @param packet the packet
-     * @param channelFreqMhz the channel frequency
-     * @param txVector the TXVECTOR
-     * @param aMpdu the A-MPDU information
-     * @param staId the STA-ID (only used for MU)
+     * @param sniffInfo the sniffing information
      *
-     * Handle TX pcap.
+     * Handle TX/RX pcap.
      */
-    static void PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
-                                 uint8_t phyId,
-                                 Ptr<const Packet> packet,
-                                 uint16_t channelFreqMhz,
-                                 WifiTxVector txVector,
-                                 MpduInfo aMpdu,
-                                 uint16_t staId = SU_STA_ID);
-    /**
-     * @param info the information needed to write to the correct PCAP file
-     * @param phyId the ID of the PHY that raised the event
-     * @param packet the packet
-     * @param channelFreqMhz the channel frequency
-     * @param txVector the TXVECTOR
-     * @param aMpdu the A-MPDU information
-     * @param signalNoise the RX signal and noise information
-     * @param staId the STA-ID (only used for MU)
-     *
-     * Handle RX pcap.
-     */
-    static void PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
-                                 uint8_t phyId,
-                                 Ptr<const Packet> packet,
-                                 uint16_t channelFreqMhz,
-                                 WifiTxVector txVector,
-                                 MpduInfo aMpdu,
-                                 SignalNoiseDbm signalNoise,
-                                 uint16_t staId = SU_STA_ID);
+    static void PcapSniffEvent(const std::shared_ptr<PcapFilesInfo>& info,
+                               uint8_t phyId,
+                               Ptr<const Packet> packet,
+                               const WifiPhy::SniffInfo& sniffInfo);
 
     std::vector<ObjectFactory> m_phys;                   ///< PHY objects
     ObjectFactory m_interferenceHelper;                  ///< interference helper
@@ -316,22 +290,11 @@ class WIFI_EXPORT WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceH
      * Get the Radiotap header for a received packet.
      *
      * @param packet the packet
-     * @param channelFreqMhz the channel frequency
-     * @param p20Index the index of the primary20 channel
-     * @param txVector the TXVECTOR
-     * @param aMpdu the A-MPDU information
-     * @param staId the STA-ID
-     * @param signalNoise the rx signal and noise information (for receiver only)
+     * @param sniffInfo the sniffing information
      * @return the radiotap header
      */
-    static RadiotapHeader GetRadiotapHeader(
-        Ptr<Packet> packet,
-        uint16_t channelFreqMhz,
-        uint8_t p20Index,
-        const WifiTxVector& txVector,
-        MpduInfo aMpdu,
-        uint16_t staId,
-        std::optional<SignalNoiseDbm> signalNoise = std::nullopt);
+    static RadiotapHeader GetRadiotapHeader(Ptr<Packet> packet,
+                                            const WifiPhy::SniffInfo& sniffInfo);
 
     /**
      * @brief Enable pcap output the indicated net device.

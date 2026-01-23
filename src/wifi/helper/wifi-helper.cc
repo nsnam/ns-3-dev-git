@@ -256,13 +256,10 @@ WifiPhyHelper::GetOrCreatePcapFile(const std::shared_ptr<PcapFilesInfo>& info, u
 }
 
 void
-WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
-                                uint8_t phyId,
-                                Ptr<const Packet> packet,
-                                uint16_t channelFreqMhz,
-                                WifiTxVector txVector,
-                                MpduInfo aMpdu,
-                                uint16_t staId)
+WifiPhyHelper::PcapSniffEvent(const std::shared_ptr<PcapFilesInfo>& info,
+                              uint8_t phyId,
+                              Ptr<const Packet> packet,
+                              const WifiPhy::SniffInfo& sniffInfo)
 {
     auto file = GetOrCreatePcapFile(info, phyId);
     if (!file)
@@ -275,83 +272,32 @@ WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
         file->Write(Simulator::Now(), packet);
         return;
     case iana::linktype::IEEE802_11_PRISM: {
-        NS_FATAL_ERROR("PcapSniffTxEvent(): DLT_PRISM_HEADER not implemented");
+        NS_FATAL_ERROR("PcapSniffEvent(): IEEE802_11_PRISM not implemented");
         return;
     }
     case iana::linktype::IEEE802_11_RADIOTAP: {
         Ptr<Packet> p = packet->Copy();
-        const auto header = GetRadiotapHeader(p,
-                                              channelFreqMhz,
-                                              info->device->GetPhy(phyId)->GetPrimary20Index(),
-                                              txVector,
-                                              aMpdu,
-                                              staId);
+        const auto header = GetRadiotapHeader(p, sniffInfo);
         p->AddHeader(header);
         file->Write(Simulator::Now(), p);
         return;
     }
     default:
-        NS_ABORT_MSG("PcapSniffTxEvent(): Unexpected data link type " << info->pcapDlt);
-    }
-}
-
-void
-WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
-                                uint8_t phyId,
-                                Ptr<const Packet> packet,
-                                uint16_t channelFreqMhz,
-                                WifiTxVector txVector,
-                                MpduInfo aMpdu,
-                                SignalNoiseDbm signalNoise,
-                                uint16_t staId)
-{
-    auto file = GetOrCreatePcapFile(info, phyId);
-    if (!file)
-    {
-        return;
-    }
-    switch (info->pcapDlt)
-    {
-    case iana::linktype::IEEE802_11:
-        file->Write(Simulator::Now(), packet);
-        return;
-    case iana::linktype::IEEE802_11_PRISM: {
-        NS_FATAL_ERROR("PcapSniffRxEvent(): DLT_PRISM_HEADER not implemented");
-        return;
-    }
-    case iana::linktype::IEEE802_11_RADIOTAP: {
-        Ptr<Packet> p = packet->Copy();
-        const auto header = GetRadiotapHeader(p,
-                                              channelFreqMhz,
-                                              info->device->GetPhy(phyId)->GetPrimary20Index(),
-                                              txVector,
-                                              aMpdu,
-                                              staId,
-                                              signalNoise);
-        p->AddHeader(header);
-        file->Write(Simulator::Now(), p);
-        return;
-    }
-    default:
-        NS_ABORT_MSG("PcapSniffRxEvent(): Unexpected data link type " << info->pcapDlt);
+        NS_ABORT_MSG("PcapSniffEvent(): Unexpected data link type " << info->pcapDlt);
     }
 }
 
 RadiotapHeader
-WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
-                                 uint16_t channelFreqMhz,
-                                 uint8_t p20Index,
-                                 const WifiTxVector& txVector,
-                                 MpduInfo aMpdu,
-                                 uint16_t staId,
-                                 std::optional<SignalNoiseDbm> signalNoise)
+WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet, const WifiPhy::SniffInfo& sniffInfo)
 {
     RadiotapHeader header;
 
+    const auto& txVector = sniffInfo.txVector;
     const auto preamble = txVector.GetPreambleType();
     const auto modClass = txVector.GetModulationClass();
     const auto channelWidth = txVector.GetChannelWidth();
     const auto gi = txVector.GetGuardInterval();
+    const auto channelFreqMhz = static_cast<uint16_t>(sniffInfo.channelFreq);
 
     header.SetWifiHeader(IsEht(preamble) ? 2 : 1);
 
@@ -375,13 +321,13 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
     uint64_t rate = 0;
     if (modClass < WIFI_MOD_CLASS_HT)
     {
-        rate = txVector.GetMode(staId).GetDataRate(channelWidth, gi, 1) * nss / 500000;
+        rate = txVector.GetMode(sniffInfo.staId).GetDataRate(channelWidth, gi, 1) * nss / 500000;
         header.SetRate(static_cast<uint8_t>(rate));
     }
     else
     {
-        mcs = txVector.GetMode(staId).GetMcsValue();
-        nss = txVector.GetNss(staId);
+        mcs = txVector.GetMode(sniffInfo.staId).GetMcsValue();
+        nss = txVector.GetNss(sniffInfo.staId);
     }
 
     RadiotapHeader::ChannelFields channelFields{.frequency = channelFreqMhz};
@@ -407,10 +353,10 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
     }
     header.SetChannelFields(channelFields);
 
-    if (signalNoise)
+    if (sniffInfo.signalNoise)
     {
-        header.SetAntennaSignalPower(signalNoise->signal);
-        header.SetAntennaNoisePower(signalNoise->noise);
+        header.SetAntennaSignalPower(sniffInfo.signalNoise->signal);
+        header.SetAntennaNoisePower(sniffInfo.signalNoise->noise);
     }
 
     if (modClass == WIFI_MOD_CLASS_HT)
@@ -452,7 +398,8 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
 
     if (txVector.IsAggregation())
     {
-        RadiotapHeader::AmpduStatusFields ampduStatusFields{.referenceNumber = aMpdu.mpduRefNumber};
+        RadiotapHeader::AmpduStatusFields ampduStatusFields{.referenceNumber =
+                                                                sniffInfo.mpduInfo.mpduRefNumber};
         ampduStatusFields.flags |= RadiotapHeader::A_MPDU_STATUS_LAST_KNOWN;
         /* For PCAP file, MPDU Delimiter and Padding should be removed by the MAC Driver */
         AmpduSubframeHeader hdr;
@@ -460,7 +407,8 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         packet->RemoveHeader(hdr);
         extractedLength = hdr.GetLength();
         packet = packet->CreateFragment(0, static_cast<uint32_t>(extractedLength));
-        if (aMpdu.type == LAST_MPDU_IN_AGGREGATE || (hdr.GetEof() && hdr.GetLength() > 0))
+        if (sniffInfo.mpduInfo.type == LAST_MPDU_IN_AGGREGATE ||
+            (hdr.GetEof() && hdr.GetLength() > 0))
         {
             ampduStatusFields.flags |= RadiotapHeader::A_MPDU_STATUS_LAST;
         }
@@ -528,8 +476,8 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         heFields.data2 = RadiotapHeader::HE_DATA2_GI_KNOWN;
         if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
-            NS_ASSERT(WifiRu::IsHe(txVector.GetHeMuUserInfo(staId).ru));
-            auto heRu = std::get<HeRu::RuSpec>(txVector.GetHeMuUserInfo(staId).ru);
+            NS_ASSERT(WifiRu::IsHe(txVector.GetHeMuUserInfo(sniffInfo.staId).ru));
+            auto heRu = std::get<HeRu::RuSpec>(txVector.GetHeMuUserInfo(sniffInfo.staId).ru);
             heFields.data2 |=
                 RadiotapHeader::HE_DATA2_RU_OFFSET_KNOWN |
                 // HeRu indices start at 1 whereas RadioTap starts at 0
@@ -542,13 +490,13 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
             GetRadiotapField(RadiotapHeader::HE_DATA3_DATA_MCS, mcs);
 
         heFields.data4 = (preamble == WIFI_PREAMBLE_HE_MU)
-                             ? GetRadiotapField(RadiotapHeader::HE_DATA4_MU_STA_ID, staId)
+                             ? GetRadiotapField(RadiotapHeader::HE_DATA4_MU_STA_ID, sniffInfo.staId)
                              : 0;
 
         heFields.data5 = 0;
         if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
-            const auto ruType = WifiRu::GetRuType(txVector.GetHeMuUserInfo(staId).ru);
+            const auto ruType = WifiRu::GetRuType(txVector.GetHeMuUserInfo(sniffInfo.staId).ru);
             switch (ruType)
             {
             case RuType::RU_26_TONE:
@@ -610,7 +558,7 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         header.SetHeMuOtherUserFields(heMuOtherUserFields);
     }
 
-    const auto isLowP80 = p20Index < (channelWidth / 40);
+    const auto isLowP80 = sniffInfo.p20Index < (channelWidth / MHz_u{40});
     if (IsEht(preamble))
     {
         RadiotapHeader::UsigFields usigFields{};
@@ -702,7 +650,7 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         ehtFields.data.at(1) = RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1_KNOWN;
         const auto ruType = (txVector.GetEhtPpduType() == 1)
                                 ? WifiRu::GetRuType(channelWidth)
-                                : WifiRu::GetRuType(txVector.GetRu(staId));
+                                : WifiRu::GetRuType(txVector.GetRu(sniffInfo.staId));
         switch (ruType)
         {
         case RuType::RU_26_TONE:
@@ -741,9 +689,10 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
             NS_ABORT_MSG("Unexpected RU type");
             break;
         }
-        const auto ruIndex =
-            (txVector.GetEhtPpduType() == 1) ? 1 : WifiRu::GetIndex(txVector.GetRu(staId));
-        const auto& ruAllocation = txVector.GetRuAllocation(p20Index);
+        const auto ruIndex = (txVector.GetEhtPpduType() == 1)
+                                 ? 1
+                                 : WifiRu::GetIndex(txVector.GetRu(sniffInfo.staId));
+        const auto& ruAllocation = txVector.GetRuAllocation(sniffInfo.p20Index);
         ehtFields.data.at(1) |=
             GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_MRU_INDEX, ruIndex) |
             GetRadiotapField(RadiotapHeader::EHT_DATA1_RU_ALLOC_CC_1_1_1, ruAllocation.at(0));
@@ -801,13 +750,13 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
                 GetRadiotapField(RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_1_2_6, ruAllocation.at(14)) |
                 GetRadiotapField(RadiotapHeader::EHT_DATA6_RU_ALLOC_CC_2_2_6, ruAllocation.at(15));
         }
-        uint32_t userInfo = RadiotapHeader::EHT_USER_INFO_STA_ID_KNOWN |
-                            RadiotapHeader::EHT_USER_INFO_MCS_KNOWN |
-                            RadiotapHeader::EHT_USER_INFO_NSS_KNOWN_O |
-                            RadiotapHeader::EHT_USER_INFO_DATA_FOR_USER |
-                            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_STA_ID, staId) |
-                            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_MCS, mcs) |
-                            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_NSS_O, nss);
+        uint32_t userInfo =
+            RadiotapHeader::EHT_USER_INFO_STA_ID_KNOWN | RadiotapHeader::EHT_USER_INFO_MCS_KNOWN |
+            RadiotapHeader::EHT_USER_INFO_NSS_KNOWN_O |
+            RadiotapHeader::EHT_USER_INFO_DATA_FOR_USER |
+            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_STA_ID, sniffInfo.staId) |
+            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_MCS, mcs) |
+            GetRadiotapField(RadiotapHeader::EHT_USER_INFO_NSS_O, nss);
         ehtFields.userInfo.push_back(userInfo);
         header.SetEhtFields(ehtFields);
     }
@@ -830,7 +779,7 @@ WifiPhyHelper::SetPcapDataLinkType(SupportedPcapDataLinkTypes dlt)
         m_pcapDlt = iana::linktype::IEEE802_11_RADIOTAP;
         return;
     default:
-        NS_ABORT_MSG("WifiPhyHelper::SetPcapFormat(): Unexpected format");
+        NS_ABORT_MSG("WifiPhyHelper::SetPcapDataLinkType(): Unexpected format");
     }
 }
 
@@ -889,11 +838,8 @@ WifiPhyHelper::EnablePcapInternal(std::string prefix,
     for (auto& phy : device->GetPhys())
     {
         phy->TraceConnectWithoutContext(
-            "MonitorSnifferTx",
-            MakeBoundCallback(&WifiPhyHelper::PcapSniffTxEvent, info, phy->GetPhyId()));
-        phy->TraceConnectWithoutContext(
-            "MonitorSnifferRx",
-            MakeBoundCallback(&WifiPhyHelper::PcapSniffRxEvent, info, phy->GetPhyId()));
+            "MonitorSniffer",
+            MakeBoundCallback(&WifiPhyHelper::PcapSniffEvent, info, phy->GetPhyId()));
     }
 }
 
