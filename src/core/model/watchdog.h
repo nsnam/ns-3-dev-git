@@ -102,6 +102,11 @@ class Watchdog
     void SetArguments(Ts&&... args);
     /**@}*/
 
+    /**
+     * @return \c true if the watchdog timer has expired, \c false otherwise
+     */
+    bool IsExpired() const;
+
   private:
     /** Internal callback invoked when the timer expires. */
     void Expire();
