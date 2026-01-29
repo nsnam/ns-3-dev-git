@@ -289,8 +289,10 @@ class LrWpanMac : public LrWpanMacBase
      * @param psduLength number of bytes in the PSDU
      * @param p the packet to be transmitted
      * @param lqi Link quality (LQI) value measured during reception of the PPDU
+     * @param rssi The received signal strength indicator measured during the reception of the
+     * packet. Supported by IEEE 802.15.4-2015 onwards.
      */
-    void PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
+    void PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int8_t rssi);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.1.2
@@ -763,10 +765,12 @@ class LrWpanMac : public LrWpanMacBase
      * Process a frame when promiscuous mode is active.
      *
      * @param lqi The LQI value of the received packet
+     * @param rssi The receive signal strength indicator in dBm.
      * @param receivedMacHdr The reference to the received MAC header
      * @param p The packet containing the MAC payload
      */
     void ReceiveInPromiscuousMode(uint8_t lqi,
+                                  int8_t rssi,
                                   const LrWpanMacHeader& receivedMacHdr,
                                   Ptr<Packet> p);
 
@@ -889,10 +893,14 @@ class LrWpanMac : public LrWpanMacBase
      * Used to process the reception of data.
      *
      * @param lqi The value of the link quality indicator (LQI) of the received packet.
+     * @param rssi The received signal strength indicator in dBm.
      * @param receivedMacHdr The reference to the received MAC header.
      * @param p The packet containing the data payload.
      */
-    void ReceiveData(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p);
+    void ReceiveData(uint8_t lqi,
+                     int8_t rssi,
+                     const LrWpanMacHeader& receivedMacHdr,
+                     Ptr<Packet> p);
 
     /**
      * Used to process an acknowledgment packet.

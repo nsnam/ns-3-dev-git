@@ -24,7 +24,8 @@ LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters()
 
 LrWpanSpectrumSignalParameters::LrWpanSpectrumSignalParameters(
     const LrWpanSpectrumSignalParameters& p)
-    : SpectrumSignalParameters(p)
+    : SpectrumSignalParameters(p),
+      preambleDuration(p.preambleDuration)
 {
     NS_LOG_FUNCTION(this << &p);
     packetBurst = p.packetBurst->Copy();

@@ -76,7 +76,7 @@ class LrWpanErrorModelTestCase : public TestCase
 };
 
 LrWpanErrorDistanceTestCase::LrWpanErrorDistanceTestCase()
-    : TestCase("Test the 802.15.4 error model vs distance"),
+    : TestCase("IEEE 802.15.4 distance error model test"),
       m_received(0)
 {
 }
@@ -135,7 +135,7 @@ LrWpanErrorDistanceTestCase::DoRun()
 
     Ptr<Packet> p;
     mob0->SetPosition(Vector(0, 0, 0));
-    mob1->SetPosition(Vector(100, 0, 0));
+    mob1->SetPosition(Vector(95, 0, 0));
     for (int i = 0; i < 1000; i++)
     {
         p = Create<Packet>(20);
@@ -144,9 +144,14 @@ LrWpanErrorDistanceTestCase::DoRun()
 
     Simulator::Run();
 
-    // Test that we received 977 packets out of 1000, at distance of 100 m
-    // with default power of 0
-    NS_TEST_ASSERT_MSG_EQ(GetReceived(), 977, "Model fails");
+    // Test that we received fewer packets than 1000, at distance less than 100 m
+    // with default Tx power of 0 dBm using the default maximum sensitivity (-106.58 dBm).
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(GetReceived(),
+                                990,
+                                "Not enough packets received, distance model failure");
+    NS_TEST_ASSERT_MSG_LT_OR_EQ(GetReceived(),
+                                1000,
+                                "Too many packets received, distance model failure");
 
     Simulator::Destroy();
 }

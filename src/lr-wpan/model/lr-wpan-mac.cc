@@ -1030,6 +1030,7 @@ LrWpanMac::MlmeGetRequest(MacPibAttributeIdentifier id)
 
 void
 LrWpanMac::ReceiveInPromiscuousMode(uint8_t lqi,
+                                    int8_t rssi,
                                     const LrWpanMacHeader& receivedMacHdr,
                                     Ptr<Packet> p)
 {
@@ -1046,6 +1047,7 @@ LrWpanMac::ReceiveInPromiscuousMode(uint8_t lqi,
         params.m_mpduLinkQuality = lqi;
         params.m_srcPanId = receivedMacHdr.GetSrcPanId();
         params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode();
+        params.m_rssi = rssi;
 
         switch (params.m_srcAddrMode)
         {
@@ -2077,7 +2079,10 @@ LrWpanMac::ReceiveCommand(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Pt
 }
 
 void
-LrWpanMac::ReceiveData(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p)
+LrWpanMac::ReceiveData(uint8_t lqi,
+                       int8_t rssi,
+                       const LrWpanMacHeader& receivedMacHdr,
+                       Ptr<Packet> p)
 {
     NS_LOG_FUNCTION(this << lqi << p);
 
@@ -2090,6 +2095,7 @@ LrWpanMac::ReceiveData(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<P
         params.m_mpduLinkQuality = lqi;
         params.m_srcPanId = receivedMacHdr.GetSrcPanId();
         params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode();
+        params.m_rssi = rssi;
 
         switch (params.m_srcAddrMode)
         {
@@ -2392,7 +2398,7 @@ LrWpanMac::GetPhy()
 }
 
 void
-LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
+LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int8_t rssi)
 {
     NS_ASSERT(m_macState == MAC_IDLE || m_macState == MAC_ACK_PENDING || m_macState == MAC_CSMA);
     NS_LOG_FUNCTION(this << psduLength << p << (uint16_t)lqi);
@@ -2443,7 +2449,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
     if (m_macPromiscuousMode)
     {
         PrintReceivedPacket(receivedMacHdr);
-        ReceiveInPromiscuousMode(lqi, receivedMacHdr, p);
+        ReceiveInPromiscuousMode(lqi, rssi, receivedMacHdr, p);
         return;
     }
 
@@ -2646,7 +2652,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
     }
     else if (receivedMacHdr.IsData())
     {
-        ReceiveData(lqi, receivedMacHdr, p);
+        ReceiveData(lqi, rssi, receivedMacHdr, p);
     }
     else if (receivedMacHdr.IsAcknowledgment() && m_txPkt && m_macState == MAC_ACK_PENDING)
     {
@@ -3425,7 +3431,7 @@ LrWpanMac::PlmeGetAttributeConfirm(PhyEnumeration status,
 void
 LrWpanMac::PlmeSetTRXStateConfirm(PhyEnumeration status)
 {
-    NS_LOG_FUNCTION(this << status);
+    NS_LOG_FUNCTION(this << status << m_macState);
 
     if (m_macState == MAC_SENDING &&
         (status == IEEE_802_15_4_PHY_TX_ON || status == IEEE_802_15_4_PHY_SUCCESS))

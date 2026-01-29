@@ -36,7 +36,9 @@ using namespace ns3::lrwpan;
 static void
 DataIndication(McpsDataIndicationParams params, Ptr<Packet> p)
 {
-    NS_LOG_UNCOND("Received packet of size " << p->GetSize());
+    std::cout << "Received packet of size: " << p->GetSize()
+              << " | LQI: " << static_cast<uint16_t>(params.m_mpduLinkQuality)
+              << " | RSSI: " << static_cast<int16_t>(params.m_rssi) << " dBm\n";
 }
 
 /**
@@ -46,7 +48,7 @@ DataIndication(McpsDataIndicationParams params, Ptr<Packet> p)
 static void
 DataConfirm(McpsDataConfirmParams params)
 {
-    NS_LOG_UNCOND("LrWpanMcpsDataConfirmStatus = " << static_cast<uint16_t>(params.m_status));
+    std::cout << "LrWpanMcpsDataConfirmStatus = " << static_cast<uint16_t>(params.m_status) << "\n";
 }
 
 /**
@@ -62,9 +64,9 @@ StateChangeNotification(std::string context,
                         PhyEnumeration oldState,
                         PhyEnumeration newState)
 {
-    NS_LOG_UNCOND(context << " state change at " << now.As(Time::S) << " from "
-                          << LrWpanHelper::LrWpanPhyEnumerationPrinter(oldState) << " to "
-                          << LrWpanHelper::LrWpanPhyEnumerationPrinter(newState));
+    std::cout << context << " state change at " << now.As(Time::S) << " from "
+              << LrWpanHelper::LrWpanPhyEnumerationPrinter(oldState) << " to "
+              << LrWpanHelper::LrWpanPhyEnumerationPrinter(newState) << "\n";
 }
 
 int
@@ -200,6 +202,7 @@ main(int argc, char* argv[])
     }
     params.m_msduHandle = 0;
     params.m_txOptions = TX_OPTION_ACK;
+
     //  dev0->GetMac ()->McpsDataRequest (params, p0);
     Simulator::ScheduleWithContext(1,
                                    Seconds(0),

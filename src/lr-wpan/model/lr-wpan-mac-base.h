@@ -330,7 +330,9 @@ struct McpsDataConfirmParams
 /**
  * @ingroup lr-wpan
  *
- * MCPS-DATA.indication params. See 7.1.1.3
+ * MCPS-DATA.indication params.
+ * See IEEE 802.15.4-2011, Section 7.1.1.1
+ * See IEEE 802.15.4-2015, Section 8.3.3 (e.g., RSSI)
  */
 struct McpsDataIndicationParams
 {
@@ -343,6 +345,9 @@ struct McpsDataIndicationParams
     Mac16Address m_dstAddr;            //!< Destination address
     Mac64Address m_dstExtAddr;         //!< Destination extended address
     uint8_t m_mpduLinkQuality{0};      //!< LQI value measured during reception of the MPDU
+    int8_t m_rssi{-128};               //!< RSSI value measured after the preamble
+                                       //!< during the reception of the packet SFD.
+                                       //!< (IEEE 802.15.4-2015 onwards)
     uint8_t m_dsn{0};                  //!< The DSN of the received data frame
 };
 

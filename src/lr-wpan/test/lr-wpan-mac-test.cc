@@ -147,9 +147,10 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun()
     // do not attempt to do multiple backoffs delays in its CSMA,
     // macMinBE and MacMaxCSMABackoffs has been set to 0.
 
-    LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC));
+    LogComponentEnableAll(LogLevel(LOG_PREFIX_NODE | LOG_PREFIX_TIME | LOG_PREFIX_FUNC));
 
     LogComponentEnable("LrWpanMac", LOG_LEVEL_DEBUG);
+    LogComponentEnable("LrWpanPhy", LOG_LEVEL_DEBUG);
     LogComponentEnable("LrWpanCsmaCa", LOG_LEVEL_DEBUG);
     LogComponentEnable("lr-wpan-mac-test", LOG_LEVEL_DEBUG);
 
@@ -251,7 +252,7 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun()
     params.m_msduHandle = 0;
 
     // Send the packet that will be rejected due to channel access failure
-    Simulator::ScheduleWithContext(1,
+    Simulator::ScheduleWithContext(dev0->GetNode()->GetId(),
                                    Seconds(0.00033),
                                    &LrWpanMac::McpsDataRequest,
                                    dev0->GetMac(),
@@ -262,7 +263,7 @@ TestRxOffWhenIdleAfterCsmaFailure::DoRun()
     Ptr<Packet> p2 = Create<Packet>(60); // 60 bytes of dummy data
     params.m_dstAddr = Mac16Address("00:02");
 
-    Simulator::ScheduleWithContext(2,
+    Simulator::ScheduleWithContext(dev2->GetNode()->GetId(),
                                    Seconds(0),
                                    &LrWpanMac::McpsDataRequest,
                                    dev2->GetMac(),
@@ -345,7 +346,7 @@ TestActiveScanPanDescriptors::DoRun()
      *      [00:01]                       [00:02]                             [00:03]
      *  PAN Coordinator 1 (PAN: 5)       End Device                  PAN Coordinator 2 (PAN: 7)
      *
-     *       |--------100 m----------------|----------106 m -----------------------|
+     *       |--------90 m----------------|----------188 m -----------------------|
      *  Channel 12               (Active Scan channels 11-14)                 Channel 14
      *
      * Test Setup:
@@ -407,12 +408,12 @@ TestActiveScanPanDescriptors::DoRun()
 
     Ptr<ConstantPositionMobilityModel> endNodeMobility =
         CreateObject<ConstantPositionMobilityModel>();
-    endNodeMobility->SetPosition(Vector(100, 0, 0));
+    endNodeMobility->SetPosition(Vector(90, 0, 0));
     endNodeNetDevice->GetPhy()->SetMobility(endNodeMobility);
 
     Ptr<ConstantPositionMobilityModel> coord2Mobility =
         CreateObject<ConstantPositionMobilityModel>();
-    coord2Mobility->SetPosition(Vector(206, 0, 0));
+    coord2Mobility->SetPosition(Vector(188, 0, 0));
     coord2NetDevice->GetPhy()->SetMobility(coord2Mobility);
 
     // MAC layer Callbacks hooks
@@ -436,7 +437,7 @@ TestActiveScanPanDescriptors::DoRun()
     params.m_bcnOrd = 15;
     params.m_sfrmOrd = 15;
     params.m_logCh = 12;
-    Simulator::ScheduleWithContext(1,
+    Simulator::ScheduleWithContext(coord1NetDevice->GetNode()->GetId(),
                                    Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coord1NetDevice->GetMac(),
@@ -459,7 +460,7 @@ TestActiveScanPanDescriptors::DoRun()
     params2.m_bcnOrd = 15;
     params2.m_sfrmOrd = 15;
     params2.m_logCh = 14;
-    Simulator::ScheduleWithContext(2,
+    Simulator::ScheduleWithContext(coord2NetDevice->GetNode()->GetId(),
                                    Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coord2NetDevice->GetMac(),
@@ -476,7 +477,7 @@ TestActiveScanPanDescriptors::DoRun()
     scanParams.m_scanChannels = 0x7800;
     scanParams.m_scanDuration = 14;
     scanParams.m_scanType = MLMESCAN_ACTIVE;
-    Simulator::ScheduleWithContext(1,
+    Simulator::ScheduleWithContext(endNodeNetDevice->GetNode()->GetId(),
                                    Seconds(3),
                                    &LrWpanMac::MlmeScanRequest,
                                    endNodeNetDevice->GetMac(),
@@ -636,7 +637,7 @@ TestOrphanScan::DoRun()
 
     Ptr<ConstantPositionMobilityModel> endNodeMobility =
         CreateObject<ConstantPositionMobilityModel>();
-    endNodeMobility->SetPosition(Vector(100, 0, 0));
+    endNodeMobility->SetPosition(Vector(95, 0, 0));
     endNodeNetDevice->GetPhy()->SetMobility(endNodeMobility);
 
     // MAC layer Callbacks hooks
@@ -659,7 +660,7 @@ TestOrphanScan::DoRun()
     params.m_bcnOrd = 15;
     params.m_sfrmOrd = 15;
     params.m_logCh = 12;
-    Simulator::ScheduleWithContext(1,
+    Simulator::ScheduleWithContext(coord1NetDevice->GetNode()->GetId(),
                                    Seconds(2),
                                    &LrWpanMac::MlmeStartRequest,
                                    coord1NetDevice->GetMac(),
@@ -678,7 +679,7 @@ TestOrphanScan::DoRun()
     scanParams.m_chPage = 0;
     scanParams.m_scanChannels = 0x7800;
     scanParams.m_scanType = MLMESCAN_ORPHAN;
-    Simulator::ScheduleWithContext(1,
+    Simulator::ScheduleWithContext(endNodeNetDevice->GetNode()->GetId(),
                                    Seconds(3),
                                    &LrWpanMac::MlmeScanRequest,
                                    endNodeNetDevice->GetMac(),

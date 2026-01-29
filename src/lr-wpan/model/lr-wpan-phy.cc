@@ -32,6 +32,8 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-value.h"
 
+#include <array>
+
 namespace ns3
 {
 namespace lrwpan
@@ -43,20 +45,22 @@ NS_OBJECT_ENSURE_REGISTERED(LrWpanPhy);
 /**
  * The data and symbol rates for the different PHY options.
  * See Table 1 in section 6.1.1 IEEE 802.15.4-2006, IEEE 802.15.4c-2009, IEEE 802.15.4d-2009.
+ * You can check also Table 66 of 802.15.4-2011.
  * Bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
  * The index follows LrWpanPhyOption (kb/s and ksymbol/s)
  */
-static const PhyDataAndSymbolRates dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPTION]{
-    {20.0, 20.0},
-    {40.0, 40.0},
-    {20.0, 20.0},
-    {250.0, 12.5},
-    {250.0, 50.0},
-    {250.0, 62.5},
-    {100.0, 25.0},
-    {250.0, 62.5},
-    {250.0, 62.5},
-};
+constexpr std::array<PhyDataAndSymbolRates, 10> dataSymbolRates{{
+    {20.0, 20.0},  // IEEE_802_15_4_868MHZ_BPSK
+    {40.0, 40.0},  // IEEE_802_15_4_915MHZ_BPSK
+    {20.0, 20.0},  // IEEE_802_15_4_950MHZ_BPSK
+    {250.0, 12.5}, // IEEE_802_15_4_868MHZ_ASK
+    {250.0, 50.0}, // IEEE_802_15_4_915MHZ_ASK
+    {250.0, 62.5}, // IEEE_802_15_4_780MHZ_OQPSK
+    {100.0, 25.0}, // IEEE_802_15_4_868MHZ_OQPSK
+    {250.0, 62.5}, // IEEE_802_15_4_915MHZ_OQPSK
+    {250.0, 62.5}, // IEEE_802_15_4_2_4GHZ_OQPSK
+    {0, 0},        // IEEE_802_15_4_INVALID_PHY_OPTION
+}};
 
 /**
  * The preamble, SFD, and PHR lengths in symbols for the different PHY options.
@@ -65,17 +69,18 @@ static const PhyDataAndSymbolRates dataSymbolRates[IEEE_802_15_4_INVALID_PHY_OPT
  * The PHR is 1 octet and it follows phySymbolsPerOctet in Table 23.
  * The index follows LrWpanPhyOption.
  */
-const PhyPpduHeaderSymbolNumber ppduHeaderSymbolNumbers[IEEE_802_15_4_INVALID_PHY_OPTION]{
-    {32.0, 8.0, 8.0},
-    {32.0, 8.0, 8.0},
-    {32.0, 8.0, 8.0},
-    {2.0, 1.0, 0.4},
-    {6.0, 1.0, 1.6},
-    {8.0, 2.0, 2.0},
-    {8.0, 2.0, 2.0},
-    {8.0, 2.0, 2.0},
-    {8.0, 2.0, 2.0},
-};
+constexpr std::array<PhyPpduHeaderSymbolNumber, 10> ppduHeaderSymbolNumbers{{
+    {32.0, 8.0, 8.0}, // IEEE_802_15_4_868MHZ_BPSK
+    {32.0, 8.0, 8.0}, // IEEE_802_15_4_915MHZ_BPSK
+    {32.0, 8.0, 8.0}, // IEEE_802_15_4_950MHZ_BPSK
+    {2.0, 1.0, 0.4},  // IEEE_802_15_4_868MHZ_ASK
+    {6.0, 1.0, 1.6},  // IEEE_802_15_4_915MHZ_ASK
+    {8.0, 2.0, 2.0},  // IEEE_802_15_4_780MHZ_OQPSK
+    {8.0, 2.0, 2.0},  // IEEE_802_15_4_868MHZ_OQPSK
+    {8.0, 2.0, 2.0},  // IEEE_802_15_4_915MHZ_OQPSK
+    {8.0, 2.0, 2.0},  // IEEE_802_15_4_2_4GHZ_OQPSK
+    {0, 0, 0},        // IEEE_802_15_4_INVALID_PHY_OPTION
+}};
 
 std::ostream&
 operator<<(std::ostream& os, const PhyEnumeration& state)
@@ -269,7 +274,7 @@ LrWpanPhy::DoDispose()
     m_pdDataRequest.Cancel();
 
     m_random = nullptr;
-    m_pdDataIndicationCallback = MakeNullCallback<void, uint32_t, Ptr<Packet>, uint8_t>();
+    m_pdDataIndicationCallback = MakeNullCallback<void, uint32_t, Ptr<Packet>, uint8_t, int8_t>();
     m_pdDataConfirmCallback = MakeNullCallback<void, PhyEnumeration>();
     m_plmeCcaConfirmCallback = MakeNullCallback<void, PhyEnumeration>();
     m_plmeEdConfirmCallback = MakeNullCallback<void, PhyEnumeration, uint8_t>();
@@ -354,40 +359,43 @@ LrWpanPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumRxParams)
 {
     NS_LOG_FUNCTION(this << spectrumRxParams);
 
-    if (!m_edRequest.IsExpired())
-    {
-        // Update the average receive power during ED.
-        Time now = Simulator::Now();
-        m_edPower.averagePower +=
-            LrWpanSpectrumValueHelper::TotalAvgPower(m_signal->GetSignalPsd(),
-                                                     m_phyPIBAttributes.phyCurrentChannel) *
-            (now - m_edPower.lastUpdate).GetTimeStep() / m_edPower.measurementLength.GetTimeStep();
-        m_edPower.lastUpdate = now;
-    }
+    // 1- Add the signal to the spectrum to keep track of the transmission regardless
+    // of the origin or the state of the receiving radio.
+    m_signal->AddSignal(spectrumRxParams->psd);
 
+    // 2- Update peak power if CCA or ED if it is in progress.
+    UpdateEnergyTracking();
+
+    // 3- Check the radio is on the right state to receceive (RX_ON) and that the signal
+    // is a lr-wpan signal, otherwise proceed to the end of the packet to be removed from
+    // the accumulated signals in the spectrum tracker.
     Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams =
         DynamicCast<LrWpanSpectrumSignalParameters>(spectrumRxParams);
 
-    if (!lrWpanRxParams)
+    if (!lrWpanRxParams || m_trxState != IEEE_802_15_4_PHY_RX_ON)
     {
-        CheckInterference();
-        m_signal->AddSignal(spectrumRxParams->psd);
-
-        // Update peak power if CCA is in progress.
-        if (!m_ccaRequest.IsExpired())
-        {
-            double power =
-                LrWpanSpectrumValueHelper::TotalAvgPower(m_signal->GetSignalPsd(),
-                                                         m_phyPIBAttributes.phyCurrentChannel);
-            if (m_ccaPeakPower < power)
-            {
-                m_ccaPeakPower = power;
-            }
-        }
-
+        NS_LOG_DEBUG("Non-Lr-wpan signal or radio is not on RX_ON, do not process");
         Simulator::Schedule(spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
         return;
     }
+
+    // The reception of the lr-wpan preamble start here
+    NS_LOG_INFO("Lr-wpan signal detected, processing preamble for a duration of "
+                << lrWpanRxParams->preambleDuration.GetSeconds() << " seconds");
+
+    Simulator::Schedule(lrWpanRxParams->preambleDuration,
+                        &LrWpanPhy::EndPreamble,
+                        this,
+                        lrWpanRxParams);
+}
+
+void
+LrWpanPhy::EndPreamble(Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams)
+{
+    NS_LOG_FUNCTION(this << lrWpanRxParams);
+
+    // If in progress, update CCA peak power or ED measurement.
+    UpdateEnergyTracking();
 
     Ptr<Packet> p = (lrWpanRxParams->packetBurst->GetPackets()).front();
     NS_ASSERT(p);
@@ -395,29 +403,6 @@ LrWpanPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumRxParams)
     // Prevent PHY from receiving another packet while switching the transceiver state.
     if (m_trxState == IEEE_802_15_4_PHY_RX_ON && !m_setTRXState.IsPending())
     {
-        // The specification doesn't seem to refer to BUSY_RX, but vendor
-        // data sheets suggest that this is a substate of the RX_ON state
-        // that is entered after preamble detection when the digital receiver
-        // is enabled.  Here, for now, we use BUSY_RX to mark the period between
-        // StartRx() and EndRx() states.
-
-        // We are going to BUSY_RX state when receiving the first bit of an SHR,
-        // as opposed to real receivers, which should go to this state only after
-        // successfully receiving the SHR.
-
-        // If synchronizing to the packet is possible, change to BUSY_RX state,
-        // otherwise drop the packet and stay in RX state. The actual synchronization
-        // is not modeled.
-
-        // Add any incoming packet to the current interference before checking the
-        // SINR.
-        NS_LOG_DEBUG(this << " receiving packet with power: "
-                          << 10 * log10(LrWpanSpectrumValueHelper::TotalAvgPower(
-                                      lrWpanRxParams->psd,
-                                      m_phyPIBAttributes.phyCurrentChannel)) +
-                                 30
-                          << "dBm");
-        m_signal->AddSignal(lrWpanRxParams->psd);
         Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd();
         *interferenceAndNoise -= *lrWpanRxParams->psd;
         *interferenceAndNoise += *m_noise;
@@ -427,62 +412,64 @@ LrWpanPhy::StartRx(Ptr<SpectrumSignalParameters> spectrumRxParams)
             LrWpanSpectrumValueHelper::TotalAvgPower(interferenceAndNoise,
                                                      m_phyPIBAttributes.phyCurrentChannel);
 
+        // Figure out if packet is decodable based on SINR.
         // Std. 802.15.4-2006, appendix E, Figure E.2
         // At SNR < -5 the BER is less than 10e-1.
         // It's useless to even *try* to decode the packet.
         if (10 * log10(sinr) > -5)
         {
             ChangeTrxState(IEEE_802_15_4_PHY_BUSY_RX);
+
+            NS_LOG_INFO("Preamble processing completed,"
+                        << " initiating the reception of the rests of the packet");
+
+            // Start tracking the packet interference
             m_currentRxPacket = std::make_pair(lrWpanRxParams, false);
             m_phyRxBeginTrace(p);
 
             m_rxLastUpdate = Simulator::Now();
+
+            // Calculate RSSI
+            // In theory, the RSSI calculation should be done in the PHR, not at the end
+            // of the preamble. However since there is not much difference in ns-3, it
+            // is done here for simplicity (We avoid doing an extra endSFD event)
+            m_rssi = static_cast<int8_t>(10 * log10(LrWpanSpectrumValueHelper::TotalAvgPower(
+                                                  m_signal->GetSignalPsd(),
+                                                  m_phyPIBAttributes.phyCurrentChannel)) +
+                                         30);
         }
         else
         {
+            // The packet is *undecodable* drop it.
+            m_currentRxPacket = std::make_pair(lrWpanRxParams, true);
             m_phyRxDropTrace(p);
+            NS_LOG_INFO(this << " packet undecodable due to low SINR: " << 10 * log10(sinr)
+                             << " dB");
         }
     }
     else if (m_trxState == IEEE_802_15_4_PHY_BUSY_RX)
     {
-        // Drop the new packet.
-        NS_LOG_DEBUG(this << " packet collision");
+        // We are already receiving a packet, drop the new packet.
+        NS_LOG_INFO(this << " Packet collision detected, dropping packet");
         m_phyRxDropTrace(p);
 
-        // Check if we correctly received the old packet up to now.
+        // Another lr-wpan packet is being transmitted in the vecinity while we are receiving
+        // another packet. This affects the reception of the first packet, therefore,
+        // check interference and its impact on this packet.
         CheckInterference();
-
-        // Add the incoming packet to the current interference after we have
-        // checked for successful reception of the current packet for the time
-        // before the additional interference.
-        m_signal->AddSignal(lrWpanRxParams->psd);
     }
     else
     {
-        // Simply drop the packet.
-        NS_LOG_DEBUG(this << " transceiver not in RX state");
+        // The current policy to process the preamble is first come first served.
+        // Therefore, if we are not in RX_ON or BUSY_RX state, we drop the packet.
+        // Other policies can be implemented in future extensions.
+        NS_LOG_DEBUG(this << " transceiver not in RX state, currently in " << m_trxState
+                          << " state, dropping packet");
         m_phyRxDropTrace(p);
-
-        // Add the signal power to the interference, anyway.
-        m_signal->AddSignal(lrWpanRxParams->psd);
     }
 
-    // Update peak power if CCA is in progress.
-    if (!m_ccaRequest.IsExpired())
-    {
-        double power =
-            LrWpanSpectrumValueHelper::TotalAvgPower(m_signal->GetSignalPsd(),
-                                                     m_phyPIBAttributes.phyCurrentChannel);
-        if (m_ccaPeakPower < power)
-        {
-            m_ccaPeakPower = power;
-        }
-    }
-
-    // Always call EndRx to update the interference.
-    // We keep track of this event, and if necessary cancel this event when a TX of a packet.
-
-    Simulator::Schedule(spectrumRxParams->duration, &LrWpanPhy::EndRx, this, spectrumRxParams);
+    Time endRx = (lrWpanRxParams->duration - lrWpanRxParams->preambleDuration);
+    Simulator::Schedule(endRx, &LrWpanPhy::EndRx, this, lrWpanRxParams);
 }
 
 void
@@ -536,11 +523,20 @@ LrWpanPhy::CheckInterference()
 }
 
 void
-LrWpanPhy::EndRx(Ptr<SpectrumSignalParameters> par)
+LrWpanPhy::UpdateEnergyTracking()
 {
-    NS_LOG_FUNCTION(this);
-
-    Ptr<LrWpanSpectrumSignalParameters> params = DynamicCast<LrWpanSpectrumSignalParameters>(par);
+    // Update CCA peak power
+    if (!m_ccaRequest.IsExpired())
+    {
+        double power =
+            LrWpanSpectrumValueHelper::TotalAvgPower(m_signal->GetSignalPsd(),
+                                                     m_phyPIBAttributes.phyCurrentChannel);
+        if (m_ccaPeakPower < power)
+        {
+            m_ccaPeakPower = power;
+            NS_LOG_DEBUG("Updating CCA peak power " << WToDbm(power) << " dBm");
+        }
+    }
 
     if (!m_edRequest.IsExpired())
     {
@@ -552,6 +548,18 @@ LrWpanPhy::EndRx(Ptr<SpectrumSignalParameters> par)
             (now - m_edPower.lastUpdate).GetTimeStep() / m_edPower.measurementLength.GetTimeStep();
         m_edPower.lastUpdate = now;
     }
+}
+
+void
+LrWpanPhy::EndRx(Ptr<SpectrumSignalParameters> par)
+{
+    NS_LOG_FUNCTION(this << "End of packet signal after a duration: " << par->duration.GetSeconds()
+                         << " seconds");
+
+    Ptr<LrWpanSpectrumSignalParameters> params = DynamicCast<LrWpanSpectrumSignalParameters>(par);
+
+    // Update peak power if CCA or ED if it is in progress.
+    UpdateEnergyTracking();
 
     Ptr<LrWpanSpectrumSignalParameters> currentRxParams = m_currentRxPacket.first;
     if (currentRxParams == params)
@@ -559,7 +567,8 @@ LrWpanPhy::EndRx(Ptr<SpectrumSignalParameters> par)
         CheckInterference();
     }
 
-    // Update the interference.
+    // The packet reception has ended, remove it from the accumulated signals
+    // in the receptor tracker
     m_signal->RemoveSignal(par->psd);
 
     if (!params)
@@ -591,12 +600,17 @@ LrWpanPhy::EndRx(Ptr<SpectrumSignalParameters> par)
         {
             m_currentRxPacket = std::make_pair(nullptr, true);
             ChangeTrxState(IEEE_802_15_4_PHY_RX_ON);
-            NS_LOG_DEBUG("Packet successfully received");
+
+            NS_LOG_INFO(" Packet successfully received,"
+                        << "passing received packet to upper layer");
 
             // The packet was successfully received, push it up the stack.
             if (!m_pdDataIndicationCallback.IsNull())
             {
-                m_pdDataIndicationCallback(currentPacket->GetSize(), currentPacket, tag.Get());
+                m_pdDataIndicationCallback(currentPacket->GetSize(),
+                                           currentPacket,
+                                           tag.Get(),
+                                           m_rssi);
             }
         }
         else
@@ -653,6 +667,10 @@ LrWpanPhy::PdDataRequest(const uint32_t psduLength, Ptr<Packet> p)
 
             Ptr<LrWpanSpectrumSignalParameters> txParams = Create<LrWpanSpectrumSignalParameters>();
             txParams->duration = CalculateTxTime(p);
+
+            double preambleSymbols = ppduHeaderSymbolNumbers[m_phyOption].shrPreamble;
+            txParams->preambleDuration = Seconds(preambleSymbols / GetDataOrSymbolRate(false));
+
             txParams->txPhy = GetObject<SpectrumPhy>();
             txParams->psd = m_txPsd;
             txParams->txAntenna = m_antenna;
@@ -844,8 +862,6 @@ LrWpanPhy::PlmeSetTRXStateRequest(PhyEnumeration state)
     // a packet being actively received)
     if (state == IEEE_802_15_4_PHY_TRX_OFF)
     {
-        CancelEd(state);
-
         if ((m_trxState == IEEE_802_15_4_PHY_BUSY_RX) && (m_currentRxPacket.first) &&
             (!m_currentRxPacket.second))
         {
@@ -855,6 +871,7 @@ LrWpanPhy::PlmeSetTRXStateRequest(PhyEnumeration state)
         }
         else if (m_trxState == IEEE_802_15_4_PHY_RX_ON || m_trxState == IEEE_802_15_4_PHY_TX_ON)
         {
+            CancelEd(state);
             ChangeTrxState(IEEE_802_15_4_PHY_TRX_OFF);
             if (!m_plmeSetTRXStateConfirmCallback.IsNull())
             {
@@ -1348,6 +1365,15 @@ LrWpanPhy::ChangeTrxState(PhyEnumeration newState)
 
     m_trxStateLogger(Simulator::Now(), m_trxState, newState);
     m_trxState = newState;
+
+    if (newState == PhyEnumeration::IEEE_802_15_4_PHY_RX_ON &&
+        m_trxStatePending == PhyEnumeration::IEEE_802_15_4_PHY_TRX_OFF)
+    {
+        // The MAC is set on RxOnWhenIdle = false, therefore when need to turn off
+        // the radio
+        NS_LOG_DEBUG("Turning off radio, appliying pending state");
+        ChangeTrxState(IEEE_802_15_4_PHY_TRX_OFF);
+    }
 }
 
 bool

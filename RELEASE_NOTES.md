@@ -43,7 +43,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 ### New user-visible features
 
 - (internet) !2405 Added support for TCP FACK (Forward Acknowledgement).
-
+- (lr-wpan) !2592 Added PHY preamble and RSSI support.
 - (visualizer) Add Lr-Wpan NetDevices support to the Pyviz visualizer.
 
 ### Bugs fixed

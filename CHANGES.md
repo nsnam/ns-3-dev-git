@@ -18,6 +18,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (internet) Added support for TCP FACK (Forward Acknowledgement).
 * (applications) New trace sources `SourceApplication::ConnectionSucceeded` and `SourceApplication::ConnectionFailed` have been added to report connection success/failure events.
+* (lr-wpan) The `McpsDataIndication` parameters now include rssi value.
 * (visualizer) Add support to `LrWpanNetDevice` in the PyViz visualizer.
 * (internet): Added attribute `TcpLedbat::AllowedIncrease` to control the ALLOWED_INCREASE parameter defined in RFC 6817.
 
@@ -36,6 +37,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (core): The `nstime.h` header does not include anymore `event-id.h`. It is possible that
 code might fail to compile due to this change. Adding an include to `event-id.h` fixes the issue.
 * (internet-apps): The DHCPv6 model has been refactored, and now supports all the DUID types.
+* (lr-wpan): Renamed ``lr-wpan-pd-plme-sap-test`` to ``lr-wpan-phy-test`` to improve clarity. Also this testsuite now includes an additional test called ``LrWpanPhyCollisionTestCase``.
+* (lr-wpan): The PHY now includes the processing of the preamble as well as registering the RSSI at the moment of receiving the packet.
 
 ### Changes to build system
 

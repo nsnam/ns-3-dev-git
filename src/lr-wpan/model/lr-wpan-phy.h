@@ -191,8 +191,10 @@ struct PhyPibAttributes : public SimpleRefCount<PhyPibAttributes>
  * @param psduLength number of bytes in the PSDU
  * @param p the packet to be transmitted
  * @param lqi Link quality (LQI) value measured during reception of the PPDU
+ * @param rssi The received signal strength indicator (RSSI) measured during the last received
+ * packet.
  */
-typedef Callback<void, uint32_t, Ptr<Packet>, uint8_t> PdDataIndicationCallback;
+typedef Callback<void, uint32_t, Ptr<Packet>, uint8_t, int8_t> PdDataIndicationCallback;
 
 /**
  * @ingroup lr-wpan
@@ -587,6 +589,14 @@ class LrWpanPhy : public SpectrumPhy
     PhyOption GetMyPhyOption();
 
     /**
+     * During the reception of the preamble, if it was found that the signal was strong enough,
+     * this function is called to schedule the end of the preamble.
+     *
+     * @param lrWpanRxParams The spectrum signal parameters associated to this lr-wpan packet.
+     */
+    void EndPreamble(Ptr<LrWpanSpectrumSignalParameters> lrWpanRxParams);
+
+    /**
      * Finish the transmission of a frame. This is called at the end of a frame
      * transmission, applying possibly pending PHY state changes and firing the
      * appropriate trace sources and confirm callbacks to the MAC.
@@ -598,6 +608,15 @@ class LrWpanPhy : public SpectrumPhy
      * whenever a change in interference is detected.
      */
     void CheckInterference();
+
+    /**
+     * Update Clear Channel Assestment (CCA) or Energy Detection (ED) energy values
+     * if an energy tracking event is currently in process. This function is called
+     * during the different events that form the reception of a packet
+     * (e.g., Preamble, payload)
+     *
+     */
+    void UpdateEnergyTracking();
 
     /**
      * Finish the reception of a frame. This is called at the end of a frame
@@ -882,12 +901,19 @@ class LrWpanPhy : public SpectrumPhy
     EdPower m_edPower;
 
     /**
+     * The  Received Signal Strength Indicator value in dBm of the
+     * last received packet. This is calculated during the SHR portion of the packet.
+     * This value has a typical range of -100 dBm to 0 dBm
+     */
+    int8_t m_rssi;
+
+    /**
      * Helper value for the peak power value during CCA.
      */
     double m_ccaPeakPower;
 
     /**
-     * The receiver sensitivity.
+     * The receiver sensitivity in Watts.
      */
     double m_rxSensitivity;
 
@@ -949,7 +975,10 @@ class LrWpanPhy : public SpectrumPhy
      */
     Ptr<UniformRandomVariable> m_random;
 
-    Ptr<ErrorModel> m_postReceptionErrorModel; //!< Error model for receive packet events
+    /**
+     * Error model for receive packet events
+     */
+    Ptr<ErrorModel> m_postReceptionErrorModel;
 };
 
 } // namespace lrwpan

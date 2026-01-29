@@ -96,10 +96,12 @@ main(int argc, char* argv[])
     cmd.Parse(argc, argv);
 
     os << "Packet (MSDU) size = " << packetSize << " bytes; tx power = " << txPower
-       << " dBm; channel = " << channelNumber << "; Rx sensitivity = " << rxSensitivity << " dBm";
+       << " dBm; channel = " << channelNumber;
 
     Gnuplot psrplot = Gnuplot("802.15.4-psr-distance.eps");
-    Gnuplot2dDataset psrdataset("802.15.4-psr-vs-distance");
+    std::ostringstream legendLabel;
+    legendLabel << rxSensitivity << " dBm";
+    Gnuplot2dDataset psrdataset(legendLabel.str());
 
     Ptr<Node> n0 = CreateObject<Node>();
     Ptr<Node> n1 = CreateObject<Node>();
@@ -129,6 +131,8 @@ main(int argc, char* argv[])
     McpsDataIndicationCallback cb0;
     cb0 = MakeCallback(&LrWpanErrorDistanceCallback);
     dev1->GetMac()->SetMcpsDataIndicationCallback(cb0);
+
+    std::cout << "Generating distance plot, this might take a few seconds...\n";
 
     McpsDataRequestParams params;
     params.m_srcAddrMode = SHORT_ADDR;
@@ -160,15 +164,19 @@ main(int argc, char* argv[])
 
     psrplot.SetTitle(os.str());
     psrplot.SetTerminal("postscript eps color enh \"Times-BoldItalic\"");
-    psrplot.SetLegend("distance (m)", "Packet Success Rate (PSR)");
+    psrplot.SetLegend("Distance (m)", "Packet Success Rate (PSR)");
     psrplot.SetExtra("set xrange [0:200]\n\
                       set yrange [0:1]\n\
                       set grid\n\
+                      set xtics 20\n\
+                      set key inside right top vertical Right noreverse enhanced autotitles nobox\n\
+                      set key title '{/:Bold Rx Sensitivity}'\n\
                       set style line 1 linewidth 5\n\
                       set style increment user");
     psrplot.GenerateOutput(berfile);
     berfile.close();
 
     Simulator::Destroy();
+    std::cout << "Distance plot generated\n";
     return 0;
 }

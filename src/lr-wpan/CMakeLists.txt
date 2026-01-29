@@ -41,7 +41,7 @@ build_lib(
     test/lr-wpan-ed-test.cc
     test/lr-wpan-error-model-test.cc
     test/lr-wpan-packet-test.cc
-    test/lr-wpan-pd-plme-sap-test.cc
+    test/lr-wpan-phy-test.cc
     test/lr-wpan-spectrum-value-helper-test.cc
     test/lr-wpan-ifs-test.cc
     test/lr-wpan-slotted-csmaca-test.cc
