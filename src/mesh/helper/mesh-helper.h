@@ -169,10 +169,9 @@ class MeshHelper
     ObjectFactory m_stackFactory;        ///< stack factory
 
     // Interface factory
-    ObjectFactory m_mac;                  ///< the MAC
-    ObjectFactory m_stationManager;       ///< the station manager
-    ObjectFactory m_ackPolicySelector[4]; ///< ack policy selector for all ACs
-    WifiStandard m_standard;              ///< standard
+    ObjectFactory m_mac;            ///< the MAC
+    ObjectFactory m_stationManager; ///< the station manager
+    WifiStandard m_standard;        ///< standard
 };
 
 /***************************************************************
