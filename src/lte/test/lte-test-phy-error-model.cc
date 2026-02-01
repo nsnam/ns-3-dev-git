@@ -60,6 +60,12 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite()
         //    tol = n*p - binoinv(0.001, n, p)
         // endfor
 
+        // This octave code calculates a 99.9% confidence level test (0.001 failure rate)
+        // for a binomial distribution.  'p' in this case comes from the PCFICH-PDCCH error
+        // curve in lte-mi-error-model.cc:75-91.
+        // SINR 2.0 dB corresponds to BLER of roughly 0.007, SINR 4.0 dB to BLER of 0.045
+        // SINR 6.0 dB to 0.206, and SINR 7.0 dB to 0.343.
+
         // 1 interfering eNB SINR -2.0 BLER 0.007 TB size 217
         AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(2, 1078, 0.007, 9, rngRun),
                     (rngRun == 1) ? TestCase::Duration::QUICK : TestCase::Duration::TAKES_FOREVER);
@@ -225,7 +231,10 @@ LenaDataPhyErrorModelTestCase::DoRun()
     // Attach a UE to a eNB
     lena->Attach(ueDevs, enbDevs.Get(0));
 
-    // Activate an EPS bearer
+    // Activate an EPS bearer.  When ActivateDataRadioBearer is called without
+    // an EPC, it defaults to the saturation mode RLC (RLC_SM_ALWAYS), which
+    // causes one packet to be generated per TTI, which provides the traffic
+    // for this test.
     EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q);
     lena->ActivateDataRadioBearer(ueDevs, bearer);
@@ -406,7 +415,10 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
     // Attach a UE to one eNB (the others are interfering ones)
     lena->Attach(ueDevs, enbDevs.Get(0));
 
-    // Activate an EPS bearer
+    // Activate an EPS bearer.  When ActivateDataRadioBearer is called without
+    // an EPC, it defaults to the saturation mode RLC (RLC_SM_ALWAYS), which
+    // causes one packet to be generated per TTI, which provides the traffic
+    // for this test.
     EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
     EpsBearer bearer(q);
     lena->ActivateDataRadioBearer(ueDevs, bearer);
