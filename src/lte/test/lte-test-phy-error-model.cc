@@ -61,18 +61,18 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite()
         // endfor
 
         // 1 interfering eNB SINR -2.0 BLER 0.007 TB size 217
-        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(2, 1078, 0.007, 9, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(2, 1078, 0.007, 9, rngRun),
                     (rngRun == 1) ? TestCase::Duration::QUICK : TestCase::Duration::TAKES_FOREVER);
         // 2 interfering eNBs SINR -4.0 BLER 0.037 TB size 217
-        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(3, 1040, 0.045, 21, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(3, 1040, 0.045, 21, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
         // 3 interfering eNBs SINR -6.0 BLER 0.21 TB size 133
-        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(4, 1250, 0.206, 40, Seconds(0.12), rngRun),
+        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(4, 1250, 0.206, 40, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
         // 4 interfering eNBs SINR -7.0 BLER 0.34 TB size 133
-        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(5, 1260, 0.343, 47, Seconds(0.12), rngRun),
+        AddTestCase(new LenaDlCtrlPhyErrorModelTestCase(5, 1260, 0.343, 47, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
 
@@ -85,27 +85,27 @@ LenaTestPhyErrorModelSuite::LenaTestPhyErrorModelSuite()
         // endfor
 
         // MCS 2 TB size of 256 bits BLER 0.33 SINR -5.51
-        AddTestCase(new LenaDataPhyErrorModelTestCase(4, 1800, 0.33, 39, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDataPhyErrorModelTestCase(4, 1800, 0.33, 39, rngRun),
                     (rngRun == 1) ? TestCase::Duration::QUICK : TestCase::Duration::TAKES_FOREVER);
         // MCS 2 TB size of 528 bits BLER 0.11 SINR -5.51
-        AddTestCase(new LenaDataPhyErrorModelTestCase(2, 1800, 0.11, 26, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDataPhyErrorModelTestCase(2, 1800, 0.11, 26, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
         // MCS 2 TB size of 1088 bits BLER 0.02 SINR -5.51
-        AddTestCase(new LenaDataPhyErrorModelTestCase(1, 1800, 0.02, 33, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDataPhyErrorModelTestCase(1, 1800, 0.02, 33, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
         // MCS 12 TB size of 4800 bits  BLER 0.3  SINR 4.43
-        AddTestCase(new LenaDataPhyErrorModelTestCase(1, 600, 0.3, 38, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDataPhyErrorModelTestCase(1, 600, 0.3, 38, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
         // MCS 12 TB size of 1632 bits  BLER 0.55  SINR 4.43
-        AddTestCase(new LenaDataPhyErrorModelTestCase(3, 600, 0.55, 40, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDataPhyErrorModelTestCase(3, 600, 0.55, 40, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
         // MCS 16 TB size of 7272 bits (3648 x 3584) BLER 0.14 SINR 8.48
         // BLER 0.14 = 1 - ((1-0.075)*(1-0.075))
-        AddTestCase(new LenaDataPhyErrorModelTestCase(1, 470, 0.14, 29, Seconds(0.04), rngRun),
+        AddTestCase(new LenaDataPhyErrorModelTestCase(1, 470, 0.14, 29, rngRun),
                     (rngRun == 1) ? TestCase::Duration::EXTENSIVE
                                   : TestCase::Duration::TAKES_FOREVER);
     }
@@ -129,14 +129,12 @@ LenaDataPhyErrorModelTestCase::LenaDataPhyErrorModelTestCase(uint16_t nUser,
                                                              uint16_t dist,
                                                              double blerRef,
                                                              uint16_t toleranceRxPackets,
-                                                             Time statsStartTime,
                                                              uint32_t rngRun)
     : TestCase(BuildNameString(nUser, dist, rngRun)),
       m_nUser(nUser),
       m_dist(dist),
       m_blerRef(blerRef),
       m_toleranceRxPackets(toleranceRxPackets),
-      m_statsStartTime(statsStartTime),
       m_rngRun(rngRun)
 {
 }
@@ -150,6 +148,15 @@ LenaDataPhyErrorModelTestCase::DoRun()
 {
     SetDataDir(NS_TEST_SOURCEDIR);
     double ber = 0.03;
+    // Allow extra time in the beginning of simulation to allow RRC connection
+    // establishment + SRS.  The random variable (m_random in LteSpectrumPhy) can
+    // cause the MIB reception to be corrupted on the first reception attempt,
+    // leading the connection to be delayed for an extra MIB period of 80 ms.
+    // Earlier versions of this test used 40 milliseconds for low interference
+    // configurations, and 120 milliseconds for high interference configurations
+    // (4 or 5 eNBs), but 120 milliseconds was found to be too low for at least
+    // one case, so 150 ms is more conservative.
+    Time statsStartTime = MilliSeconds(150);
     Config::SetDefault("ns3::LteAmc::Ber", DoubleValue(ber));
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));
     Config::SetDefault("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue(false));
@@ -239,11 +246,11 @@ LenaDataPhyErrorModelTestCase::DoRun()
     }
 
     Time statsDuration = Seconds(1);
-    Simulator::Stop(m_statsStartTime + statsDuration - Seconds(0.0001));
+    Simulator::Stop(statsStartTime + statsDuration - Seconds(0.0001));
 
     lena->EnableRlcTraces();
     Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats();
-    rlcStats->SetAttribute("StartTime", TimeValue(m_statsStartTime));
+    rlcStats->SetAttribute("StartTime", TimeValue(statsStartTime));
     rlcStats->SetAttribute("EpochDuration", TimeValue(statsDuration));
 
     Simulator::Run();
@@ -298,14 +305,12 @@ LenaDlCtrlPhyErrorModelTestCase::LenaDlCtrlPhyErrorModelTestCase(uint16_t nEnb,
                                                                  uint16_t dist,
                                                                  double blerRef,
                                                                  uint16_t toleranceRxPackets,
-                                                                 Time statsStartTime,
                                                                  uint32_t rngRun)
     : TestCase(BuildNameString(nEnb, dist, rngRun)),
       m_nEnb(nEnb),
       m_dist(dist),
       m_blerRef(blerRef),
       m_toleranceRxPackets(toleranceRxPackets),
-      m_statsStartTime(statsStartTime),
       m_rngRun(rngRun)
 {
 }
@@ -320,6 +325,15 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
     SetDataDir(NS_TEST_SOURCEDIR);
 
     double ber = 0.03;
+    // Allow extra time in the beginning of simulation to allow RRC connection
+    // establishment + SRS.  The random variable (m_random in LteSpectrumPhy) can
+    // cause the MIB reception to be corrupted on the first reception attempt,
+    // leading the connection to be delayed for an extra MIB period of 80 ms.
+    // Earlier versions of this test used 40 milliseconds for low interference
+    // configurations, and 120 milliseconds for high interference configurations
+    // (4 or 5 eNBs), but 120 milliseconds was found to be too low for at least
+    // one case, so 150 ms is more conservative.
+    Time statsStartTime = MilliSeconds(150);
     Config::SetDefault("ns3::LteAmc::Ber", DoubleValue(ber));
     Config::SetDefault("ns3::LteAmc::AmcModel", EnumValue(LteAmc::PiroEW2010));
     Config::SetDefault("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue(true));
@@ -410,11 +424,11 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
     uePhy->SetAttribute("NoiseFigure", DoubleValue(9.0));
 
     Time statsDuration = Seconds(1);
-    Simulator::Stop(m_statsStartTime + statsDuration - Seconds(0.0001));
+    Simulator::Stop(statsStartTime + statsDuration - Seconds(0.0001));
 
     lena->EnableRlcTraces();
     Ptr<RadioBearerStatsCalculator> rlcStats = lena->GetRlcStats();
-    rlcStats->SetAttribute("StartTime", TimeValue(m_statsStartTime));
+    rlcStats->SetAttribute("StartTime", TimeValue(statsStartTime));
     rlcStats->SetAttribute("EpochDuration", TimeValue(statsDuration));
 
     Simulator::Run();
