@@ -217,6 +217,10 @@ LenaDataPhyErrorModelTestCase::DoRun()
     ueDevs = lena->InstallUeDevice(ueNodes);
     lena->AssignStreams(ueDevs, stream, true);
     stream += 1000;
+    lena->GetDownlinkSpectrumChannel()->AssignStreams(stream);
+    stream += 1000;
+    lena->GetUplinkSpectrumChannel()->AssignStreams(stream);
+    stream += 1000;
 
     // Attach a UE to a eNB
     lena->Attach(ueDevs, enbDevs.Get(0));
@@ -393,6 +397,10 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun()
     stream += 1000;
     ueDevs = lena->InstallUeDevice(ueNodes);
     lena->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
+    lena->GetDownlinkSpectrumChannel()->AssignStreams(stream);
+    stream += 1000;
+    lena->GetUplinkSpectrumChannel()->AssignStreams(stream);
     stream += 1000;
 
     // Attach a UE to one eNB (the others are interfering ones)
