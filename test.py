@@ -220,6 +220,9 @@ def parse_examples_to_run_file(
         # Add all of the C++ examples that were built, i.e. found
         # in the directory, to the list of C++ examples to run.
         if os.path.exists(example_path):
+            # Handle paths with empty spaces
+            example_path = '"%s"' % example_path
+
             # Add any arguments to the path.
             if len(example_name_parts) != 1:
                 example_path = "%s %s" % (example_path, example_arguments)
@@ -867,10 +870,21 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     if is_python:
         path_cmd = PYTHON[0] + " " + os.path.join(NS3_BASEDIR, shell_command)
     else:
+
+        # Here we handle paths with empty spaces.
+        # To do that, we need to separate program from arguments, then quote the absolute program path with spaces.
+        shell_args = re.findall(r'(?:".*?"|\S)+', shell_command)
+
         if len(build_path):
-            path_cmd = os.path.join(build_path, shell_command)
+            path_cmd = os.path.join(build_path, shell_args[0])
         else:
-            path_cmd = os.path.join(NS3_BUILDDIR, shell_command)
+            path_cmd = (
+                shell_args[0].strip('"')
+                if NS3_BUILDDIR in shell_args[0]
+                else os.path.join(NS3_BUILDDIR, shell_args[0])
+            )
+
+        path_cmd = f'"{path_cmd}" {" ".join(shell_args[1:])}'
 
     if valgrind:
         if VALGRIND_SUPPRESSIONS_FILE:
@@ -1762,7 +1776,7 @@ def run_tests():
 
                 for name, test, do_run, do_valgrind_run, fullness in example_tests:
                     # Remove any arguments and directory names from test.
-                    test_name = test.split(" ", 1)[0]
+                    test_name = re.findall(r'(?:".*?"|\S)+', test)[0].strip('"')
                     test_name = os.path.basename(test_name)
                     test_name = test_name[:-4] if sys.platform == "win32" else test_name
 

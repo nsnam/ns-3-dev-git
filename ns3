@@ -1444,7 +1444,8 @@ def check_module_installed(module_name: str):
 
 def run_step(args, target_to_run, target_args):
     libdir = "%s/lib" % out_dir
-
+    if not os.path.exists(libdir):
+        libdir += "64"
     custom_env = {
         "PATH": libdir,
         "PYTHONPATH": "%s/bindings/python" % out_dir,
@@ -1532,10 +1533,12 @@ def run_step(args, target_to_run, target_args):
 
         # running with command template?
         if args.command_template:
-            commands = (args.command_template % target_to_run).split()
-            check_program_installed(commands[0])
-            target_to_run = commands[0]
-            target_args = commands[1:] + target_args
+            commands = args.command_template % f'"{target_to_run}"'
+            commands = list(re.findall(r'(?:".*?"|\S)+', commands))
+            target_to_run = commands[0].strip('"')
+            commands = commands[1:]
+            check_program_installed(target_to_run)
+            target_args = commands + target_args
 
             # running mpi on the CI?
             if target_to_run in ["mpiexec", "mpirun"] and os.getenv("MPI_CI"):

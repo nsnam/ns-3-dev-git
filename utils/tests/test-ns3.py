@@ -144,6 +144,8 @@ def get_libraries_list(lib_outdir=usual_lib_outdir):
     @param lib_outdir: path containing libraries
     @return list of built libraries.
     """
+    if not os.path.exists(lib_outdir):
+        lib_outdir += "64"
     libraries = glob.glob(lib_outdir + "/*", recursive=True)
     return list(filter(lambda x: "scratch-nested-subdir-lib" not in x, libraries))
 
@@ -232,8 +234,10 @@ class DockerContainerManager:
         )
 
         # Redefine the execute command of the container
-        def split_exec(docker_container, cmd):
-            return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
+        def split_exec(docker_container, cmd, workdir="/ns-3-dev"):
+            cmd_split = re.findall(r'(?:".*?"|\S)+', cmd)
+            cmd_split = list(map(lambda x: x.replace('"', ""), cmd_split))
+            return docker_container._execute(cmd_split, workdir=workdir)
 
         self.container._execute = self.container.execute
         self.container.execute = partial(split_exec, self.container)
@@ -2204,7 +2208,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         relative_path = os.sep.join(["build", "release"])
         for different_out_dir in [absolute_path, relative_path]:
             return_code, stdout, stderr = run_ns3(
-                'configure -G "{generator}" --out=%s' % different_out_dir
+                'configure -G "{generator}" --out="%s"' % different_out_dir
             )
             self.config_ok(return_code, stdout, stderr)
             self.assertIn(
@@ -2272,7 +2276,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Reconfigure setting the installation folder to ns-3-dev/build/install.
         install_prefix = os.sep.join([ns3_path, "build", "install"])
         return_code, stdout, stderr = run_ns3(
-            'configure -G "{generator}" --prefix=%s' % install_prefix
+            'configure -G "{generator}" --prefix="%s"' % install_prefix
         )
         self.config_ok(return_code, stdout, stderr)
 
@@ -2581,7 +2585,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             self.skipTest("Optional components are not supported on Windows")
 
         # First enable automatic components fetching
-        return_code, stdout, stderr = run_ns3("configure -- -DNS3_FETCH_OPTIONAL_COMPONENTS=ON")
+        return_code, stdout, stderr = run_ns3(
+            "configure --disable-werror -- -DNS3_FETCH_OPTIONAL_COMPONENTS=ON"
+        )
         self.assertEqual(return_code, 0)
 
         # Build the optional components to check if their dependencies were fetched
@@ -3171,6 +3177,47 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         # Remove test module
         if os.path.exists(destination_src):
             shutil.rmtree(destination_src)
+
+    def test_19_EmptySpaceHandlingOnTestAndCommandTemplate(self):
+        """!
+        Test if test.py and command-template handles empty spaces in executable paths correctly
+        @return None
+        """
+        # Clean the ns-3 configuration
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
+
+        with DockerContainerManager(self, "ubuntu:22.04") as container:
+            # Install toolchain
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+
+            # Create new copy of ns-3 on a "path with empty spaces"
+            test_path = "/path with empty spaces/ns-3-dev"
+            try:
+                container.execute(f'mkdir -p "{test_path}"')
+                container.execute(f'cp -R ./ "{test_path}"')
+            except DockerException as e:
+                pass
+
+            # Configure enabling examples as tests too, filtering to core and sixlowpan
+            try:
+                container.execute(
+                    './ns3 configure --enable-examples --enable-tests --filter-module-examples-and-tests="core;sixlowpan"',
+                    workdir=test_path,
+                )
+            except DockerException as e:
+                self.fail()
+
+            # Execute tests and examples to see if all work
+            try:
+                container.execute("./test.py", workdir=test_path)
+            except DockerException as e:
+                self.fail()
+
+        # Clean cache to prevent dumb errors
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
 
 
 class NS3QualityControlTestCase(unittest.TestCase):
