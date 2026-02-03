@@ -1,3 +1,8 @@
+This project contains contributions that are mostly licensed as GPLv2-only,
+but some code is licensed differently; the LICENSES directory contains
+the set of licenses present in the codebase.  The common denominator and
+requirement for contribution is compatibility with the GPLv2-only license.
+
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
