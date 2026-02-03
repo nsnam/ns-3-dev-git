@@ -8,7 +8,7 @@
 # to support all platforms, such as alma linux, used to build the manylinux pip
 # wheel.
 set(CMAKE_INSTALL_RPATH
-    "${CMAKE_INSTALL_PREFIX}/lib:$ORIGIN/:$ORIGIN/../lib:${CMAKE_INSTALL_PREFIX}/lib64:$ORIGIN/:$ORIGIN/../lib64"
+    "${CMAKE_INSTALL_PREFIX}/lib:$ORIGIN/:$ORIGIN/../lib:$ORIGIN/../../lib:${CMAKE_INSTALL_PREFIX}/lib64:$ORIGIN/:$ORIGIN/../lib64:$ORIGIN/../../lib64"
 )
 
 # cmake-format: off
@@ -16,6 +16,7 @@ set(CMAKE_INSTALL_RPATH
 # source: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
 # cmake-format: on
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 function(build_required_and_libs_lists module_name visibility libraries
          all_ns3_libraries
