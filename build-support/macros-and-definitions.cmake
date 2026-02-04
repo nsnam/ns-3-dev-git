@@ -970,8 +970,10 @@ macro(process_options)
       )
       add_custom_target(
         run-introspected-command-line
-        COMMAND ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
-                ${Python3_EXECUTABLE} ./test.py --no-build --constrain=example
+        COMMAND
+          ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
+          ${Python3_EXECUTABLE} ./test.py --no-build --retain
+          --constrain=example
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         DEPENDS all-test-targets # all-test-targets only exists if ENABLE_TESTS
                                  # is set to ON

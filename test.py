@@ -2247,7 +2247,7 @@ def run_tests():
     # directories, which will probably surprise the user.
     #
     if not args.retain:
-        shutil.rmtree(testpy_output_dir)
+        shutil.rmtree(TMP_OUTPUT_DIR)
 
     if passed_tests + skipped_tests == total_tests:
         return 0  # success
