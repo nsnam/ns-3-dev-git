@@ -32,7 +32,6 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 * various rate control algorithms including **Aarf, Arf, Cara, Onoe, Rraa,
   ConstantRate, Minstrel and Minstrel-HT**
 * 802.11s (mesh), described in another chapter
-* 802.11p and WAVE (vehicular), described in another chapter
 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
@@ -193,6 +192,21 @@ Some implementation choices that are not imposed by the standard are listed belo
 * Once an A-MSDU is created, it is no longer modified, even before it is actually transmitted
   for the first time. This means that this A-MSDU cannot be aggregated to other MSDUs using A-MSDU
   aggregation.
+
+The following open issues are classified as unfixed bugs in the ns-3 tracker, and users should
+be aware of them:
+
+* The default TXOP limits do not conform to the standard (e.g., 2.528 ms for AC_BE is not default); see `Issue 289 <https://gitlab.com/nsnam/ns-3-dev/-/issues/289>_` and `Merge Request 1976 <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/1976>_`.
+* CCA issues with use of ED and PD thresholds have been reported; see `Issue 1247 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1247>_` and `Issue 1056 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1056>_` and `Issue 900 <https://gitlab.com/nsnam/ns-3-dev/-/issues/900>_`.
+* Use of MLO possibly causes the WifiPhy::MonitorSniffRx trace to miss some packets; see `Issue 1179 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1179>_`.
+* MinstrelHt rate control has reported bugs; see `Issue 886 <https://gitlab.com/nsnam/ns-3-dev/-/issues/886>_` and `Issue 51 <https://gitlab.com/nsnam/ns-3-dev/-/issues/51>_` and `Merge Request 2344 <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/2344>_`.
+* The 1600ns guard interval configuration performance for 802.11ax seems to be incorrect; see `Issue 1010 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1010>_`.
+* Support for 22 MHz channels for the HE PHY is limited; see `Issue 402 <https://gitlab.com/nsnam/ns-3-dev/-/issues/402>_`.
+* HT simulations cannot use SingleModelSpectrumChannel in 2.4 GHz; see `Issue 1090 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1090>_`.
+* The spatial-reuse-example.cc produces results inconsistent with its commented expected results; see `Issue 566 <https://gitlab.com/nsnam/ns-3-dev/-/issues/566>_`.
+* There may be lingering issues with the Wi-Fi frame capture model; see `Issue 746 <https://gitlab.com/nsnam/ns-3-dev/-/issues/746>_`.
+
+The following hyperlink links to `all open wifi module issues <https://gitlab.com/nsnam/ns-3-dev/-/issues?label_name%5B%5D=module%3A%3Awifi>_`, not all of which are bugs (some are related to feature requests).
 
 Design Details
 **************
