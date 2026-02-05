@@ -11,6 +11,7 @@
 
 #include "source-application.h"
 
+#include "ns3/applications-export.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 #include "ns3/traced-callback.h"
@@ -33,7 +34,7 @@ class GammaRandomVariable;
  * 802.11-14/0571r12 - 11ax Evaluation Methodology (see applications documentation for
  * full citation).
  */
-class TgaxVideoTraffic : public SourceApplication
+class APPLICATIONS_EXPORT TgaxVideoTraffic : public SourceApplication
 {
   public:
     /**

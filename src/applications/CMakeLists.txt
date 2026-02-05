@@ -69,4 +69,5 @@ build_lib(
     test/tgax-voip-traffic-test-suite.cc
     test/tgax-virtual-desktop-test-suite.cc
     test/rta-tig-mobile-gaming-test-suite.cc
+  GENERATE_EXPORT_HEADER
 )
