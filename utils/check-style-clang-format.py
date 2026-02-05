@@ -850,7 +850,9 @@ def check_licenses_line(
     ]
     # fmt: on
 
+    # REUSE-IgnoreStart
     SPDX_LICENSE = "SPDX-License-Identifier: GPL-2.0-only"
+    # REUSE-IgnoreEnd
 
     is_line_compliant = True
     line_fixed = line
