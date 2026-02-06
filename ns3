@@ -1535,7 +1535,8 @@ def run_step(args, target_to_run, target_args):
         if args.command_template:
             commands = args.command_template % f'"{target_to_run}"'
             commands = list(re.findall(r'(?:".*?"|\S)+', commands))
-            target_to_run = commands[0].strip('"')
+            commands = list(map(lambda x: x.replace('"', ""), commands))
+            target_to_run = commands[0]
             commands = commands[1:]
             check_program_installed(target_to_run)
             target_args = commands + target_args
