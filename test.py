@@ -889,7 +889,7 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     if valgrind:
         if VALGRIND_SUPPRESSIONS_FILE:
             cmd = (
-                "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s"
+                'valgrind --suppressions="%s" --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s'
                 % (suppressions_path, path_cmd)
             )
         else:
