@@ -58,9 +58,12 @@ macro(_eigen3_check_version)
   endif()
 
   if(NOT EIGEN3_VERSION_OK)
-
-    message(STATUS "Eigen3 version ${EIGEN3_VERSION} found in ${EIGEN3_INCLUDE_DIR}, "
-                   "but at least version ${Eigen3_FIND_VERSION} is required")
+    if(${EIGEN3_VERSION} STREQUAL "..")
+      message(WARNING "The Eigen you have installed in ${EIGEN3_INCLUDE_DIR} is not Eigen3. Make sure you did not install Eigen5 by mistake.")
+    else()
+      message(STATUS "Eigen3 version ${EIGEN3_VERSION} found in ${EIGEN3_INCLUDE_DIR}, "
+                    "but at least version ${Eigen3_FIND_VERSION} is required")
+    endif()
   endif()
 endmacro()
 
