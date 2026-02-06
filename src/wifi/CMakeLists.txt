@@ -167,7 +167,6 @@ set(source_files
     model/wifi-ru.cc
     model/wifi-spectrum-phy-interface.cc
     model/wifi-spectrum-signal-parameters.cc
-    model/wifi-standard-constants.cc
     model/wifi-standards.cc
     model/wifi-tx-current-model.cc
     model/wifi-tx-parameters.cc

@@ -23,47 +23,47 @@ namespace ns3
 
 /// Wi-Fi Time Unit value in microseconds (see IEEE 802.11-2020 sec. 3.1)
 /// Used to initialize WIFI_TU
-WIFI_EXPORT extern const Time WIFI_TU;
+inline const Time WIFI_TU = MicroSeconds(1024);
 
 /// aRxPHYStartDelay value to use when waiting for a new frame in the context of EMLSR operations
 /// (Sec. 35.3.17 of 802.11be D3.1)
-extern const Time EMLSR_RX_PHY_START_DELAY;
+inline const Time EMLSR_RX_PHY_START_DELAY = MicroSeconds(20);
 
 /// aSIFSTime value for OFDM (20 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)
-extern const Time OFDM_SIFS_TIME_20MHZ;
+inline const Time OFDM_SIFS_TIME_20MHZ = MicroSeconds(16);
 
 /// aSlotTime duration for OFDM (20 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)
-extern const Time OFDM_SLOT_TIME_20MHZ;
+inline const Time OFDM_SLOT_TIME_20MHZ = MicroSeconds(9);
 
 /// aSIFSTime value for OFDM (10 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)
-extern const Time OFDM_SIFS_TIME_10MHZ;
+inline const Time OFDM_SIFS_TIME_10MHZ = MicroSeconds(32);
 
 /// aSlotTime duration for OFDM (10 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)
-extern const Time OFDM_SLOT_TIME_10MHZ;
+inline const Time OFDM_SLOT_TIME_10MHZ = MicroSeconds(13);
 
 /// aSIFSTime value for OFDM (5 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)
-extern const Time OFDM_SIFS_TIME_5MHZ;
+inline const Time OFDM_SIFS_TIME_5MHZ = MicroSeconds(64);
 
 /// aSlotTime duration for OFDM (5 MHz channel spacing)
 /// (Table 17-21 "OFDM PHY characteristics" of 802.11-2020)
-extern const Time OFDM_SLOT_TIME_5MHZ;
+inline const Time OFDM_SLOT_TIME_5MHZ = MicroSeconds(21);
 
 /// aSIFSTime duration for DSSS (Table 16-4 "HR/DSSS PHY characteristics" of 802.11-2020)
-extern const Time DSSS_SIFS_TIME;
+inline const Time DSSS_SIFS_TIME = MicroSeconds(10);
 
 /// aSlotTime duration for DSSS (Table 16-4 "HR/DSSS PHY characteristics" of 802.11-2020)
-extern const Time DSSS_SLOT_TIME;
+inline const Time DSSS_SLOT_TIME = MicroSeconds(20);
 
 /// maximum propagation delay
-WIFI_EXPORT extern const Time MAX_PROPAGATION_DELAY;
+inline const Time MAX_PROPAGATION_DELAY = MicroSeconds(1);
 
 /// The aMediumSyncThreshold defined by Sec. 35.3.16.18.1 of 802.11be D4.0
-WIFI_EXPORT extern const Time MEDIUM_SYNC_THRESHOLD;
+inline const Time MEDIUM_SYNC_THRESHOLD = MicroSeconds(72);
 
 /// minimum TX power level value
 static constexpr uint8_t WIFI_MIN_TX_PWR_LEVEL{1};
