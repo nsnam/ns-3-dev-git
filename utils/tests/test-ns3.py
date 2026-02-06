@@ -1462,7 +1462,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Get the commands to run sample-simulator in two processes with mpi
         return_code, stdout, stderr = run_ns3(mpi_command)
         self.assertEqual(return_code, 0)
-        self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
+        self.assertIn('mpiexec -np 2 "%s"' % sample_simulator_path, stdout)
 
         # Get the commands to run sample-simulator in two processes with mpi, now with the environment variable
         return_code, stdout, stderr = run_ns3(mpi_command)
@@ -1470,25 +1470,26 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         if os.getenv("USER", "") == "root":
             if shutil.which("ompi_info"):
                 self.assertIn(
-                    "mpiexec --allow-run-as-root --oversubscribe -np 2 %s" % sample_simulator_path,
+                    'mpiexec --allow-run-as-root --oversubscribe -np 2 "%s"'
+                    % sample_simulator_path,
                     stdout,
                 )
             else:
                 self.assertIn(
-                    "mpiexec --allow-run-as-root -np 2 %s" % sample_simulator_path, stdout
+                    'mpiexec --allow-run-as-root -np 2 "%s"' % sample_simulator_path, stdout
                 )
         else:
-            self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
+            self.assertIn('mpiexec -np 2 "%s"' % sample_simulator_path, stdout)
 
         # Now we repeat for the non-mpi command
         return_code, stdout, stderr = run_ns3(non_mpi_command)
         self.assertEqual(return_code, 0)
-        self.assertIn("echo %s" % sample_simulator_path, stdout)
+        self.assertIn('echo "%s"' % sample_simulator_path, stdout)
 
         # Again the non-mpi command, with the MPI_CI environment variable set
         return_code, stdout, stderr = run_ns3(non_mpi_command)
         self.assertEqual(return_code, 0)
-        self.assertIn("echo %s" % sample_simulator_path, stdout)
+        self.assertIn('echo "%s"' % sample_simulator_path, stdout)
 
         return_code, stdout, stderr = run_ns3('configure -G "{generator}" --disable-examples')
         self.assertEqual(return_code, 0)
