@@ -118,8 +118,6 @@ Optional
 
 Please see below subsections for Python-related package requirements.
 
-For MacPorts packages we show the most recent package version available as of early 2023.
-
 +-----------------------------+----------------------------------+--------------------------+
 | **Feature**                 | **Homebrew packages**            | **MacPort packages**     |
 +=============================+==================================+==========================+
@@ -127,7 +125,7 @@ For MacPorts packages we show the most recent package version available as of ea
 +-----------------------------+----------------------------------+--------------------------+
 | Database support            | ``sqlite``                       | ``sqlite3``              |
 +-----------------------------+----------------------------------+--------------------------+
-| NetAnim animator            | ``qt@5``                         | ``qt513``                |
+| NetAnim animator            | ``qt@5``                         | ``qt59``                 |
 +-----------------------------+----------------------------------+--------------------------+
 | MPI-based distributed       |                                  | ``openmpi``              |
 | simulation                  | ``open-mpi``                     |                          |
@@ -142,7 +140,7 @@ For MacPorts packages we show the most recent package version available as of ea
 |                             |                                  | `XX`` the Python minor   |
 |                             |                                  | version such as `12`     |
 +-----------------------------+----------------------------------+--------------------------+
-| Eigen3                      | ``eigen``                        | ``eigen3``               |
+| Eigen3                      | ``eigen@3``                      | ``eigen3``               |
 +-----------------------------+----------------------------------+--------------------------+
 | GNU Scientific Library      | ``gsl``                          | ``gsl``                  |
 +-----------------------------+----------------------------------+--------------------------+
