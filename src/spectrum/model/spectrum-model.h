@@ -43,6 +43,14 @@ struct BandInfo
     double fl; //!< lower limit of subband
     double fc; //!< center frequency
     double fh; //!< upper limit of subband
+
+    /**
+     * Three-way comparison operator
+     *
+     * @param rhs right hand side
+     * @return deduced comparison type
+     */
+    auto operator<=>(const BandInfo& rhs) const = default;
 };
 
 /// Container of BandInfo
@@ -110,20 +118,21 @@ class SpectrumModel : public SimpleRefCount<SpectrumModel>
     SpectrumModelUid_t GetUid() const;
 
     /**
-     * Const Iterator to the model Bands container start.
+     * Const Iterator to the model Bands container start, i.e. to the band with lowest frequency.
      *
      * @return a const iterator to the start of the vector of bands
      */
     Bands::const_iterator Begin() const;
+
     /**
-     * Const Iterator to the model Bands container end.
+     * Const Iterator to the model Bands container end, i.e. after the band with highest frequency.
      *
      * @return a const iterator to past-the-end of the vector of bands
      */
     Bands::const_iterator End() const;
 
     /**
-     * Check if another SpectrumModels has bands orthogonal to our bands.
+     * Check if another SpectrumModel has bands orthogonal to our bands.
      *
      * @param other another SpectrumModel
      * @returns true if bands are orthogonal
@@ -131,7 +140,14 @@ class SpectrumModel : public SimpleRefCount<SpectrumModel>
     bool IsOrthogonal(const SpectrumModel& other) const;
 
   private:
+    /**
+     * Initialize internal variables
+     */
+    void InitModel();
+
     Bands m_bands;            //!< Actual definition of frequency bands within this SpectrumModel
+    bool m_contiguousBands;   //!< Whether the bands are contiguous (i.e., no gap between adjacent
+                              //!< bands)
     SpectrumModelUid_t m_uid; //!< unique id for a given set of frequencies
     static SpectrumModelUid_t m_uidCount; //!< counter to assign m_uids
 };
