@@ -263,14 +263,17 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
         {
             NS_LOG_LOGIC("converting txPowerSpectrum SpectrumModelUids "
                          << txSpectrumModelUid << " --> " << rxSpectrumModelUid);
-            auto rxConverterIterator =
-                txInfoIterator->second.m_spectrumConverterMap.find(rxSpectrumModelUid);
-            if (rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.end())
+            if (auto rxConverterIterator =
+                    txInfoIterator->second.m_spectrumConverterMap.find(rxSpectrumModelUid);
+                rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.end())
             {
                 // No converter means TX SpectrumModel is orthogonal to RX SpectrumModel
                 continue;
             }
-            convertedTxPowerSpectrum = rxConverterIterator->second.Convert(txParams->psd);
+            else
+            {
+                convertedTxPowerSpectrum = rxConverterIterator->second.Convert(txParams->psd);
+            }
         }
         convertedPsds.emplace(rxSpectrumModelUid, convertedTxPowerSpectrum);
     }
@@ -286,10 +289,13 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
 
         const auto rxSpectrumModelUid = rxInfoIterator->second.m_rxSpectrumModel->GetUid();
 
-        if ((txSpectrumModelUid != rxSpectrumModelUid) &&
-            !txInfoIterator->second.m_spectrumConverterMap.contains(rxSpectrumModelUid))
+        if (const auto IsOrthogonal = rxInfoIterator->second.m_rxSpectrumModel->IsOrthogonal(
+                *txInfoIterator->second.m_txSpectrumModel);
+            (txSpectrumModelUid != rxSpectrumModelUid) &&
+            !txInfoIterator->second.m_spectrumConverterMap.contains(rxSpectrumModelUid) &&
+            IsOrthogonal)
         {
-            // No converter means TX SpectrumModel is orthogonal to RX SpectrumModel
+            // TX SpectrumModel is orthogonal to RX SpectrumModel
             continue;
         }
 
@@ -426,9 +432,9 @@ MultiModelSpectrumChannel::StartRx(
             const auto txSpectrumModelUid = txPsd->GetSpectrumModelUid();
             NS_LOG_LOGIC("converting txPowerSpectrum SpectrumModelUids "
                          << txSpectrumModelUid << " --> " << phySpectrumModelUid);
-            const auto rxConverterIterator =
-                txInfoIterator->second.m_spectrumConverterMap.find(phySpectrumModelUid);
-            if (rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.cend())
+            if (const auto rxConverterIterator =
+                    txInfoIterator->second.m_spectrumConverterMap.find(phySpectrumModelUid);
+                rxConverterIterator == txInfoIterator->second.m_spectrumConverterMap.end())
             {
                 // No converter means TX SpectrumModel is orthogonal to current PHY SpectrumModel
                 return;

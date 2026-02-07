@@ -100,6 +100,13 @@ SpectrumModel::InitModel()
             }
         }
     }
+    // check if all bands have the same size
+    const auto bandSize = m_bands.cbegin()->fh - m_bands.cbegin()->fl;
+    m_uniqueBandSize =
+        (m_bands.size() == 1) ||
+        std::all_of(m_bands.cbegin(), m_bands.cend(), [bandSize](const auto& b) {
+            return std::abs((b.fh - b.fl) - bandSize) <= std::numeric_limits<double>::epsilon();
+        });
 }
 
 Bands::const_iterator
@@ -143,6 +150,39 @@ SpectrumModel::IsOrthogonal(const SpectrumModel& other) const
                 return false;
             }
         }
+    }
+    return true;
+}
+
+bool
+SpectrumModel::IsAligned(const SpectrumModel& other) const
+{
+    if (m_uniqueBandSize && other.m_uniqueBandSize)
+    {
+        // same band size, only one band has to be checked
+        const auto bandBandWidth = m_bands.begin()->fh - m_bands.begin()->fl;
+        const auto otherBandWidth = other.m_bands.begin()->fh - other.m_bands.begin()->fl;
+        return std::abs(bandBandWidth - otherBandWidth) <= std::numeric_limits<double>::epsilon();
+    }
+    auto myIt = Begin();
+    auto otherIt = other.Begin();
+    while (myIt != End() && otherIt != other.End())
+    {
+        while (otherIt != other.End() && otherIt->fh <= myIt->fl)
+        {
+            ++otherIt;
+        }
+        if (otherIt == other.End())
+        {
+            break;
+        }
+        if (std::abs(myIt->fl - otherIt->fl) > std::numeric_limits<double>::epsilon() ||
+            std::abs(myIt->fh - otherIt->fh) > std::numeric_limits<double>::epsilon())
+        {
+            return false;
+        }
+        ++myIt;
+        ++otherIt;
     }
     return true;
 }

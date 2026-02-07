@@ -139,6 +139,17 @@ class SpectrumModel : public SimpleRefCount<SpectrumModel>
      */
     bool IsOrthogonal(const SpectrumModel& other) const;
 
+    /**
+     * Check if another SpectrumModel is aligned with our bands.
+     * This means that both SpectrumModels have boundaries for each band that are common between the
+     * two models. In this case, the conversion between the two models is just a matter of copying
+     * values in the overlapping bands and setting to zero the values in the non-overlapping bands.
+     *
+     * @param other another SpectrumModel
+     * @returns true if bands are aligned
+     */
+    bool IsAligned(const SpectrumModel& other) const;
+
   private:
     /**
      * Initialize internal variables
@@ -148,6 +159,7 @@ class SpectrumModel : public SimpleRefCount<SpectrumModel>
     Bands m_bands;            //!< Actual definition of frequency bands within this SpectrumModel
     bool m_contiguousBands;   //!< Whether the bands are contiguous (i.e., no gap between adjacent
                               //!< bands)
+    bool m_uniqueBandSize;    //!< Whether all bands have the same size
     SpectrumModelUid_t m_uid; //!< unique id for a given set of frequencies
     static SpectrumModelUid_t m_uidCount; //!< counter to assign m_uids
 };
