@@ -991,6 +991,45 @@ To summarize Time declaration and initialization, consider the following example
   Time t{100000000}; // NOT OK, is interpreted differently when ``Time::SetResolution()`` called
   Time t{0.1}; // NOT OK, will round to zero; see above and also merge request !2007
 
+A constant that cannot be declared as ``constexpr`` (such as an ``ns3::Time`` constant) and needs
+to be used in multiple translation units (TUs) shall be declared as ``inline`` and initialized in a
+header file that is then included in all the TUs in which the constant needs to be used:
+
+.. sourcecode:: cpp
+
+  inline const Time WIFI_TU = MicroSeconds(1024);
+
+Indeed, since C++17, there may be more than one definition of a variable declared as ``inline`` in
+the program as long as each definition appears in a different TU and all definitions are identical.
+See wifi-standard-constants.h for an example of how to group such constants in a header file and
+declare them so that the values may be used in Attribute defaults.
+
+This approach is to be preferred over declaring the constant as ``extern`` in a header file and
+initializing the constant in a separate ``.cc`` file, because in such a case it would be dangerous
+to use the constant in the initialization of a static variable (e.g., the ``tid`` static member in
+the static ``GetTypeId`` method of classes inheriting from the ``Object`` class) due to the issue
+of static initialization order.
+
+A constant that cannot be declared as ``constexpr`` (such as an ``ns3::Time`` constant) and needs
+to be used in a single TU shall be declared and initialized in the ``.cc`` file before it is used:
+
+.. sourcecode:: cpp
+
+  // Example of declaring a Time constant locally
+  // If DEFAULT_BEACON_INTERVAL is declared with the class implementation such as
+  // below, and it is used as an an attribute default value, make sure that it
+  // is declared before the object TypeId is registered, such as below:
+  const Time DEFAULT_BEACON_INTERVAL = MicroSeconds(DEFAULT_BEACON_INTERVAL_USEC);
+
+  NS_OBJECT_ENSURE_REGISTERED(ApWifiMac);
+
+Instead, constants that can be declared as ``constexpr`` (such as all the POD types) shall be
+initialized in an header file by using the ``constexpr`` keyword only:
+
+.. sourcecode:: cpp
+
+  constexpr uint16_t MIN_AID{1};
+
 Comments
 ========
 
