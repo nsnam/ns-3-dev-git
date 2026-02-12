@@ -503,23 +503,25 @@ GlobalRouting<T>::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit 
     *os << std::resetiosflags(std::ios::adjustfield) << std::setiosflags(std::ios::left);
 
     std::string name;
+    std::string header;
     if constexpr (IsIpv4)
     {
         name = "Ipv4";
+        header = "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface";
     }
     else
     {
         name = "Ipv6";
+        header = "Destination                    Next Hop                   Flag Met Ref Use Iface";
     }
 
     *os << "Node: " << m_ip->template GetObject<Node>()->GetId() << ", Time: " << Now().As(unit)
         << ", Local time: " << m_ip->template GetObject<Node>()->GetLocalTime().As(unit) << ", "
-        << name << "GlobalRouting table" << std::endl;
+        << name << "GlobalRouting table" << std::endl
+        << header << std::endl;
 
     if (GetNRoutes() > 0)
     {
-        *os << "Destination                    Next Hop                   Flag Met Ref Use If"
-            << std::endl;
         for (uint32_t j = 0; j < GetNRoutes(); j++)
         {
             std::ostringstream dest;
@@ -535,7 +537,6 @@ GlobalRouting<T>::PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit 
                 *os << std::setw(16) << gw.str();
                 mask << route.GetDestNetworkMask();
                 *os << std::setw(16) << mask.str();
-                ;
             }
             else
             {
