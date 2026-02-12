@@ -63,6 +63,8 @@ fixes, use `./ns3 run "clang-tidy -fix"`.
   Procedure A updates are applied; if it exceeds 1 m, channel parameters are re-generated (new realization).
   For stationary links, the channel remains unchanged. See `spectrum.rst` for ns-3 update triggering and
   1 m step-size handling.
+* (spectrum): Correct long-term combining in the 3GPP channel model to use RX Hermitian combining (conjugate
+  transpose of RX beamforming weights); previously the RX beamforming vector was not conjugated (issue #1314).
 
 ## Changes from ns-3.46 to ns-3.46.1
 

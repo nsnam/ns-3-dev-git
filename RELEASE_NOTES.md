@@ -62,6 +62,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) #1295 - Avoid floating point precision issues in wifi-error-rate-models-test.cc
 - (internet) !2624 - Fix TCP LEDBAT congestion window growth calculation
 - (wifi) #1284 - Fix radiotap for received packets
+- (spectrum) #1314 - Fix missing complex conjugation of RX beamforming vector in 3GPP long-term channel component calculation.
 
 ## Release 3.46.1
 

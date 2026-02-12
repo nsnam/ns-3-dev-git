@@ -192,6 +192,13 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
     /**
      * @brief Computes a longTerm component from a specific port of s device to the
      * specific port of u device and for a specific cluster index
+     *
+     * The beamformed (long-term) effective channel coefficient:
+     * \f$ h_{\rm eff} = \mathbf{w}_{\rm rx}^H \mathbf{H} \mathbf{w}_{\rm tx} \f$.
+     *
+     * @note The RX beamforming vector is stored on the antenna as \f$\mathbf{w}_{\rm rx}\f$.
+     *       This function applies it as a Hermitian inner product (i.e., uses the complex
+     *       conjugate of the RX weights) when forming \f$\mathbf{w}_{\rm rx}^H\f$.
      * @param params The params that include the channel matrix
      * @param sAnt pointer to first antenna
      * @param uAnt uAnt pointer to second antenna
