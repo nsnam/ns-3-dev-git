@@ -89,27 +89,23 @@ double g_noiseDbmAvg;  //!< Average noise power [dBm]
 uint32_t g_samples;    //!< Number of samples
 
 /**
- * Monitor sniffer Rx trace
+ * Monitor sniffer trace
  *
  * @param packet The sensed packet.
- * @param channelFreqMhz The channel frequency [MHz].
- * @param txVector The Tx vector.
- * @param aMpdu The aMPDU.
- * @param signalNoise The signal and noise dBm.
- * @param staId The STA ID.
+ * @param info The sniffer trace info.
  */
 void
-MonitorSniffRx(Ptr<const Packet> packet,
-               uint16_t channelFreqMhz,
-               WifiTxVector txVector,
-               MpduInfo aMpdu,
-               SignalNoiseDbm signalNoise,
-               uint16_t staId)
+MonitorSniff(Ptr<const Packet> packet, const WifiPhy::SniffInfo& info)
 
 {
+    if (!info.signalNoise.has_value())
+    {
+        // This information corresponds to a transmitted packet, so we do not update the averages.
+        return;
+    }
     g_samples++;
-    g_signalDbmAvg += ((signalNoise.signal - g_signalDbmAvg) / g_samples);
-    g_noiseDbmAvg += ((signalNoise.noise - g_noiseDbmAvg) / g_samples);
+    g_signalDbmAvg += ((info.signalNoise->signal - g_signalDbmAvg) / g_samples);
+    g_noiseDbmAvg += ((info.signalNoise->noise - g_noiseDbmAvg) / g_samples);
 }
 
 NS_LOG_COMPONENT_DEFINE("WifiSpectrumPerExample");
@@ -477,8 +473,8 @@ main(int argc, char* argv[])
             clientApp.Stop(simulationTime + Seconds(1));
         }
 
-        Config::ConnectWithoutContext("/NodeList/0/DeviceList/*/Phy/MonitorSnifferRx",
-                                      MakeCallback(&MonitorSniffRx));
+        Config::ConnectWithoutContext("/NodeList/0/DeviceList/*/Phy/MonitorSniffer",
+                                      MakeCallback(&MonitorSniff));
 
         if (enablePcap)
         {

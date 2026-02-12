@@ -1975,23 +1975,19 @@ IncrementCounter(std::map<Mac48Address, uint64_t>& counter,
  *
  * @param context The context.
  * @param p The packet.
- * @param channelFreqMhz The channel frequqncy.
- * @param txVector The TX vector.
- * @param aMpdu The AMPDU.
- * @param signalNoise The signal and noise dBm.
- * @param staId The STA ID.
+ * @param info The sniff info.
  */
 void
-TracePacketReception(std::string context,
-                     Ptr<const Packet> p,
-                     uint16_t channelFreqMhz,
-                     WifiTxVector txVector,
-                     MpduInfo aMpdu,
-                     SignalNoiseDbm signalNoise,
-                     uint16_t staId)
+TracePacketReception(std::string context, Ptr<const Packet> p, const WifiPhy::SniffInfo& info)
 {
-    Ptr<Packet> packet = p->Copy();
-    if (txVector.IsAggregation())
+    if (!info.signalNoise)
+    {
+        // not RXed packet, ignore
+        return;
+    }
+
+    auto packet = p->Copy();
+    if (info.txVector.IsAggregation())
     {
         AmpduSubframeHeader subHdr;
         uint32_t extractedLength;
@@ -2585,9 +2581,8 @@ Experiment::Run(const WifiHelper& helper,
     }
 
     // Log packet receptions
-    Config::Connect(
-        "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx",
-        MakeCallback(&TracePacketReception));
+    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSniffer",
+                    MakeCallback(&TracePacketReception));
 
     // Log association and disassociation
     if (infra)

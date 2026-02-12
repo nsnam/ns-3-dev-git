@@ -2169,55 +2169,39 @@ class Bug2470TestCase : public TestCase
   private:
     /**
      * Callback when ADDBA state changed
-     * @param context node context
      * @param t the time the state changed
      * @param recipient the MAC address of the recipient
      * @param tid the TID
      * @param state the state
      */
-    void AddbaStateChangedCallback(std::string context,
-                                   Time t,
+    void AddbaStateChangedCallback(Time t,
                                    Mac48Address recipient,
                                    uint8_t tid,
                                    OriginatorBlockAckAgreement::State state);
     /**
      * Callback when a frame is transmitted.
      * @param rxErrorModel the post reception error model on the receiver
-     * @param context the context
      * @param psduMap the PSDU map
      * @param txVector the TX vector
      * @param txPowerW the tx power in Watts
      */
     void TxCallback(Ptr<ListErrorModel> rxErrorModel,
-                    std::string context,
                     WifiConstPsduMap psduMap,
                     WifiTxVector txVector,
                     double txPowerW);
 
     /**
      * Callback when packet is received
-     * @param context node context
      * @param p the received packet
-     * @param channelFreqMhz the channel frequency in MHz
-     * @param txVector the TX vector
-     * @param aMpdu the A-MPDU info
-     * @param signalNoise the signal noise in dBm
-     * @param staId the STA-ID
+     * @param info the sniffing information
      */
-    void RxCallback(std::string context,
-                    Ptr<const Packet> p,
-                    uint16_t channelFreqMhz,
-                    WifiTxVector txVector,
-                    MpduInfo aMpdu,
-                    SignalNoiseDbm signalNoise,
-                    uint16_t staId);
+    void RxSnifferCallback(Ptr<const Packet> p, const WifiPhy::SniffInfo& info);
     /**
      * Callback when packet is dropped
-     * @param context node context
      * @param p the failed packet
      * @param snr the SNR of the failed packet in linear scale
      */
-    void RxErrorCallback(std::string context, Ptr<const Packet> p, double snr);
+    void RxErrorCallback(Ptr<const Packet> p, double snr);
     /**
      * Triggers the arrival of a burst of 1000 Byte-long packets in the source device
      * @param numPackets number of packets in burst
@@ -2266,8 +2250,7 @@ Bug2470TestCase::~Bug2470TestCase()
 }
 
 void
-Bug2470TestCase::AddbaStateChangedCallback(std::string context,
-                                           Time t,
+Bug2470TestCase::AddbaStateChangedCallback(Time t,
                                            Mac48Address recipient,
                                            uint8_t tid,
                                            OriginatorBlockAckAgreement::State state)
@@ -2294,7 +2277,6 @@ Bug2470TestCase::AddbaStateChangedCallback(std::string context,
 
 void
 Bug2470TestCase::TxCallback(Ptr<ListErrorModel> rxErrorModel,
-                            std::string context,
                             WifiConstPsduMap psduMap,
                             WifiTxVector txVector,
                             double txPowerW)
@@ -2312,16 +2294,16 @@ Bug2470TestCase::TxCallback(Ptr<ListErrorModel> rxErrorModel,
 }
 
 void
-Bug2470TestCase::RxCallback(std::string context,
-                            Ptr<const Packet> p,
-                            uint16_t channelFreqMhz,
-                            WifiTxVector txVector,
-                            MpduInfo aMpdu,
-                            SignalNoiseDbm signalNoise,
-                            uint16_t staId)
+Bug2470TestCase::RxSnifferCallback(Ptr<const Packet> p, const WifiPhy::SniffInfo& info)
 {
-    Ptr<Packet> packet = p->Copy();
-    if (aMpdu.type != MpduType::NORMAL_MPDU)
+    if (!info.signalNoise)
+    {
+        // not RXed packet, ignore
+        return;
+    }
+
+    auto packet = p->Copy();
+    if (info.mpduInfo.type != MpduType::NORMAL_MPDU)
     {
         m_receivedAmpduCount++;
     }
@@ -2337,9 +2319,9 @@ Bug2470TestCase::RxCallback(std::string context,
 }
 
 void
-Bug2470TestCase::RxErrorCallback(std::string context, Ptr<const Packet> p, double snr)
+Bug2470TestCase::RxErrorCallback(Ptr<const Packet> p, double snr)
 {
-    Ptr<Packet> packet = p->Copy();
+    auto packet = p->Copy();
     WifiMacHeader hdr;
     packet->RemoveHeader(hdr);
     if (hdr.IsAction())
@@ -2423,17 +2405,19 @@ Bug2470TestCase::RunSubtest(TypeOfStation rcvErrorType)
     }
     wifiMac->GetWifiPhy(0)->SetPostReceptionErrorModel(rxErrorModel);
 
-    Config::Connect(
-        "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx",
-        MakeCallback(&Bug2470TestCase::RxCallback, this));
-    Config::Connect("/NodeList/*/DeviceList/*/Phy/State/RxError",
-                    MakeCallback(&Bug2470TestCase::RxErrorCallback, this));
-    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/BE_Txop/"
-                    "BlockAckManager/AgreementState",
-                    MakeCallback(&Bug2470TestCase::AddbaStateChangedCallback, this));
-    Config::Connect("/NodeList/" + std::to_string(rcvErrorType == STA ? 0 /* AP */ : 1 /* STA */) +
-                        "/DeviceList/*/$ns3::WifiNetDevice/Phys/0/PhyTxPsduBegin",
-                    MakeCallback(&Bug2470TestCase::TxCallback, this).Bind(rxErrorModel));
+    Config::ConnectWithoutContext(
+        "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSniffer",
+        MakeCallback(&Bug2470TestCase::RxSnifferCallback, this));
+    Config::ConnectWithoutContext("/NodeList/*/DeviceList/*/Phy/State/RxError",
+                                  MakeCallback(&Bug2470TestCase::RxErrorCallback, this));
+    Config::ConnectWithoutContext(
+        "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/BE_Txop/"
+        "BlockAckManager/AgreementState",
+        MakeCallback(&Bug2470TestCase::AddbaStateChangedCallback, this));
+    Config::ConnectWithoutContext(
+        "/NodeList/" + std::to_string(rcvErrorType == STA ? 0 /* AP */ : 1 /* STA */) +
+            "/DeviceList/*/$ns3::WifiNetDevice/Phys/0/PhyTxPsduBegin",
+        MakeCallback(&Bug2470TestCase::TxCallback, this).Bind(rxErrorModel));
 
     Simulator::Schedule(Seconds(0.5),
                         &Bug2470TestCase::SendPacketBurst,
