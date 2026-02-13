@@ -42,27 +42,36 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### New user-visible features
 
+Numbers preceded by '!' reference GitLab.com Merge Request numbers (for more information)
+Numbers preceded by '#' reference GitLab.com Issue numbers (for more information)
+
+- (applications) !2611 New IEEE 802.11ax evaluation methodology traffic generators for video, VoIP, virtual desktop, and real-time mobile gaming
+- (core) !2633 Added `SystemPath::FindSelf()` to retrieve the full path to the running executable.
+- (examples) !2686 New TCP BBR Python example program.
 - (internet) !2405 Added support for TCP FACK (Forward Acknowledgement).
+- (internet) !2530 Added IPv6 support to Global Routing.
+- (internet) !2434 Added `PrintRouting` functionality to `GlobalRouting` similar to `TraceRoute`.
 - (lr-wpan) !2592 Added PHY preamble and RSSI support.
-- (visualizer) Add Lr-Wpan NetDevices support to the Pyviz visualizer.
-- (spectrum) The ns-3 3GPP channel model supports a spatial-consistency update technique
-  aligned with TR 38.901 Procedure A (Sec. 7.6.3.2), enabled via the `UpdatePeriod`
-  attribute of `ThreeGppChannelModel` (see `spectrum.rst` for ns-3 update triggering and
-  1 m step-size handling). Default per-cluster shadowing correlation distances are
-  provided for terrestrial cellular scenarios (UMa/UMi/RMa/Indoor). For V2V and NTN,
-  the corresponding 3GPP reports do not provide standardized per-cluster correlation
-  distances; users should configure appropriate values in the parameter tables (the
-  default is 1 m, yielding weak correlation unless adjusted).
+- (propagation) !2626 Added 3GPP outdoor-to-indoor (O2I) penetration losses for sub-6 GHz frequencies according to TS 38.901 Table 7.4.3-3, including vehicular O2I losses.
+- (spectrum) !2490 The ns-3 3GPP channel model now supports a spatial-consistency update technique
+  aligned with TR 38.901 Procedure A (Sec. 7.6.3.2).
+- (visualizer) !2663 Add Lr-Wpan NetDevices support to the Pyviz visualizer.
 
 ### Bugs fixed
 
-- (visualizer) !2636 - Fix overlapping labels and simulation stop time in PyViz visualizer.
-- (wifi) Fix incorrect aPSDUMaxLength value for 802.11be.
-- (wifi) Fix hardcoded threshold value in EHT PHY to determine per-20MHz CCA indication.
-- (wifi) #1295 - Avoid floating point precision issues in wifi-error-rate-models-test.cc
+- (core) #1252 - Handle >1023 character paths to self on Linux
 - (internet) !2624 - Fix TCP LEDBAT congestion window growth calculation
-- (wifi) #1284 - Fix radiotap for received packets
+- (network) #1226 - Fix Ipv6Prefix and Ipv4Mask default constructors
+- (network) !2728 Fix deserialization, TLV field alignment, and MCS padding issues in Radiotap header
+- (propagation) !2593 Fix 3GPP O2I loss distributions that used standard deviation instead of variance from TS 38.901 Table 7.4.3-2
 - (spectrum) #1314 - Fix missing complex conjugation of RX beamforming vector in 3GPP long-term channel component calculation.
+- (wifi) !2613 Fix incorrect aPSDUMaxLength value for 802.11be.
+- (wifi) !2614 Fix hardcoded threshold value in EHT PHY to determine per-20MHz CCA indication.
+- (wifi) !2614 Fix spurious CCA-BUSY notification after channel width has changed
+- (wifi) #1295 - Avoid floating point precision issues in wifi-error-rate-models-test.cc
+- (wifi) #1284 - Fix radiotap for received packets
+- (wifi) !2599 Fix misuse of TX power and power level in remote station manager
+- (visualizer) !2636 - Fix overlapping labels and simulation stop time in PyViz visualizer.
 
 ## Release 3.46.1
 
