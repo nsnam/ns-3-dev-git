@@ -11,6 +11,7 @@
 
 #include "ns3/log.h"
 
+#include <algorithm>
 #include <bitset>
 #include <cmath>
 #include <iomanip>
