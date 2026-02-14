@@ -15,10 +15,16 @@
  * 3D-urban macro (UMa), and it can be configured changing the value of the
  * string "scenario".
  * Each node hosts has an antenna array with 4 antenna elements.
+ *
+ * The example writes its main results to the file ``snr-trace.txt``.
+ * Each row contains: (i) the simulation time (s), (ii) the SNR obtained with
+ * steering vectors (``DoBeamforming``), (iii) the SNR obtained with matched-filter
+ * combining, and (iv) the propagation gain.
  */
 
 #include "ns3/channel-condition-model.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/constant-velocity-mobility-model.h"
 #include "ns3/core-module.h"
 #include "ns3/lte-spectrum-value-helper.h"
 #include "ns3/mobility-model.h"
@@ -57,13 +63,59 @@ struct ComputeSnrParams
 };
 
 /**
- * Perform the beamforming using the DFT beamforming method
- * @param txMob the mobility model of the node performing the beamforming
- * @param thisAntenna the antenna object associated to thisDevice
- * @param rxMob the mobility model of the node towards which will point the beam
+ * Perform a simple (DFT/steering) beamforming toward the other node.
+ *
+ * This function builds a per-element complex weight vector based on the geometric
+ * direction between two nodes and the antenna element locations returned by
+ * `PhasedArrayModel::GetElementLocation()`. The weights are unit-norm (equal
+ * power across elements) and have the form:
+ *
+ *   w[i] = exp(j * phase_i) / sqrt(N),
+ *   phase_i = sign * 2*pi * ( u · r_i )
+ *
+ * where `u` is the unit direction corresponding to the azimuth/inclination
+ * angles of the line-of-sight vector between the nodes, `r_i` is the location of
+ * element `i` in the array coordinate system, and `N` is the number of antenna
+ * elements.
+ *
+ * Sign convention and how to use this function:
+ *
+ * The 3GPP channel coefficients are constructed using spatial phase terms of the
+ * form exp(+j*2*pi*(u·r)) (see `ThreeGppChannelModel::GetNewChannel()`), i.e., the
+ * array *response/steering vector* toward a direction is proportional to:
+ *
+ *   a(theta)[i] = exp(+j*2*pi*(u·r_i)).
+ *
+ * In standard array processing, a transmit precoder that steers energy toward
+ * that direction uses the complex conjugate of the response, therefore
+ * sign = -1  (phase = -2*pi*(u·r_i)).
+ *
+ * For receive combining, the effective scalar channel is computed using the
+ * Hermitian inner product:
+ *
+ *   h_eff = w_rx^H * H * w_tx .
+ *
+ * To obtain matched-filter (maximum-ratio) receive combining toward the same
+ * direction, the stored receive weight vector should be proportional to the
+ * response a(theta), so that `w_rx^H` applies the conjugation at combining time
+ * sign = +1  (phase = +2*pi*(u·r_i)).
+ *
+ * Therefore, when this function is used to set beamforming vectors explicitly in
+ * this example:
+ *   - Use `sign = -1` when generating TX weights (precoding).
+ *   - Use `sign = +1` when generating RX weights (so that Hermitian combining
+ *     applies the conjugation).
+ *
+ * @param txMob The mobility model of the node for which the weights are generated.
+ * @param thisAntenna The antenna array on which the beamforming vector is set.
+ * @param rxMob The mobility model of the peer node toward/from which the beam is steered.
+ * @param sign Phase progression sign: typically -1 for TX weights and +1 for RX weights.
  */
 static void
-DoBeamforming(Ptr<MobilityModel> txMob, Ptr<PhasedArrayModel> thisAntenna, Ptr<MobilityModel> rxMob)
+DoBeamforming(Ptr<MobilityModel> txMob,
+              Ptr<PhasedArrayModel> thisAntenna,
+              Ptr<MobilityModel> rxMob,
+              double sign)
 {
     // retrieve the position of the two nodes
     Vector aPos = txMob->GetPosition();
@@ -91,7 +143,7 @@ DoBeamforming(Ptr<MobilityModel> txMob, Ptr<PhasedArrayModel> thisAntenna, Ptr<M
     for (uint64_t ind = 0; ind < totNoArrayElements; ind++)
     {
         Vector loc = thisAntenna->GetElementLocation(ind);
-        double phase = -2 * M_PI *
+        double phase = sign * 2 * M_PI *
                        (sinVAngleRadian * cosHAngleRadian * loc.x +
                         sinVAngleRadian * sinHAngleRadian * loc.y + cosVAngleRadian * loc.z);
         antennaWeights[ind] = exp(std::complex<double>(0, phase)) * power;
@@ -99,6 +151,76 @@ DoBeamforming(Ptr<MobilityModel> txMob, Ptr<PhasedArrayModel> thisAntenna, Ptr<M
 
     // store the antenna weights
     thisAntenna->SetBeamformingVector(antennaWeights);
+}
+
+/**
+ * Build the RX matched-filter (maximum-ratio) combining vector by aggregating
+ * the contributions of all clusters and normalizing the result:
+ * \f[
+ * \mathbf{g} = \sum_{c} \mathbf{H}_{c}\mathbf{w}_{\rm tx}, \qquad
+ * \mathbf{w}_{\rm rx} = \frac{\mathbf{g}}{\|\mathbf{g}\|}
+ * \f]
+ *
+ * The per-cluster channel matrix \f$\mathbf{H}_{c}\f$ is obtained from
+ * ``params->m_channel(u, s, c)`` (u: RX element index, s: TX element index, c: cluster index).
+ *
+ * @param params Channel parameters containing the per-cluster channel matrix.
+ * @param txAntenna TX phased-array model.
+ * @param rxAntenna RX phased-array model.
+ * @param wTx Unit-norm TX beamforming/precoding vector (size must match
+ * ``txAntenna->GetNumElems()``).
+ *
+ * @return The RX combining vector (size ``rxAntenna->GetNumElems()``), normalized to unit norm
+ *         (unless the channel is all-zero, in which case a zero vector is returned).
+ */
+
+static ns3::PhasedArrayModel::ComplexVector
+BuildRxMatchedFilterOverAllClusters(
+    ns3::Ptr<const ns3::MatrixBasedChannelModel::ChannelMatrix> params,
+    ns3::Ptr<const ns3::PhasedArrayModel> txAntenna,
+    ns3::Ptr<const ns3::PhasedArrayModel> rxAntenna,
+    const ns3::PhasedArrayModel::ComplexVector& wTx)
+{
+    using C = std::complex<double>;
+
+    const uint64_t nTx = txAntenna->GetNumElems();
+    const uint64_t nRx = rxAntenna->GetNumElems();
+    const size_t numClusters = params->m_channel.GetNumPages();
+
+    NS_ASSERT_MSG(wTx.GetSize() == nTx, "wTx size does not match TX antenna elements");
+    NS_ASSERT_MSG(params->m_channel.GetNumRows() == nRx, "Channel rows != #RX elements");
+    NS_ASSERT_MSG(params->m_channel.GetNumCols() == nTx, "Channel cols != #TX elements");
+
+    ns3::PhasedArrayModel::ComplexVector g(nRx);
+
+    // g = sum_c (H_c * wTx)
+    for (size_t c = 0; c < numClusters; ++c)
+    {
+        for (uint64_t u = 0; u < nRx; ++u)
+        {
+            C acc{0.0, 0.0};
+            for (uint64_t s = 0; s < nTx; ++s)
+            {
+                acc += params->m_channel(u, s, c) * wTx[s];
+            }
+            g[u] += acc;
+        }
+    }
+    // Normalize: wRx = g / ||g||
+    double norm2 = 0.0;
+    for (uint64_t u = 0; u < nRx; ++u)
+    {
+        norm2 += std::norm(g[u]);
+    }
+    if (norm2 > 0.0)
+    {
+        const double invNorm = 1.0 / std::sqrt(norm2);
+        for (uint64_t u = 0; u < nRx; ++u)
+        {
+            g[u] *= invNorm;
+        }
+    }
+    return g; // unit-norm (unless channel is all-zero)
 }
 
 /**
@@ -137,22 +259,49 @@ ComputeSnr(const ComputeSnrParams& params)
     NS_ASSERT_MSG(params.txAntenna, "params.txAntenna is nullptr!");
     NS_ASSERT_MSG(params.rxAntenna, "params.rxAntenna is nullptr!");
 
+    // set/update the beamforming vectors on each call
+    double sign = -1.0;
+    DoBeamforming(params.txMob, params.txAntenna, params.rxMob, sign);
+    sign = +1.0;
+    DoBeamforming(params.rxMob, params.rxAntenna, params.txMob, sign);
     // apply the fast fading and the beamforming gain
     auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
                                                                     params.txMob,
                                                                     params.rxMob,
                                                                     params.txAntenna,
                                                                     params.rxAntenna);
-    auto rxPsd = rxParams->psd;
-    NS_LOG_DEBUG("Average rx power " << 10 * log10(Sum(*rxPsd) * 180e3) << " dB");
+    auto rxPsdSteering = rxParams->psd;
+    NS_LOG_DEBUG("Average rx power " << 10 * log10(Sum(*rxPsdSteering) * 180e3) << " dB");
+    NS_LOG_DEBUG("Average SNR " << 10 * log10(Sum(*rxPsdSteering) / Sum(*noisePsd)) << " dB");
 
-    // compute the SNR
-    NS_LOG_DEBUG("Average SNR " << 10 * log10(Sum(*rxPsd) / Sum(*noisePsd)) << " dB");
+    Ptr<ThreeGppChannelModel> channelModel =
+        DynamicCast<ThreeGppChannelModel>(m_spectrumLossModel->GetChannelModel());
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
+        channelModel->GetChannel(params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
+
+    const auto& wTx = params.txAntenna->GetBeamformingVectorRef();
+    auto wRx =
+        BuildRxMatchedFilterOverAllClusters(channelMatrix, params.txAntenna, params.rxAntenna, wTx);
+    params.rxAntenna->SetBeamformingVector(wRx); // Install RX matched-filter (MRC) combiner
+
+    auto rxParamsMatchedFilterComb =
+        m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
+                                                        params.txMob,
+                                                        params.rxMob,
+                                                        params.txAntenna,
+                                                        params.rxAntenna);
+
+    auto rxPsdMatchedFilterComb = rxParamsMatchedFilterComb->psd;
+    NS_LOG_DEBUG("Average rx power when using matched filter combining "
+                 << 10 * log10(Sum(*rxPsdMatchedFilterComb) * 180e3) << " dB");
+    NS_LOG_DEBUG("Average SNR when using matched filter combining "
+                 << 10 * log10(Sum(*rxPsdMatchedFilterComb) / Sum(*noisePsd)) << " dB");
 
     // print the SNR and pathloss values in the snr-trace.txt file
     std::ofstream f;
     f.open("snr-trace.txt", std::ios::out | std::ios::app);
-    f << Simulator::Now().GetSeconds() << " " << 10 * log10(Sum(*rxPsd) / Sum(*noisePsd)) << " "
+    f << Simulator::Now().GetSeconds() << " " << 10 * log10(Sum(*rxPsdSteering) / Sum(*noisePsd))
+      << " " << 10 * log10(Sum(*rxPsdMatchedFilterComb) / Sum(*noisePsd)) << " "
       << propagationGainDb << std::endl;
     f.close();
 }
@@ -249,8 +398,9 @@ main(int argc, char* argv[])
     // create the tx and rx mobility models, set the positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
-    Ptr<MobilityModel> rxMob = CreateObject<ConstantPositionMobilityModel>();
+    Ptr<ConstantVelocityMobilityModel> rxMob = CreateObject<ConstantVelocityMobilityModel>();
     rxMob->SetPosition(Vector(distance, 0.0, 1.6));
+    rxMob->SetVelocity(Vector(0.5, 0, 0)); // set small velocity to allow for channel updates
 
     // assign the mobility models to the nodes
     nodes.Get(0)->AggregateObject(txMob);
@@ -267,10 +417,6 @@ main(int argc, char* argv[])
                                                        UintegerValue(2),
                                                        "NumRows",
                                                        UintegerValue(2));
-
-    // set the beamforming vectors
-    DoBeamforming(txMob, txAntenna, rxMob);
-    DoBeamforming(rxMob, rxAntenna, txMob);
 
     for (int i = 0; i < floor(simTime / timeRes); i++)
     {
