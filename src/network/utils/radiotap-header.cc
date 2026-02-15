@@ -1352,8 +1352,16 @@ RadiotapHeader::DeserializeEht(Buffer::Iterator start, uint32_t bytesRead)
         dataField = start.ReadU32();
         bytesRead += RADIOTAP_EHT_DATA_SIZE_B;
     }
-    const auto userInfosBytes = m_ehtTlv.length - bytesRead - m_ehtTlvPad;
-    NS_ASSERT(userInfosBytes % RADIOTAP_EHT_USER_INFO_SIZE_B == 0);
+    const auto tlvHdrSizeAndPad = m_ehtTlvPad + RADIOTAP_TLV_HEADER_SIZE_B;
+    const auto ehtBytesRead = bytesRead - tlvHdrSizeAndPad - startBytesRead;
+    NS_ASSERT_MSG(ehtBytesRead <= m_ehtTlv.length,
+                  "Deserialized more bytes (" << ehtBytesRead
+                                              << ") than the length specified by the TLV length ("
+                                              << m_ehtTlv.length << ")");
+    const auto userInfosBytes = m_ehtTlv.length - ehtBytesRead;
+    NS_ASSERT_MSG((userInfosBytes % RADIOTAP_EHT_USER_INFO_SIZE_B == 0),
+                  "User info bytes (" << userInfosBytes << ") not a multiple of user info size ("
+                                      << RADIOTAP_EHT_USER_INFO_SIZE_B << ")");
     const std::size_t numUsers = userInfosBytes / RADIOTAP_EHT_USER_INFO_SIZE_B;
     for (std::size_t i = 0; i < numUsers; ++i)
     {
