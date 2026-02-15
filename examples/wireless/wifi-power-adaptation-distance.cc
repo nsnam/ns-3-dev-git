@@ -139,7 +139,7 @@ class NodeStatistics
      * @param newPower Actual Tx power.
      * @param dest Destination of the transmission.
      */
-    void PowerCallback(std::string path, double oldPower, double newPower, Mac48Address dest);
+    void PowerCallback(std::string path, dBm_u oldPower, dBm_u newPower, Mac48Address dest);
     /**
      * @brief Callback called by WifiNetDevice/RemoteStationManager/x/RateChange.
      *
@@ -281,7 +281,7 @@ NodeStatistics::PhyCallback(std::string path, Ptr<const Packet> packet, double p
 }
 
 void
-NodeStatistics::PowerCallback(std::string path, double oldPower, double newPower, Mac48Address dest)
+NodeStatistics::PowerCallback(std::string path, dBm_u oldPower, dBm_u newPower, Mac48Address dest)
 {
     m_currentPower[dest] = dBm_u{newPower};
 }

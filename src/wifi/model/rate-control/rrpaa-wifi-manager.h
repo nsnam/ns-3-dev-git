@@ -216,7 +216,7 @@ class RrpaaWifiManager : public WifiRemoteStationManager
     /**
      * The trace source fired when the transmission power change
      */
-    TracedCallback<double, double, Mac48Address> m_powerChange;
+    TracedCallback<dBm_u, dBm_u, Mac48Address> m_powerChange;
     /**
      * The trace source fired when the transmission rate change
      */
