@@ -256,7 +256,7 @@ as their involvement with the project deepens; maintainers are not newcomers
 to the project.
 
 The list of maintainers for each module is found here:
-https://www.nsnam.org/developers/maintainers/
+https://www.nsnam.org/about/governance/maintainers/
 
 Maintainers review code (bug fixes, new models) within scope of their
 maintenance responsibility.  A maintainer of a module should "sign off"
