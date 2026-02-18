@@ -592,6 +592,13 @@ RadiotapHeader::SetTsft(uint64_t value)
                              << m_present.at(0).to_ulong() << std::dec);
 }
 
+uint64_t
+RadiotapHeader::GetTsft() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_TSFT), "TSFT field not present in radiotap header");
+    return m_tsft;
+}
+
 void
 RadiotapHeader::SerializeTsft(Buffer::Iterator& start) const
 {
@@ -623,6 +630,13 @@ RadiotapHeader::SetFrameFlags(uint8_t flags)
                              << m_present.at(0).to_ulong() << std::dec);
 }
 
+uint8_t
+RadiotapHeader::GetFrameFlags() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_FLAGS), "Flags field not present in radiotap header");
+    return m_flags;
+}
+
 void
 RadiotapHeader::SetRate(uint8_t rate)
 {
@@ -636,8 +650,15 @@ RadiotapHeader::SetRate(uint8_t rate)
                              << m_present.at(0).to_ulong() << std::dec);
 }
 
+uint8_t
+RadiotapHeader::GetRate() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_RATE), "Rate field not present in radiotap header");
+    return m_rate;
+}
+
 void
-RadiotapHeader::SetChannelFields(const ChannelFields& channelFields)
+RadiotapHeader::SetChannelFields(const RadiotapHeader::ChannelFields& channelFields)
 {
     NS_LOG_FUNCTION(this << channelFields.frequency << channelFields.flags);
 
@@ -648,6 +669,13 @@ RadiotapHeader::SetChannelFields(const ChannelFields& channelFields)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::ChannelFields&
+RadiotapHeader::GetChannelFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_CHANNEL), "Channel field not present in radiotap header");
+    return m_channelFields;
 }
 
 void
@@ -673,8 +701,15 @@ RadiotapHeader::DeserializeChannel(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintChannel(std::ostream& os) const
 {
-    os << " channel.frequency=" << m_channelFields.frequency << " channel.flags=0x" << std::hex
-       << m_channelFields.flags << std::dec;
+    os << " " << m_channelFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::ChannelFields& fields)
+{
+    os << "channel.frequency=" << fields.frequency << " channel.flags=0x" << std::hex
+       << fields.flags << std::dec;
+    return os;
 }
 
 void
@@ -703,8 +738,24 @@ RadiotapHeader::SetAntennaNoisePower(double noise)
                              << m_present.at(0).to_ulong() << std::dec);
 }
 
+double
+RadiotapHeader::GetAntennaSignalPower() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_DBM_ANTSIGNAL),
+                  "Antenna signal field not present in radiotap header");
+    return static_cast<double>(m_antennaSignal);
+}
+
+double
+RadiotapHeader::GetAntennaNoisePower() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_DBM_ANTNOISE),
+                  "Antenna noise field not present in radiotap header");
+    return static_cast<double>(m_antennaNoise);
+}
+
 void
-RadiotapHeader::SetMcsFields(const McsFields& mcsFields)
+RadiotapHeader::SetMcsFields(const RadiotapHeader::McsFields& mcsFields)
 {
     NS_LOG_FUNCTION(this << mcsFields.known << mcsFields.flags << mcsFields.mcs);
 
@@ -715,6 +766,13 @@ RadiotapHeader::SetMcsFields(const McsFields& mcsFields)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::McsFields&
+RadiotapHeader::GetMcsFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_MCS), "MCS field not present in radiotap header");
+    return m_mcsFields;
 }
 
 void
@@ -742,12 +800,19 @@ RadiotapHeader::DeserializeMcs(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintMcs(std::ostream& os) const
 {
-    os << " mcs.known=0x" << std::hex << +m_mcsFields.known << " mcs.flags0x=" << +m_mcsFields.flags
-       << " mcsRate=" << std::dec << +m_mcsFields.mcs;
+    os << " " << m_mcsFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::McsFields& fields)
+{
+    os << "mcs.known=0x" << std::hex << +fields.known << " mcs.flags0x=" << +fields.flags
+       << " mcsRate=" << std::dec << +fields.mcs;
+    return os;
 }
 
 void
-RadiotapHeader::SetAmpduStatus(const AmpduStatusFields& ampduStatusFields)
+RadiotapHeader::SetAmpduStatus(const RadiotapHeader::AmpduStatusFields& ampduStatusFields)
 {
     NS_LOG_FUNCTION(this << ampduStatusFields.referenceNumber << ampduStatusFields.flags);
 
@@ -758,6 +823,14 @@ RadiotapHeader::SetAmpduStatus(const AmpduStatusFields& ampduStatusFields)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::AmpduStatusFields&
+RadiotapHeader::GetAmpduStatus() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_AMPDU_STATUS),
+                  "A-MPDU status field not present in radiotap header");
+    return m_ampduStatusFields;
 }
 
 void
@@ -787,11 +860,19 @@ RadiotapHeader::DeserializeAmpduStatus(Buffer::Iterator start, uint32_t bytesRea
 void
 RadiotapHeader::PrintAmpduStatus(std::ostream& os) const
 {
-    os << " ampduStatus.flags=0x" << std::hex << m_ampduStatusFields.flags << std::dec;
+    os << " " << m_ampduStatusFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::AmpduStatusFields& fields)
+{
+    os << "ampduStatus.referenceNumber=" << fields.referenceNumber << " ampduStatus.flags=0x"
+       << std::hex << fields.flags << std::dec;
+    return os;
 }
 
 void
-RadiotapHeader::SetVhtFields(const VhtFields& vhtFields)
+RadiotapHeader::SetVhtFields(const RadiotapHeader::VhtFields& vhtFields)
 {
     NS_LOG_FUNCTION(this << vhtFields.known << vhtFields.flags << vhtFields.mcsNss.at(0)
                          << vhtFields.mcsNss.at(1) << vhtFields.mcsNss.at(2)
@@ -805,6 +886,13 @@ RadiotapHeader::SetVhtFields(const VhtFields& vhtFields)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::VhtFields&
+RadiotapHeader::GetVhtFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_VHT), "VHT field not present in radiotap header");
+    return m_vhtFields;
 }
 
 void
@@ -846,18 +934,25 @@ RadiotapHeader::DeserializeVht(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintVht(std::ostream& os) const
 {
-    os << " vht.known=0x" << m_vhtFields.known << " vht.flags=0x" << m_vhtFields.flags
-       << " vht.bandwidth=" << std::dec << m_vhtFields.bandwidth;
-    for (std::size_t i = 0; i < m_vhtFields.mcsNss.size(); ++i)
+    os << " " << m_vhtFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::VhtFields& fields)
+{
+    os << "vht.known=0x" << std::hex << fields.known << " vht.flags=0x" << fields.flags
+       << " vht.bandwidth=" << std::dec << fields.bandwidth;
+    for (std::size_t i = 0; i < fields.mcsNss.size(); ++i)
     {
-        os << " vht.mcsNss[" << i << "]=" << +m_vhtFields.mcsNss.at(i);
+        os << " vht.mcsNss[" << i << "]=" << +fields.mcsNss.at(i);
     }
-    os << " vht.coding=" << m_vhtFields.coding << " vht.groupId=" << m_vhtFields.groupId
-       << " vht.partialAid=" << m_vhtFields.partialAid;
+    os << " vht.coding=" << fields.coding << " vht.groupId=" << fields.groupId
+       << " vht.partialAid=" << fields.partialAid;
+    return os;
 }
 
 void
-RadiotapHeader::SetTimestamp(const Timestamp& timestamp)
+RadiotapHeader::SetTimestamp(const RadiotapHeader::Timestamp& timestamp)
 {
     NS_LOG_FUNCTION(this << timestamp);
 
@@ -868,6 +963,13 @@ RadiotapHeader::SetTimestamp(const Timestamp& timestamp)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::Timestamp&
+RadiotapHeader::GetTimestamp() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_TIMESTAMP), "Timestamp field not present in radiotap header");
+    return m_timestamp;
 }
 
 void
@@ -1052,7 +1154,7 @@ operator<<(std::ostream& os, const RadiotapHeader::Timestamp& timestamp)
 }
 
 void
-RadiotapHeader::SetHeFields(const HeFields& heFields)
+RadiotapHeader::SetHeFields(const RadiotapHeader::HeFields& heFields)
 {
     NS_LOG_FUNCTION(this << heFields.data1 << heFields.data2 << heFields.data3 << heFields.data4
                          << heFields.data5 << heFields.data6);
@@ -1064,6 +1166,13 @@ RadiotapHeader::SetHeFields(const HeFields& heFields)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::HeFields&
+RadiotapHeader::GetHeFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_HE), "HE field not present in radiotap header");
+    return m_heFields;
 }
 
 void
@@ -1097,14 +1206,20 @@ RadiotapHeader::DeserializeHe(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintHe(std::ostream& os) const
 {
-    os << " he.data1=0x" << std::hex << m_heFields.data1 << " he.data2=0x" << std::hex
-       << m_heFields.data2 << " he.data3=0x" << std::hex << m_heFields.data3 << " he.data4=0x"
-       << std::hex << m_heFields.data4 << " he.data5=0x" << std::hex << m_heFields.data5
-       << " he.data6=0x" << std::hex << m_heFields.data6 << std::dec;
+    os << " " << m_heFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::HeFields& fields)
+{
+    return os << "he.data1=0x" << std::hex << fields.data1 << " he.data2=0x" << std::hex
+              << fields.data2 << " he.data3=0x" << std::hex << fields.data3 << " he.data4=0x"
+              << std::hex << fields.data4 << " he.data5=0x" << std::hex << fields.data5
+              << " he.data6=0x" << std::hex << fields.data6 << std::dec;
 }
 
 void
-RadiotapHeader::SetHeMuFields(const HeMuFields& heMuFields)
+RadiotapHeader::SetHeMuFields(const RadiotapHeader::HeMuFields& heMuFields)
 {
     NS_LOG_FUNCTION(this << heMuFields.flags1 << heMuFields.flags2);
 
@@ -1115,6 +1230,13 @@ RadiotapHeader::SetHeMuFields(const HeMuFields& heMuFields)
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex
                              << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::HeMuFields&
+RadiotapHeader::GetHeMuFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_HE_MU), "HE MU field not present in radiotap header");
+    return m_heMuFields;
 }
 
 void
@@ -1156,12 +1278,20 @@ RadiotapHeader::DeserializeHeMu(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintHeMu(std::ostream& os) const
 {
-    os << " heMu.flags1=0x" << std::hex << m_heMuFields.flags1 << " heMu.flags2=0x"
-       << m_heMuFields.flags2 << std::dec;
+    os << " " << m_heMuFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::HeMuFields& fields)
+{
+    os << "heMu.flags1=0x" << std::hex << fields.flags1 << " heMu.flags2=0x" << std::hex
+       << fields.flags2 << std::dec;
+    return os;
 }
 
 void
-RadiotapHeader::SetHeMuOtherUserFields(const HeMuOtherUserFields& heMuOtherUserFields)
+RadiotapHeader::SetHeMuOtherUserFields(
+    const RadiotapHeader::HeMuOtherUserFields& heMuOtherUserFields)
 {
     NS_LOG_FUNCTION(this << heMuOtherUserFields.perUser1 << heMuOtherUserFields.perUser2
                          << heMuOtherUserFields.perUserPosition
@@ -1174,6 +1304,14 @@ RadiotapHeader::SetHeMuOtherUserFields(const HeMuOtherUserFields& heMuOtherUserF
 
     NS_LOG_LOGIC(" m_length=" << m_length << " m_present=0x" << std::hex
                               << m_present.at(0).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::HeMuOtherUserFields&
+RadiotapHeader::GetHeMuOtherUserFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_HE_MU_OTHER_USER),
+                  "HE MU other user field not present in radiotap header");
+    return m_heMuOtherUserFields;
 }
 
 void
@@ -1203,15 +1341,20 @@ RadiotapHeader::DeserializeHeMuOtherUser(Buffer::Iterator start, uint32_t bytesR
 void
 RadiotapHeader::PrintHeMuOtherUser(std::ostream& os) const
 {
-    os << " heMuOtherUser.perUser1=" << m_heMuOtherUserFields.perUser1
-       << " heMuOtherUser.perUser2=" << m_heMuOtherUserFields.perUser2
-       << " heMuOtherUser.perUserPosition=" << m_heMuOtherUserFields.perUserPosition
-       << " heMuOtherUser.perUserKnown=0x" << std::hex << m_heMuOtherUserFields.perUserKnown
-       << std::dec;
+    os << " " << m_heMuOtherUserFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::HeMuOtherUserFields& fields)
+{
+    return os << "heMuOtherUser.perUser1=" << fields.perUser1
+              << " heMuOtherUser.perUser2=" << fields.perUser2
+              << " heMuOtherUser.perUserPosition=" << fields.perUserPosition
+              << " heMuOtherUser.perUserKnown=0x" << std::hex << fields.perUserKnown << std::dec;
 }
 
 void
-RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
+RadiotapHeader::SetUsigFields(const RadiotapHeader::UsigFields& usigFields)
 {
     NS_LOG_FUNCTION(this << usigFields.common << usigFields.mask << usigFields.value);
 
@@ -1229,6 +1372,13 @@ RadiotapHeader::SetUsigFields(const UsigFields& usigFields)
     NS_LOG_LOGIC(" m_length=" << m_length << " m_present[0]=0x" << std::hex
                               << m_present.at(0).to_ulong() << " m_present[1]=0x"
                               << m_present.at(1).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::UsigFields&
+RadiotapHeader::GetUsigFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_USIG), "U-SIG field not present in Radiotap header");
+    return m_usigFields;
 }
 
 void
@@ -1268,12 +1418,18 @@ RadiotapHeader::DeserializeUsig(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintUsig(std::ostream& os) const
 {
-    os << " usig.common=0x" << std::hex << m_usigFields.common << " usig.value=0x"
-       << m_usigFields.value << " usig.mask=0x" << m_usigFields.mask << std::dec;
+    os << " " << m_usigFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::UsigFields& fields)
+{
+    return os << "usig.common=0x" << std::hex << fields.common << " usig.value=0x" << fields.value
+              << " usig.mask=0x" << fields.mask << std::dec;
 }
 
 void
-RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
+RadiotapHeader::SetEhtFields(const RadiotapHeader::EhtFields& ehtFields)
 {
     NS_LOG_FUNCTION(this << ehtFields.known);
 
@@ -1293,6 +1449,13 @@ RadiotapHeader::SetEhtFields(const EhtFields& ehtFields)
     NS_LOG_LOGIC("m_length=" << m_length << " m_present[0]=0x" << std::hex
                              << m_present.at(0).to_ulong() << " m_present[1]=0x"
                              << m_present.at(1).to_ulong() << std::dec);
+}
+
+const RadiotapHeader::EhtFields&
+RadiotapHeader::GetEhtFields() const
+{
+    NS_ASSERT_MSG(IsPresent(RADIOTAP_EHT), "EHT field not present in Radiotap header");
+    return m_ehtFields;
 }
 
 void
@@ -1361,18 +1524,24 @@ RadiotapHeader::DeserializeEht(Buffer::Iterator start, uint32_t bytesRead)
 void
 RadiotapHeader::PrintEht(std::ostream& os) const
 {
-    os << " eht.known=0x" << std::hex << m_ehtFields.known;
+    os << " " << m_ehtFields;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const RadiotapHeader::EhtFields& fields)
+{
+    os << "eht.known=0x" << std::hex << fields.known;
     std::size_t index = 0;
-    for (const auto dataField : m_ehtFields.data)
+    for (const auto dataField : fields.data)
     {
         os << " eht.data" << index++ << "=0x" << dataField;
     }
     index = 0;
-    for (const auto userInfoField : m_ehtFields.userInfo)
+    for (const auto userInfoField : fields.userInfo)
     {
         os << " eht.userInfo" << index++ << "=0x" << userInfoField;
     }
-    os << std::dec;
+    return os << std::dec;
 }
 
 } // namespace ns3

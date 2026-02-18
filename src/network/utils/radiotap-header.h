@@ -72,6 +72,30 @@ class RadiotapHeader : public Header
     static constexpr std::size_t RADIOTAP_BITS_PER_PRESENT_FIELD{32};
 
     /**
+     * @brief Radiotap fields.
+     */
+    enum RadiotapFields : uint32_t
+    {
+        RADIOTAP_TSFT = 0,
+        RADIOTAP_FLAGS = 1,
+        RADIOTAP_RATE = 2,
+        RADIOTAP_CHANNEL = 3,
+        RADIOTAP_DBM_ANTSIGNAL = 5,
+        RADIOTAP_DBM_ANTNOISE = 6,
+        RADIOTAP_MCS = 19,
+        RADIOTAP_AMPDU_STATUS = 20,
+        RADIOTAP_VHT = 21,
+        RADIOTAP_TIMESTAMP = 22,
+        RADIOTAP_HE = 23,
+        RADIOTAP_HE_MU = 24,
+        RADIOTAP_HE_MU_OTHER_USER = 25,
+        RADIOTAP_TLV = 28,
+        RADIOTAP_MORE_PRESENT = 31, // indicates that another 32 bits of present flags follow
+        RADIOTAP_USIG = 33,
+        RADIOTAP_EHT = 34,
+    };
+
+    /**
      * This method is used by Packet::Print to print the content of the header as
      * ascii data to a C++ output stream.  Although the header is free to format
      * its output as it wishes, it is recommended to follow a few rules to integrate
@@ -105,6 +129,16 @@ class RadiotapHeader : public Header
     void SetTsft(uint64_t tsft);
 
     /**
+     * @brief Get the Time Synchronization Function Timer (TSFT) value.  Valid for
+     * received frames only.
+     *
+     * @return Value in microseconds of the MAC's 64-bit 802.11 Time
+     *         Synchronization Function timer when the first bit of the MPDU
+     *         arrived at the MAC.
+     */
+    uint64_t GetTsft() const;
+
+    /**
      * @brief Frame flags.
      */
     enum FrameFlag : uint8_t
@@ -129,11 +163,25 @@ class RadiotapHeader : public Header
     void SetFrameFlags(uint8_t flags);
 
     /**
+     * @brief Get the frame flags of the transmitted or received frame.
+     *
+     * @return the frame flags of the transmitted or received frame.
+     */
+    uint8_t GetFrameFlags() const;
+
+    /**
      * @brief Set the transmit/receive rate in units of 500 Kbps.
      *
      * @param rate the transmit/receive rate to set.
      */
     void SetRate(uint8_t rate);
+
+    /**
+     * @brief Get the transmit/receive rate in units of 500 Kbps.
+     *
+     * @return the transmit/receive rate in units of 500 Kbps.
+     */
+    uint8_t GetRate() const;
 
     /**
      * @brief Channel flags.
@@ -158,6 +206,13 @@ class RadiotapHeader : public Header
     {
         uint16_t frequency{0};             //!< Tx/Rx frequency in MHz
         uint16_t flags{CHANNEL_FLAG_NONE}; //!< flags field (@see ChannelFlags)
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const ChannelFields& rhs) const = default;
     };
 
     /**
@@ -166,6 +221,13 @@ class RadiotapHeader : public Header
      * @param channelFields The subfields of the Channel field.
      */
     void SetChannelFields(const ChannelFields& channelFields);
+
+    /**
+     * @brief Get the subfields of the Channel field
+     *
+     * @return The subfields of the Channel field.
+     */
+    const ChannelFields& GetChannelFields() const;
 
     /**
      * @brief Set the RF signal power at the antenna as a decibel difference
@@ -184,6 +246,24 @@ class RadiotapHeader : public Header
      *              from an arbitrary, fixed reference.
      */
     void SetAntennaNoisePower(double noise);
+
+    /**
+     * @brief Get the RF signal power at the antenna as a decibel difference from an arbitrary,
+     * fixed reference.
+     *
+     * @return The RF signal power at the antenna as a decibel difference from an arbitrary, fixed
+     * reference.
+     */
+    double GetAntennaSignalPower() const;
+
+    /**
+     * @brief Get the RF noise power at the antenna as a decibel difference from an arbitrary, fixed
+     * reference.
+     *
+     * @return The RF noise power at the antenna as a decibel difference from an arbitrary, fixed
+     * reference.
+     */
+    double GetAntennaNoisePower() const;
 
     /**
      * @brief MCS known bits.
@@ -228,6 +308,13 @@ class RadiotapHeader : public Header
         uint8_t known{MCS_KNOWN_NONE}; //!< known flags
         uint8_t flags{MCS_FLAGS_NONE}; //!< flags field
         uint8_t mcs{0};                //!< MCS index value
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const McsFields& rhs) const = default;
     };
 
     /**
@@ -236,6 +323,13 @@ class RadiotapHeader : public Header
      * @param mcsFields The subfields of the MCS field.
      */
     void SetMcsFields(const McsFields& mcsFields);
+
+    /**
+     * @brief Get the subfields of the MCS field.
+     *
+     * @return The subfields of the MCS field.
+     */
+    const McsFields& GetMcsFields() const;
 
     /**
      * @brief A-MPDU status flags.
@@ -264,6 +358,13 @@ class RadiotapHeader : public Header
         uint16_t flags{A_MPDU_STATUS_NONE}; //!< flags field
         uint8_t crc{1};                     //!< CRC field
         uint8_t reserved{0};                //!< Reserved field
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const AmpduStatusFields& rhs) const = default;
     };
 
     /**
@@ -272,6 +373,13 @@ class RadiotapHeader : public Header
      * @param ampduStatusFields The subfields of the A-MPDU status field.
      */
     void SetAmpduStatus(const AmpduStatusFields& ampduStatusFields);
+
+    /**
+     * @brief Get the subfields of the A-MPDU status field.
+     *
+     * @return The subfields of the A-MPDU status field.
+     */
+    const AmpduStatusFields& GetAmpduStatus() const;
 
     /**
      * @brief VHT known bits.
@@ -323,6 +431,13 @@ class RadiotapHeader : public Header
         uint8_t coding{0};               //!< coding field
         uint8_t groupId{0};              //!< group_id field
         uint16_t partialAid{0};          //!< partial_aid field
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const VhtFields& rhs) const = default;
     };
 
     /**
@@ -331,6 +446,13 @@ class RadiotapHeader : public Header
      * @param vhtFields The subfields of the VHT field.
      */
     void SetVhtFields(const VhtFields& vhtFields);
+
+    /**
+     * @brief Get the subfields of the VHT field.
+     *
+     * @return The subfields of the VHT field.
+     */
+    const VhtFields& GetVhtFields() const;
 
     /**
      * @brief Timestamp flags.
@@ -438,6 +560,13 @@ class RadiotapHeader : public Header
     void SetTimestamp(const Timestamp& timestamp);
 
     /**
+     * @brief Get the subfields of the Timestamp field.
+     *
+     * @return The subfields of the Timestamp field.
+     */
+    const Timestamp& GetTimestamp() const;
+
+    /**
      * @brief bits of the HE data fields.
      */
     enum HeData : uint16_t
@@ -526,6 +655,13 @@ class RadiotapHeader : public Header
         uint16_t data4{0}; //!< data4 field
         uint16_t data5{0}; //!< data5 field
         uint16_t data6{0}; //!< data6 field
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const HeFields& rhs) const = default;
     };
 
     /**
@@ -534,6 +670,13 @@ class RadiotapHeader : public Header
      * @param heFields The subfields of the HE field.
      */
     void SetHeFields(const HeFields& heFields);
+
+    /**
+     * @brief Get the subfields of the HE field.
+     *
+     * @return The subfields of the HE field.
+     */
+    const HeFields& GetHeFields() const;
 
     /**
      * @brief HE MU flags1.
@@ -580,6 +723,13 @@ class RadiotapHeader : public Header
         uint16_t flags2{0};                  //!< flags2 field
         std::array<uint8_t, 4> ruChannel1{}; //!< RU_channel1 field
         std::array<uint8_t, 4> ruChannel2{}; //!< RU_channel2 field
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const HeMuFields& rhs) const = default;
     };
 
     /**
@@ -588,6 +738,13 @@ class RadiotapHeader : public Header
      * @param heMuFields The subfields of the HE-MU field.
      */
     void SetHeMuFields(const HeMuFields& heMuFields);
+
+    /**
+     * @brief Get the subfields of the HE-MU field.
+     *
+     * @return The subfields of the HE-MU field.
+     */
+    const HeMuFields& GetHeMuFields() const;
 
     /**
      * @brief HE MU per_user_known.
@@ -613,6 +770,13 @@ class RadiotapHeader : public Header
         uint16_t perUser2{0};       //!< per_user_2 field
         uint8_t perUserPosition{0}; //!< per_user_position field
         uint8_t perUserKnown{0};    //!< per_user_known field
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const HeMuOtherUserFields& rhs) const = default;
     };
 
     /**
@@ -623,12 +787,26 @@ class RadiotapHeader : public Header
     void SetHeMuOtherUserFields(const HeMuOtherUserFields& heMuOtherUserFields);
 
     /**
+     * @brief Get the subfields of the HE-MU-other-user field.
+     *
+     * @return The subfields of the HE-MU-other-user field.
+     */
+    const HeMuOtherUserFields& GetHeMuOtherUserFields() const;
+
+    /**
      * structure that contains the subfields of the TLV fields.
      */
     struct TlvFields
     {
         uint16_t type{0};   //!< type field.
         uint16_t length{0}; //!< length field.
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const TlvFields& rhs) const = default;
     };
 
     /**
@@ -639,6 +817,13 @@ class RadiotapHeader : public Header
         uint32_t common{0}; //!< common field.
         uint32_t value{0};  //!< value field.
         uint32_t mask{0};   //!< mask field.
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const UsigFields& rhs) const = default;
     };
 
     /**
@@ -718,6 +903,13 @@ class RadiotapHeader : public Header
     void SetUsigFields(const UsigFields& usigFields);
 
     /**
+     * @brief Get the subfields of the U-SIG field.
+     *
+     * @return The subfields of the U-SIG field.
+     */
+    const UsigFields& GetUsigFields() const;
+
+    /**
      * structure that contains the subfields of the EHT field.
      */
     struct EhtFields
@@ -725,6 +917,13 @@ class RadiotapHeader : public Header
         uint32_t known{0};                //!< known field.
         std::array<uint32_t, 9> data{};   //!< data fields.
         std::vector<uint32_t> userInfo{}; //!< user info fields.
+
+        /**
+         * @brief Equality operator
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
+         */
+        bool operator==(const EhtFields& rhs) const = default;
     };
 
     /**
@@ -895,6 +1094,13 @@ class RadiotapHeader : public Header
      * @param ehtFields The subfields of the EHT-SIG field.
      */
     void SetEhtFields(const EhtFields& ehtFields);
+
+    /**
+     * @brief Get the subfields of the EHT-SIG field.
+     *
+     * @return The subfields of the EHT-SIG field.
+     */
+    const EhtFields& GetEhtFields() const;
 
   private:
     static constexpr int MIN_HEADER_SIZE{8}; //!< the minimum size of the radiotap header
@@ -1170,30 +1376,6 @@ class RadiotapHeader : public Header
      */
     void PrintEht(std::ostream& os) const;
 
-    /**
-     * @brief Radiotap fields.
-     */
-    enum RadiotapFields : uint32_t
-    {
-        RADIOTAP_TSFT = 0,
-        RADIOTAP_FLAGS = 1,
-        RADIOTAP_RATE = 2,
-        RADIOTAP_CHANNEL = 3,
-        RADIOTAP_DBM_ANTSIGNAL = 5,
-        RADIOTAP_DBM_ANTNOISE = 6,
-        RADIOTAP_MCS = 19,
-        RADIOTAP_AMPDU_STATUS = 20,
-        RADIOTAP_VHT = 21,
-        RADIOTAP_TIMESTAMP = 22,
-        RADIOTAP_HE = 23,
-        RADIOTAP_HE_MU = 24,
-        RADIOTAP_HE_MU_OTHER_USER = 25,
-        RADIOTAP_TLV = 28,
-        RADIOTAP_MORE_PRESENT = 31, // indicates that another 32 bits of present flags follow
-        RADIOTAP_USIG = 33,
-        RADIOTAP_EHT = 34,
-    };
-
     uint16_t m_length{MIN_HEADER_SIZE}; //!< entire length of radiotap data + header
 
     std::vector<std::bitset<RADIOTAP_BITS_PER_PRESENT_FIELD>> m_present{
@@ -1258,6 +1440,46 @@ class RadiotapHeader : public Header
 std::ostream& operator<<(std::ostream& os, RadiotapHeader::Timestamp::Position position);
 
 /**
+ * Serialize ChannelFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the ChannelFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::ChannelFields& fields);
+
+/**
+ * Serialize McsFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the McsFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::McsFields& fields);
+
+/**
+ * Serialize AmpduStatusFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the AmpduStatusFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::AmpduStatusFields& fields);
+
+/**
+ * Serialize VhtFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the VhtFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::VhtFields& fields);
+
+/**
  * Serialize Timestamp to the given ostream.
  *
  * @param os the output stream
@@ -1266,6 +1488,56 @@ std::ostream& operator<<(std::ostream& os, RadiotapHeader::Timestamp::Position p
  * @return output stream
  */
 std::ostream& operator<<(std::ostream& os, const RadiotapHeader::Timestamp& timestamp);
+
+/**
+ * Serialize HeFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the HeFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::HeFields& fields);
+
+/**
+ * Serialize HeMuFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the HeMuFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::HeMuFields& fields);
+
+/**
+ * Serialize HeMuOtherUserFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the HeMuOtherUserFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::HeMuOtherUserFields& fields);
+
+/**
+ * Serialize UsigFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the UsigFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::UsigFields& fields);
+
+/**
+ * Serialize EhtFields to the given ostream.
+ *
+ * @param os the output stream
+ * @param fields the EhtFields to stringify
+ *
+ * @return output stream
+ */
+std::ostream& operator<<(std::ostream& os, const RadiotapHeader::EhtFields& fields);
 
 } // namespace ns3
 
