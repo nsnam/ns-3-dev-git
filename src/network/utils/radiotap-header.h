@@ -14,6 +14,7 @@
 #include "ns3/nstime.h"
 
 #include <array>
+#include <bitset>
 #include <optional>
 #include <vector>
 
@@ -66,6 +67,9 @@ class RadiotapHeader : public Header
      * @returns The number of bytes read.
      */
     uint32_t Deserialize(Buffer::Iterator start) override;
+
+    /// Number of bits per "present" field in the radiotap header
+    static constexpr std::size_t RADIOTAP_BITS_PER_PRESENT_FIELD{32};
 
     /**
      * This method is used by Packet::Print to print the content of the header as
@@ -896,6 +900,14 @@ class RadiotapHeader : public Header
     static constexpr int MIN_HEADER_SIZE{8}; //!< the minimum size of the radiotap header
 
     /**
+     * Indicate whether a specific field is present in the radiotap header
+     *
+     * @param field Field to check
+     * @return true if the field is present, false otherwise
+     */
+    bool IsPresent(uint32_t field) const;
+
+    /**
      * Update a present field.
      *
      * @param field The field to set in a present bitmask.
@@ -1183,7 +1195,9 @@ class RadiotapHeader : public Header
     };
 
     uint16_t m_length{MIN_HEADER_SIZE}; //!< entire length of radiotap data + header
-    std::vector<uint32_t> m_present{0}; //!< bits describing which fields follow header
+
+    std::vector<std::bitset<RADIOTAP_BITS_PER_PRESENT_FIELD>> m_present{
+        0}; //!< bits describing which fields follow header
 
     uint8_t m_tsftPad{0}; //!< TSFT padding.
     uint64_t m_tsft{0};   //!< Time Synchronization Function Timer (when the first bit of the MPDU
