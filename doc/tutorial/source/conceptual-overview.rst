@@ -150,10 +150,9 @@ into an easy to use model for your convenience.
 
 A First ns-3 Script
 *******************
-If you downloaded the system as was suggested above, you will have a release
-of |ns3| in a directory called ``workspace`` under your home
-directory.  Change into that release directory, and you should find a
-directory structure something like the following:
+Change into the *ns-3* or *ns-3.<version>* directory that you downloaded by one of
+the various methods described in the getting started chapter, and you should find
+a directory structure something like the following:
 
 .. sourcecode:: bash
 
