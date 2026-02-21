@@ -113,6 +113,17 @@ IsPresent(const std::vector<std::bitset<RADIOTAP_BITS_PER_PRESENT_FIELD>>& prese
     return (presentBits.size() > bitmaskIdx) && presentBits.at(bitmaskIdx).test(bitIdx);
 }
 
+/**
+ * @brief Convert a power value in dBm to the corresponding value in the radiotap header
+ * @param power Power value in dBm
+ * @return Power value in the radiotap header format (8-bit signed integer)
+ */
+int8_t
+ConvertPower(double power)
+{
+    return std::clamp<int8_t>(std::floor(power + 0.5), -128, 127);
+}
+
 } // namespace
 
 NS_LOG_COMPONENT_DEFINE("RadiotapHeader");
@@ -689,19 +700,7 @@ RadiotapHeader::SetAntennaSignalPower(double signal)
 
     UpdatePresentField(RADIOTAP_DBM_ANTSIGNAL);
     m_length += RADIOTAP_ANTENNA_SIGNAL_SIZE_B;
-
-    if (signal > 127)
-    {
-        m_antennaSignal = 127;
-    }
-    else if (signal < -128)
-    {
-        m_antennaSignal = -128;
-    }
-    else
-    {
-        m_antennaSignal = static_cast<int8_t>(floor(signal + 0.5));
-    }
+    m_antennaSignal = ConvertPower(signal);
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
                              << std::dec);
@@ -714,19 +713,7 @@ RadiotapHeader::SetAntennaNoisePower(double noise)
 
     UpdatePresentField(RADIOTAP_DBM_ANTNOISE);
     m_length += RADIOTAP_ANTENNA_NOISE_SIZE_B;
-
-    if (noise > 127.0)
-    {
-        m_antennaNoise = 127;
-    }
-    else if (noise < -128.0)
-    {
-        m_antennaNoise = -128;
-    }
-    else
-    {
-        m_antennaNoise = static_cast<int8_t>(floor(noise + 0.5));
-    }
+    m_antennaNoise = ConvertPower(noise);
 
     NS_LOG_LOGIC("m_length=" << m_length << " m_present=0x" << std::hex << m_present.at(0)
                              << std::dec);
