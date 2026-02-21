@@ -118,13 +118,15 @@ class RadiotapHeader : public Header
 
     /**
      * @brief Set the frame flags of the transmitted or received frame.
+     *
      * @param flags flags to set.
      */
     void SetFrameFlags(uint8_t flags);
 
     /**
-     * @brief Set the transmit/receive channel frequency in units of megahertz
-     * @param rate the transmit/receive channel frequency in units of megahertz.
+     * @brief Set the transmit/receive rate in units of 500 Kbps.
+     *
+     * @param rate the transmit/receive rate to set.
      */
     void SetRate(uint8_t rate);
 
