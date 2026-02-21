@@ -43,6 +43,7 @@ set(source_files
     model/ap-wifi-mac.cc
     model/block-ack-agreement.cc
     model/block-ack-manager.cc
+    model/block-ack-parameter-set.cc
     model/block-ack-type.cc
     model/block-ack-window.cc
     model/capability-information.cc
@@ -232,6 +233,7 @@ set(header_files
     model/ap-wifi-mac.h
     model/block-ack-agreement.h
     model/block-ack-manager.h
+    model/block-ack-parameter-set.h
     model/block-ack-type.h
     model/block-ack-window.h
     model/capability-information.h
