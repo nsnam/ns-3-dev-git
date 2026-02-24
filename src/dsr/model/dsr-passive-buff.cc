@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -171,21 +173,6 @@ DsrPassiveBuffer::Find(Ipv4Address dst)
     return false;
 }
 
-/// IsExpired structure
-struct IsExpired
-{
-    /**
-     * Check for an expired entry
-     * @param e passive buffer entry
-     * @return true if equal
-     */
-    bool operator()(const DsrPassiveBuffEntry& e) const
-    {
-        // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
-        return (e.GetExpireTime().IsStrictlyNegative());
-    }
-};
-
 void
 DsrPassiveBuffer::Purge()
 {
@@ -193,17 +180,21 @@ DsrPassiveBuffer::Purge()
      * Purge the buffer to eliminate expired entries
      */
     NS_LOG_DEBUG("The passive buffer size " << m_passiveBuffer.size());
-    IsExpired pred;
-    for (auto i = m_passiveBuffer.begin(); i != m_passiveBuffer.end(); ++i)
+
+    for (const auto& item : m_passiveBuffer)
     {
-        if (pred(*i))
+        if (item.GetExpireTime().IsStrictlyNegative())
         {
             NS_LOG_DEBUG("Dropping Queue Packets");
-            Drop(*i, "Drop out-dated packet ");
+            Drop(item, "Drop out-dated packet ");
         }
     }
-    m_passiveBuffer.erase(std::remove_if(m_passiveBuffer.begin(), m_passiveBuffer.end(), pred),
-                          m_passiveBuffer.end());
+
+    [[maybe_unused]] auto erasedElementsNum =
+        std::erase_if(m_passiveBuffer, [](const DsrPassiveBuffEntry& e) {
+            return e.GetExpireTime().IsStrictlyNegative();
+        });
+    NS_LOG_DEBUG("Purged " << erasedElementsNum << " from Passive Buffer");
 }
 
 void

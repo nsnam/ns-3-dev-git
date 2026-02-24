@@ -19,11 +19,11 @@
 
 #include "ns3/boolean.h"
 #include "ns3/double.h"
-#include "ns3/dsr-fs-header.h"
 #include "ns3/dsr-helper.h"
 #include "ns3/dsr-main-helper.h"
 #include "ns3/dsr-option-header.h"
 #include "ns3/dsr-rcache.h"
+#include "ns3/dsr-routing-header.h"
 #include "ns3/dsr-rreq-table.h"
 #include "ns3/dsr-rsendbuff.h"
 #include "ns3/ipv4-address-helper.h"
@@ -85,7 +85,7 @@ DsrFsHeaderTest::DoRun()
     header.Serialize(buf.Begin());
 
     const uint8_t* data = buf.PeekData();
-    NS_TEST_EXPECT_MSG_EQ(*(data + 8),
+    NS_TEST_EXPECT_MSG_EQ(*(data + 4),
                           rreqHeader.GetType(),
                           "expect the rreqHeader after fixed size header");
 }
@@ -139,11 +139,11 @@ DsrRreqHeaderTest::DoRun()
     dsr::DsrRoutingHeader header;
     header.AddDsrOption(h);
     p->AddHeader(header);
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     dsr::DsrOptionRreqHeader h2;
     h2.SetNumberAddress(3);
     uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_EXPECT_MSG_EQ(bytes, 20, "Total RREP is 20 bytes long");
+    NS_TEST_EXPECT_MSG_EQ(bytes, 20, "Total RREQ is 20 bytes long");
 }
 
 // -----------------------------------------------------------------------------
@@ -191,11 +191,11 @@ DsrRrepHeaderTest::DoRun()
     dsr::DsrRoutingHeader header;
     header.AddDsrOption(h);
     p->AddHeader(header);
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     dsr::DsrOptionRrepHeader h2;
     h2.SetNumberAddress(3);
     uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_EXPECT_MSG_EQ(bytes, 16, "Total RREP is 16 bytes long");
+    NS_TEST_EXPECT_MSG_EQ(bytes, 15, "Total RREP is 15 bytes long");
 }
 
 // -----------------------------------------------------------------------------
@@ -248,11 +248,11 @@ DsrSRHeaderTest::DoRun()
     dsr::DsrRoutingHeader header;
     header.AddDsrOption(h);
     p->AddHeader(header);
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     dsr::DsrOptionSRHeader h2;
     h2.SetNumberAddress(3);
     uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_EXPECT_MSG_EQ(bytes, 16, "Total RREP is 16 bytes long");
+    NS_TEST_EXPECT_MSG_EQ(bytes, 16, "Total SR is 16 bytes long");
 }
 
 // -----------------------------------------------------------------------------
@@ -297,10 +297,10 @@ DsrRerrHeaderTest::DoRun()
     dsr::DsrRoutingHeader header;
     header.AddDsrOption(h);
     p->AddHeader(header);
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     dsr::DsrOptionRerrUnreachHeader h2;
     uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_EXPECT_MSG_EQ(bytes, 20, "Total RREP is 20 bytes long");
+    NS_TEST_EXPECT_MSG_EQ(bytes, 20, "Total RERR is 20 bytes long");
 }
 
 // -----------------------------------------------------------------------------
@@ -340,12 +340,12 @@ DsrAckReqHeaderTest::DoRun()
     dsr::DsrRoutingHeader header;
     header.AddDsrOption(h);
     p->AddHeader(header);
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     p->AddHeader(header);
     dsr::DsrOptionAckReqHeader h2;
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_EXPECT_MSG_EQ(bytes, 4, "Total RREP is 4 bytes long");
+    NS_TEST_EXPECT_MSG_EQ(bytes, 4, "Total ACK-REQ is 4 bytes long");
 }
 
 // -----------------------------------------------------------------------------
@@ -389,12 +389,12 @@ DsrAckHeaderTest::DoRun()
     dsr::DsrRoutingHeader header;
     header.AddDsrOption(h);
     p->AddHeader(header);
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     p->AddHeader(header);
     dsr::DsrOptionAckHeader h2;
-    p->RemoveAtStart(8);
+    p->RemoveAtStart(4);
     uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_EXPECT_MSG_EQ(bytes, 12, "Total RREP is 12 bytes long");
+    NS_TEST_EXPECT_MSG_EQ(bytes, 12, "Total ACK is 12 bytes long");
 }
 
 // -----------------------------------------------------------------------------

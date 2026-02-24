@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -32,6 +34,9 @@ namespace ns3
 {
 namespace dsr
 {
+
+class DsrMaintainBuffEntry;
+
 /**
  * The maintenance buffer is responsible for maintaining packet next hop delivery
  * The data packet is saved in maintenance buffer whenever the data packet is sent out of send
@@ -44,47 +49,21 @@ struct LinkKey
     Ipv4Address m_ourAdd;      ///< local address
     Ipv4Address m_nextHop;     ///< next hop address
 
+    constexpr LinkKey() = default;
+
     /**
-     * Compare maintain Buffer entries
-     * @param o object to compare
-     * @return true if equal
+     * Constructor from a DsrMaintainBuffEntry.
+     * @param entry the DsrMaintainBuffEntry
      */
-    bool operator<(const LinkKey& o) const
-    {
-        if (m_source < o.m_source)
-        {
-            return true;
-        }
-        if (o.m_source < m_source)
-        {
-            return false;
-        }
-        if (m_destination < o.m_destination)
-        {
-            return true;
-        }
-        if (o.m_destination < m_destination)
-        {
-            return false;
-        }
-        if (m_ourAdd < o.m_ourAdd)
-        {
-            return true;
-        }
-        if (o.m_ourAdd < m_ourAdd)
-        {
-            return false;
-        }
-        if (m_nextHop < o.m_nextHop)
-        {
-            return true;
-        }
-        if (o.m_nextHop < m_nextHop)
-        {
-            return false;
-        }
-        return false;
-    }
+    LinkKey(const DsrMaintainBuffEntry& entry);
+
+    /**
+     * @brief Three-way comparison operator.
+     *
+     * @param other the other LinkKey to compare with
+     * @returns comparison result
+     */
+    constexpr std::strong_ordering operator<=>(const LinkKey& other) const = default;
 };
 
 /// NetworkKey structure
@@ -96,55 +75,21 @@ struct NetworkKey
     Ipv4Address m_source;      ///< source address
     Ipv4Address m_destination; ///< destination address
 
+    constexpr NetworkKey() = default;
+
     /**
-     * Compare maintain Buffer entries
-     * @param o object to compare
-     * @return true if equal
+     * Constructor from a DsrMaintainBuffEntry.
+     * @param entry the DsrMaintainBuffEntry
      */
-    bool operator<(const NetworkKey& o) const
-    {
-        if (m_ackId < o.m_ackId)
-        {
-            return true;
-        }
-        if (o.m_ackId < m_ackId)
-        {
-            return false;
-        }
-        if (m_source < o.m_source)
-        {
-            return true;
-        }
-        if (o.m_source < m_source)
-        {
-            return false;
-        }
-        if (m_destination < o.m_destination)
-        {
-            return true;
-        }
-        if (o.m_destination < m_destination)
-        {
-            return false;
-        }
-        if (m_ourAdd < o.m_ourAdd)
-        {
-            return true;
-        }
-        if (o.m_ourAdd < m_ourAdd)
-        {
-            return false;
-        }
-        if (m_nextHop < o.m_nextHop)
-        {
-            return true;
-        }
-        if (o.m_nextHop < m_nextHop)
-        {
-            return false;
-        }
-        return false;
-    }
+    NetworkKey(const DsrMaintainBuffEntry& entry);
+
+    /**
+     * @brief Three-way comparison operator.
+     *
+     * @param other the other NetworkKey to compare with
+     * @returns comparison result
+     */
+    constexpr std::strong_ordering operator<=>(const NetworkKey& other) const = default;
 };
 
 /// PassiveKey structure
@@ -155,47 +100,21 @@ struct PassiveKey
     Ipv4Address m_destination; ///< destination address
     uint8_t m_segsLeft;        ///< segments left
 
+    constexpr PassiveKey() = default;
+
     /**
-     * Compare maintain Buffer entries
-     * @param o is the object to compare
-     * @return true if equal
+     * Constructor from a DsrMaintainBuffEntry.
+     * @param entry the DsrMaintainBuffEntry
      */
-    bool operator<(const PassiveKey& o) const
-    {
-        if (m_ackId < o.m_ackId)
-        {
-            return true;
-        }
-        if (o.m_ackId < m_ackId)
-        {
-            return false;
-        }
-        if (m_source < o.m_source)
-        {
-            return true;
-        }
-        if (o.m_source < m_source)
-        {
-            return false;
-        }
-        if (m_destination < o.m_destination)
-        {
-            return true;
-        }
-        if (o.m_destination < m_destination)
-        {
-            return false;
-        }
-        if (m_segsLeft < o.m_segsLeft)
-        {
-            return true;
-        }
-        if (o.m_segsLeft < m_segsLeft)
-        {
-            return false;
-        }
-        return false;
-    }
+    PassiveKey(const DsrMaintainBuffEntry& entry);
+
+    /**
+     * @brief Three-way comparison operator.
+     *
+     * @param other the other NetworkKey to compare with
+     * @returns comparison result
+     */
+    constexpr std::strong_ordering operator<=>(const PassiveKey& other) const = default;
 };
 
 /**

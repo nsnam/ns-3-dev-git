@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -189,13 +191,6 @@ class DsrOptions : public Object
                        std::vector<Ipv4Address>& nodeList,
                        Ipv4Address& source,
                        Ipv4Address& destination);
-    /**
-     * @brief Get the node id with Ipv4Address
-     *
-     * @param address IPv4 address to look for ID
-     * @return the id of the node
-     */
-    uint32_t GetIDfromIP(Ipv4Address address);
     /**
      * @brief Get the node object with Ipv4Address
      *

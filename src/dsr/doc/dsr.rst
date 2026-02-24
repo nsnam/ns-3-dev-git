@@ -11,7 +11,8 @@ Dynamic Source Routing (DSR)
 
 Dynamic Source Routing (DSR) protocol is a reactive routing protocol designed specifically
 for use in multi-hop wireless ad hoc networks of mobile nodes. The current model implementation is based on the RFC 4728 [2_], with some extensions
-and modifications. The initial implementation was developed by `the ResiliNets research group <https://resilinets.org/>`_ at the University of Kansas with additions to the link cache mechanism done by Song Luan <lsuper@mail.ustc.edu.cn>.
+and modifications. The initial implementation was developed by `the ResiliNets research group <https://resilinets.org/>`_ at the University of Kansas
+with additions to the link cache mechanism done by Song Luan <lsuper@mail.ustc.edu.cn>.
 
 The source code for this module lives in the directory ``src/dsr``.
 
@@ -35,14 +36,13 @@ Hence, the term dynamic source routing.
 Scope and Limitations
 ---------------------
 
-* The model is not fully compliant with RFC 4728 [2_]. As an example, DSR fixed size header has been extended and it is four octets longer then the RFC specification. As a consequence, the DSR headers can not be correctly decoded by Wireshark.
 * At the moment, the model does not handle ICMP packets, and assumes that traffic is either TCP or UDP.
 * No flow state available.
 * No First Hop External (F), Last Hop External (L) flags.
 * There are no ways of handling unknown DSR options.
 * DSR option ``flow state not supported`` is not handled.
 * DSR option ``unsupported option`` is not handled.
-* Route Reply header is not aligned to the DSR RFC descriptions.
+* DSR uses "direct" calls to neighbor nodes instead of relying on L2 information. This might generate overly optimistic performances.
 
 
 Protocol operational details
@@ -56,13 +56,13 @@ When the packet is sent out from the send buffer, it will be queued in maintenan
 
 The maintenance buffer then buffers the already sent out packets and waits for the notification of packet delivery.
 Protocol operation strongly depends on broken link detection mechanism.
-Three heuristics detection mechanisms are implementented as recommended by the RFC as follows:
+Three heuristics detection mechanisms are implemented as recommended by the RFC as follows:
 
 1. A link layer feedback is used when possible, which is also the fastest mechanism of these three to detect link errors. A link is considered to be broken if frame transmission results in a transmission failure for all retries. This mechanism is meant for active links and works much faster than in its absence. DSR is able to detect the link layer transmission failure and notify that as broken. Recalculation of routes will be triggered when needed. If user does not want to use link layer acknowledgment, it can be tuned by setting the ``LinkAcknowledgment`` attribute to false in ``dsr-routing.cc``.
 
 2. Passive acknowledgment should be used whenever possible. The node turns on "promiscuous" receive mode, in which it can receive packets not destined for itself, and when the node assures the delivery of that data packet to its destination, it cancels the passive acknowledgment timer.
 
-3. A network layer acknowledment scheme is used to notify the receipt of a packet. Route request packet are not be acknowledged or retransmitted.
+3. A network layer acknowledgment scheme is used to notify the receipt of a packet. Route request packet are not be acknowledged or retransmitted.
 
 Route Cache implementation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,17 +84,6 @@ Two caching mechanisms exists in the implementation: Path cache and Link cache.
   * When adding multiple routes for one destination, the route is compared based on hop-count and expire time, the one with less hop count or relatively new route is favored.
 
 - **Link Cache:** This is an improvement over the patch cache in the sense that it uses different subpaths and make use ot the Dijkstra algorithm.
-
-Modifications
-~~~~~~~~~~~~~
-
-* The DsrFsHeader has added 3 fields: message type, source id, destination id, and these changes only for post-processing.
-
-  1. Message type is used to identify the data packet from control packet.
-  2. Source id is used to identify the real source of the data packet since the packet is delivered hop-by-hop and the Ipv4Header is not carrying the real source and destination ip address as needed.
-  3. Destination id is for same reason of above.
-
-* DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery.
 
 Other considerations
 ~~~~~~~~~~~~~~~~~~~~

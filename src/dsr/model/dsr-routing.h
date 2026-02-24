@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -21,7 +23,6 @@
 #define DSR_ROUTING_H
 
 #include "dsr-errorbuff.h"
-#include "dsr-fs-header.h"
 #include "dsr-gratuitous-reply-table.h"
 #include "dsr-maintain-buff.h"
 #include "dsr-network-queue.h"
@@ -104,7 +105,11 @@ class DsrRouting : public IpL4Protocol
     /**
      * @brief Define the dsr protocol number.
      */
-    static const uint8_t PROT_NUMBER;
+    static constexpr uint8_t PROT_NUMBER = 48;
+    /**
+     * @brief Define the NO_NEXT_HEADER to set in control packets.
+     */
+    static constexpr uint8_t NO_NEXT_HEADER = 59;
     /**
      * @brief Constructor.
      */
@@ -244,18 +249,6 @@ class DsrRouting : public IpL4Protocol
      */
     std::vector<std::string> GetElementsFromContext(std::string context);
     /**
-     * @brief Get the node id from ip address.
-     * @param address IPv4 address
-     * @return the node id
-     */
-    uint16_t GetIDfromIP(Ipv4Address address);
-    /**
-     * @brief Get the ip address from id.
-     * @param id unique ID
-     * @return the ip address for the id
-     */
-    Ipv4Address GetIPfromID(uint16_t id);
-    /**
      * @brief Get the Ip address from mac address.
      * @param address Mac48Address
      * @return the ip address
@@ -337,13 +330,11 @@ class DsrRouting : public IpL4Protocol
      * @param rerr unreachable header
      * @param sourceRoute source routing header
      * @param nextHop IP address of next hop
-     * @param protocol number
      * @param route IP route
      */
     void ForwardErrPacket(DsrOptionRerrUnreachHeader& rerr,
                           DsrOptionSRHeader& sourceRoute,
                           Ipv4Address nextHop,
-                          uint8_t protocol,
                           Ptr<Ipv4Route> route);
     /**
      * @brief This function is called by higher layer protocol when sending packets
@@ -370,9 +361,8 @@ class DsrRouting : public IpL4Protocol
      * @param packet to send
      * @param source IP address
      * @param nextHop IP address
-     * @param protocol number
      */
-    void SendPacket(Ptr<Packet> packet, Ipv4Address source, Ipv4Address nextHop, uint8_t protocol);
+    void SendPacket(Ptr<Packet> packet, Ipv4Address source, Ipv4Address nextHop);
     /**
      * @brief This function is called to schedule sending packets from the network queue
      * @param priority for sending
@@ -547,9 +537,8 @@ class DsrRouting : public IpL4Protocol
      * @brief Broadcast the route request packet in subnet
      * @param source source address
      * @param destination destination address
-     * @param protocol protocol number
      */
-    void SendInitialRequest(Ipv4Address source, Ipv4Address destination, uint8_t protocol);
+    void SendInitialRequest(Ipv4Address source, Ipv4Address destination);
     /**
      * @brief Send the error request packet
      * @param rerr the route error header
@@ -565,8 +554,9 @@ class DsrRouting : public IpL4Protocol
     /**
      * @brief Schedule the intermediate route request
      * @param packet the original packet
+     * @param source the original source IP address to preserve in the IP header
      */
-    void ScheduleInterRequest(Ptr<Packet> packet);
+    void ScheduleInterRequest(Ptr<Packet> packet, Ipv4Address source);
     /**
      * @brief Send the gratuitous reply
      * @param replyTo The destination address to send the reply to
@@ -625,14 +615,12 @@ class DsrRouting : public IpL4Protocol
      * @param destination IPv4 address of the immediate ACK receiver
      * @param realSrc IPv4 address of the real source
      * @param realDst IPv4 address of the real destination
-     * @param protocol the protocol number
      * @param route Route
      */
     void SendAck(uint16_t ackId,
                  Ipv4Address destination,
                  Ipv4Address realSrc,
                  Ipv4Address realDst,
-                 uint8_t protocol,
                  Ptr<Ipv4Route> route);
     /**
      * @param p packet to forward up
@@ -754,6 +742,9 @@ class DsrRouting : public IpL4Protocol
     TracedCallback<const DsrOptionSRHeader&> m_txPacketTrace; ///< packet trace callback
 
   private:
+    /**
+     * @brief Starts the routing protocol
+     */
     void Start();
     /**
      * @brief Send the route error message when the link breaks to the next hop.

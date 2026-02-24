@@ -4,7 +4,7 @@ build_lib(
     helper/dsr-helper.cc
     helper/dsr-main-helper.cc
     model/dsr-errorbuff.cc
-    model/dsr-fs-header.cc
+    model/dsr-routing-header.cc
     model/dsr-gratuitous-reply-table.cc
     model/dsr-maintain-buff.cc
     model/dsr-network-queue.cc
@@ -19,7 +19,7 @@ build_lib(
     helper/dsr-helper.h
     helper/dsr-main-helper.h
     model/dsr-errorbuff.h
-    model/dsr-fs-header.h
+    model/dsr-routing-header.h
     model/dsr-gratuitous-reply-table.h
     model/dsr-maintain-buff.h
     model/dsr-network-queue.h

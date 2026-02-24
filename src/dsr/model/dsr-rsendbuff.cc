@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -132,20 +134,6 @@ DsrSendBuffer::Find(Ipv4Address dst)
     return false;
 }
 
-struct IsExpired
-{
-    /**
-     * comparison operator
-     * @param e entry to compare
-     * @return true if expired
-     */
-    bool operator()(const DsrSendBuffEntry& e) const
-    {
-        // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
-        return (e.GetExpireTime().IsStrictlyNegative());
-    }
-};
-
 void
 DsrSendBuffer::Purge()
 {
@@ -153,17 +141,20 @@ DsrSendBuffer::Purge()
      * Purge the buffer to eliminate expired entries
      */
     NS_LOG_INFO("The send buffer size " << m_sendBuffer.size());
-    IsExpired pred;
-    for (auto i = m_sendBuffer.begin(); i != m_sendBuffer.end(); ++i)
+    for (const auto& item : m_sendBuffer)
     {
-        if (pred(*i))
+        if (item.GetExpireTime().IsStrictlyNegative())
         {
             NS_LOG_DEBUG("Dropping Queue Packets");
-            Drop(*i, "Drop out-dated packet ");
+            Drop(item, "Drop out-dated packet ");
         }
     }
-    m_sendBuffer.erase(std::remove_if(m_sendBuffer.begin(), m_sendBuffer.end(), pred),
-                       m_sendBuffer.end());
+
+    [[maybe_unused]] auto erasedElementsNum =
+        std::erase_if(m_sendBuffer, [](const DsrSendBuffEntry& e) {
+            return e.GetExpireTime().IsStrictlyNegative();
+        });
+    NS_LOG_DEBUG("Purged " << erasedElementsNum << " from Send Buffer");
 }
 
 void

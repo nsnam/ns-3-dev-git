@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -217,28 +219,40 @@ DsrMaintainBuffer::LinkEqual(DsrMaintainBuffEntry& entry)
     return false;
 }
 
-/// IsExpired structure
-struct IsExpired
-{
-    /**
-     * @brief comparison operator
-     * @param e maintain buffer entry
-     * @return true if the entry is expired
-     */
-    bool operator()(const DsrMaintainBuffEntry& e) const
-    {
-        // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
-        return (e.GetExpireTime().IsStrictlyNegative());
-    }
-};
-
 void
 DsrMaintainBuffer::Purge()
 {
-    NS_LOG_DEBUG("Purging Maintenance Buffer");
-    IsExpired pred;
-    m_maintainBuffer.erase(std::remove_if(m_maintainBuffer.begin(), m_maintainBuffer.end(), pred),
-                           m_maintainBuffer.end());
+    [[maybe_unused]] auto erasedElementsNum =
+        std::erase_if(m_maintainBuffer, [](const DsrMaintainBuffEntry& e) {
+            return e.GetExpireTime().IsStrictlyNegative();
+        });
+
+    NS_LOG_DEBUG("Purged " << erasedElementsNum << " from Maintenance Buffer");
+}
+
+LinkKey::LinkKey(const DsrMaintainBuffEntry& entry)
+{
+    m_source = entry.GetSrc();
+    m_destination = entry.GetDst();
+    m_ourAdd = entry.GetOurAdd();
+    m_nextHop = entry.GetNextHop();
+}
+
+NetworkKey::NetworkKey(const DsrMaintainBuffEntry& entry)
+{
+    m_ackId = entry.GetAckId();
+    m_ourAdd = entry.GetOurAdd();
+    m_nextHop = entry.GetNextHop();
+    m_source = entry.GetSrc();
+    m_destination = entry.GetDst();
+}
+
+PassiveKey::PassiveKey(const DsrMaintainBuffEntry& entry)
+{
+    m_ackId = 0;
+    m_source = entry.GetSrc();
+    m_destination = entry.GetDst();
+    m_segsLeft = entry.GetSegsLeft();
 }
 
 } // namespace dsr
