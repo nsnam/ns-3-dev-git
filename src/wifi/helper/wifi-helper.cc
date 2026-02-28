@@ -577,9 +577,6 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         RadiotapHeader::HeMuFields heMuFields{};
         // TODO: fill in fields
         header.SetHeMuFields(heMuFields);
-        RadiotapHeader::HeMuOtherUserFields heMuOtherUserFields{};
-        // TODO: fill in fields
-        header.SetHeMuOtherUserFields(heMuOtherUserFields);
     }
 
     const auto isLowP80 = sniffInfo.p20Index < (channelWidth / MHz_u{40});
