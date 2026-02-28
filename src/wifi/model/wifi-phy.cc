@@ -1956,7 +1956,8 @@ WifiPhy::GetPreviouslyRxPpduUid() const
 void
 WifiPhy::SetPreviouslyRxPpduUid(uint64_t uid)
 {
-    NS_ASSERT(m_standard >= WIFI_STANDARD_80211be);
+    NS_ASSERT_MSG(m_standard >= WIFI_STANDARD_80211ax,
+                  "Setting previously RX PPDU UID is only supported for HE and later standards");
     m_previouslyRxPpduUid = uid;
 }
 
