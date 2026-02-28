@@ -468,9 +468,10 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
     if (modClass == WIFI_MOD_CLASS_HE)
     {
         RadiotapHeader::HeFields heFields{};
-        heFields.data1 = RadiotapHeader::HE_DATA1_BSS_COLOR_KNOWN |
-                         RadiotapHeader::HE_DATA1_DATA_MCS_KNOWN |
-                         RadiotapHeader::HE_DATA1_BW_RU_ALLOC_KNOWN;
+        heFields.data1 =
+            RadiotapHeader::HE_DATA1_BSS_COLOR_KNOWN | RadiotapHeader::HE_DATA1_CODING_KNOWN |
+            RadiotapHeader::HE_DATA1_STBC_KNOWN | RadiotapHeader::HE_DATA1_DATA_MCS_KNOWN |
+            RadiotapHeader::HE_DATA1_BW_RU_ALLOC_KNOWN;
         if (preamble == WIFI_PREAMBLE_HE_ER_SU)
         {
             heFields.data1 |= RadiotapHeader::HE_DATA1_FORMAT_EXT_SU;
@@ -485,21 +486,30 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
             heFields.data1 |= RadiotapHeader::HE_DATA1_FORMAT_TRIG;
         }
 
-        heFields.data2 = RadiotapHeader::HE_DATA2_GI_KNOWN;
+        heFields.data2 = RadiotapHeader::HE_DATA2_PRISEC_80_KNOWN |
+                         RadiotapHeader::HE_DATA2_GI_KNOWN |
+                         RadiotapHeader::HE_DATA2_RU_OFFSET_KNOWN;
         if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
-            NS_ASSERT(WifiRu::IsHe(txVector.GetHeMuUserInfo(sniffInfo.staId).ru));
-            auto heRu = std::get<HeRu::RuSpec>(txVector.GetHeMuUserInfo(sniffInfo.staId).ru);
+            const auto& userInfo = txVector.GetHeMuUserInfo(sniffInfo.staId);
+            NS_ASSERT(WifiRu::IsHe(userInfo.ru));
+            auto heRu = std::get<HeRu::RuSpec>(userInfo.ru);
             heFields.data2 |=
-                RadiotapHeader::HE_DATA2_RU_OFFSET_KNOWN |
                 // HeRu indices start at 1 whereas RadioTap starts at 0
                 GetRadiotapField(RadiotapHeader::HE_DATA2_RU_OFFSET, heRu.GetIndex() - 1) |
                 GetRadiotapField(RadiotapHeader::HE_DATA2_PRISEC_80_SEC, !heRu.GetPrimary80MHz());
         }
+        else
+        {
+            heFields.data2 |= GetRadiotapField(RadiotapHeader::HE_DATA2_PRISEC_80_SEC, 0) |
+                              GetRadiotapField(RadiotapHeader::HE_DATA2_RU_OFFSET, 0);
+        }
 
         heFields.data3 =
             GetRadiotapField(RadiotapHeader::HE_DATA3_BSS_COLOR, txVector.GetBssColor()) |
-            GetRadiotapField(RadiotapHeader::HE_DATA3_DATA_MCS, mcs);
+            GetRadiotapField(RadiotapHeader::HE_DATA3_CODING, txVector.IsLdpc() ? 1 : 0) |
+            GetRadiotapField(RadiotapHeader::HE_DATA3_DATA_MCS, mcs) |
+            GetRadiotapField(RadiotapHeader::HE_DATA3_STBC, txVector.IsStbc() ? 1 : 0);
 
         heFields.data4 = (preamble == WIFI_PREAMBLE_HE_MU)
                              ? GetRadiotapField(RadiotapHeader::HE_DATA4_MU_STA_ID, sniffInfo.staId)
@@ -556,6 +566,8 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         {
             heFields.data5 |= RadiotapHeader::HE_DATA5_GI_3_2;
         }
+
+        heFields.data6 = GetRadiotapField(RadiotapHeader::HE_DATA6_NSTS, nss);
 
         header.SetHeFields(heFields);
     }
