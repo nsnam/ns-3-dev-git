@@ -504,6 +504,11 @@ class RadiotapHeader : public Header
         HE_DATA5_PRE_FEC_PAD = 0x3000,             /**< Pre-FEC Padding Factor */
         HE_DATA5_TXBF = 0x4000,                    /**< TxBF */
         HE_DATA5_PE_DISAMBIG = 0x8000,             /**< PE Disambiguity */
+        /* Data 6 */
+        HE_DATA6_NSTS = 0x000f,                 /**< NSTS (actual number of space-time streams) */
+        HE_DATA6_DOPPLER_VALUE = 0x0010,        /**< Doppler value */
+        HE_DATA6_TXOP_VALUE = 0x7f00,           /**< TXOP value */
+        HE_DATA6_MIDAMBLE_PERIODICITY = 0x8000, /**< midamble periodicity */
     };
 
     /**
