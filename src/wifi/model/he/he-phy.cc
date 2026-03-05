@@ -1127,9 +1127,13 @@ HePhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu /* = nullptr */)
 
     if (ccaIndication.has_value())
     {
-        NS_LOG_DEBUG("CCA busy for " << ccaIndication.value().second << " during "
-                                     << ccaIndication.value().first.As(Time::S));
+        NS_LOG_DEBUG("CCA indication for " << ccaIndication.value().second << " during "
+                                           << ccaIndication.value().first.As(Time::US));
         NotifyCcaBusy(ccaIndication.value().first, ccaIndication.value().second, per20MHzDurations);
+        if (m_wifiPhy->IsStateCcaBusy())
+        {
+            NS_LOG_DEBUG("CCA busy for " << m_state->GetDelayUntilIdle().As(Time::US));
+        }
         return;
     }
 
@@ -1157,8 +1161,12 @@ HePhy::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu /* = nullptr */)
 
     if (m_wifiPhy->IsStateCcaBusy())
     {
-        NS_LOG_DEBUG("Update CCA indication to IDLE");
+        NS_LOG_DEBUG("Update CCA indication");
         m_state->SwitchMaybeToCcaBusy(Seconds(0), WIFI_CHANLIST_PRIMARY, per20MHzDurations);
+        if (m_wifiPhy->IsStateIdle())
+        {
+            NS_LOG_DEBUG("CCA indication updated to IDLE");
+        }
     }
 }
 
