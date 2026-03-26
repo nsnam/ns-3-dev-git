@@ -18,6 +18,29 @@ HeOperation::HeOperation()
 {
 }
 
+HeOperation::HeOperation(const HeOperation& other)
+    : WifiInformationElement(),
+      m_heOpParams(other.m_heOpParams),
+      m_bssColorInfo(other.m_bssColorInfo),
+      m_basicHeMcsAndNssSet(other.m_basicHeMcsAndNssSet),
+      m_6GHzOpInfo(m_heOpParams.m_6GHzOpPresent)
+{
+    m_6GHzOpInfo = other.m_6GHzOpInfo.ToOptional();
+}
+
+HeOperation&
+HeOperation::operator=(const HeOperation& other)
+{
+    if (this != &other)
+    {
+        m_heOpParams = other.m_heOpParams;
+        m_bssColorInfo = other.m_bssColorInfo;
+        m_basicHeMcsAndNssSet = other.m_basicHeMcsAndNssSet;
+        m_6GHzOpInfo = other.m_6GHzOpInfo.ToOptional();
+    }
+    return *this;
+}
+
 WifiInformationElementId
 HeOperation::ElementId() const
 {

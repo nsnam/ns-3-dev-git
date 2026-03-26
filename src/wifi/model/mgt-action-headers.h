@@ -704,6 +704,21 @@ class FilsDiscHeader : public Header
   public:
     FilsDiscHeader();
 
+    /**
+     * Copy constructor
+     *
+     * @param other the object to copy from
+     */
+    FilsDiscHeader(const FilsDiscHeader& other);
+
+    /**
+     * Copy assignment operator
+     *
+     * @param other the object to assign from
+     * @return a reference to this object
+     */
+    FilsDiscHeader& operator=(const FilsDiscHeader& other);
+
     /// @return the object TypeId
     static TypeId GetTypeId();
     TypeId GetInstanceTypeId() const override;

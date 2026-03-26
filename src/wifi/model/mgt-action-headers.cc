@@ -1484,6 +1484,51 @@ FilsDiscHeader::FilsDiscHeader()
 {
 }
 
+FilsDiscHeader::FilsDiscHeader(const FilsDiscHeader& other)
+    : m_frameCtl(other.m_frameCtl),
+      m_timeStamp(other.m_timeStamp),
+      m_beaconInt(other.m_beaconInt),
+      m_len(m_frameCtl.m_lenPresenceInd),
+      m_fdCap(m_frameCtl.m_capPresenceInd),
+      m_opClass(other.m_opClass),
+      m_primaryCh(m_frameCtl.m_primChPresenceInd),
+      m_apConfigSeqNum(m_frameCtl.m_apCsnPresenceInd),
+      m_accessNetOpt(m_frameCtl.m_anoPresenceInd),
+      m_chCntrFreqSeg1(m_frameCtl.m_chCntrFreqSeg1PresenceInd),
+      m_rnr(other.m_rnr),
+      m_tim(other.m_tim),
+      m_ssid(other.m_ssid)
+{
+    m_len = other.m_len.ToOptional();
+    m_fdCap = other.m_fdCap.ToOptional();
+    m_primaryCh = other.m_primaryCh.ToOptional();
+    m_apConfigSeqNum = other.m_apConfigSeqNum.ToOptional();
+    m_accessNetOpt = other.m_accessNetOpt.ToOptional();
+    m_chCntrFreqSeg1 = other.m_chCntrFreqSeg1.ToOptional();
+}
+
+FilsDiscHeader&
+FilsDiscHeader::operator=(const FilsDiscHeader& other)
+{
+    if (this != &other)
+    {
+        m_frameCtl = other.m_frameCtl;
+        m_timeStamp = other.m_timeStamp;
+        m_beaconInt = other.m_beaconInt;
+        m_len = other.m_len.ToOptional();
+        m_fdCap = other.m_fdCap.ToOptional();
+        m_opClass = other.m_opClass;
+        m_primaryCh = other.m_primaryCh.ToOptional();
+        m_apConfigSeqNum = other.m_apConfigSeqNum.ToOptional();
+        m_accessNetOpt = other.m_accessNetOpt.ToOptional();
+        m_chCntrFreqSeg1 = other.m_chCntrFreqSeg1.ToOptional();
+        m_rnr = other.m_rnr;
+        m_tim = other.m_tim;
+        m_ssid = other.m_ssid;
+    }
+    return *this;
+}
+
 void
 FilsDiscHeader::SetSsid(const std::string& ssid)
 {

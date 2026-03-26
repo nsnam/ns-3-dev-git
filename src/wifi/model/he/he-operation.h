@@ -28,6 +28,21 @@ class HeOperation : public WifiInformationElement
   public:
     HeOperation();
 
+    /**
+     * Copy constructor
+     *
+     * @param other the object to copy from
+     */
+    HeOperation(const HeOperation& other);
+
+    /**
+     * Copy assignment operator
+     *
+     * @param other the object to assign from
+     * @return a reference to this object
+     */
+    HeOperation& operator=(const HeOperation& other);
+
     // Implementations of pure virtual methods of WifiInformationElement
     WifiInformationElementId ElementId() const override;
     WifiInformationElementId ElementIdExt() const override;
