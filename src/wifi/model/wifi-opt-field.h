@@ -54,6 +54,19 @@ class OptFieldWithPresenceInd
     /// @return whether this object contains a value
     constexpr bool has_value() const;
 
+    /// This is a helper function commonly used in the copy/move constructors and copy/move
+    /// assignment operators of the owner class to assign a member of OptFieldWithPresenceInd type.
+    ///
+    /// @code
+    ///   OwnerClass::OwnerClass(const OwnerClass& other)
+    ///   {
+    ///       m_optField = other.m_optField.ToOptional();
+    ///   }
+    /// @endcode
+    ///
+    /// @return the contained value wrapped in std::optional, if any
+    constexpr std::optional<T> ToOptional() const;
+
     /// @return a pointer to the contained value
     constexpr const T* operator->() const;
 
@@ -139,6 +152,13 @@ constexpr bool
 OptFieldWithPresenceInd<T>::has_value() const
 {
     return m_field.has_value();
+}
+
+template <typename T>
+constexpr std::optional<T>
+OptFieldWithPresenceInd<T>::ToOptional() const
+{
+    return m_field;
 }
 
 template <typename T>
