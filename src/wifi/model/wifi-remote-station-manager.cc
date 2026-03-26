@@ -1764,7 +1764,7 @@ WifiRemoteStationManager::AddStationHeOperation(Mac48Address from, const HeOpera
 {
     NS_LOG_FUNCTION(this << from << heOperation);
     auto state = LookupState(from);
-    if (auto operation6GHz = heOperation.m_6GHzOpInfo)
+    if (auto& operation6GHz = heOperation.m_6GHzOpInfo)
     {
         switch (operation6GHz->m_chWid)
         {
