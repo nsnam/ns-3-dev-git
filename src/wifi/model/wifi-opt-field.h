@@ -23,6 +23,13 @@ namespace ns3
  * around std::optional (most of its functions are exposed, more can be added if needed) that
  * additionally sets the Presence Indicator flag appropriately when operations like reset or
  * assignment of a value are performed on the optional field.
+ *
+ * Any class declaring a member of type OptFieldWithPresenceInd must provide a copy constructor and
+ * a copy assignment operator (and a move constructor and a move assignment operator, if needed)
+ * that correctly bind the Presence Indicator flag of the OptFieldWithPresenceInd member(s). The
+ * copy/move constructors and copy/move assignment operators of this class are deleted, so that the
+ * compiler will signal the need of adding copy/move constructors and/or copy/move assignment
+ * operators in the owner class.
  */
 template <typename T>
 class OptFieldWithPresenceInd
@@ -31,6 +38,12 @@ class OptFieldWithPresenceInd
     /// @brief constructor
     /// @param presenceFlag the Presence Indicator flag
     OptFieldWithPresenceInd(bool& presenceFlag);
+
+    // Delete copy/move constructors and copy/move assignment operators to signal rebind issues
+    OptFieldWithPresenceInd(const OptFieldWithPresenceInd&) = delete;
+    OptFieldWithPresenceInd(OptFieldWithPresenceInd&&) = delete;
+    OptFieldWithPresenceInd& operator=(const OptFieldWithPresenceInd&) = delete;
+    OptFieldWithPresenceInd& operator=(OptFieldWithPresenceInd&&) = delete;
 
     /// @brief Destroy the value (if any) contained in the optional field.
     /// @return a reference to this object
