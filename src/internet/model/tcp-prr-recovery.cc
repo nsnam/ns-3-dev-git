@@ -82,17 +82,25 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
 
     m_prrDelivered += deliveredBytes;
 
-    int sendCount;
+    int64_t sendCount;
     if (tcb->m_bytesInFlight > tcb->m_ssThresh)
     {
-        // Proportional Rate Reductions
-        sendCount =
-            std::ceil(m_prrDelivered * tcb->m_ssThresh * 1.0 / m_recoveryFlightSize) - m_prrOut;
+        // Proportional Rate Reduction (RFC 6937)
+        // Use 64-bit arithmetic to prevent uint32_t * uint32_t overflow
+        uint64_t dividend =
+            static_cast<uint64_t>(m_prrDelivered) * static_cast<uint64_t>(tcb->m_ssThresh);
+        // Integer ceiling division: ceil(a/b) = a/b + (a%b != 0)
+        uint64_t quotient = dividend / static_cast<uint64_t>(m_recoveryFlightSize) +
+                            (dividend % static_cast<uint64_t>(m_recoveryFlightSize) != 0);
+        sendCount = static_cast<int64_t>(quotient) - static_cast<int64_t>(m_prrOut);
     }
     else
     {
         // PRR-CRB by default
-        int limit = std::max(m_prrDelivered - m_prrOut, deliveredBytes);
+        // Use signed arithmetic to prevent unsigned subtraction wrap
+        int64_t limit =
+            std::max<int64_t>(static_cast<int64_t>(m_prrDelivered) - static_cast<int64_t>(m_prrOut),
+                              static_cast<int64_t>(deliveredBytes));
 
         // safeACK should be true iff ACK advances SND.UNA with no further loss indicated.
         // We approximate that here (given the current lack of RACK-TLP in ns-3)
@@ -101,16 +109,19 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
         if (safeACK)
         {
             // PRR-SSRB when recovery makes good progress
-            limit += tcb->m_segmentSize;
+            limit += static_cast<int64_t>(tcb->m_segmentSize);
         }
 
         // Attempt to catch up, as permitted
-        sendCount = std::min(limit, static_cast<int>(tcb->m_ssThresh - tcb->m_bytesInFlight));
+        sendCount = std::min<int64_t>(limit,
+                                      static_cast<int64_t>(tcb->m_ssThresh) -
+                                          static_cast<int64_t>(tcb->m_bytesInFlight));
     }
 
     /* Force a fast retransmit upon entering fast recovery */
-    sendCount = std::max(sendCount, static_cast<int>(m_prrOut > 0 ? 0 : tcb->m_segmentSize));
-    tcb->m_cWnd = tcb->m_bytesInFlight + sendCount;
+    sendCount =
+        std::max<int64_t>(sendCount, static_cast<int64_t>(m_prrOut > 0 ? 0 : tcb->m_segmentSize));
+    tcb->m_cWnd = tcb->m_bytesInFlight + static_cast<uint32_t>(sendCount);
     tcb->m_cWndInfl = tcb->m_cWnd;
 }
 
