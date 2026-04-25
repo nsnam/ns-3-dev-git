@@ -4315,30 +4315,32 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
         }
     }
 
-    std::ostringstream oss;
-    oss << "Husn (sAntenna, uAntenna): " << sAntenna->GetId() << ", " << uAntenna->GetId()
-        << " | vals=[";
-
-    bool first = true;
-    for (size_t cIndex = 0; cIndex < hUsn.GetNumPages(); ++cIndex)
+    if (g_log.IsEnabled(ns3::LOG_DEBUG))
     {
-        for (size_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); ++rowIdx)
+        std::ostringstream oss;
+        oss << "Husn (sAntenna, uAntenna): " << sAntenna->GetId() << ", " << uAntenna->GetId()
+            << " | vals=[";
+
+        bool first = true;
+        for (size_t cIndex = 0; cIndex < hUsn.GetNumPages(); ++cIndex)
         {
-            for (size_t colIdx = 0; colIdx < hUsn.GetNumCols(); ++colIdx)
+            for (size_t rowIdx = 0; rowIdx < hUsn.GetNumRows(); ++rowIdx)
             {
-                if (!first)
+                for (size_t colIdx = 0; colIdx < hUsn.GetNumCols(); ++colIdx)
                 {
-                    oss << ", ";
+                    if (!first)
+                    {
+                        oss << ", ";
+                    }
+                    first = false;
+                    oss << hUsn(rowIdx, colIdx, cIndex);
                 }
-                first = false;
-                oss << hUsn(rowIdx, colIdx, cIndex);
             }
         }
+        oss << "]";
+
+        NS_LOG_DEBUG(oss.str());
     }
-    oss << "]";
-
-    NS_LOG_DEBUG(oss.str());
-
     NS_LOG_INFO("size of coefficient matrix (rows, columns, clusters) = ("
                 << hUsn.GetNumRows() << ", " << hUsn.GetNumCols() << ", " << hUsn.GetNumPages()
                 << ")");
