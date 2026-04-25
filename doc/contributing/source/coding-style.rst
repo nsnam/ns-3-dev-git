@@ -1827,9 +1827,9 @@ Miscellaneous items
     };
 
   For new ns-3 code, we recommend using this operator where possible.  There are cases in which
-  the default does not apply, and you can read about some of them
-  `here <https://en.cppreference.com/w/cpp/language/default_comparisons.html>`_ and
-  `here <https://devblogs.microsoft.com/cppblog/simplify-your-code-with-rocket-science-c20s-spaceship-operator/>`_.
+  the default does not apply, and you can read about some of them on
+  `cppreference's default comparisons page <https://en.cppreference.com/w/cpp/language/default_comparisons.html>`_
+  and on `Microsoft's C++ blog post on the spaceship operator <https://devblogs.microsoft.com/cppblog/simplify-your-code-with-rocket-science-c20s-spaceship-operator/>`_.
   You may notice in the ns-3 codebase that most code defines operators separately, because the code predates C++20.
   Some of this code may be changed to use ``<=>`` over time.
 
