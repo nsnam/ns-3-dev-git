@@ -21,7 +21,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 - g++-11.1 or later, or LLVM/clang++-17 or later
 - Python 3.10 or later
-- CMake 3.20 or later
+- CMake 3.25 or later
 - (macOS only) Xcode 16.2 or later
 - (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
 
@@ -65,11 +65,11 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 - g++-11.1 or later, or LLVM/clang++-17 or later
 - Python 3.10 or later
-- CMake 3.20 or later
+- CMake 3.25 or later
 - (macOS only) Xcode 16.2 or later
 - (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
 
-This release of ns-3 updated the minimum supported version of Python from 3.8 to 3.10.
+This release of ns-3 updated the minimum supported version of Python from 3.8 to 3.10, and the minimum supported version of CMake from 3.20 to 3.25.
 
 Contributors or maintainers who require the use of cmake-format (CMake formatting utility) to pass
 the ns-3 CI checks should note that only Python 3.12 is currently supported for cmake-format.
