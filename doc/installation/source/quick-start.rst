@@ -42,13 +42,13 @@ source archive download (via a web browser, ``wget``, or ``curl``).
 |                    | or ``tar`` and ``bunzip2``           | No minimum version           |
 |                    | (for Web download)                   |                              |
 +--------------------+--------------------------------------+------------------------------+
-| **Compiler**       | ``g++``                              | >= 10                        |
+| **Compiler**       | ``g++``                              | >= 11.1                      |
 +                    +                                      +                              +
-|                    | or ``clang++``                       | >= 11                        |
+|                    | or ``clang++``                       | >= 17                        |
 +--------------------+--------------------------------------+------------------------------+
-| **Configuration**  | ``python3``                          | >= 3.8                       |
+| **Configuration**  | ``python3``                          | >= 3.10                      |
 +--------------------+--------------------------------------+------------------------------+
-| **Build system**   | ``cmake``,                           | >= 3.13                      |
+| **Build system**   | ``cmake``,                           | >= 3.25                      |
 +                    +                                      +                              +
 |                    | and at least one of:                 | No minimum version           |
 |                    | ``make``, ``ninja``, or ``Xcode``    |                              |
