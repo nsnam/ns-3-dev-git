@@ -1404,7 +1404,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         run_ns3("clean")
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
             try:
                 container.execute(
                     "./ns3 configure --enable-modules=core,network,internet -- -DCMAKE_CXX_COMPILER=/usr/bin/g++"
@@ -1677,7 +1678,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             # Install basic packages
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 ninja-build cmake g++")
+            container.execute("apt-get install -y python3 ninja-build cmake g++ python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
 
             # Clean ns-3 artifacts
             container.execute("./ns3 clean")
@@ -2019,11 +2021,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         run_ns3("clean")
 
         # Ubuntu 22.04 ships with:
-        # - cmake 3.22: does support PCH
+        # - cmake 3.22 (overridden via pip to >=3.25 to satisfy ns-3 minimum): does support PCH
         # - ccache 4.5: compatible with pch
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake ccache g++")
+            container.execute("apt-get install -y python3 cmake ccache g++ python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
             try:
                 container.execute("./ns3 configure")
             except DockerException as e:
@@ -2054,7 +2057,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++")
+            container.execute("apt-get install -y python3 cmake g++ python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
             return_code = 0
             stdout = ""
             try:
@@ -3119,7 +3123,8 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             # Install toolchain
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
 
             # Verify that Armadillo is not available and that we did not
             # add any new unnecessary dependency when features are not used
@@ -3195,7 +3200,8 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             # Install toolchain
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
 
             # Create new copy of ns-3 on a "path with empty spaces"
             test_path = "/path with empty spaces/ns-3-dev"

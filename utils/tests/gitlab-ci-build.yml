@@ -22,7 +22,7 @@
       valgrind
     - python3 -m venv ns3env
     - source ./ns3env/bin/activate
-    - python3 -m pip install python_on_whales GitPython cppyy django requests cmake-format
+    - python3 -m pip install python_on_whales GitPython cppyy django requests cmake-format cmake==3.25.2
   script:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
