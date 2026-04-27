@@ -33,7 +33,6 @@
   extends: .weekly-clang-ubuntu
   variables:
     LIBGSL: libgsl27
-    EXTRA_PACKAGES: libstdc++-10-dev
 
 .weekly-clang-ubuntu24.04:
   image: ubuntu:24.04
