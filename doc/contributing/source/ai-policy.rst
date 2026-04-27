@@ -209,13 +209,18 @@ you, or if you instead asked it to review and tidy up something that you
 generated largely by yourself. If the former, disclose the tool use, but
 otherwise, use need not be mentioned.
 
-Here are some examples of commit messages that demonstrate how to apply
+Here is one example of a commit message that demonstrate how to apply
 the principles of this policy:
 
 .. code-block:: text
 
-   core: Create mp-units attribute wrappers
-   Claude Code assisted with implementation
+    commit 870e0fac55a1d366f4b034830739763054d9edc7
+    Author: Tom Henderson <tomh@tomh.org>
+    Date:   Tue Apr 14 09:19:05 2026 -0700
+
+        sixlowpan: Fix clang-tidy modernize-use-override warning
+
+        Claude Code (opus-4.6) assisted with implementation.
 
 Other examples will be provided at a later date.
 
