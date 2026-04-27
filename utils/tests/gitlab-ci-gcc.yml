@@ -14,8 +14,11 @@
 # - jammy (22.04LTS) 11
 # - kinetic (22.10) 12
 # - lunar (23.04) 12
-# - lunar (23.10) 13
+# - mantic (23.10) 13
 # - noble (24.04LTS) 13
+# - oracular (24.10) 14
+# - plucky (25.04) 14
+# - questing (25.10) 15
 
 .weekly-gcc-base:
   extends: .base-build
