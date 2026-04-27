@@ -34,12 +34,6 @@
   variables:
     LIBGSL: libgsl27
 
-.weekly-clang-ubuntu24.04:
-  image: ubuntu:24.04
-  extends: .weekly-clang-ubuntu
-  variables:
-    LIBGSL: libgsl27
-
 weekly-clang:
   rules:
     - if: $RELEASE == "weekly"
