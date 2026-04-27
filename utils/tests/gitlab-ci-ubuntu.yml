@@ -160,6 +160,66 @@ weekly-test-ubuntu-24.04-optimized:
     LIBXML2: libxml2
     COMPILER: g++
 
+# Ubuntu 26.04 (Until April 2031)
+weekly-build-ubuntu-26.04-debug:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:26.04
+  stage: build
+  variables:
+    MODE: debug
+    LIBGSL: libgsl28
+    LIBXML2: libxml2-16
+    COMPILER: g++
+
+weekly-build-ubuntu-26.04-default:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:26.04
+  stage: build
+  variables:
+    MODE: default
+    LIBGSL: libgsl28
+    LIBXML2: libxml2-16
+    COMPILER: g++
+
+weekly-build-ubuntu-26.04-optimized:
+  extends: .weekly-base-ubuntu
+  needs: ["weekly-ubuntu"]
+  image: ubuntu:26.04
+  stage: build
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl28
+    LIBXML2: libxml2-16
+    COMPILER: g++
+
+weekly-test-ubuntu-26.04-default:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:26.04
+  stage: test
+  needs: ["weekly-build-ubuntu-26.04-default"]
+  dependencies:
+    - weekly-build-ubuntu-26.04-default
+  variables:
+    MODE: default
+    LIBGSL: libgsl28
+    LIBXML2: libxml2-16
+    COMPILER: g++
+
+weekly-test-ubuntu-26.04-optimized:
+  extends: .weekly-base-ubuntu
+  image: ubuntu:26.04
+  stage: test
+  needs: ["weekly-build-ubuntu-26.04-optimized"]
+  dependencies:
+    - weekly-build-ubuntu-26.04-optimized
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl28
+    LIBXML2: libxml2-16
+    COMPILER: g++
+
 # Ubuntu Rolling (latest released, might be non-LTS)
 weekly-build-ubuntu-rolling-debug:
   extends: .weekly-base-ubuntu
