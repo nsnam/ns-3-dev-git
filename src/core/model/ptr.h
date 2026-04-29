@@ -795,8 +795,12 @@ Ptr<T>::operator*()
     return *m_ptr;
 }
 
+// Clang-format guard required for versions <= 20
+// clang-format off
 template <typename T>
-Ptr<T>::operator bool() const
+Ptr<T>::
+operator bool() const
+// clang-format on
 {
     return m_ptr != nullptr;
 }

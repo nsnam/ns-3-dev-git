@@ -124,8 +124,12 @@ OptFieldWithPresenceInd<T>::operator=(std::optional<T>&& other)
     return *this;
 }
 
+// Clang-format guard required for versions <= 20
+// clang-format off
 template <typename T>
-constexpr OptFieldWithPresenceInd<T>::operator bool() const
+constexpr OptFieldWithPresenceInd<T>::
+operator bool() const
+// clang-format on
 {
     return m_field.has_value();
 }

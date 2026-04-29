@@ -100,9 +100,9 @@ struct EhtPhyCapabilities
     uint8_t maxNumSupportedEhtLtfs : 5; //!< Maximum Number Of Supported EHT-LTFs
     uint8_t supportMcs15 : 4;           //!< Support Of MCS 15
     uint8_t supportEhtDupIn6GHz : 1;    //!< Support Of EHT DUP (MCS 14) In 6 GHz
-    uint8_t
-        support20MhzOperatingStaReceivingNdpWithWiderBw : 1; //!< Support For 20 MHz Operating STA
-                                                             //!< Receiving NDP With Wider Bandwidth
+    uint8_t support20MhzOperatingStaReceivingNdpWithWiderBw : 1; //!< Support For 20 MHz Operating
+                                                                 //!< STA Receiving NDP With Wider
+                                                                 //!< Bandwidth
 
     uint8_t nonOfdmaUlMuMimoBwNotLargerThan80Mhz : 1; //!< Non-OFDMA UL MU-MIMO (BW ≤ 80 MHz)
     uint8_t nonOfdmaUlMuMimo160Mhz : 1;               //!< Non-OFDMA UL MU-MIMO (BW = 160 MHz)
@@ -111,10 +111,10 @@ struct EhtPhyCapabilities
     uint8_t muBeamformer160Mhz : 1;                   //!< MU Beamformer (BW = 160 MHz)
     uint8_t muBeamformer320Mhz : 1;                   //!< MU Beamformer (BW = 320 MHz)
     uint8_t tbSoundingFeedbackRateLimit : 1;          //!< TB Sounding Feedback Rate Limit
-    uint8_t
-        rx1024QamInWiderBwDlOfdmaSupport : 1; //!< Rx 1024-QAM In Wider Bandwidth DL OFDMA Support
-    uint8_t
-        rx4096QamInWiderBwDlOfdmaSupport : 1; //!< Rx 4096-QAM In Wider Bandwidth DL OFDMA Support
+    uint8_t rx1024QamInWiderBwDlOfdmaSupport : 1;     //!< Rx 1024-QAM In Wider Bandwidth DL
+                                                      //!< OFDMA Support
+    uint8_t rx4096QamInWiderBwDlOfdmaSupport : 1;     //!< Rx 4096-QAM In Wider Bandwidth DL
+                                                      //!< OFDMA Support
 
     /**
      * Get the size of the serialized EHT PHY capabilities subfield
