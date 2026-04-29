@@ -1,0 +1,59 @@
+# NS3 CI script for Rocky Linux
+
+# A single release job is run, to keep track of the package names and
+# versions in the Enterprise Linux family.
+
+.weekly-base-rockylinux:
+  extends: .base-build
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  image: rockylinux/rockylinux:10
+  before_script:
+    - dnf update -y
+    - dnf install -y epel-release
+    - dnf config-manager --set-enabled crb
+    - dnf install -y
+      gcc-c++ cmake ccache ninja-build
+      boost-devel
+      eigen3-devel
+      gtk3 gtk3-devel
+      gsl gsl-devel
+      sqlite sqlite-devel
+      libxml2 libxml2-devel
+      mpich mpich-devel openssh
+      goocanvas2-devel
+      python3 python3-devel
+      python3-gobject-devel gobject-introspection-devel
+      graphviz-devel graphviz
+      git
+    - source /etc/profile.d/modules.sh
+    - module load mpi/mpich-$(uname -m)
+  variables:
+    MODE: release
+    COMPILER: g++
+
+weekly-rockylinux:
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
+  stage: pre-build
+  script:
+    - echo "Starting Rocky Linux jobs"
+
+weekly-rockylinux-gcc-release:
+  extends: .weekly-base-rockylinux
+  needs: ["weekly-rockylinux"]
+  stage: build
+
+weekly-test-rockylinux-gcc-release:
+  extends: .weekly-base-rockylinux
+  stage: test
+  needs: ["weekly-rockylinux-gcc-release"]
+  dependencies:
+    - weekly-rockylinux-gcc-release

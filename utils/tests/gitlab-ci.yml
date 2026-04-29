@@ -112,7 +112,7 @@ include:
   - "utils/tests/gitlab-ci-per-commit.yml"
   - "utils/tests/gitlab-ci-alpine.yml"
   - "utils/tests/gitlab-ci-ubuntu.yml"
-  - "utils/tests/gitlab-ci-fedora.yml"
+  - "utils/tests/gitlab-ci-rockylinux.yml"
   - "utils/tests/gitlab-ci-gcc.yml"
   - "utils/tests/gitlab-ci-clang.yml"
   - "utils/tests/gitlab-ci-scheduled.yml"
