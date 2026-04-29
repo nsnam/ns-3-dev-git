@@ -81,7 +81,9 @@ ExampleAsTestCase::DoRun()
         // Strip any system- or compiler-dependent messages
         // resulting from invoking NS_FATAL..., which in turn
         // calls std::terminate
-        post += " | sed '1,/" + std::string(NS_FATAL_MSG) + "/!d' ";
+        post += " | sed \"1,/" + std::string(NS_FATAL_MSG) + "/!d\" ";
+        post += " | sed \"s/file=[^,]*/file=.../\" ";
+        post += " | sed \"s/line=[^,]*/line=.../\" ";
     }
 
     std::stringstream ss;

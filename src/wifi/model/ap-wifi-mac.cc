@@ -58,7 +58,7 @@ ApWifiMac::GetTypeId()
             .AddAttribute(
                 "BeaconInterval",
                 "Delay between two beacons",
-                TimeValue(DEFAULT_BEACON_INTERVAL),
+                TimeValue(DEFAULT_BEACON_INTERVAL()),
                 MakeTimeAccessor(&ApWifiMac::GetBeaconInterval, &ApWifiMac::SetBeaconInterval),
                 MakeTimeChecker())
             .AddAttribute("BeaconJitter",

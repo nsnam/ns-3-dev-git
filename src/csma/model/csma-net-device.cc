@@ -97,7 +97,9 @@ CsmaNetDevice::GetTypeId()
                             "A packet has been received by this device, "
                             "has been passed up from the physical layer "
                             "and is being forwarded up the local protocol stack.  "
-                            "This is a promiscuous trace,",
+                            "This is a promiscuous trace, and it is only fired "
+                            "when a promiscuous receive callback has been "
+                            "installed via SetPromiscReceiveCallback.",
                             MakeTraceSourceAccessor(&CsmaNetDevice::m_macPromiscRxTrace),
                             "ns3::Packet::TracedCallback")
             .AddTraceSource("MacRx",

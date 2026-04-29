@@ -48,7 +48,7 @@ class SixLowPanNdBindingTable : public Object
     /**
      * @brief Destructor.
      */
-    ~SixLowPanNdBindingTable();
+    ~SixLowPanNdBindingTable() override;
 
     /**
      * @brief Get the NetDevice associated with this cache.

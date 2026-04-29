@@ -26,8 +26,18 @@ static constexpr bool DEFAULT_WIFI_UL_MU_DATA_DISABLE{false};
 /// UL MU Data Disable Rx support at AP
 static constexpr bool DEFAULT_WIFI_UL_MU_DATA_DISABLE_RX{true};
 
-/// Default Beacon interval
-inline const Time DEFAULT_BEACON_INTERVAL = MicroSeconds(102400);
+/**
+ *  @brief Default Beacon interval
+ *
+ *  Default beacon interval.
+ *  Note: inlining Time can cause issues on MSVC due to how DLLs are
+ *  loaded and runtime precision tracking. We temporarily call a function
+ *  that returns the interval declared in the wifi-ns3-constants.cc file,
+ *  until a permanent solution is found.
+ *
+ *  @return the default beacon interval
+ */
+Time DEFAULT_BEACON_INTERVAL();
 
 } // namespace ns3
 

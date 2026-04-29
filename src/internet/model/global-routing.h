@@ -188,7 +188,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @see Ipv4GlobalRouting
      */
     GlobalRouting();
-    ~GlobalRouting();
+    ~GlobalRouting() override;
 
     // These methods inherited from base class
 
@@ -211,7 +211,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
     Ptr<IpRoute> RouteOutput(Ptr<Packet> p,
                              const IpHeader& header,
                              Ptr<NetDevice> oif,
-                             Socket::SocketErrno& sockerr);
+                             Socket::SocketErrno& sockerr) override;
 
     /// Callback for IPv4 unicast packets to be forwarded
     typedef Callback<void, Ptr<IpRoute>, Ptr<const Packet>, const IpHeader&>
@@ -273,7 +273,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
                     const UnicastForwardCallback& ucb,
                     const MulticastForwardCallback& mcb,
                     const LocalDeliverCallback& lcb,
-                    const ErrorCallback& ecb);
+                    const ErrorCallback& ecb) override;
 
     /**
      * @param interface the index of the interface we are being notified about
@@ -281,14 +281,14 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @sa Ipv4RoutingProtocol::NotifyInterfaceUp
      * @sa Ipv6RoutingProtocol::NotifyInterfaceUp
      */
-    void NotifyInterfaceUp(uint32_t interface);
+    void NotifyInterfaceUp(uint32_t interface) override;
     /**
      * @param interface the index of the interface we are being notified about
      *
      * @sa Ipv4RoutingProtocol::NotifyInterfaceDown
      * @sa Ipv6RoutingProtocol::NotifyInterfaceDown
      */
-    void NotifyInterfaceDown(uint32_t interface);
+    void NotifyInterfaceDown(uint32_t interface) override;
     /**
      * @param interface the index of the interface we are being notified about
      * @param address a new address being added to an interface
@@ -296,7 +296,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @sa Ipv4RoutingProtocol::NotifyAddAddress
      * @sa Ipv6RoutingProtocol::NotifyAddAddress
      */
-    void NotifyAddAddress(uint32_t interface, IpInterfaceAddress address);
+    void NotifyAddAddress(uint32_t interface, IpInterfaceAddress address) override;
     /**
      * @param interface the index of the interface we are being notified about
      * @param address a new address being added to an interface
@@ -304,7 +304,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @sa Ipv4RoutingProtocol::NotifyRemoveAddress
      * @sa Ipv6RoutingProtocol::NotifyRemoveAddress
      */
-    void NotifyRemoveAddress(uint32_t interface, IpInterfaceAddress address);
+    void NotifyRemoveAddress(uint32_t interface, IpInterfaceAddress address) override;
 
     /**
      * @brief Notify a new route.
@@ -317,11 +317,21 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @param interface output interface
      * @param prefixToUse prefix to use as source with this route
      */
-    virtual void NotifyAddRoute(Ipv6Address dst,
-                                Ipv6Prefix mask,
-                                Ipv6Address nextHop,
-                                uint32_t interface,
-                                Ipv6Address prefixToUse = Ipv6Address::GetZero());
+    // These four methods each override a virtual in only one of the two possible
+    // base classes (Ipv4RoutingProtocol or Ipv6RoutingProtocol), so they cannot
+    // be marked 'override' without causing a hard error in the other
+    // specialization.  Suppress the resulting Clang diagnostic; GCC does not
+    // emit an equivalent warning, so no guard is needed there.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+    // NOLINTBEGIN(modernize-use-override)
+    void NotifyAddRoute(Ipv6Address dst,
+                        Ipv6Prefix mask,
+                        Ipv6Address nextHop,
+                        uint32_t interface,
+                        Ipv6Address prefixToUse = Ipv6Address::GetZero());
     /**
      * @brief Notify route removing.
      * @param dst destination address
@@ -330,11 +340,11 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @param interface output interface
      * @param prefixToUse prefix to use as source with this route
      */
-    virtual void NotifyRemoveRoute(Ipv6Address dst,
-                                   Ipv6Prefix mask,
-                                   Ipv6Address nextHop,
-                                   uint32_t interface,
-                                   Ipv6Address prefixToUse = Ipv6Address::GetZero());
+    void NotifyRemoveRoute(Ipv6Address dst,
+                           Ipv6Prefix mask,
+                           Ipv6Address nextHop,
+                           uint32_t interface,
+                           Ipv6Address prefixToUse = Ipv6Address::GetZero());
 
     /* From IPv4RoutingProtocol */
     /**
@@ -344,7 +354,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      *
      * @sa Ipv4RoutingProtocol::SetIpv4
      */
-    virtual void SetIpv4(Ptr<Ip> ipv4);
+    void SetIpv4(Ptr<Ip> ipv4);
 
     /* From IPv6RoutingProtocol */
     /**
@@ -354,7 +364,12 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      *
      * @sa Ipv6RoutingProtocol::SetIpv6
      */
-    virtual void SetIpv6(Ptr<Ip> ipv6);
+    void SetIpv6(Ptr<Ip> ipv6);
+    // NOLINTEND(modernize-use-override)
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
     /**
      * @brief Print the Routing Table entries
@@ -365,7 +380,8 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @sa Ipv4RoutingProtocol::PrintRoutingTable
      * @sa Ipv6RoutingProtocol::PrintRoutingTable
      */
-    void PrintRoutingTable(Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
+    void PrintRoutingTable(Ptr<OutputStreamWrapper> stream,
+                           Time::Unit unit = Time::S) const override;
 
     /**
      * @brief Add a host route to the global routing table.
@@ -495,7 +511,7 @@ class GlobalRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProtocol
      * @sa Ipv4RoutingProtocol::DoDispose
      * @sa Ipv6RoutingProtocol::DoDispose
      */
-    void DoDispose();
+    void DoDispose() override;
 
   private:
     /// Set to true if packets are randomly routed among ECMP; set to false for using only one route

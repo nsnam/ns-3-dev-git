@@ -218,7 +218,7 @@ WifiTxStatsHelperTest::DoRun()
                     "Ssid",
                     SsidValue(Ssid("test-ssid")),
                     "BeaconInterval",
-                    TimeValue(DEFAULT_BEACON_INTERVAL),
+                    TimeValue(DEFAULT_BEACON_INTERVAL()),
                     "EnableBeaconJitter",
                     BooleanValue(false));
         apDevices = wifi.Install(phy, mac, m_wifiApNode);
@@ -292,7 +292,7 @@ WifiTxStatsHelperTest::DoRun()
                     "Ssid",
                     SsidValue(Ssid("test-ssid")),
                     "BeaconInterval",
-                    TimeValue(DEFAULT_BEACON_INTERVAL),
+                    TimeValue(DEFAULT_BEACON_INTERVAL()),
                     "EnableBeaconJitter",
                     BooleanValue(false));
         apDevices = wifi.Install(phy, mac, m_wifiApNode);

@@ -79,6 +79,7 @@ SOURCES = \
 	$(SRC)/wifi/doc/source/wifi-changelog.rst \
 	$(SRC)/wifi/doc/source/wifi-references.rst \
 	$(SRC)/uan/doc/uan.rst \
+	$(SRC)/virtual-net-device/doc/virtual-net-device.rst \
 	$(SRC)/topology-read/doc/topology.rst \
 	$(SRC)/traffic-control/doc/traffic-control-layer.rst \
 	$(SRC)/traffic-control/doc/queue-discs.rst \

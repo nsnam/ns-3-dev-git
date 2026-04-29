@@ -361,7 +361,7 @@ WifiTxopTest::DoRun()
         "Ssid",
         SsidValue(Ssid("wifi-txop-ssid")),
         "BeaconInterval",
-        TimeValue(DEFAULT_BEACON_INTERVAL),
+        TimeValue(DEFAULT_BEACON_INTERVAL()),
         "EnableBeaconJitter",
         BooleanValue(false),
         "AifsnsForSta",
@@ -388,7 +388,7 @@ WifiTxopTest::DoRun()
     for (uint16_t i = 1; i < m_nStations; i++)
     {
         dev = DynamicCast<WifiNetDevice>(m_staDevices.Get(i));
-        Simulator::Schedule(i * DEFAULT_BEACON_INTERVAL,
+        Simulator::Schedule(i * DEFAULT_BEACON_INTERVAL(),
                             &WifiMac::SetSsid,
                             dev->GetMac(),
                             Ssid("wifi-txop-ssid"));

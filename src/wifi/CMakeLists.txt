@@ -155,6 +155,7 @@ set(source_files
     model/wifi-mode.cc
     model/wifi-mpdu.cc
     model/wifi-net-device.cc
+    model/wifi-ns3-constants.cc
     model/wifi-phy.cc
     model/wifi-phy-common.cc
     model/wifi-phy-operating-channel.cc

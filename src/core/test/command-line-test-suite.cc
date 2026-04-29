@@ -7,6 +7,7 @@
  */
 #include "ns3/command-line.h"
 #include "ns3/config.h"
+#include "ns3/example-as-test.h"
 #include "ns3/global-value.h"
 #include "ns3/log.h"
 #include "ns3/string.h"
@@ -563,6 +564,16 @@ CommandLineTestSuite::CommandLineTestSuite()
     AddTestCase(new CommandLineInvalidTestCase);
     AddTestCase(new CommandLineNonOptionTestCase);
     AddTestCase(new CommandLineCharStarTestCase);
+    AddTestCase(new ExampleAsTestCase("core-fatal-command-line-duplicate-option",
+                                      "fatal-command-line-duplicate-option-example",
+                                      NS_TEST_SOURCEDIR,
+                                      "",
+                                      false));
+    AddTestCase(new ExampleAsTestCase("core-fatal-command-line-duplicate-non-option",
+                                      "fatal-command-line-duplicate-non-option-example",
+                                      NS_TEST_SOURCEDIR,
+                                      "",
+                                      false));
 }
 
 /**

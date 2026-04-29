@@ -742,6 +742,7 @@ CommandLine::AddValue(const std::string& name,
                       std::size_t num)
 {
     NS_LOG_FUNCTION(this << name << help << value << num);
+    TestForDuplicateOption(name);
     auto item = std::make_shared<CharStarItem>();
     item->m_name = name;
     item->m_help = help;
@@ -759,6 +760,7 @@ CommandLine::AddValue(const std::string& name,
 
 {
     NS_LOG_FUNCTION(this << &name << &help << &callback);
+    TestForDuplicateOption(name);
     auto item = std::make_shared<CallbackItem>();
     item->m_name = name;
     item->m_help = help;
@@ -771,6 +773,7 @@ void
 CommandLine::AddValue(const std::string& name, const std::string& attributePath)
 {
     NS_LOG_FUNCTION(this << name << attributePath);
+    TestForDuplicateOption(name);
     // Attribute name is last token
     std::size_t colon = attributePath.rfind("::");
     const std::string typeName = attributePath.substr(0, colon);
@@ -831,6 +834,31 @@ CommandLine::HandleAttribute(const std::string& name, const std::string& value)
 {
     return Config::SetGlobalFailSafe(name, StringValue(value)) ||
            Config::SetDefaultFailSafe(name, StringValue(value));
+}
+
+void
+CommandLine::CheckForDuplicateItemNameError(std::string name,
+                                            std::string optType,
+                                            const Items& items)
+{
+    // Check for existing parameter name
+    auto existingNameIt = std::find_if(items.begin(), items.end(), [name](const auto& itemPtr) {
+        return itemPtr->m_name == name;
+    });
+    NS_ABORT_MSG_IF(existingNameIt != items.end(),
+                    "Duplicate " << optType << " CommandLine argument named: " << name);
+}
+
+void
+CommandLine::TestForDuplicateOption(std::string name)
+{
+    CheckForDuplicateItemNameError(name, "option", m_options);
+}
+
+void
+CommandLine::TestForDuplicateNonOption(std::string name)
+{
+    CheckForDuplicateItemNameError(name, "non-option", m_nonOptions);
 }
 
 bool

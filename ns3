@@ -1387,7 +1387,7 @@ def build_step(
     output,
 ):
     # There is one scenario where we build everything: ./ns3 build
-    if "build" in args and len(args.build) == 0:
+    if len(args.build) == 0:
         cmake_build(
             current_cmake_cache_folder,
             jobs=args.jobs,
@@ -1397,7 +1397,7 @@ def build_step(
         )
 
     # If we are building specific targets, we build them one by one
-    if "build" in args:
+    else:
         non_executable_targets = [
             "assemble-introspected-command-line",
             "check-version",
@@ -2161,6 +2161,7 @@ def main():
     if run_only or build_and_run:
         if target_to_run in ns3_programs:
             target_to_run = check_ambiguous_target("Run", target_to_run, ns3_programs)
+            args.build = [target_to_run]
         elif ".py" in target_to_run and os.path.exists(target_to_run):
             # We let python scripts pass to be able to run ./utils/python-unit-tests.py
             pass

@@ -82,16 +82,8 @@ elseif(
   )
 endif()
 
-set(example_as_test_sources)
-set(example_as_test_headers)
 set(example_as_test_suite)
 if(${ENABLE_EXAMPLES})
-  set(example_as_test_sources
-      model/example-as-test.cc
-  )
-  set(example_as_test_headers
-      model/example-as-test.h
-  )
   set(example_as_test_suite
       test/examples-as-tests-test-suite.cc
   )
@@ -128,7 +120,6 @@ endif()
 set(source_files
     ${int64x64_sources}
     ${fd-reader-sources}
-    ${example_as_test_sources}
     ${embedded_version_sources}
     helper/csv-reader.cc
     helper/random-variable-stream-helper.cc
@@ -195,13 +186,13 @@ set(source_files
     model/wall-clock-synchronizer.cc
     model/matrix-array.cc
     model/demangle.cc
+    model/example-as-test.cc
 )
 
 # Define core lib headers
 set(header_files
     ${config_headers}
     ${int64x64_headers}
-    ${example_as_test_headers}
     ${embedded_version_headers}
     helper/csv-reader.h
     helper/event-garbage-collector.h
@@ -303,6 +294,7 @@ set(header_files
     model/wall-clock-synchronizer.h
     model/val-array.h
     model/matrix-array.h
+    model/example-as-test.h
 )
 
 set(test_sources
@@ -351,3 +343,25 @@ build_lib(
   TEST_SOURCES ${test_sources}
   GENERATE_EXPORT_HEADER
 )
+
+if(${ENABLE_TESTS})
+  set(test-executables
+      fatal-command-line-duplicate-non-option-example
+      fatal-command-line-duplicate-option-example
+  )
+  foreach(
+    test-exec
+    ${test-executables}
+  )
+    build_exec(
+      EXECNAME ${test-exec}
+      SOURCE_FILES ./test/${test-exec}.cc
+      LIBRARIES_TO_LINK ${libcore}
+      EXECUTABLE_DIRECTORY_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/src/core/test/
+    )
+    add_dependencies(
+      test-runner-examples-as-tests
+      ${test-exec}
+    )
+  endforeach()
+endif()

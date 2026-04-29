@@ -1073,6 +1073,17 @@ doxygen documentation):
   ``MpduResponseTimeout``, ``PsduResponseTimeout``, ``PsduMapResponseTimeout``
 * ``WifiMacQueue`` trace source: ``Expired``
 
+The ``WifiMac`` class also provides packet-level trace sources:
+
+* ``MacTx``: A packet has been received by the WifiNetDevice and is about to be enqueued
+* ``MacTxDrop``: A packet has been dropped in the MAC layer before being queued for transmission
+* ``MacPromiscRx``: A packet has been received and is being forwarded up the local protocol stack
+  (promiscuous trace)
+* ``MacRx``: A packet has been received and is being forwarded up the local protocol stack
+  (non-promiscuous trace)
+* ``MacRxDrop``: A packet has been dropped in the MAC layer after it has been passed up from the
+  physical layer
+
 Internally, a wifi MAC queue is made of multiple sub-queues, each storing frames of
 a given type (i.e., data or management) and having a given receiver address and TID.
 For single-user transmissions, the next station to serve is determined by a wifi MAC

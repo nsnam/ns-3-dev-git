@@ -94,7 +94,7 @@ main(int argc, char* argv[])
                   "Ssid",
                   SsidValue(ssid),
                   "BeaconInterval",
-                  TimeValue(DEFAULT_BEACON_INTERVAL),
+                  TimeValue(DEFAULT_BEACON_INTERVAL()),
                   "BeaconGeneration",
                   BooleanValue(true));
     NetDeviceContainer staDevice;

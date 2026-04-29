@@ -203,14 +203,12 @@ is not the most efficient approach but it certainly makes writing scripts much
 easier.
 
 Each of the |ns3| include files is placed in a directory called
-``ns3`` (under the build directory) during the build process to help avoid
+``build/include/ns3`` during the build process to help avoid
 include file name collisions.  The ``ns3/core-module.h`` file corresponds
 to the ns-3 module you will find in the directory ``src/core`` in your
 downloaded release distribution.  If you list this directory you will find a
 large number of header files.  When you do a build, ns3 will place public
-header files in an ``ns3`` directory under the appropriate
-``build/debug`` or ``build/optimized`` directory depending on your
-configuration.  CMake will also automatically generate a module include file to
+header files in an ``build/include/ns3`` directory.  CMake will also automatically generate a module include file to
 load all of the public header files.
 
 Since you are, of course, following this tutorial religiously, you will

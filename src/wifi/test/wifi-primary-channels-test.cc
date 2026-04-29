@@ -381,7 +381,7 @@ WifiPrimaryChannelsTest::DoSetup()
                 "MaxMissedBeacons",
                 UintegerValue(20),
                 "WaitBeaconTimeout",
-                TimeValue(DEFAULT_BEACON_INTERVAL)); // same as BeaconInterval
+                TimeValue(DEFAULT_BEACON_INTERVAL())); // same as BeaconInterval
 
     WifiPhy::ChannelSettingsValue channelValue;
 
@@ -405,7 +405,7 @@ WifiPrimaryChannelsTest::DoSetup()
                     "Ssid",
                     SsidValue(Ssid("wifi-ssid-" + std::to_string(bss))),
                     "BeaconInterval",
-                    TimeValue(DEFAULT_BEACON_INTERVAL),
+                    TimeValue(DEFAULT_BEACON_INTERVAL()),
                     "EnableBeaconJitter",
                     BooleanValue(false));
 
@@ -494,7 +494,7 @@ WifiPrimaryChannelsTest::DoRun()
         for (uint16_t i = 1; i < m_nStationsPerBss; i++)
         {
             dev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i));
-            Simulator::Schedule(i * DEFAULT_BEACON_INTERVAL,
+            Simulator::Schedule(i * DEFAULT_BEACON_INTERVAL(),
                                 &WifiMac::SetSsid,
                                 dev->GetMac(),
                                 Ssid("wifi-ssid-" + std::to_string(bss)));
@@ -508,13 +508,13 @@ WifiPrimaryChannelsTest::DoRun()
         dev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
         auto mac = DynamicCast<ApWifiMac>(dev->GetMac());
 
-        Simulator::Schedule((m_nStationsPerBss - 1) * DEFAULT_BEACON_INTERVAL,
+        Simulator::Schedule((m_nStationsPerBss - 1) * DEFAULT_BEACON_INTERVAL(),
                             &ApWifiMac::SetBeaconInterval,
                             mac,
                             MicroSeconds(1024 * 65535));
     }
 
-    m_time = (m_nStationsPerBss + 1) * DEFAULT_BEACON_INTERVAL;
+    m_time = (m_nStationsPerBss + 1) * DEFAULT_BEACON_INTERVAL();
 
     Simulator::Schedule(m_time, &WifiPrimaryChannelsTest::CheckAssociation, this);
 

@@ -98,7 +98,7 @@ The key attributes that the FqCoDelQueue class holds include the following:
 * ``DropBatchSize:`` The maximum number of packets dropped from the fat flow.
 * ``Perturbation:`` The salt used as an additional input to the hash function used to classify packets.
 * ``CeThreshold`` The FqCoDel CE threshold for marking packets
-* ``UseL4s`` True to use L4S (only ECT1 packets are marked at CE threshold)
+* ``UseL4s`` True to use L4S (only ECT1 packets are marked at CE threshold). This corresponds to the Linux ce_threshold_selector setting of 0x01/0x01 (https://man7.org/linux/man-pages/man8/tc-fq_codel.8.html).
 * ``EnableSetAssociativeHash:`` The parameter used to enable set associative hash.
 
 Perturbation is an optional configuration attribute and can be used to generate

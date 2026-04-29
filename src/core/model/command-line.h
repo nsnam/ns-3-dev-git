@@ -655,6 +655,31 @@ class CommandLine
     /** Argument list container */
     using Items = std::vector<std::shared_ptr<Item>>;
 
+    /**
+     * @brief Checks for duplicate item names in a list of items.
+     *
+     * This function checks for the existence of an item with the same name as the one provided in
+     * the list of items. If a duplicate is found, an error message is generated and the program is
+     * aborted.
+     *
+     * @param[in] name The name of the item to check.
+     * @param[in] optType The type of option that the item represents (e.g. "option", "non-option").
+     * @param[in] items A list of Items to check for duplicate names.
+     */
+    void CheckForDuplicateItemNameError(std::string name, std::string optType, const Items& items);
+    /**
+     * @brief Test for duplicate option arguments.
+     *
+     * @param name The name of the option argument to test for.
+     */
+    void TestForDuplicateOption(std::string name);
+    /**
+     * Tests for duplicate non-option arguments.
+     *
+     * @param name The name of the non-option argument to test for.
+     */
+    void TestForDuplicateNonOption(std::string name);
+
     /** The list of option arguments */
     Items m_options;
     /** The list of non-option arguments */
@@ -746,6 +771,7 @@ template <typename T>
 void
 CommandLine::AddValue(const std::string& name, const std::string& help, T& value)
 {
+    TestForDuplicateOption(name);
     auto item = std::make_shared<UserItem<T>>();
     item->m_name = name;
     item->m_help = help;
@@ -762,6 +788,7 @@ template <typename T>
 void
 CommandLine::AddNonOption(const std::string& name, const std::string& help, T& value)
 {
+    TestForDuplicateNonOption(name);
     auto item = std::make_shared<UserItem<T>>();
     item->m_name = name;
     item->m_help = help;

@@ -209,7 +209,8 @@ of the available implementations:
 
  * ``AlohaNoackNetDevice``: a minimal NetDevice that allows to send
    packets over ``HalfDuplexIdealPhy`` (or other PHY model based on
-   the  ``GenericPhy`` interface).
+   the  ``GenericPhy`` interface). It provides NetDevice trace sources
+   ``MacTx``, ``MacTxDrop``, ``MacRx``, and ``MacPromiscRx``.
 
  * ``SpectrumAnalyzer``, ``WaveformGenerator`` and ``MicrowaveOven`` are examples of PHY
    models other than communication devices - the names should be

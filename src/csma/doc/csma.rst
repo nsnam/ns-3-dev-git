@@ -159,6 +159,23 @@ CsmaNetDevice provides following Attributes:
 * Rx:  A trace source for received packets;
 * Drop:  A trace source for dropped packets.
 
+In addition to these attributes, CsmaNetDevice exposes a number of trace
+sources.  The most commonly used ones are:
+
+* ``MacTx``: Trace source for packets handed down from upper layers, and fires
+  before the packet is enqueued into the device transmit queue;
+* ``MacTxDrop``: Trace source for packets dropped by the device before
+  transmission;
+* ``MacRx``: Trace source for packets successfully received in non-promiscuous
+  mode;
+* ``MacPromiscRx``: Trace source for packets received in promiscuous mode and fired
+  only when a promiscuous receive callback is installed via
+  ``SetPromiscReceiveCallback``;
+* ``Sniffer`` / ``PromiscSniffer``: Trace sources simulating non-promiscuous
+  and promiscuous packet sniffers. On the receive path they follow the same
+  packet selection as ``MacRx`` / ``MacPromiscRx`` and on the transmit
+  path they fire after dequeuing from the device transmit queue.
+
 The CsmaNetDevice supports the assignment of a "receive error model." This is an
 ErrorModel object that is used to simulate data corruption on the link.
 

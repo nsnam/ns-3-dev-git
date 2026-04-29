@@ -2692,7 +2692,7 @@ WifiPsModeAttributesTest::DoSetup()
     WifiMacHelper mac;
     mac.SetType("ns3::ApWifiMac",
                 "BeaconInterval",
-                TimeValue(DEFAULT_BEACON_INTERVAL),
+                TimeValue(DEFAULT_BEACON_INTERVAL()),
                 "Ssid",
                 ssidValue);
 
@@ -2710,7 +2710,7 @@ WifiPsModeAttributesTest::DoSetup()
                 "Ssid",
                 ssidValue,
                 "WaitBeaconTimeout",
-                TimeValue((STA_BEACON_JITTER + WAIT_BEACON_SURPLUS) * DEFAULT_BEACON_INTERVAL));
+                TimeValue((STA_BEACON_JITTER + WAIT_BEACON_SURPLUS) * DEFAULT_BEACON_INTERVAL()));
 
     auto staDevs = wifi.Install(staPhy, mac, wifiStaNodes.Get(STA_INDEX));
 
@@ -2728,11 +2728,12 @@ WifiPsModeAttributesTest::DoSetup()
     if (m_enableEmlsr)
     {
         phy.ResetPhyToFreqRangeMapping();
-        mac.SetType("ns3::StaWifiMac",
-                    "Ssid",
-                    ssidValue,
-                    "WaitBeaconTimeout",
-                    TimeValue((DUT_BEACON_JITTER + WAIT_BEACON_SURPLUS) * DEFAULT_BEACON_INTERVAL));
+        mac.SetType(
+            "ns3::StaWifiMac",
+            "Ssid",
+            ssidValue,
+            "WaitBeaconTimeout",
+            TimeValue((DUT_BEACON_JITTER + WAIT_BEACON_SURPLUS) * DEFAULT_BEACON_INTERVAL()));
         mac.SetEmlsrManager("ns3::AdvancedEmlsrManager",
                             "EmlsrLinkSet",
                             StringValue("0,1"),

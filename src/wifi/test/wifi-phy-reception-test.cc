@@ -4074,7 +4074,7 @@ TestUnsupportedModulationReception::DoRun()
                 "Ssid",
                 SsidValue(Ssid("wifi-backoff-ssid")),
                 "BeaconInterval",
-                TimeValue(DEFAULT_BEACON_INTERVAL),
+                TimeValue(DEFAULT_BEACON_INTERVAL()),
                 "EnableBeaconJitter",
                 BooleanValue(false));
 
@@ -4087,7 +4087,7 @@ TestUnsupportedModulationReception::DoRun()
     for (uint16_t i = 0; i < m_nStations; i++)
     {
         dev = DynamicCast<WifiNetDevice>(m_staDevices.Get(i));
-        Simulator::Schedule(init + i * DEFAULT_BEACON_INTERVAL,
+        Simulator::Schedule(init + i * DEFAULT_BEACON_INTERVAL(),
                             &WifiMac::SetSsid,
                             dev->GetMac(),
                             Ssid("wifi-backoff-ssid"));
