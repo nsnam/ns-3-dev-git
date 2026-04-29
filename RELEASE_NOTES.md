@@ -25,8 +25,8 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (macOS only) Xcode 16.2 or later
 - (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
 
-The version of clang-format enforced by the check-style-clang-format.py script for
-this release is version 20 only.
+The versions of clang-format enforced by the check-style-clang-format.py script for
+this release are 20 to 22.
 
 Version 22 of the clang-tidy linter is now supported and recommended, although
 versions 17 to 21 are still compatible.
