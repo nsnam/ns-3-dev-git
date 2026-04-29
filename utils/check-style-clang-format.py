@@ -63,6 +63,7 @@ DIRECTORIES_TO_SKIP = [
     "build",
     "cmake-cache",
     "testpy-output",
+    "third-party",
     "venv",
 ]
 
