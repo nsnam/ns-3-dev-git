@@ -2070,7 +2070,8 @@ def main():
             target_to_run = target_to_run.split()
             target_to_run, target_args = target_to_run[0], target_to_run[1:]
             # Remove version prefixes and build profile suffices if they exist
-            if os.path.basename(target_to_run).startswith("ns3"):
+            base_target = os.path.basename(target_to_run)
+            if base_target.startswith("ns3-dev") or base_target.startswith("ns3."):
                 pardir = os.path.dirname(target_to_run)
                 components = os.path.basename(target_to_run).split("-")
                 if "ns3" in components[0]:
