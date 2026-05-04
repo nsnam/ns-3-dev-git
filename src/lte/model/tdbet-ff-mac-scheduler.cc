@@ -593,6 +593,7 @@ TdBetFfMacScheduler::DoSchedDlTriggerReq(
         }
         auto nLayers = m_dlInfoListBuffered.at(i).m_harqStatus.size();
         std::vector<bool> retx;
+        retx.reserve(2);
         NS_LOG_INFO(this << " Processing DLHARQ feedback");
         if (nLayers == 1)
         {
