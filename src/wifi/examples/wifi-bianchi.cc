@@ -3185,12 +3185,11 @@ main(int argc, char* argv[])
                            apTxPower,
                            staTxPower,
                            MicroSeconds(pktInterval));
-            uint32_t k = 0;
             if (bytesReceived.size() != n)
             {
                 NS_FATAL_ERROR("Not all stations got traffic!");
             }
-            for (auto it = bytesReceived.begin(); it != bytesReceived.end(); it++, k++)
+            for (auto it = bytesReceived.begin(); it != bytesReceived.end(); ++it)
             {
                 Time first = timeFirstReceived.find(it->first)->second;
                 Time last = timeLastReceived.find(it->first)->second;

@@ -778,9 +778,7 @@ Ipv4L3Protocol::Send(Ptr<Packet> packet,
     if (destination.IsBroadcast() || destination.IsLocalMulticast())
     {
         NS_LOG_LOGIC("Ipv4L3Protocol::Send case 2:  limited broadcast - no route");
-        uint32_t ifaceIndex = 0;
-        for (auto ifaceIter = m_interfaces.begin(); ifaceIter != m_interfaces.end();
-             ifaceIter++, ifaceIndex++)
+        for (auto ifaceIter = m_interfaces.begin(); ifaceIter != m_interfaces.end(); ++ifaceIter)
         {
             Ptr<Ipv4Interface> outInterface = *ifaceIter;
             // ANY source matches any interface
