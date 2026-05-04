@@ -144,6 +144,44 @@ class Ptr
      */
     template <typename U>
     Ptr(const Ptr<U>& o);
+
+    /**
+     * Move by transferring the managed reference from another Ptr.
+     *
+     * The moved-from Ptr is left empty. The underlying reference count is not changed.
+     *
+     * @param [in,out] o The Ptr to move from.
+     */
+    Ptr(Ptr&& o) noexcept
+        : m_ptr(o.m_ptr)
+    {
+        o.m_ptr = nullptr;
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * Releases any object currently referenced by this Ptr, then transfers the managed
+     * reference from another Ptr. The moved-from Ptr is left empty. The underlying
+     * reference count for the moved object is not changed.
+     *
+     * @param [in,out] o The Ptr to move from.
+     * @return A reference to self.
+     */
+    Ptr& operator=(Ptr&& o) noexcept
+    {
+        if (this != &o)
+        {
+            if (m_ptr)
+            {
+                m_ptr->Unref();
+            }
+            m_ptr = o.m_ptr;
+            o.m_ptr = nullptr;
+        }
+        return *this;
+    }
+
     /** Destructor. */
     ~Ptr();
     /**
