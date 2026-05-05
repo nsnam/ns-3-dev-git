@@ -282,10 +282,10 @@ template <typename MEM, typename OBJ, typename... Args>
 void
 WifiTxTimer::Timeout(MEM mem_ptr, OBJ obj, Args... args)
 {
-    FeedTraceSource(std::forward<Args>(args)...);
+    FeedTraceSource(args...);
 
     // Invoke the method set by the user
-    ((*obj).*mem_ptr)(std::forward<Args>(args)...);
+    ((*obj).*mem_ptr)(std::move(args)...);
 }
 
 } // namespace ns3
