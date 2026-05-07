@@ -31,13 +31,13 @@ check-style-clang-format-20:
 #     CLANG_FORMAT_VERSION: 21
 
 # Clang-tidy
-clang-tidy-21:
+clang-tidy-22:
   extends: .code-linting-base
   stage: code-linting
   image: ubuntu:rolling
   variables:
     MPI_CI: 1
-    CLANG_TIDY_VERSION: 21
+    CLANG_TIDY_VERSION: 22
     CLANG_TIDY_OUTPUT: clang-tidy-output.log
     FILES_CHANGED: git-diff-name-only.log
   before_script:
