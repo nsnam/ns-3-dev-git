@@ -11,7 +11,6 @@
 
 #include "sta-wifi-mac.h"
 #include "wifi-net-device.h"
-#include "wifi-phy.h"
 
 #include "ns3/boolean.h"
 #include "ns3/eht-configuration.h"
@@ -148,9 +147,9 @@ WifiAssocManager::GetTypeId()
                           MakeBooleanAccessor(&WifiAssocManager::m_enableChannelSwitch),
                           MakeBooleanChecker())
             .AddTraceSource("ScanningEnd",
-                            "Traces the end of every scanning procedure. Provides the list of APs "
-                            "found during the scanning procedure, sorted in the order in which "
-                            "they were discovered.",
+                            "Traces the end of every scanning procedure. Provides the scan "
+                            "duration and the list of APs found during the scanning "
+                            "procedure, sorted in the order in which they were discovered.",
                             MakeTraceSourceAccessor(&WifiAssocManager::m_scanEndLogger),
                             "ns3::WifiAssocManager::ScanEndCallback");
     return tid;
@@ -587,6 +586,8 @@ WifiAssocManager::StartScanning(bool offline)
 {
     NS_LOG_FUNCTION(this << offline);
 
+    m_currScanResults.perChanResults.clear();
+
     if (!m_enableScanning)
     {
         NS_LOG_DEBUG("Scanning disabled");
@@ -625,6 +626,20 @@ WifiAssocManager::StartScanning(bool offline)
         m_scanParams.type = WifiScanType::PASSIVE;
         m_scanParams.maxChannelTime = waitBeaconTimeout.Get();
     }
+
+    const auto expectedChannels = std::accumulate(
+        m_scanParams.channelList.cbegin(),
+        m_scanParams.channelList.cend(),
+        0,
+        [](auto sum, const auto& phyIdChannelsPair) {
+            return sum + std::accumulate(phyIdChannelsPair.second.cbegin(),
+                                         phyIdChannelsPair.second.cend(),
+                                         0,
+                                         [](auto innerSum, const auto& bandChannelsPair) {
+                                             return innerSum + bandChannelsPair.second.size();
+                                         });
+        });
+    m_currScanResults.perChanResults.reserve(expectedChannels);
 
     for (const auto& [phyId, bandChannelsMap] : m_scanParams.channelList)
     {
@@ -671,8 +686,6 @@ WifiAssocManager::ScanChannels()
     NS_ABORT_MSG_IF(m_scanParams.channelList.empty(), "No channels to scan");
     m_channelsToSet.clear();
 
-    m_currScanAps.clear();
-
     for (const auto& [phyId, phyBandChannelsMap] : m_scanParams.channelList)
     {
         NS_ABORT_MSG_IF(phyBandChannelsMap.empty(), "No PHY band for PHY ID " << +phyId);
@@ -700,10 +713,11 @@ WifiAssocManager::SwitchToChannelToScan(
     NS_ASSERT(phy);
     // check if we need to switch channel to scan the given channel
     const auto isMultipleOf20MHz = (static_cast<uint16_t>(phy->GetChannelWidth()) % 20 == 0);
+    const auto width = (!isMultipleOf20MHz ? phy->GetChannelWidth() : MHz_u{20});
     const auto channelNo =
         (!isMultipleOf20MHz
              ? phy->GetChannelNumber()
-             : phy->GetOperatingChannel().GetPrimaryChannelNumber(MHz_u{20}, phy->GetStandard()));
+             : phy->GetOperatingChannel().GetPrimaryChannelNumber(width, phy->GetStandard()));
 
     if (channelNo != *channelIt)
     {
@@ -714,7 +728,6 @@ WifiAssocManager::SwitchToChannelToScan(
             phy->ResumeFromSleep();
         }
 
-        const auto width = (!isMultipleOf20MHz ? phy->GetChannelWidth() : MHz_u{20});
         NS_LOG_DEBUG("Switching PHY " << +phyId << " to channel " << *channelIt << ", " << band);
         phy->SetOperatingChannel(WifiPhy::ChannelSegments{{*channelIt, width, band, 0}});
 
@@ -736,6 +749,19 @@ WifiAssocManager::SwitchToChannelToScan(
     }
 }
 
+std::optional<WifiAssocManager::PerChanScanResultsIterator>
+WifiAssocManager::GetLastPerChanScanResult(uint8_t phyId)
+{
+    const auto it = std::find_if(m_currScanResults.perChanResults.rbegin(),
+                                 m_currScanResults.perChanResults.rend(),
+                                 [phyId](auto&& result) { return result.phyId == phyId; });
+    if (it == m_currScanResults.perChanResults.rend())
+    {
+        return std::nullopt;
+    }
+    return std::prev(it.base());
+}
+
 void
 WifiAssocManager::ScanCurrentChannel(
     uint8_t phyId,
@@ -743,6 +769,20 @@ WifiAssocManager::ScanCurrentChannel(
     WifiScanParams::ChannelList::mapped_type::const_iterator channelIt)
 {
     NS_LOG_FUNCTION(this << phyId << band << *channelIt);
+
+    auto phy = m_mac->GetDevice()->GetPhy(phyId);
+    NS_ASSERT(phy);
+    const auto isMultipleOf20MHz = (static_cast<uint16_t>(phy->GetChannelWidth()) % 20 == 0);
+    const auto width = (!isMultipleOf20MHz ? phy->GetChannelWidth() : MHz_u{20});
+    const WifiChannelConfig scanChannel{
+        WifiChannelConfig::SegmentWithoutUnits{static_cast<uint8_t>(*channelIt), width, band, 0}};
+
+    if (auto last = GetLastPerChanScanResult(phyId))
+    {
+        (*last)->scanEndTime = Simulator::Now() - phy->GetChannelSwitchDelay();
+    }
+    m_currScanResults.perChanResults.push_back(
+        {.phyId = phyId, .scanStartTime = Simulator::Now(), .scanChannel = scanChannel});
 
     Time scanDuration;
 
@@ -864,13 +904,17 @@ WifiAssocManager::SwitchToNextChannelToScan(uint8_t phyId, WifiPhyBand band, uin
         return;
     }
 
-    // no other channel to scan for this PHY; if we are not waiting for other PHYs to finish their
-    // scanning, we are done
+    // no other channel to scan for this PHY; record the end time of the final channel.
+    if (auto last = GetLastPerChanScanResult(phyId))
+    {
+        (*last)->scanEndTime = Simulator::Now();
+    }
+
+    // if we are not waiting for other PHYs to finish their scanning, we are done
     if (!IsScanning())
     {
         EndScanning();
-        m_scanEndLogger(m_currScanAps);
-        m_currScanAps.clear();
+        m_scanEndLogger(m_currScanResults);
     }
 }
 
@@ -897,7 +941,11 @@ WifiAssocManager::NotifyApInfo(const StaWifiMac::ApInfo&& apInfo)
         return;
     }
 
-    m_currScanAps.emplace_back(apInfo);
+    if (!m_currScanResults.perChanResults.empty())
+    {
+        // currently scanning, store the AP info in the current scan results
+        m_currScanResults.perChanResults.back().apList.emplace_back(apInfo);
+    }
 
     // check if an ApInfo object with the same BSSID is already present in the
     // sorted list of ApInfo objects. This is done by trying to insert the BSSID

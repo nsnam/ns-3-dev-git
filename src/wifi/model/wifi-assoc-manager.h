@@ -11,6 +11,7 @@
 
 #include "qos-utils.h"
 #include "sta-wifi-mac.h"
+#include "wifi-phy.h"
 
 #include "ns3/attribute-container.h"
 #include "ns3/enum.h"
@@ -117,6 +118,27 @@ class WIFI_EXPORT WifiAssocManager : public Object
         std::size_t m_nbrApInfoId;     ///< Neighbor AP Information field index
         std::size_t m_tbttInfoFieldId; ///< TBTT Information field index
     };
+
+    /// Structure to hold the results of a scanning procedure on a specific channel
+    struct PerChanScanResults
+    {
+        uint8_t phyId;                 ///< ID of the PHY on which the scan has been performed
+        Time scanStartTime;            ///< time at which the scan started on that channel
+        Time scanEndTime;              ///< time at which the scan ended on that channel
+        WifiChannelConfig scanChannel; ///< channel settings of the channel that was scanned
+        std::list<StaWifiMac::ApInfo>
+            apList; ///< list of APs found during the scan (sorted in the order of discovery)
+    };
+
+    /// Structure to hold the results of a scanning procedure
+    struct WifiScanResults
+    {
+        std::vector<PerChanScanResults> perChanResults; ///< list of results for each scanned
+                                                        ///< channel in the order they were scanned
+    };
+
+    /// Iterator type for per-channel scan results
+    using PerChanScanResultsIterator = std::vector<PerChanScanResults>::iterator;
 
     /**
      * @brief Get the type ID.
@@ -431,6 +453,14 @@ class WIFI_EXPORT WifiAssocManager : public Object
                             WifiScanParams::ChannelList::mapped_type::const_iterator channelIt);
 
     /**
+     * Find the most recent scan results entry for a given PHY.
+     *
+     * @param phyId the ID of the PHY
+     * @return optional iterator to the latest scan result for the PHY
+     */
+    std::optional<PerChanScanResultsIterator> GetLastPerChanScanResult(uint8_t phyId);
+
+    /**
      * Switch the given PHY to the next channel to scan. If there is no other channel to scan for
      * the given PHY, call EndScanning() if scanning has been completed for all other PHYs.
      *
@@ -476,13 +506,11 @@ class WIFI_EXPORT WifiAssocManager : public Object
 
     /// hash table to help locate ApInfo objects in the sorted list based on the BSSID
     std::unordered_map<Mac48Address, SortedList::const_iterator, WifiAddressHash> m_apListIt;
-    std::list<StaWifiMac::ApInfo> m_currScanAps; ///< list of APs found during the current scan
-                                                 ///< (sorted in the order of discovery)
-    TracedCallback<const std::list<StaWifiMac::ApInfo>&>
-        m_scanEndLogger; ///< scanning procedure end logger
+    WifiScanResults m_currScanResults; ///< results of the current scanning procedure
+    TracedCallback<const WifiScanResults&> m_scanEndLogger; ///< scanning procedure end logger
 
     /// TracedCallback signature for scanning procedure end events
-    using ScanEndCallback = void (*)(const std::list<StaWifiMac::ApInfo>&);
+    using ScanEndCallback = void (*)(const WifiScanResults&);
 };
 
 } // namespace ns3

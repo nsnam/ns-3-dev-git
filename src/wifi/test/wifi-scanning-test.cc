@@ -284,11 +284,11 @@ class WifiOfflineChannelScanningTest : public TestCase
 
     /**
      * Callback connected to the ScanningEnd trace. The purpose is to verify that the trace is
-     * fired and the given list is empty (no AP is setup on the scanned channels).
+     * fired and the scan results contain no discovered APs.
      *
-     * @param apList the list of APs discovered while scanning
+     * @param scanResults the results of the scanning procedure
      */
-    void ScanEndCallback(const std::list<StaWifiMac::ApInfo>& apList);
+    void ScanEndCallback(const WifiAssocManager::WifiScanResults& scanResults);
 
   private:
     void DoSetup() override;
@@ -413,13 +413,17 @@ WifiOfflineChannelScanningTest::DoSetup()
 }
 
 void
-WifiOfflineChannelScanningTest::ScanEndCallback(const std::list<StaWifiMac::ApInfo>& apList)
+WifiOfflineChannelScanningTest::ScanEndCallback(
+    const WifiAssocManager::WifiScanResults& scanResults)
 {
+    NS_LOG_FUNCTION(this << scanResults.perChanResults.size());
     ++m_traceFiredCount;
-    NS_TEST_EXPECT_MSG_EQ(apList.empty(), true, "Expected no AP discovered during scanning");
-    for (const auto& ap : apList)
+    for (const auto& perChanResult : scanResults.perChanResults)
     {
-        std::cout << ap << std::endl;
+        NS_TEST_EXPECT_MSG_EQ(perChanResult.apList.empty(),
+                              true,
+                              "Expected no AP discovered during scanning on channel "
+                                  << perChanResult.scanStartTime);
     }
 }
 
