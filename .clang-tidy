@@ -61,4 +61,3 @@ ExtraArgsBefore:
 FormatStyle: "file"
 HeaderFilterRegex: "(contrib|examples|scratch|src|utils)/.*\\.h$"
 ExcludeHeaderFilterRegex: "(third-party|eigen[0-9]*)/.*"
-UseColor: true
