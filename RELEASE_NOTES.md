@@ -43,6 +43,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### Bugs fixed
 
+- (internet) !2863 Fixes missing `ECN_DISABLED` check in IPv6 `ForwardUp6()` ECN handling
 - (lr-wpan) !2860 Fixes packet drop when CheckSumEnabled and correct.
 - (internet) !2792 Prevent Ipv[4,6]ListRouting from using wrong output interface and add test.
 - (spectrum) !2774 `MultiModelSpectrumChannel` will now omit an existing precoding matrix if its dimensions do not match those of the receiver. This is necessary because we do not convert it in the same way as the PSD.

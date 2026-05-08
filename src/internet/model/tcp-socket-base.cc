@@ -1311,7 +1311,8 @@ TcpSocketBase::ForwardUp6(Ptr<Packet> packet,
         m_tcb->m_ecnState = TcpSocketState::ECN_CE_RCVD;
         m_congestionControl->CwndEvent(m_tcb, TcpSocketState::CA_EVENT_ECN_IS_CE);
     }
-    else if (header.GetEcn() != Ipv6Header::ECN_NotECT)
+    else if (header.GetEcn() != Ipv6Header::ECN_NotECT &&
+             m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED)
     {
         m_congestionControl->CwndEvent(m_tcb, TcpSocketState::CA_EVENT_ECN_NO_CE);
     }
