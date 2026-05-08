@@ -2425,15 +2425,6 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int
     LrWpanMacTrailer receivedMacTrailer;
     p->RemoveTrailer(receivedMacTrailer);
 
-    // Extract the MAC Header from the packet
-    LrWpanMacHeader receivedMacHdr;
-    p->RemoveHeader(receivedMacHdr);
-
-    if (Node::ChecksumEnabled())
-    {
-        receivedMacTrailer.EnableFcs(true);
-    }
-
     // From section 7.5.6.2 Reception and rejection, IEEE 802.15.4-2006
     // - Level 1 filtering: Test FCS field and reject if frame fails.
     // - Level 2 filtering: If promiscuous mode pass frame to higher layer
@@ -2444,12 +2435,20 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int
     //   srcPanId = m_macPanId if only srcAddr field in Data or Command frame,accept frame if
     //   srcPanId=m_macPanId.
 
-    // Level 1 filtering
-    if (!receivedMacTrailer.CheckFcs(p))
+    // Level 1 filtering (Only available if ns-3 included the FCS)
+    if (Node::ChecksumEnabled())
     {
-        m_macRxDropTrace(originalPkt);
-        return;
+        if (!receivedMacTrailer.CheckFcs(p))
+        {
+            m_macRxDropTrace(originalPkt);
+            return;
+        }
     }
+
+    // After the the FCS check, we can now
+    // extract the MAC Header from the packet
+    LrWpanMacHeader receivedMacHdr;
+    p->RemoveHeader(receivedMacHdr);
 
     // Level 2 filtering
     if (m_macPromiscuousMode)
