@@ -43,12 +43,11 @@ clang-tidy-21:
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
-      clang cmake
-      clang-tidy clang-tidy-$CLANG_TIDY_VERSION
+      clang-tidy-$CLANG_TIDY_VERSION clang-$CLANG_TIDY_VERSION cmake libstdc++-16-dev
       libboost-all-dev libeigen3-dev libgtk-3-dev libopenmpi-dev libsqlite3-dev
       gsl-bin libgsl-dev libgsl28
       git ssh
-    - ./ns3 configure -d debug
+    - CXX=clang++-$CLANG_TIDY_VERSION ./ns3 configure -d debug
       --enable-clang-tidy
       --enable-examples --enable-tests --enable-asserts
       --enable-mpi
