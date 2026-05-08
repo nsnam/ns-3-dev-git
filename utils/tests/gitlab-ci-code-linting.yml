@@ -72,12 +72,7 @@ clang-tidy-22:
         echo "Running clang-tidy on the following changed files:";
         echo $FILES_TO_CHECK;
       fi
-    - run-clang-tidy-$CLANG_TIDY_VERSION -p cmake-cache/ -quiet $FILES_TO_CHECK
-      1> $CLANG_TIDY_OUTPUT
-      2> /dev/null
-
-    # Trim empty lines from output file
-    - sed -i '/^$/d' $CLANG_TIDY_OUTPUT
+    - run-clang-tidy-$CLANG_TIDY_VERSION -p cmake-cache/ -quiet $FILES_TO_CHECK > $CLANG_TIDY_OUTPUT
 
     # Check job results
     - (! egrep -v "file not found \[clang-diagnostic-error\]" $CLANG_TIDY_OUTPUT | egrep -A3 "error:|warning:|note:")
