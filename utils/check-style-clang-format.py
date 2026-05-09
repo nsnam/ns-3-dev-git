@@ -6,8 +6,7 @@
 #
 # Author: Eduardo Nuno Almeida <enmsa@outlook.pt> [INESC TEC and FEUP, Portugal]
 
-"""
-Check and apply the ns-3 coding style recursively to all files in the PATH arguments.
+"""Check and apply the ns-3 coding style recursively to all files in the PATH arguments.
 
 The coding style is defined with the clang-format tool, whose definitions are in
 the ".clang-format" file. This script performs the following checks / fixes:
@@ -177,11 +176,13 @@ FILE_ENCODING = "UTF-8"
 # AUXILIARY FUNCTIONS
 ###########################################################
 def should_analyze_directory(dirpath: str) -> bool:
-    """
-    Check whether a directory should be analyzed.
+    """Check whether a directory should be analyzed.
 
-    @param dirpath Directory path.
-    @return Whether the directory should be analyzed.
+    Args:
+        dirpath: Directory path.
+
+    Returns:
+        Whether the directory should be analyzed.
     """
 
     _, directory = os.path.split(dirpath)
@@ -194,13 +195,15 @@ def should_analyze_file(
     files_to_check: List[str],
     file_extensions_to_check: List[str],
 ) -> bool:
-    """
-    Check whether a file should be analyzed.
+    """Check whether a file should be analyzed.
 
-    @param path Path to the file.
-    @param files_to_check List of files that shall be checked.
-    @param file_extensions_to_check List of file extensions that shall be checked.
-    @return Whether the file should be analyzed.
+    Args:
+        path: Path to the file.
+        files_to_check: List of files that shall be checked.
+        file_extensions_to_check: List of file extensions that shall be checked.
+
+    Returns:
+        Whether the file should be analyzed.
     """
 
     filename = os.path.split(path)[1]
@@ -216,15 +219,17 @@ def should_analyze_file(
 def find_files_to_check_style(
     paths: List[str],
 ) -> Dict[str, List[str]]:
-    """
-    Find all files to be checked in a given list of paths.
+    """Find all files to be checked in a given list of paths.
 
-    @param paths List of paths to the files to check.
-    @return Dictionary of checks and corresponding list of files to check.
-            Example: {
-                "formatting": list_of_files_to_check_formatting,
-                ...,
-            }
+    Args:
+        paths List of paths to the files to check.
+
+    Returns:
+        Dictionary of checks and corresponding list of files to check.
+        Example: {
+            "formatting": list_of_files_to_check_formatting,
+            ...,
+        }
     """
 
     # Get list of files found in the given path
@@ -262,11 +267,13 @@ def find_files_to_check_style(
 
 
 def find_clang_format_path() -> str:
-    """
-    Find the path to one of the supported versions of clang-format.
-    If no supported version of clang-format is found, raise an exception.
+    """Find the path to one of the supported versions of clang-format.
 
-    @return Path to clang-format.
+    Returns:
+        Path to clang-format.
+
+    Raises:
+        RuntimeError: If no supported version of clang-format is found.
     """
 
     # Find exact version, starting from the most recent one
@@ -315,15 +322,17 @@ def check_style_clang_format(
     verbose: bool,
     n_jobs: int = 1,
 ) -> bool:
-    """
-    Check / fix the coding style of a list of files.
+    """Check / fix the coding style of a list of files.
 
-    @param paths List of paths to the files to check.
-    @param checks_enabled Dictionary of checks indicating whether to enable each of them.
-    @param fix Whether to fix (True) or just check (False) the file.
-    @param verbose Show the lines that are not compliant with the style.
-    @param n_jobs Number of parallel jobs.
-    @return Whether all files are compliant with all enabled style checks.
+    Args:
+        paths: List of paths to the files to check.
+        checks_enabled: Dictionary of checks indicating whether to enable each of them.
+        fix: Whether to fix (True) or just check (False) the file.
+        verbose: Show the lines that are not compliant with the style.
+        n_jobs: Number of parallel jobs.
+
+    Returns:
+        Whether all files are compliant with all enabled style checks.
     """
 
     files_to_check = find_files_to_check_style(paths)
@@ -438,17 +447,19 @@ def check_style_files(
     n_jobs: int,
     **kwargs,
 ) -> bool:
-    """
-    Check / fix style of a list of files.
+    """Check / fix style of a list of files.
 
-    @param style_check_str Description of the check to be performed.
-    @param check_style_file_function Function used to check the file.
-    @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the file (True).
-    @param verbose Show the lines that are not compliant with the style.
-    @param n_jobs Number of parallel jobs.
-    @param kwargs Additional keyword arguments to the check_style_file_function.
-    @return Whether all files are compliant with the style.
+    Args:
+        style_check_str: Description of the check to be performed.
+        check_style_file_function: Function used to check the file.
+        filename: Name of the file to be checked.
+        fix: Whether to fix (True) or just check (False) the file (True).
+        verbose: Show the lines that are not compliant with the style.
+        n_jobs: Number of parallel jobs.
+        kwargs: Additional keyword arguments to the check_style_file_function.
+
+    Returns:
+        Whether all files are compliant with the style.
     """
 
     # Check files
@@ -503,16 +514,18 @@ def check_formatting_file(
     verbose: bool,
     clang_format_path: str,
 ) -> Tuple[str, bool, List[str]]:
-    """
-    Check / fix the coding style of a file with clang-format.
+    """Check / fix the coding style of a file with clang-format.
 
-    @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the style of the file.
-    @param verbose Show the lines that are not compliant with the style.
-    @param clang_format_path Path to clang-format.
-    @return Tuple [Filename,
-                   Whether the file is compliant with the style (before the check),
-                   Verbose information].
+    Args:
+        filename: Name of the file to be checked.
+        fix: Whether to fix (True) or just check (False) the style of the file.
+        verbose: Show the lines that are not compliant with the style.
+        clang_format_path: Path to clang-format.
+
+    Returns:
+        Tuple (Filename,
+               Whether the file is compliant with the style (before the check),
+               Verbose information)
     """
 
     verbose_infos: List[str] = []
@@ -560,15 +573,17 @@ def check_encoding_file(
     fix: bool,
     verbose: bool,
 ) -> Tuple[str, bool, List[str]]:
-    """
-    Check / fix the encoding of a file.
+    """Check / fix the encoding of a file.
 
-    @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the encoding of the file.
-    @param verbose Show the lines that are not compliant with the style.
-    @return Tuple [Filename,
-                   Whether the file is compliant with the style (before the check),
-                   Verbose information].
+    Args:
+        filename: Name of the file to be checked.
+        fix: Whether to fix (True) or just check (False) the encoding of the file.
+        verbose: Show the lines that are not compliant with the style.
+
+    Returns:
+        Tuple (Filename,
+               Whether the file is compliant with the style (before the check),
+               Verbose information)
     """
 
     verbose_infos: List[str] = []
@@ -623,17 +638,19 @@ def check_manually_file(
     respect_clang_format_guards: bool,
     check_style_line_function: Callable[[str, str, int], Tuple[bool, str, List[str]]],
 ) -> Tuple[str, bool, List[str]]:
-    """
-    Check / fix a file manually using a function to check / fix each line.
+    """Check / fix a file manually using a function to check / fix each line.
 
-    @param filename Name of the file to be checked.
-    @param fix Whether to fix (True) or just check (False) the style of the file.
-    @param verbose Show the lines that are not compliant with the style.
-    @param respect_clang_format_guards Whether to respect clang-format guards.
-    @param check_style_line_function Function used to check each line.
-    @return Tuple [Filename,
-                   Whether the file is compliant with the style (before the check),
-                   Verbose information].
+    Args:
+        filename: Name of the file to be checked.
+        fix: Whether to fix (True) or just check (False) the style of the file.
+        verbose: Show the lines that are not compliant with the style.
+        respect_clang_format_guards: Whether to respect clang-format guards.
+        check_style_line_function: Function used to check each line.
+
+    Returns:
+        Tuple (Filename,
+               Whether the file is compliant with the style (before the check),
+               Verbose information)
     """
 
     is_file_compliant = True
@@ -685,15 +702,17 @@ def check_include_prefixes_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix #include headers from the same module with the "ns3/" prefix in a line.
+    """Check / fix #include headers from the same module with the "ns3/" prefix in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Filename,
+               Whether the line is compliant with the style (before the check),
+               Verbose information)
     """
 
     is_line_compliant = True
@@ -736,15 +755,17 @@ def check_include_quotes_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix ns-3 #include headers using angle brackets <> rather than quotes "" in a line.
+    """Check / fix ns-3 #include headers using angle brackets <> rather than quotes "" in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Whether the line is compliant with the style (before the check),
+               Fixed line,
+               Verbose information)
     """
 
     is_line_compliant = True
@@ -774,15 +795,17 @@ def check_doxygen_tags_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix Doxygen tags using \\ rather than @ in a line.
+    """Check / fix Doxygen tags using \\ rather than @ in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Whether the line is compliant with the style (before the check),
+               Fixed line,
+               Verbose information)
     """
 
     IGNORED_WORDS = [
@@ -824,15 +847,17 @@ def check_licenses_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix SPDX licenses rather than GPL text in a line.
+    """Check / fix SPDX licenses rather than GPL text in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Whether the line is compliant with the style (before the check),
+               Fixed line,
+               Verbose information)
     """
 
     # fmt: off
@@ -890,15 +915,17 @@ def check_emacs_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix emacs file style comment in a line.
+    """Check / fix emacs file style comment in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Whether the line is compliant with the style (before the check),
+               Fixed line,
+               Verbose information)
     """
 
     is_line_compliant = True
@@ -930,15 +957,17 @@ def check_whitespace_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix whitespace in a line.
+    """Check / fix whitespace in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Whether the line is compliant with the style (before the check),
+               Fixed line,
+               Verbose information)
     """
 
     is_line_compliant = True
@@ -963,15 +992,17 @@ def check_tabs_line(
     filename: str,
     line_number: int,
 ) -> Tuple[bool, str, List[str]]:
-    """
-    Check / fix tabs in a line.
+    """Check / fix tabs in a line.
 
-    @param line The line to check.
-    @param filename Name of the file to be checked.
-    @param line_number The number of the line checked.
-    @return Tuple [Whether the line is compliant with the style (before the check),
-                   Fixed line,
-                   Verbose information].
+    Args:
+        line: The line to check.
+        filename: Name of the file to be checked.
+        line_number: The number of the line checked.
+
+    Returns:
+        Tuple (Whether the line is compliant with the style (before the check),
+               Fixed line,
+               Verbose information)
     """
 
     is_line_compliant = True
