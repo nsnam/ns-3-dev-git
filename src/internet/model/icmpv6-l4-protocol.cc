@@ -749,7 +749,10 @@ Icmpv6L4Protocol::HandleNS(Ptr<Packet> packet,
         flags += 4; /* R flag */
     }
 
-    Address hardwareAddress = interface->GetDevice()->GetAddress();
+    // DAD replies are sent to a multicast address. Otherwise, use the interface address that is
+    // valid for the unicast receiver, as the device may have multiple link-layer addresses.
+    Address hardwareAddress = src.IsAny() ? interface->GetDevice()->GetAddress()
+                                          : interface->GetDevice()->GetAddressFor(replyMacAddress);
     NdiscCache::Ipv6PayloadHeaderPair p = ForgeNA(
         target.IsLinkLocal() ? interface->GetLinkLocalAddress().GetAddress() : ifaddr.GetAddress(),
         src.IsAny() ? dst : src, // DAD replies must go to the multicast group it was sent to.
