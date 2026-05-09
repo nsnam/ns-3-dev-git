@@ -1610,7 +1610,7 @@ MultiLinkSetupTest::CheckDisabledLinks()
             (legacyAssoc
                  ? m_staMacs[0]->GetFrameExchangeManager(m_staSetupLinks.front())->GetAddress()
                  : m_staMacs[0]->GetAddress());
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, addr, 0);
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, addr, 0);
 
         // the queue on the AP should have a mask if and only if the link has been setup
         auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
@@ -2036,7 +2036,7 @@ MultiLinkTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
                 });
 
                 nQueuedPkt++;
-                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), item);
+                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), std::nullopt, item);
             }
             // Each MPDU contains an A-MSDU consisting of two MSDUs
             NS_TEST_EXPECT_MSG_EQ(nQueuedPkt, m_nPackets / 2, "Unexpected number of queued MPDUs");
@@ -2572,7 +2572,7 @@ MultiLinkMuTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
                 });
 
                 nQueuedPkt++;
-                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), item);
+                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), std::nullopt, item);
             }
             // Each MPDU contains an A-MSDU consisting of two MSDUs
             NS_TEST_EXPECT_MSG_EQ(nQueuedPkt, m_nPackets / 2, "Unexpected number of queued MPDUs");

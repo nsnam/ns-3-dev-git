@@ -138,22 +138,27 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      */
     Ptr<WifiMpdu> Peek(std::optional<uint8_t> linkId) const;
     /**
-     * Search and return, if present in the queue, the first packet having the
-     * receiver address equal to <i>dest</i>, and TID equal to <i>tid</i>.
-     * If <i>item</i> is not a null pointer, the search starts from the packet
-     * following <i>item</i> in the queue; otherwise, the search starts from the
-     * head of the queue. This method does not remove the packet from the queue.
-     * It is typically used by ns3::QosTxop in order to perform correct MSDU aggregation
-     * (A-MSDU).
+     * Search and return, if present in the queue, the first packet having the receiver address
+     * equal to <i>dest</i>, the transmitter address equal to <i>src</i> ONLY in case the receiver
+     * is a group address, and TID equal to <i>tid</i>. If <i>item</i> is not a null pointer, the
+     * search starts from the packet following <i>item</i> in the queue; otherwise, the search
+     * starts from the head of the queue. This method does not remove the packet from the queue. It
+     * is typically used by ns3::QosTxop in order to perform correct MSDU aggregation (A-MSDU).
+     *
+     * Note that the source address is a link address and is required for group addressed packets
+     * because group addressed packets are duplicated for every link, hence the source address is
+     * needed to identify the correct queue from which the packet should be peeked.
      *
      * @param tid the given TID
      * @param dest the given destination
+     * @param src the given source link address, checked ONLY if the destination is a group address
      * @param item the item after which the search starts from
      *
      * @return the peeked packet or nullptr if no packet was found
      */
     Ptr<WifiMpdu> PeekByTidAndAddress(uint8_t tid,
                                       Mac48Address dest,
+                                      std::optional<Mac48Address> src = std::nullopt,
                                       Ptr<const WifiMpdu> item = nullptr) const;
     /**
      * Search and return the first packet present in the container queue identified

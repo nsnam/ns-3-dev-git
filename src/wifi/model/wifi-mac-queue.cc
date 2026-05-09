@@ -313,14 +313,20 @@ WifiMacQueue::Peek(std::optional<uint8_t> linkId) const
 }
 
 Ptr<WifiMpdu>
-WifiMacQueue::PeekByTidAndAddress(uint8_t tid, Mac48Address dest, Ptr<const WifiMpdu> item) const
+WifiMacQueue::PeekByTidAndAddress(uint8_t tid,
+                                  Mac48Address dest,
+                                  std::optional<Mac48Address> src,
+                                  Ptr<const WifiMpdu> item) const
 {
     NS_LOG_FUNCTION(this << +tid << dest << item);
-    NS_ABORT_IF(dest.IsBroadcast());
-    WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                 dest.IsGroup() ? WifiRcvAddr::GROUPCAST : WifiRcvAddr::UNICAST,
-                                 dest,
-                                 tid);
+    NS_ASSERT_MSG(!dest.IsGroup() || src.has_value(),
+                  "The source address must be specified for group addressed packets");
+
+    const auto queueId =
+        dest.IsBroadcast()
+            ? MakeWifiBroadcastQueueId(WIFI_QOSDATA_QUEUE, *src, tid)
+            : (dest.IsGroup() ? MakeWifiGroupcastQueueId(WIFI_QOSDATA_QUEUE, dest, *src, tid)
+                              : MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, dest, tid));
     return PeekByQueueId(queueId, item);
 }
 

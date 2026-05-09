@@ -78,7 +78,7 @@ WifiMacQueueDropOldestTest::DoRun()
         NS_TEST_EXPECT_MSG_EQ(mpdu->GetPacket()->GetUid(),
                               packetUid,
                               "Stored packet is not the expected one");
-        mpdu = wifiMacQueue->PeekByTidAndAddress(0, addr1, mpdu);
+        mpdu = wifiMacQueue->PeekByTidAndAddress(0, addr1, std::nullopt, mpdu);
     }
 
     // Push another element into the queue.
@@ -104,7 +104,7 @@ WifiMacQueueDropOldestTest::DoRun()
         NS_TEST_EXPECT_MSG_EQ(mpdu->GetPacket()->GetUid(),
                               packetUid,
                               "Stored packet is not the expected one");
-        mpdu = wifiMacQueue->PeekByTidAndAddress(0, addr1, mpdu);
+        mpdu = wifiMacQueue->PeekByTidAndAddress(0, addr1, std::nullopt, mpdu);
     }
 
     wifiMacScheduler->Dispose();
@@ -214,8 +214,8 @@ WifiExtractExpiredMpdusTest::DoRun()
     Enqueue(rxAddr2, false, MilliSeconds(70));
     Enqueue(rxAddr2, false, MilliSeconds(75));
 
-    WifiContainerQueueId queueId1{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, rxAddr1, 0};
-    WifiContainerQueueId queueId2{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, rxAddr2, 0};
+    const auto queueId1 = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, rxAddr1, 0);
+    const auto queueId2 = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, rxAddr2, 0);
 
     Simulator::Schedule(MilliSeconds(25), [&]() {
         /**
@@ -462,10 +462,7 @@ WifiMacQueueFlushTest::DoRun()
         wifiMacQueue->Enqueue(item);
     }
 
-    WifiContainerQueueId queueId(WifiContainerQueueType::WIFI_QOSDATA_QUEUE,
-                                 WifiRcvAddr::UNICAST,
-                                 addr1,
-                                 tid);
+    const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, addr1, tid);
 
     // Check that all elements are inserted successfully.
     NS_TEST_EXPECT_MSG_EQ(wifiMacQueue->GetNPackets(),

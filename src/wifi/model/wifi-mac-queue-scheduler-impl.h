@@ -419,7 +419,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
                 {
                     // linkId was not in the map, set the mask if all queues are blocked
                     for (const auto& [reason, linkIds] :
-                         m_blockAllInfo[static_cast<std::size_t>(std::get<WifiRcvAddr>(queueId))])
+                         m_blockAllInfo[static_cast<std::size_t>(queueId.addrType)])
                     {
                         if (linkIds.contains(linkId))
                         {
@@ -452,7 +452,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::InitQueueInfo(AcIndex ac, Ptr<cons
         {
             Mask mask;
             for (const auto& [reason, linkIds] :
-                 m_blockAllInfo[static_cast<std::size_t>(std::get<WifiRcvAddr>(queueId))])
+                 m_blockAllInfo[static_cast<std::size_t>(queueId.addrType)])
             {
                 if (linkIds.contains(*linkId))
                 {
@@ -637,7 +637,7 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::DoBlockAllQueues(
     {
         for (auto& [queueId, queueInfo] : m_perAcInfo[ac].queueInfoMap)
         {
-            if (addrTypes.empty() || addrTypes.contains(std::get<WifiRcvAddr>(queueId)))
+            if (addrTypes.empty() || addrTypes.contains(queueId.addrType))
             {
                 for (auto& [linkId, mask] : queueInfo.linkIds)
                 {

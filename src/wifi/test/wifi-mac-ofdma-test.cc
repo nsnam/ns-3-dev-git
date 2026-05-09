@@ -660,6 +660,7 @@ OfdmaAckSequenceTest::Transmit(std::string context,
 
             while ((mpdu = queue->PeekByTidAndAddress(i * 2,
                                                       staDev->GetMac()->GetAddress(),
+                                                      std::nullopt,
                                                       lastInFlight)) != nullptr)
             {
                 if (mpdu->IsInFlight())

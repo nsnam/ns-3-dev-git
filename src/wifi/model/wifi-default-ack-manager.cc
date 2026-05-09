@@ -152,8 +152,7 @@ WifiDefaultAckManager::IsResponseNeeded(Ptr<const WifiMpdu> mpdu,
     }
     // * no other frame belonging to this BA agreement is queued (because, in such
     //   a case, a Block Ack is not going to be requested anytime soon)
-    if (auto queueId =
-            WifiContainerQueueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, origReceiver, tid);
+    if (const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, origReceiver, tid);
         edca->GetWifiMacQueue()->GetNPackets(queueId) -
             edca->GetBaManager()->GetNBufferedPackets(origReceiver, tid) - seqNumbers.size() <
         1)
@@ -192,8 +191,9 @@ WifiDefaultAckManager::ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const
     auto agreement = m_mac->GetBaAgreementEstablishedAsOriginator(origReceiver, tid);
     NS_ASSERT(agreement);
     auto mpduDist = agreement->get().GetDistance(mpdu->GetHeader().GetSequenceNumber());
+    const auto src = m_mac->GetFrameExchangeManager(m_linkId)->GetAddress();
 
-    Ptr<WifiMpdu> item = queue->PeekByTidAndAddress(tid, origReceiver);
+    Ptr<WifiMpdu> item = queue->PeekByTidAndAddress(tid, origReceiver, src);
 
     while (item)
     {
@@ -212,7 +212,7 @@ WifiDefaultAckManager::ExistInflightOnSameLink(Ptr<const WifiMpdu> mpdu) const
             NS_LOG_DEBUG("Found MPDU inflight on the same link");
             return true;
         }
-        item = queue->PeekByTidAndAddress(tid, origReceiver, item);
+        item = queue->PeekByTidAndAddress(tid, origReceiver, src, item);
     }
     NS_ABORT_MSG("Should not get here");
     return false;

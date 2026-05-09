@@ -1524,8 +1524,8 @@ WifiPowerSaveModeTest::SetEvents()
             rsm->m_drop = false;
 
             // drop queued broadcast frame
-            WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                         WifiRcvAddr::BROADCAST,
+            const auto queueId =
+                MakeWifiBroadcastQueueId(WIFI_QOSDATA_QUEUE,
                                          m_apMac->GetFrameExchangeManager(0)->GetAddress(),
                                          0);
             auto mpdu = m_apMac->GetTxopQueue(AC_BE)->PeekByQueueId(queueId);

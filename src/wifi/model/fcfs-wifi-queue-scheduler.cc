@@ -92,8 +92,8 @@ FcfsWifiQueueScheduler::HasToDropBeforeEnqueuePriv(AcIndex ac, Ptr<WifiMpdu> mpd
     {
         for (const auto& [priority, queueInfo] : GetSortedQueues(ac))
         {
-            if (std::get<WifiContainerQueueType>(queueInfo.get().first) == WIFI_MGT_QUEUE ||
-                std::get<WifiContainerQueueType>(queueInfo.get().first) == WIFI_CTL_QUEUE)
+            if (queueInfo.get().first.type == WIFI_MGT_QUEUE ||
+                queueInfo.get().first.type == WIFI_CTL_QUEUE)
             {
                 // do not drop control or management frames
                 continue;
@@ -126,7 +126,7 @@ FcfsWifiQueueScheduler::DoNotifyEnqueue(AcIndex ac, Ptr<WifiMpdu> mpdu)
     auto item = GetWifiMacQueue(ac)->PeekByQueueId(queueId);
     NS_ASSERT(item);
 
-    SetPriority(ac, queueId, {item->GetTimestamp(), std::get<WifiContainerQueueType>(queueId)});
+    SetPriority(ac, queueId, {item->GetTimestamp(), queueId.type});
 }
 
 void
@@ -145,9 +145,7 @@ FcfsWifiQueueScheduler::DoNotifyDequeue(AcIndex ac, const std::list<Ptr<WifiMpdu
     {
         if (auto item = GetWifiMacQueue(ac)->PeekByQueueId(queueId))
         {
-            SetPriority(ac,
-                        queueId,
-                        {item->GetTimestamp(), std::get<WifiContainerQueueType>(queueId)});
+            SetPriority(ac, queueId, {item->GetTimestamp(), queueId.type});
         }
     }
 }
@@ -168,9 +166,7 @@ FcfsWifiQueueScheduler::DoNotifyRemove(AcIndex ac, const std::list<Ptr<WifiMpdu>
     {
         if (auto item = GetWifiMacQueue(ac)->PeekByQueueId(queueId))
         {
-            SetPriority(ac,
-                        queueId,
-                        {item->GetTimestamp(), std::get<WifiContainerQueueType>(queueId)});
+            SetPriority(ac, queueId, {item->GetTimestamp(), queueId.type});
         }
     }
 }

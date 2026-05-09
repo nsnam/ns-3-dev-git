@@ -618,10 +618,7 @@ ApWifiMac::GetBufferedDataFor(Mac48Address address, uint8_t linkId) const
 {
     if (!GetQosSupported())
     {
-        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE,
-                                           WifiRcvAddr::UNICAST,
-                                           address,
-                                           std::nullopt);
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_DATA_QUEUE, address);
         return GetTxopQueue(AC_BE_NQOS)->PeekByQueueId(queueId);
     }
 
@@ -684,11 +681,9 @@ ApWifiMac::GetBufferedMmpduFor(Mac48Address address, uint8_t linkId) const
         }
         for (const auto& aci : acList)
         {
-            WifiContainerQueueId queueId(
+            const auto queueId = MakeWifiUnicastQueueId(
                 WIFI_MGT_QUEUE,
-                WifiRcvAddr::UNICAST,
-                link.stationManager->GetAffiliatedStaAddress(address).value_or(address),
-                std::nullopt);
+                link.stationManager->GetAffiliatedStaAddress(address).value_or(address));
 
             if (auto mpdu = GetTxopQueue(aci)->PeekByQueueId(queueId))
             {
@@ -725,8 +720,8 @@ ApWifiMac::HasBufferedGroupcast(uint8_t linkId) const
 
         while (queueId)
         {
-            if (const auto addrType = std::get<1>(*queueId);
-                addrType == WifiRcvAddr::BROADCAST || addrType == WifiRcvAddr::GROUPCAST)
+            if (queueId->addrType == WifiRcvAddr::BROADCAST ||
+                queueId->addrType == WifiRcvAddr::GROUPCAST)
             {
                 NS_LOG_DEBUG("Found some group addressed frames for link " << +linkId);
                 return true;
@@ -841,10 +836,7 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
     // look for buffered data frames
     if (!GetQosSupported())
     {
-        const WifiContainerQueueId queueId(WIFI_DATA_QUEUE,
-                                           WifiRcvAddr::UNICAST,
-                                           receiver,
-                                           std::nullopt);
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_DATA_QUEUE, receiver);
         auto start = hdr.IsData() ? mpdu : nullptr;
         if (auto bu = GetTxopQueue(AC_BE_NQOS)->PeekByQueueId(queueId, start))
         {
@@ -865,7 +857,10 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
                 (hdr.IsQosData() && hdr.GetQosTid() == tid) ? mpdu->GetOriginal() : nullptr;
 
             if (auto bu = GetTxopQueue(QosUtilsMapTidToAc(tid))
-                              ->PeekByTidAndAddress(tid, receiver, start))
+                              ->PeekByTidAndAddress(tid,
+                                                    receiver,
+                                                    GetFrameExchangeManager(linkId)->GetAddress(),
+                                                    start))
             {
                 NS_LOG_DEBUG("Found a buffered unit: " << *bu);
                 return true;
@@ -876,10 +871,7 @@ ApWifiMac::HasMoreDataAfter(Ptr<const WifiMpdu> mpdu, uint8_t linkId) const
     // look for buffered management frames
     for (const auto aci : acList)
     {
-        const WifiContainerQueueId queueId(WIFI_MGT_QUEUE,
-                                           WifiRcvAddr::UNICAST,
-                                           addr1,
-                                           std::nullopt);
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_MGT_QUEUE, addr1);
         auto start = (hdr.IsMgt() && mpdu->GetQueueAc() == aci) ? mpdu : nullptr;
 
         if (auto bu = GetTxopQueue(aci)->PeekByQueueId(queueId, start))

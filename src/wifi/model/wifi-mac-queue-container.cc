@@ -71,36 +71,39 @@ WifiMacQueueContainer::GetQueueId(Ptr<const WifiMpdu> mpdu)
     const WifiMacHeader& hdr = mpdu->GetHeader();
 
     WifiRcvAddr addrType;
-    Mac48Address address;
+    std::optional<Mac48Address> addr1;
+    std::optional<Mac48Address> addr2;
+
     if (hdr.GetAddr1().IsBroadcast())
     {
         addrType = WifiRcvAddr::BROADCAST;
-        address = hdr.GetAddr2();
+        addr2 = hdr.GetAddr2();
     }
     else if (hdr.GetAddr1().IsGroup())
     {
         addrType = WifiRcvAddr::GROUPCAST;
-        address = hdr.IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr() : hdr.GetAddr1();
+        addr1 = hdr.IsQosAmsdu() ? mpdu->begin()->second.GetDestinationAddr() : hdr.GetAddr1();
+        addr2 = hdr.GetAddr2();
     }
     else
     {
         addrType = WifiRcvAddr::UNICAST;
-        address = hdr.GetAddr1();
+        addr1 = hdr.GetAddr1();
     }
 
     if (hdr.IsCtl())
     {
-        return {WIFI_CTL_QUEUE, addrType, address, std::nullopt};
+        return {WIFI_CTL_QUEUE, addrType, addr1, addr2, std::nullopt};
     }
     if (hdr.IsMgt())
     {
-        return {WIFI_MGT_QUEUE, addrType, address, std::nullopt};
+        return {WIFI_MGT_QUEUE, addrType, addr1, addr2, std::nullopt};
     }
     if (hdr.IsQosData())
     {
-        return {WIFI_QOSDATA_QUEUE, addrType, address, hdr.GetQosTid()};
+        return {WIFI_QOSDATA_QUEUE, addrType, addr1, addr2, hdr.GetQosTid()};
     }
-    return {WIFI_DATA_QUEUE, addrType, address, std::nullopt};
+    return {WIFI_DATA_QUEUE, addrType, addr1, addr2, std::nullopt};
 }
 
 const WifiMacQueueContainer::ContainerQueue&
@@ -214,15 +217,25 @@ WifiMacQueueContainer::GetAllExpiredMpdus() const
 std::size_t
 std::hash<ns3::WifiContainerQueueId>::operator()(ns3::WifiContainerQueueId queueId) const
 {
-    auto [type, addrType, address, tid] = queueId;
-    const std::size_t size = tid.has_value() ? 8 : 7;
-
-    std::vector<uint8_t> buffer(size);
-    buffer[0] = type;
-    address.CopyTo(&buffer[1]);
-    if (tid.has_value())
+    std::vector<uint8_t> buffer;
+    buffer.reserve(1 + 1 + 6 + 6 + 1); // reserve the maximum possible size of the buffer
+    buffer.emplace_back(queueId.type);
+    buffer.emplace_back(static_cast<uint8_t>(queueId.addrType));
+    if (queueId.addr1.has_value())
     {
-        buffer[7] = *tid;
+        const auto size = buffer.size();
+        buffer.resize(size + 6);
+        queueId.addr1.value().CopyTo(&buffer[size]);
+    }
+    if (queueId.addr2.has_value())
+    {
+        const auto size = buffer.size();
+        buffer.resize(size + 6);
+        queueId.addr2.value().CopyTo(&buffer[size]);
+    }
+    if (queueId.tid.has_value())
+    {
+        buffer.emplace_back(*queueId.tid);
     }
 
     std::string s(buffer.begin(), buffer.end());

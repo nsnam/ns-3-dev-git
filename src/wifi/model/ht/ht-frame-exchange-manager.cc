@@ -126,7 +126,7 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
     // NOLINTEND(bugprone-branch-clone)
     else
     {
-        WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, recipient, tid};
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, recipient, tid);
         uint32_t packets = qosTxop->GetWifiMacQueue()->GetNPackets(queueId);
         establish =
             (m_mac->Is6GhzBand(m_linkId) ||
@@ -152,7 +152,8 @@ HtFrameExchangeManager::NeedSetupGcrBlockAck(const WifiMacHeader& header)
         m_mpduAggregator->GetMaxAmpduSize(groupAddress, tid, WIFI_MOD_CLASS_HT);
     const auto isGcrBa = (m_apMac->GetGcrManager()->GetRetransmissionPolicy() ==
                           GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK);
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::GROUPCAST, groupAddress, tid};
+    const auto queueId =
+        MakeWifiGroupcastQueueId(WIFI_QOSDATA_QUEUE, groupAddress, GetAddress(), tid);
 
     for (const auto& recipients =
              m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(groupAddress);
@@ -634,10 +635,7 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
             // needed after sending a BAR to that recipient on this link)
             if (bar->GetHeader().GetAddr2() == m_self && recipientMld)
             {
-                WifiContainerQueueId queueId{WIFI_CTL_QUEUE,
-                                             WifiRcvAddr::UNICAST,
-                                             *recipientMld,
-                                             std::nullopt};
+                const auto queueId = MakeWifiUnicastQueueId(WIFI_CTL_QUEUE, *recipientMld);
                 Ptr<WifiMpdu> otherBar;
                 while ((otherBar = queue->PeekByQueueId(queueId, otherBar)))
                 {
@@ -669,13 +667,12 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         auto baManager = m_mac->GetQosTxop(ac)->GetBaManager();
         for (const auto& [recipient, tid] : baManager->GetSendBarIfDataQueuedList())
         {
-            WifiContainerQueueId queueId(
+            const auto queueId = MakeWifiUnicastQueueId(
                 WIFI_QOSDATA_QUEUE,
-                WifiRcvAddr::UNICAST,
                 GetWifiRemoteStationManager()->GetMldAddress(recipient).value_or(recipient),
                 tid);
             // check if data is queued and can be transmitted on this link
-            if (queue->PeekByTidAndAddress(tid, recipient) &&
+            if (queue->PeekByTidAndAddress(tid, recipient, GetAddress()) &&
                 !m_mac->GetTxBlockedOnLink(QosUtilsMapTidToAc(tid), queueId, m_linkId))
             {
                 auto [reqHdr, hdr] = m_mac->GetQosTxop(ac)->PrepareBlockAckRequest(recipient, tid);

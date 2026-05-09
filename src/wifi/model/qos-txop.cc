@@ -177,7 +177,7 @@ QosTxop::GetLink(uint8_t linkId) const
 uint8_t
 QosTxop::GetQosQueueSize(uint8_t tid, Mac48Address receiver) const
 {
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, receiver, tid};
+    const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, receiver, tid);
     uint32_t bufferSize = m_queue->GetNBytes(queueId);
     // A queue size value of 254 is used for all sizes greater than 64 768 octets.
     uint8_t queueSize = static_cast<uint8_t>(std::ceil(std::min(bufferSize, 64769U) / 256.0));
@@ -392,11 +392,13 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
         {
             return m_queue->PeekFirstAvailable(linkId, mpdu);
         }
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                     recipient.IsGroup() ? WifiRcvAddr::GROUPCAST
-                                                         : WifiRcvAddr::UNICAST,
-                                     recipient,
-                                     tid);
+        const auto queueId =
+            recipient.IsGroup()
+                ? MakeWifiGroupcastQueueId(WIFI_QOSDATA_QUEUE,
+                                           recipient,
+                                           m_mac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                           tid)
+                : MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, recipient, tid);
         if (auto mask = m_mac->GetMacQueueScheduler()->GetQueueLinkMask(m_ac, queueId, linkId);
             mask && mask->none())
         {
@@ -709,10 +711,15 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
         // be set equal to the sequence number of such packet.
         const auto queueRecipient = respHdr.GetGcrGroupAddress().value_or(recipient);
         auto startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress(tid, queueRecipient);
-        auto peekedItem = m_queue->PeekByTidAndAddress(tid, queueRecipient);
-        if (peekedItem && peekedItem->HasSeqNoAssigned())
+        for (const auto linkId : m_mac->GetLinkIds())
         {
-            startingSeq = peekedItem->GetHeader().GetSequenceNumber();
+            const auto src = m_mac->GetFrameExchangeManager(linkId)->GetAddress();
+            auto peekedItem = m_queue->PeekByTidAndAddress(tid, queueRecipient, src);
+            if (peekedItem && peekedItem->HasSeqNoAssigned())
+            {
+                startingSeq = peekedItem->GetHeader().GetSequenceNumber();
+                break;
+            }
         }
         m_baManager->UpdateOriginatorAgreement(respHdr, recipient, startingSeq);
     }

@@ -1000,10 +1000,7 @@ BlockAckManager::ScheduleBar(const CtrlBAckRequestHeader& reqHdr, const WifiMacH
 
     uint8_t tid = reqHdr.GetTidInfo();
 
-    WifiContainerQueueId queueId(WIFI_CTL_QUEUE,
-                                 WifiRcvAddr::UNICAST,
-                                 hdr.GetAddr1(),
-                                 std::nullopt);
+    const auto queueId = MakeWifiUnicastQueueId(WIFI_CTL_QUEUE, hdr.GetAddr1());
     auto pkt = Create<Packet>();
     pkt->AddHeader(reqHdr);
     Ptr<WifiMpdu> item = nullptr;
