@@ -36,6 +36,7 @@ void
 WifiMacQueueScheduler::SetWifiMac(Ptr<WifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
+    NS_ABORT_MSG_IF(m_mac, "Cannot set the MAC twice");
     m_mac = mac;
 }
 
