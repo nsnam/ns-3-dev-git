@@ -10,6 +10,25 @@ API and behavior changes across releases
 This page tracks the most relevant changes to the API and behavior of the wifi
 module occurred across the various releases of |ns3|.
 
+Wifi MAC queue scheduler refactor
++++++++++++++++++++++++++++++++++
+
+As of ns-3.48, the ``WifiMacQueueSchedulerImpl`` template base class has
+absorbed the ``DropPolicy`` attribute and the ``HasToDropBeforeEnqueue``
+implementation that previously lived in ``FcfsWifiQueueScheduler``, so that
+every subclass (including the new ``RrWifiQueueScheduler``) inherits the same
+drop behavior. As part of this change:
+
+* The nested enum ``ns3::FcfsWifiQueueScheduler::DropPolicy`` has been
+  removed; use ``ns3::WifiMacQueueSchedulerImpl::DropPolicy`` instead. The
+  attribute path (``.../FcfsWifiQueueScheduler/DropPolicy``) still resolves
+  via inheritance and is unchanged for users configuring via ``Config::Set``
+  or the attribute string.
+* The free struct ``ns3::FcfsPrio`` (and its comparison operators) has been
+  removed. ``FcfsWifiQueueScheduler`` now derives from
+  ``WifiMacQueueSchedulerImpl<WifiSchedPrecedence<Time>>``; new subclasses
+  should similarly parameterize the base with ``WifiSchedPrecedence<...>``.
+
 ChannelSettings attribute
 +++++++++++++++++++++++++
 

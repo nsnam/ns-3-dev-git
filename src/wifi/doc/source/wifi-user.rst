@@ -735,6 +735,46 @@ enables to select the acknowledgment method, e.g.:
     Config::SetDefault("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
                        EnumValue(WifiAcknowledgment::DL_MU_AGGREGATE_TF));
 
+MAC queue scheduler
++++++++++++++++++++
+
+By default, a wifi device uses the ``FcfsWifiQueueScheduler`` (first-come,
+first-served). A different scheduler can be selected on the MAC helper before
+installing the devices. For example, to serve receivers in a round-robin
+fashion at the AP:
+
+.. sourcecode:: cpp
+
+    WifiMacHelper wifiMacHelper;
+    wifiMacHelper.SetMacQueueScheduler("ns3::RrWifiQueueScheduler");
+    // ... remaining SetType / install calls as usual
+
+Any attributes declared on the scheduler base class
+(``ns3::WifiMacQueueSchedulerImpl``) can be passed as additional arguments to
+``SetMacQueueScheduler``. The main one is ``DropPolicy``, which selects
+whether an enqueue into a full data queue drops the newest (default) or the
+oldest in-queue data frame:
+
+.. sourcecode:: cpp
+
+    wifiMacHelper.SetMacQueueScheduler("ns3::RrWifiQueueScheduler",
+                                       "DropPolicy", StringValue("DropOldest"));
+
+Notes:
+
+* The scheduler is not tied to any particular 802.11 amendment; it works with
+  any QoS-capable MAC. On a non-QoS MAC, ``RrWifiQueueScheduler`` produces the
+  same serving order as ``FcfsWifiQueueScheduler``.
+* The scheduler is per-device. The most visible effect of
+  ``RrWifiQueueScheduler`` is on downlink from an AP to several STAs on the
+  same Access Category: it prevents head-of-line blocking of one STA by a
+  large backlog to another.
+* Control and management frames always preempt data frames regardless of the
+  scheduler in use.
+* The wifi MAC queue scheduler is consulted for single-user transmissions. DL
+  OFDMA / UL OFDMA scheduling is performed by the separate Multi-User
+  Scheduler (see the ``SetMultiUserScheduler`` snippet above).
+
 Selection of the Access Category (AC)
 +++++++++++++++++++++++++++++++++++++
 

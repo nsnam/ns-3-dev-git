@@ -1084,16 +1084,44 @@ The ``WifiMac`` class also provides packet-level trace sources:
 * ``MacRxDrop``: A packet has been dropped in the MAC layer after it has been passed up from the
   physical layer
 
-Internally, a wifi MAC queue is made of multiple sub-queues, each storing frames of
-a given type (i.e., data or management) and having a given receiver address and TID.
-For single-user transmissions, the next station to serve is determined by a wifi MAC
-queue scheduler (held by the ``WifiMac`` instance). A wifi MAC queue scheduler is
-implemented through a base class (``WifiMacQueueScheduler``) and subclasses defining
-specific scheduling policies. The default scheduler (``FcfsWifiQueueScheduler``)
-gives management frames higher priority than data frames and serves data frames in a
-first come first serve fashion. For multi-user transmissions (see below), scheduling
-is performed by a Multi-User scheduler, which may or may not consult the wifi MAC queue
-scheduler to identify the stations to serve with a Multi-User DL or UL transmission.
+Internally, a wifi MAC queue is made of multiple *container queues*, each storing
+frames of a given type (data, management, or control) addressed to a given receiver
+and, for QoS data, a given TID. For single-user transmissions, the next container
+queue to serve among those pending for an Access Category is determined by a
+*wifi MAC queue scheduler*, held by the ``WifiMac`` instance. (For multi-user
+transmissions, see the Multi-User Scheduler section below; a Multi-User scheduler
+may or may not consult the wifi MAC queue scheduler to identify the stations to
+serve with a Multi-User DL or UL transmission.)
+
+The wifi MAC queue scheduler is pluggable. It is modeled by the abstract base
+class ``WifiMacQueueScheduler`` and a templated implementation class
+``WifiMacQueueSchedulerImpl<Priority>``, which maintains, per Access Category, a
+set of container queues sorted by a priority value of type ``Priority``. Concrete
+subclasses define how that priority is assigned and updated. The
+``WifiSchedPrecedence<Priority>`` helper wraps a user-supplied priority type and
+enforces that control frames always precede management frames, which in turn
+always precede data frames; within the same type, the user priority value
+breaks ties.
+
+The base class exposes a ``DropPolicy`` attribute (``DropOldest`` or
+``DropNewest``, default ``DropNewest``) that applies to every subclass and
+controls what happens when a data frame is enqueued into a full container
+queue. ``DropNewest`` drops the incoming frame; ``DropOldest`` drops the
+oldest non-in-flight, non-retry data frame across the queues of that AC.
+Control and management frames are never dropped by the scheduler.
+
+Two concrete schedulers are provided:
+
+* ``FcfsWifiQueueScheduler`` (the default) assigns, as the priority of each
+  container queue, the enqueue time of the head-of-queue frame. Data frames
+  are therefore served in first-come-first-serve order across all receivers
+  (and TIDs) of an AC.
+* ``RrWifiQueueScheduler`` assigns, as the priority of each container queue,
+  the last time a frame from that queue was transmitted inside a TXOP of
+  which this device is the holder. Container queues of an AC are therefore
+  sorted in increasing order of last-served time, yielding round-robin
+  service among receivers (and, for QoS data, among TIDs of the same
+  receiver).
 
 Power Save mode
 ###############
