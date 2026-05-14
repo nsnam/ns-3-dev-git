@@ -22,6 +22,7 @@ namespace ns3
 
 class WifiMpdu;
 class WifiMac;
+class WifiMacQueue;
 
 /**
  * @ingroup wifi
@@ -95,6 +96,14 @@ class WifiMacQueueScheduler : public Object
      * @param mac the wifi MAC
      */
     virtual void SetWifiMac(Ptr<WifiMac> mac);
+
+    /**
+     * Set the Wifi MAC queue associated with the given Access Category.
+     *
+     * @param ac the Access Category
+     * @param queue the Wifi MAC queue
+     */
+    virtual void SetWifiMacQueue(AcIndex ac, Ptr<WifiMacQueue> queue);
 
     /**
      * Get the next queue to serve, which is guaranteed to contain at least an MPDU whose lifetime

@@ -578,6 +578,6 @@ MeshWifiInterfaceMac::ConfigureContentionWindow(uint32_t cwMin, uint32_t cwMax)
     m_txop->SetMinCw(0);
     m_txop->SetMaxCw(0);
     m_txop->SetAifsn(1);
-    m_scheduler->SetWifiMac(this);
+    m_scheduler->SetWifiMacQueue(AC_BE_NQOS, m_txop->GetWifiMacQueue());
 }
 } // namespace ns3

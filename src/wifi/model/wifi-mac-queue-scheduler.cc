@@ -8,6 +8,7 @@
 
 #include "wifi-mac-queue-scheduler.h"
 
+#include "wifi-mac-queue.h"
 #include "wifi-mac.h"
 
 namespace ns3
@@ -36,6 +37,14 @@ WifiMacQueueScheduler::SetWifiMac(Ptr<WifiMac> mac)
 {
     NS_LOG_FUNCTION(this << mac);
     m_mac = mac;
+}
+
+void
+WifiMacQueueScheduler::SetWifiMacQueue(AcIndex ac, Ptr<WifiMacQueue> queue)
+{
+    NS_LOG_FUNCTION(this << ac << queue);
+    NS_ABORT_MSG_IF(!queue, "Cannot set a null wifi MAC queue");
+    queue->SetScheduler(this);
 }
 
 Ptr<WifiMac>

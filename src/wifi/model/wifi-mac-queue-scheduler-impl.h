@@ -102,6 +102,8 @@ class WifiMacQueueSchedulerImpl : public WifiMacQueueScheduler
 
     /** @copydoc ns3::WifiMacQueueScheduler::SetWifiMac */
     void SetWifiMac(Ptr<WifiMac> mac) override;
+    /** @copydoc ns3::WifiMacQueueScheduler::SetWifiMacQueue */
+    void SetWifiMacQueue(AcIndex ac, Ptr<WifiMacQueue> queue) override;
     /** @copydoc ns3::WifiMacQueueScheduler::GetNext(AcIndex,std::optional<uint8_t>,bool) */
     std::optional<WifiContainerQueueId> GetNext(AcIndex ac,
                                                 std::optional<uint8_t> linkId,
@@ -423,11 +425,20 @@ WifiMacQueueSchedulerImpl<Priority, Compare>::SetWifiMac(Ptr<WifiMac> mac)
     {
         if (auto queue = mac->GetTxopQueue(ac); queue != nullptr)
         {
-            m_perAcInfo.at(ac).wifiMacQueue = queue;
-            queue->SetScheduler(this);
+            SetWifiMacQueue(ac, queue);
         }
     }
     WifiMacQueueScheduler::SetWifiMac(mac);
+}
+
+template <class Priority, class Compare>
+void
+WifiMacQueueSchedulerImpl<Priority, Compare>::SetWifiMacQueue(AcIndex ac, Ptr<WifiMacQueue> queue)
+{
+    NS_LOG_FUNCTION(this << ac << queue);
+    NS_ASSERT(static_cast<uint8_t>(ac) < AC_UNDEF);
+    m_perAcInfo.at(ac).wifiMacQueue = queue;
+    WifiMacQueueScheduler::SetWifiMacQueue(ac, queue);
 }
 
 template <class Priority, class Compare>
