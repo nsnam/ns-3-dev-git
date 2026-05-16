@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE("WifiMloUdpTest");
  * @brief Test UDP packet transmission between MLDs and SLDs.
  *
  * This test sets up an AP MLD and two non-AP MLDs having a variable number of links (possibly one).
- * The RF channels to set each link to are provided as input parameters. This test aims at veryfing
+ * The RF channels to set each link to are provided as input parameters. This test aims at verifying
  * the successful transmission and reception of UDP packets in different traffic scenarios (from
  * the first station to the AP, from the AP to the first station, from one station to another).
  * The number of transmitted ARP Request/Reply frames for IPv4 traffic and Neighbor
@@ -250,8 +250,8 @@ WifiMloUdpTest::DoSetup()
     NetDeviceContainer apDevices = wifi.Install(apPhyHelper, mac, wifiApNode);
 
     // Uncomment the lines below to write PCAP files
-    apPhyHelper.EnablePcap("wifi-mlo_AP", apDevices);
-    staPhyHelper1.EnablePcap("wifi-mlo_STA", staDevices);
+    // apPhyHelper.EnablePcap("wifi-mlo_AP", apDevices);
+    // staPhyHelper1.EnablePcap("wifi-mlo_STA", staDevices);
 
     // Assign fixed streams to random variables in use
     streamNumber += WifiHelper::AssignStreams(apDevices, streamNumber);
