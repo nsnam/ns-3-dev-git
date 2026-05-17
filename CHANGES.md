@@ -30,6 +30,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
+* (sixlowpan) The boolean `Rfc6282` attribute of the `SixLowPanNetDevice` class has been removed and replaced by the `CompressionType` enum attribute, with values `HC1` (RFC4944) and `IPHC` (RFC6282). The default value (`IPHC`) preserves existing behavior. Scripts that previously set `Rfc6282` to `false` to select HC1 must now set `CompressionType` to `HC1`.
 * (wifi) The `PowerSaveMode` attribute of the `StaWifiMac` class has been deprecated in favor of the `PowerSaveMode` attribute of the `PowerSaveManager` class.
 * (wifi) The `BeaconJitter` attribute of the `ApWifiMac` class is no longer constrained to be a uniform random variable, but it can be a random variable of any type (provided that generated values are comprised between 0 and 1).
 * (network) The `SequenceNumber` template class has been changed to allow sequence numbers with an arbitrary number of bits (e.g., 10 bits). As a consequence, the template signature is slightly changed, but the `typedef` versions `SequenceNumber[8,16,32]` are working as usual. Sequence numbers larger than 63 bits are not supported due to internal representation limitations.

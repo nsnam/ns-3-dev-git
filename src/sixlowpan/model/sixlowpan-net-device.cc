@@ -14,6 +14,7 @@
 
 #include "ns3/boolean.h"
 #include "ns3/channel.h"
+#include "ns3/enum.h"
 #include "ns3/ipv6-extension-header.h"
 #include "ns3/ipv6-l3-protocol.h"
 #include "ns3/log.h"
@@ -46,11 +47,12 @@ SixLowPanNetDevice::GetTypeId()
             .SetParent<NetDevice>()
             .SetGroupName("SixLowPan")
             .AddConstructor<SixLowPanNetDevice>()
-            .AddAttribute("Rfc6282",
-                          "Use RFC6282 (IPHC) if true, RFC4944 (HC1) otherwise.",
-                          BooleanValue(true),
-                          MakeBooleanAccessor(&SixLowPanNetDevice::m_useIphc),
-                          MakeBooleanChecker())
+            .AddAttribute(
+                "CompressionType",
+                "The compression type, IPHC (RFC6282), or HC1 (RFC4944).",
+                EnumValue(SixLowPanNetDevice::IPHC),
+                MakeEnumAccessor<CompressionType_e>(&SixLowPanNetDevice::m_compressionType),
+                MakeEnumChecker(SixLowPanNetDevice::IPHC, "IPHC", SixLowPanNetDevice::HC1, "HC1"))
             .AddAttribute("OmitUdpChecksum",
                           "Omit the UDP checksum in IPHC compression.",
                           BooleanValue(true),
@@ -350,7 +352,7 @@ SixLowPanNetDevice::ReceiveFromDevice(Ptr<NetDevice> incomingPort,
         }
         break;
     case SixLowPanDispatch::LOWPAN_HC1:
-        if (m_useIphc)
+        if (m_compressionType != HC1)
         {
             m_dropTrace(DROP_DISALLOWED_COMPRESSION, copyPkt, this, GetIfIndex());
             return;
@@ -359,7 +361,7 @@ SixLowPanNetDevice::ReceiveFromDevice(Ptr<NetDevice> incomingPort,
         isPktDecompressed = true;
         break;
     case SixLowPanDispatch::LOWPAN_IPHC:
-        if (!m_useIphc)
+        if (m_compressionType != IPHC)
         {
             m_dropTrace(DROP_DISALLOWED_COMPRESSION, copyPkt, this, GetIfIndex());
             return;
@@ -594,7 +596,7 @@ SixLowPanNetDevice::DoSend(Ptr<Packet> packet,
 
     protocolNumber = PROT_NUMBER;
 
-    if (m_useIphc)
+    if (m_compressionType == IPHC)
     {
         NS_LOG_LOGIC("Compressing packet using IPHC");
         origHdrSize += CompressLowPanIphc(packet, m_netDevice->GetAddress(), destination);

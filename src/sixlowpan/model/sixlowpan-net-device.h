@@ -76,6 +76,15 @@ class SixLowPanNetDevice : public NetDevice
     };
 
     /**
+     * Compression type.
+     */
+    enum CompressionType_e
+    {
+        HC1,  //!< HC1 (RFC4944)
+        IPHC, //!< IPHC (RFC6282)
+    };
+
+    /**
      * @brief The protocol number for 6LoWPAN (0xA0ED) - see \RFC{7973}.
      */
     static constexpr uint16_t PROT_NUMBER{0xA0ED};
@@ -634,7 +643,7 @@ class SixLowPanNetDevice : public NetDevice
      */
     uint16_t m_fragmentReassemblyListSize;
 
-    bool m_useIphc; //!< Use IPHC or HC1.
+    CompressionType_e m_compressionType; //!< Compression type
 
     bool m_meshUnder;            //!< Use a mesh-under routing.
     uint8_t m_bc0Serial;         //!< Serial number used in BC0 header.

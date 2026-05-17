@@ -7,6 +7,7 @@
  */
 
 #include "ns3/boolean.h"
+#include "ns3/enum.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/log.h"
@@ -131,7 +132,7 @@ SixlowpanHc1ImplTest::DoRun()
         rxNode->AddDevice(rxDev);
 
         Ptr<SixLowPanNetDevice> rxSix = CreateObject<SixLowPanNetDevice>();
-        rxSix->SetAttribute("Rfc6282", BooleanValue(false));
+        rxSix->SetAttribute("CompressionType", EnumValue(SixLowPanNetDevice::HC1));
         rxNode->AddDevice(rxSix);
         rxSix->SetNetDevice(rxDev);
 
@@ -154,7 +155,7 @@ SixlowpanHc1ImplTest::DoRun()
         txNode->AddDevice(txDev);
 
         Ptr<SixLowPanNetDevice> txSix = CreateObject<SixLowPanNetDevice>();
-        txSix->SetAttribute("Rfc6282", BooleanValue(false));
+        txSix->SetAttribute("CompressionType", EnumValue(SixLowPanNetDevice::HC1));
         txNode->AddDevice(txSix);
         txSix->SetNetDevice(txDev);
 

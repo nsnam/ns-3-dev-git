@@ -270,7 +270,7 @@ Attributes
 
 The 6lowPAN provide some attributes:
 
-* ``Rfc6282``: (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
+* ``CompressionType``: (enum, default ``IPHC``), selects the header compression scheme: ``HC1`` (RFC4944) or ``IPHC`` (RFC6282).
 * ``OmitUdpChecksum``: (boolean, default true), Omit the UDP checksum in IPHC compression.
 * ``FragmentReassemblyListSize``: (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * ``FragmentExpirationTimeout``: (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.
