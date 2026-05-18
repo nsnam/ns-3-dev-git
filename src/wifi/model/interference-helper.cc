@@ -755,7 +755,7 @@ InterferenceHelper::CalculatePayloadSnrPer(Ptr<Event> event,
     const auto per =
         CalculatePayloadPer(event, channelWidth, &ni, band, staId, relativeMpduStartStop);
 
-    return SnrPer(snr, per);
+    return SnrPer{snr, per};
 }
 
 double
@@ -785,7 +785,7 @@ InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
      */
     const auto per = CalculatePhyHeaderPer(event, &ni, channelWidth, band, header);
 
-    return SnrPer(snr, per);
+    return SnrPer{snr, per};
 }
 
 InterferenceHelper::NiChanges::iterator
