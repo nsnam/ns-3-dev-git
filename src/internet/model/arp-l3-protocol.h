@@ -11,6 +11,7 @@
 #include "ipv4-header.h"
 
 #include "ns3/address.h"
+#include "ns3/internet-export.h"
 #include "ns3/net-device.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
@@ -41,7 +42,7 @@ class TrafficControlLayer;
  * @ingroup arp
  * @brief An implementation of the ARP protocol.
  */
-class ArpL3Protocol : public Object
+class INTERNET_EXPORT ArpL3Protocol : public Object
 {
   public:
     /**
