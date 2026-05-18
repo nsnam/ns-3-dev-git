@@ -90,6 +90,7 @@ check_deps(
   sionna.rt # main sionna package
   pybind11 # required to call sionna from c++
 )
+set(sionna_test_sources)
 if(NOT
    ("${sionna_deps}"
     STREQUAL
