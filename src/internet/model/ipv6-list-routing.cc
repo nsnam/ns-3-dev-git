@@ -73,6 +73,14 @@ Ipv6ListRouting::RouteOutput(Ptr<Packet> p,
                                           << (*i).first);
         NS_LOG_LOGIC("Requesting source address for destination " << header.GetDestination());
         route = (*i).second->RouteOutput(p, header, oif, sockerr);
+        if (oif)
+        {
+            if (route && route->GetOutputDevice() != oif)
+            {
+                NS_LOG_LOGIC("Not on requested interface, skipping");
+                continue;
+            }
+        }
         if (route)
         {
             NS_LOG_LOGIC("Found route " << route);

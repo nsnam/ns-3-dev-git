@@ -752,6 +752,78 @@ Udp6SocketImplTest::DoRun()
 /**
  * @ingroup internet-test
  *
+ * @brief UDP Socket BindToNetDevice restricts outgoing packets to bound device
+ */
+class UdpSocketBindToNetDeviceTest : public TestCase
+{
+  public:
+    UdpSocketBindToNetDeviceTest()
+        : TestCase("UDP BindToNetDevice restricts outgoing packets to bound device")
+    {
+    }
+
+    void DoRun() override;
+};
+
+void
+UdpSocketBindToNetDeviceTest::DoRun()
+{
+    // Create two nodes and two point-to-point links
+    // Sender Node
+    Ptr<Node> txNode = CreateObject<Node>();
+    // Receiver Node
+    Ptr<Node> rxNode = CreateObject<Node>();
+
+    NodeContainer nodes(txNode, rxNode);
+
+    SimpleNetDeviceHelper helperChannel1;
+    helperChannel1.SetNetDevicePointToPointMode(true);
+    NetDeviceContainer net1 = helperChannel1.Install(nodes);
+
+    SimpleNetDeviceHelper helperChannel2;
+    helperChannel2.SetNetDevicePointToPointMode(true);
+    NetDeviceContainer net2 = helperChannel2.Install(nodes);
+
+    InternetStackHelper internet;
+    internet.Install(nodes);
+
+    // Assign only one IP subnet to each link
+    Ptr<Ipv4> ipv4;
+    uint32_t netdev_idx;
+    Ipv4InterfaceAddress ipv4Addr;
+
+    // Sender Node
+    ipv4 = txNode->GetObject<Ipv4>();
+    netdev_idx = ipv4->AddInterface(net1.Get(0));
+    ipv4->AddAddress(netdev_idx,
+                     Ipv4InterfaceAddress(Ipv4Address("10.0.0.1"), Ipv4Mask("255.255.255.0")));
+    ipv4->SetUp(netdev_idx);
+
+    netdev_idx = ipv4->AddInterface(net2.Get(0));
+    ipv4->AddAddress(netdev_idx,
+                     Ipv4InterfaceAddress(Ipv4Address("10.0.1.1"), Ipv4Mask("255.255.255.0")));
+    ipv4->SetUp(netdev_idx);
+
+    // Create UDP socket on sender and bind to net2 (10.0.1.1)
+    Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory>();
+    Ptr<Socket> txSocket = txSocketFactory->CreateSocket();
+
+    // Try to send to 10.0.1.2 (only reachable via net1)
+    txSocket->BindToNetDevice(net1.Get(0));
+    int sent = txSocket->SendTo(Create<Packet>(100), 0, InetSocketAddress("10.0.1.2", 1234));
+    NS_TEST_EXPECT_MSG_EQ(sent, -1, "Send should fail: no route via bound device");
+
+    // Now send to 10.0.1.2 (reachable via net2)
+    txSocket->BindToNetDevice(net2.Get(0));
+    sent = txSocket->SendTo(Create<Packet>(100), 0, InetSocketAddress("10.0.1.2", 1234));
+    NS_TEST_EXPECT_MSG_EQ(sent, 100, "Send should succeed: route exists via bound device");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup internet-test
+ *
  * @brief UDP TestSuite
  */
 class UdpTestSuite : public TestSuite
@@ -764,6 +836,7 @@ class UdpTestSuite : public TestSuite
         AddTestCase(new UdpSocketLoopbackTest, TestCase::Duration::QUICK);
         AddTestCase(new Udp6SocketImplTest, TestCase::Duration::QUICK);
         AddTestCase(new Udp6SocketLoopbackTest, TestCase::Duration::QUICK);
+        AddTestCase(new UdpSocketBindToNetDeviceTest, TestCase::Duration::QUICK);
     }
 };
 

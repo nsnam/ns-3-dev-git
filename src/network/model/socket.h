@@ -593,9 +593,9 @@ class Socket : public Object
      * @brief Bind a socket to specific device.
      *
      * This method corresponds to using setsockopt() SO_BINDTODEVICE
-     * of real network or BSD sockets.   If set on a socket, this option will
-     * force packets to leave the bound device regardless of the device that
-     * IP routing would naturally choose.  In the receive direction, only
+     * of real network or BSD sockets.   If set on a socket, this option
+     * restricts routing to the bound device. Packets are sent only
+     * if a route exists via that device.  In the receive direction, only
      * packets received from the bound interface will be delivered.
      *
      * This option has no particular relationship to binding sockets to
