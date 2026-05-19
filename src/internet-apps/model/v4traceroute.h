@@ -102,6 +102,8 @@ class V4TraceRoute : public Application
     bool m_verbose;
     /// Start time to report total ping time
     Time m_started;
+    /// True once completion output has been emitted
+    bool m_traceComplete;
     /// Next packet will be sent
     EventId m_next;
     /// The Current probe value

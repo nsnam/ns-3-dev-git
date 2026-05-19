@@ -90,6 +90,7 @@ V4TraceRoute::V4TraceRoute()
       m_socket(nullptr),
       m_seq(0),
       m_verbose(true),
+      m_traceComplete(false),
       m_probeCount(0),
       m_maxProbes(3),
       m_ttl(1),
@@ -115,6 +116,7 @@ V4TraceRoute::StartApplication()
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_LOGIC("Application started");
+    m_traceComplete = false;
     m_started = Simulator::Now();
 
     NS_ABORT_MSG_IF(m_remote.IsAny(), "'Remote' attribute not properly set");
@@ -151,6 +153,21 @@ V4TraceRoute::StopApplication()
 {
     NS_LOG_FUNCTION(this);
 
+    if (!m_traceComplete)
+    {
+        if (m_verbose)
+        {
+            NS_LOG_UNCOND("\nTrace Complete");
+        }
+
+        if (m_printStream)
+        {
+            *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
+        }
+
+        m_traceComplete = true;
+    }
+
     if (m_next.IsPending())
     {
         m_next.Cancel();
@@ -164,16 +181,6 @@ V4TraceRoute::StopApplication()
     if (m_socket)
     {
         m_socket->Close();
-    }
-
-    if (m_verbose)
-    {
-        NS_LOG_UNCOND("\nTrace Complete");
-    }
-
-    if (m_printStream)
-    {
-        *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
     }
 }
 
@@ -340,16 +347,19 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
             m_waitIcmpReplyTimer.Cancel();
             if (m_probeCount == m_maxProbes)
             {
-                if (m_verbose)
+                if (!m_traceComplete)
                 {
-                    NS_LOG_UNCOND("\nTrace Complete");
+                    if (m_verbose)
+                    {
+                        NS_LOG_UNCOND("\nTrace Complete");
+                    }
+                    if (m_printStream)
+                    {
+                        *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
+                    }
+                    m_traceComplete = true;
+                    Simulator::ScheduleNow(&V4TraceRoute::StopApplication, this);
                 }
-
-                if (m_printStream)
-                {
-                    *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
-                }
-                Simulator::ScheduleNow(&V4TraceRoute::StopApplication, this);
             }
             else if (m_ttl < m_maxTtl + 1)
             {
