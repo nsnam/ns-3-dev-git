@@ -17,7 +17,7 @@ build_lib(
     model/hierarchical-mobility-model.cc
     model/leo-circular-orbit-mobility-model.cc
     model/leo-circular-orbit-position-allocator.cc
-    model/leo-orbit.cc
+    model/leo-orbital-shell.cc
     model/mobility-model.cc
     model/position-allocator.cc
     model/random-direction-2d-mobility-model.cc
@@ -44,7 +44,7 @@ build_lib(
     model/hierarchical-mobility-model.h
     model/leo-circular-orbit-mobility-model.h
     model/leo-circular-orbit-position-allocator.h
-    model/leo-orbit.h
+    model/leo-orbital-shell.h
     model/mobility-model.h
     model/position-allocator.h
     model/random-direction-2d-mobility-model.h
@@ -57,6 +57,7 @@ build_lib(
   LIBRARIES_TO_LINK ${libantenna}
                     ${libnetwork}
   TEST_SOURCES
+    test/leo-mobility-test-suite.cc
     test/box-line-intersection-test.cc
     test/geo-to-cartesian-test.cc
     test/geocentric-topocentric-conversion-test.cc

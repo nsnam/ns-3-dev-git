@@ -352,3 +352,11 @@ man_pages = [("index", "ns-3-model-library", "ns-3 Model Library", ["ns-3 projec
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #
 # texinfo_no_detailmenu = False
+
+numfig = True
+numref_format = {
+    "figure": "Fig. {number}: %s",
+    "table": "Table {number}: %s",
+    "code-block": "Listing {number}: %s",
+    "section": "Section {number}: %s",
+}

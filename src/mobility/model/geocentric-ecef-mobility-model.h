@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: GPL-2.0-only
  *
- *
+ * Author: Jesse Chiu <jessest94106@gmail.com>
  */
 
 #ifndef GEOCENTRIC_ECEF_MOBILITY_MODEL_H
@@ -16,21 +16,29 @@ namespace ns3
 
 /**
  * @ingroup mobility
- * @brief Geocentric mobility model that returns ECEF coordinates from GetPosition()
+ * @ingroup leo
+ * @brief Fixed geocentric mobility model whose generic position is ECEF
  *
- * This class extends GeocentricConstantPositionMobilityModel to override the default behavior.
- * While the parent class returns ENU (East-North-Up) coordinates from GetPosition(),
- * this derived class returns ECEF (Earth-Centered Earth-Fixed) coordinates instead.
+ * This class adapts GeocentricConstantPositionMobilityModel for NTN scenarios
+ * where fixed ground nodes and satellite nodes must report positions in the
+ * same coordinate frame through the generic MobilityModel API.
  *
- * This is useful for scenarios where:
- * - Both satellite and ground station need to use the same coordinate system (ECEF)
- * - Distance calculations are performed using GetPosition() in propagation models
- * - The type checking requires GeocentricConstantPositionMobilityModel (e.g., NTN scenarios)
+ * GeocentricConstantPositionMobilityModel provides GetGeocentricPosition() for
+ * ECEF (Earth-Centered Earth-Fixed) coordinates, but its GetPosition() reports
+ * the local topocentric/ENU (East-North-Up) position. LEO satellite mobility
+ * models report ECEF coordinates from GetPosition(). Some NR, 3GPP propagation,
+ * spectrum, and antenna geometry code queries nodes only through
+ * MobilityModel::GetPosition(), so changing those call sites to use
+ * GetGeocentricPosition() would require broader API changes.
  *
- * The class still maintains all the functionality of the parent class, including:
- * - GetGeocentricPosition() which returns ECEF coordinates
- * - GetGeographicPosition() which returns Geographic coordinates
- * - Type compatibility with GeocentricConstantPositionMobilityModel
+ * GeocentricEcefMobilityModel therefore overrides DoGetPosition() so
+ * GetPosition() returns the same ECEF coordinates as GetGeocentricPosition(),
+ * while retaining the geographic and geocentric accessors from the parent class.
+ *
+ * @internal
+ * TODO: Consider if a unified units/coordinate system framework could
+ *       eliminate the need for specialized mobility model classes like this one
+ *       by allowing positions to carry their coordinate system metadata.
  */
 class GeocentricEcefMobilityModel : public GeocentricConstantPositionMobilityModel
 {
@@ -44,12 +52,12 @@ class GeocentricEcefMobilityModel : public GeocentricConstantPositionMobilityMod
     /**
      * Create a geocentric ECEF mobility model
      */
-    GeocentricEcefMobilityModel();
+    GeocentricEcefMobilityModel() = default;
 
     /**
      * Destructor
      */
-    ~GeocentricEcefMobilityModel() override;
+    ~GeocentricEcefMobilityModel() override = default;
 
   private:
     /**

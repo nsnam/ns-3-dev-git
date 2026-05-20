@@ -14,7 +14,9 @@ cpp_examples = [
     ("reference-point-group-mobility-example --useHelper=1", "True", "True"),
     ("leo-circular-orbit-tracing-example", "True", "True"),
     ("leo-antenna-orientation", "True", "True"),
-    ("leo-antenna-orientation --duration=10000", "True", "True"),
+    ("leo-antenna-orientation --resolution=1ms", "True", "True"),
+    ("leo-antenna-orientation --ns3::LeoCircularOrbitMobilityModel::Speed=8000", "True", "True"),
+    ("leo-antenna-orientation --duration=10000s", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

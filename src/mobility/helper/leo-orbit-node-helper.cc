@@ -7,18 +7,14 @@
 
 #include "leo-orbit-node-helper.h"
 
-#include "math.h"
 #include "mobility-helper.h"
 
-#include "ns3/config.h"
+#include "ns3/csv-reader.h"
 #include "ns3/double.h"
-#include "ns3/geographic-positions.h"
-#include "ns3/integer.h"
 #include "ns3/log.h"
-#include "ns3/waypoint.h"
+#include "ns3/uinteger.h"
 
 #include <fstream>
-#include <vector>
 
 using namespace std;
 
@@ -26,165 +22,158 @@ namespace ns3
 {
 NS_LOG_COMPONENT_DEFINE("LeoOrbitNodeHelper");
 
-LeoOrbitNodeHelper::LeoOrbitNodeHelper(const Time& timeStep)
+LeoOrbitNodeHelper::LeoOrbitNodeHelper(const Time& resolution)
 {
+    NS_LOG_FUNCTION(this << resolution.As(Time::S));
     m_nodeFactory.SetTypeId("ns3::Node");
-    m_timeStep = timeStep;
-}
-
-LeoOrbitNodeHelper::~LeoOrbitNodeHelper()
-{
+    m_resolution = resolution;
 }
 
 void
 LeoOrbitNodeHelper::SetAttribute(string name, const AttributeValue& value)
 {
+    NS_LOG_FUNCTION(this);
     m_nodeFactory.Set(name, value);
 }
 
+void
+LeoOrbitNodeHelper::SetResolution(Time resolution)
+{
+    NS_LOG_FUNCTION(this << resolution.As(Time::S));
+    m_resolution = resolution;
+}
+
+std::size_t
+LeoOrbitNodeHelper::CalculateNumberOfOrbitSatellites(const LeoOrbitalShell& orbit)
+{
+    return orbit.planes * orbit.sats;
+}
+
 NodeContainer
-LeoOrbitNodeHelper::Install(const LeoOrbit& orbit)
+LeoOrbitNodeHelper::CreateNodesAndInstallMobility(const LeoOrbitalShell& orbit)
 {
     NS_LOG_FUNCTION(this << orbit);
+
+    NodeContainer satelliteContainer;
+    for (std::size_t i = 0; i < CalculateNumberOfOrbitSatellites(orbit); i++)
+    {
+        satelliteContainer.Add(m_nodeFactory.Create<Node>());
+    }
+
+    Install(satelliteContainer, orbit);
+
+    return satelliteContainer;
+}
+
+void
+LeoOrbitNodeHelper::Install(NodeContainer nodes, const LeoOrbitalShell& orbit)
+{
+    NS_LOG_FUNCTION(this << &orbit);
+
+    NS_LOG_INFO("Installing shell: altitude = "
+                << orbit.alt << " km, inclination = " << orbit.inc << " deg, " << orbit.planes
+                << " planes, " << orbit.sats << " sats/plane, phasing = " << orbit.phasing
+                << ", RAAN span = " << orbit.raanSpanDeg << " deg");
+
+    bool planes = orbit.planes == 0;
+    bool sats = orbit.sats == 0;
+    bool alt = orbit.alt <= 0;
+    bool raan = orbit.raanSpanDeg <= 0 || orbit.raanSpanDeg > 360;
+    bool phasing = orbit.phasing >= orbit.planes;
+
+    NS_ABORT_MSG_IF(planes || sats || alt || raan || phasing,
+                    (planes ? "Number of orbital planes must be > 0; " : "")
+                        << (sats ? "Number of satellites per plane must be > 0; " : "")
+                        << (alt ? "Orbital altitude must be > 0 km; " : "")
+                        << (raan ? "RAAN span must be in (0, 360] degrees; " : "")
+                        << (phasing ? "Phasing factor must be in [0, planes - 1]" : ""));
+
+    if (nodes.GetN() != static_cast<uint32_t>(orbit.planes * orbit.sats))
+    {
+        NS_LOG_WARN("Number of nodes " << nodes.GetN() << " does not match constellation size "
+                                       << orbit.planes * orbit.sats);
+    }
 
     MobilityHelper mobility;
     mobility.SetPositionAllocator("ns3::LeoCircularOrbitPositionAllocator",
                                   "NumOrbits",
-                                  IntegerValue(orbit.planes),
+                                  UintegerValue(orbit.planes),
                                   "NumSatellites",
-                                  IntegerValue(orbit.sats));
+                                  UintegerValue(orbit.sats),
+                                  "PhasingFactor",
+                                  UintegerValue(orbit.phasing),
+                                  "RaanSpanDeg",
+                                  DoubleValue(orbit.raanSpanDeg));
     mobility.SetMobilityModel("ns3::LeoCircularOrbitMobilityModel",
                               "Altitude",
                               DoubleValue(orbit.alt),
                               "Inclination",
-                              DoubleValue(orbit.inc));
-
-    auto progressVector = GenerateProgressVector(orbit);
-
-    // This section:
-    // - Creates a node, installs mobility, associate node to a progress vector, and adds node to
-    // a NodeContainer.
-    // - It also calculates the initial offset for nodes that share the same orbit, assigning each
-    // node a different starting index, which will be increased at every call to Update().
-    // - It tries to distribute nodes evenly within the Progress Vector, by diluting the remainder
-    // space between the first nodes.
-
-    uint32_t truncatedRegularStepSize = progressVector->size() / orbit.sats;
-    int32_t remainder = progressVector->size() % orbit.sats;
-    uint64_t progressVectorIndex;
-
-    NodeContainer satelliteContainer;
-    for (uint16_t i = 0; i < orbit.planes; i++)
-    {
-        progressVectorIndex = 0;
-        auto rem = remainder;
-        for (int32_t j = 0; j < orbit.sats; j++)
-        {
-            auto node = m_nodeFactory.Create<Node>();
-            mobility.Install(node);
-            auto currentNodeMobModel = node->GetObject<LeoCircularOrbitMobilityModel>();
-            // associates the progress vector to the node
-            currentNodeMobModel->SetProgressVectorPointer(progressVector);
-            currentNodeMobModel->SetNodeIndexAtProgressVector(progressVectorIndex);
-            if (rem > 0)
-            {
-                // there's a remainder
-                // adds one space to dilute the remainder
-                progressVectorIndex++;
-            }
-            currentNodeMobModel->UpdateNodePositionAndScheduleEvent();
-            satelliteContainer.Add(node);
-            progressVectorIndex += truncatedRegularStepSize;
-            rem--;
-        }
-    }
-    return satelliteContainer;
+                              DoubleValue(orbit.inc),
+                              "Resolution",
+                              TimeValue(m_resolution));
+    mobility.Install(nodes);
 }
 
 NodeContainer
-LeoOrbitNodeHelper::Install(const std::string& orbitFile)
+LeoOrbitNodeHelper::CreateNodesAndInstallMobility(const std::string& orbitFile)
 {
     NS_LOG_FUNCTION(this << orbitFile);
 
-    NodeContainer nodes;
-    ifstream orbitsf;
-    orbitsf.open(orbitFile, ifstream::in);
-    LeoOrbit orbit;
-    while ((orbitsf >> orbit))
+    // Read orbit file contents
+    std::vector<LeoOrbitalShell> orbits;
+    CsvReader csv(orbitFile);
+    while (csv.FetchNextRow())
     {
-        nodes.Add(Install(orbit));
-        NS_LOG_DEBUG("Added orbit plane");
+        // Require at least 4 columns; allow up to 6
+        if (csv.ColumnCount() < 4)
+        {
+            NS_LOG_WARN("Skipping row " << csv.RowNumber() << " of " << orbitFile
+                                        << ": expected at least 4 columns, got "
+                                        << csv.ColumnCount());
+            continue;
+        }
+
+        LeoOrbitalShell orbit{};
+
+        bool ok = csv.GetValue(0, orbit.alt);
+        ok &= csv.GetValue(1, orbit.inc);
+        ok &= csv.GetValue(2, orbit.planes);
+        ok &= csv.GetValue(3, orbit.sats);
+        if (!ok)
+        {
+            NS_LOG_WARN("Skipping row " << csv.RowNumber() << " of " << orbitFile
+                                        << ": non-numeric value in required column");
+            continue;
+        }
+
+        // Optional 5th column: Walker Delta phasing factor
+        csv.GetValue(4, orbit.phasing);
+        // Optional 6th column: RAAN span in degrees (360 = Delta, 180 = Star)
+        csv.GetValue(5, orbit.raanSpanDeg);
+        orbits.push_back(orbit);
     }
-    orbitsf.close();
 
-    NS_LOG_DEBUG("Added " << nodes.GetN() << " nodes");
+    NS_ABORT_MSG_IF(orbits.empty(),
+                    "No valid orbit rows found in " << orbitFile << "; check file format");
 
-    return nodes;
+    return CreateNodesAndInstallMobility(orbits);
 }
 
 NodeContainer
-LeoOrbitNodeHelper::Install(const vector<LeoOrbit>& orbits)
+LeoOrbitNodeHelper::CreateNodesAndInstallMobility(const vector<LeoOrbitalShell>& orbits)
 {
     NS_LOG_FUNCTION(this << orbits);
 
     NodeContainer nodes;
     for (auto& orbit : orbits)
     {
-        nodes.Add(Install(orbit));
+        nodes.Add(CreateNodesAndInstallMobility(orbit));
         NS_LOG_DEBUG("Added orbit plane");
     }
 
     NS_LOG_DEBUG("Added " << nodes.GetN() << " nodes");
 
     return nodes;
-}
-
-constexpr double M_TO_KM = 1000; ///< Meters in a kilometer
-
-std::shared_ptr<std::vector<double>>
-LeoOrbitNodeHelper::GenerateProgressVector(const LeoOrbit& orbit) const
-{
-    // sqrt((km^3/s^2) / km) => sqrt(km^2/s^2) => km/s * 1000m/km = m/s
-    const auto earthRadiusKm = (GeographicPositions::EARTH_SEMIMAJOR_AXIS / M_TO_KM);
-    const auto orbitHeight = earthRadiusKm + orbit.alt;             // km
-    double nodeSpeed = sqrt(LEO_EARTH_GGC / orbitHeight);           // km/s
-    double orbitPerimeter = (earthRadiusKm + orbit.alt) * 2 * M_PI; // 2*pi*r km
-
-    // Calculates the step size for the progress vector - the step size represents how much the
-    // node progresses along its orbit during a single time resolution interval. Since the model
-    // only fetches the node position at each interval, we only need to store its offset at each
-    // interval.
-    double stepSize = nodeSpeed * m_timeStep.GetSeconds(); // km
-
-    // Ensure correct gradient (not against earth rotation)
-    int sign = 1;
-    // Convert to radians then apply inverted signal if needed
-    if (((orbit.inc / 180.0) * M_PI) > M_PI / 2)
-    {
-        sign = -1;
-    }
-
-    // Fraction of orbit per step
-    double stepFraction = stepSize / orbitPerimeter;
-
-    // Total number of steps in the orbit
-    std::size_t steps = std::round(1.0 / stepFraction);
-
-    // Angular advance per step, anomaly per step
-    double stepAngle = sign * 2 * M_PI * stepFraction;
-
-    // Creates the container and associates it to the pointer passed via argument
-    auto progVecPtr = std::make_shared<std::vector<double>>(steps);
-
-    // It progresses step by step until it makes one cycle along the orbit, and at each step, we
-    // calculate the angle/offset - creating a vector with all possible offsets given a time res.
-    for (std::size_t i = 0; i < steps; i++)
-    {
-        // 2pi * sign * amountProgressed / earth circular perimeter
-        progVecPtr->at(i) = i * stepAngle;
-    }
-
-    return progVecPtr;
 }
 
 }; // namespace ns3

@@ -39,6 +39,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 - (wifi) Add support for Power Save mode.
 - (spectrum) Add the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, enabling ray-traced phased-array spectrum propagation via `sionna.rt` scenes and solver integration.
 - (network) The `SequenceNumber` template class has been changed to allow sequence numbers with an arbitrary number of bits (e.g., 10 bits).
+- (mobility) Add the `LeoCircularOrbitMobilityModel` for satellite-based mobility. Orbital shells can be defined via `LeoOrbitalShell`, loaded from files via `LeoOrbitNodeHelper`.
 
 ### Bugs fixed
 

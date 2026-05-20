@@ -19,6 +19,14 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (wifi) Add the `PsmTimeout` attribute to `DefaultPowerSaveManager` to keep STAs in PS mode awake for extra time before going to sleep
 * (wifi) Add the `ListenAdvance` attribute to `DefaultPowerSaveManager` to make STAs in PS mode wake up some time in advance prior to the TBTT
 * (spectrum) Added the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, with scene loading, path solver configuration, delay normalization, and phased-array spectrum loss integration.
+* (core) Add 3D and 2D Vector cross-product functions `CrossProduct()`.
+* (mobility) Add `LeoCircularOrbitMobilityModel` for simulating satellite mobility in circular Low Earth Orbit (LEO) using geocentric coordinates. Supports configurable altitude and inclination parameters.
+* (mobility) Add `GeocentricEcefMobilityModel` that extends `GeocentricConstantPositionMobilityModel` to return ECEF (Earth-Centered Earth-Fixed) coordinates from `GetPosition()` instead of ENU coordinates, useful for scenarios where both satellite and ground station need to use the same coordinate system.
+* (mobility) Add `LeoOrbitalShell` class for defining Walker Delta/Star orbital shells with altitude, inclination, number of orbital planes, and satellites per plane, with CSV serialization support.
+* (mobility) Add `LeoCircularOrbitPositionAllocator` for allocating initial positions of satellites along a circular orbit, computing Right ascension of ascending node (RAAN) and perigee argument.
+* (mobility) Add `LeoOrbitNodeHelper` helper class for installing LEO satellite nodes from orbit definition files or `LeoOrbitalShell` objects.
+* (mobility) Add `GeographicPositions::LEO_EARTH_GGC` constant for the geocentric gravitational constant.
+* (mobility) Add unified LEO satellite example (`leo-satellite-example`) demonstrating mobility tracing, antenna pointing toward ground station, and full 3GPP NTN propagation loss estimation in a single program controlled by `--mode` switch.
 
 ### Changes to existing API
 

@@ -14,6 +14,7 @@
 /**
  * @file
  * @ingroup mobility
+ * @ingroup leo
  * Class GeocentricConstantPositionMobilityModel declaration.
  */
 
@@ -21,6 +22,7 @@ namespace ns3
 {
 
 /**
+ * @ingroup leo
  * @brief Mobility model using geocentric euclidean coordinates, as defined in 38.811 chapter 6.3
  */
 class GeocentricConstantPositionMobilityModel : public MobilityModel

@@ -11,6 +11,12 @@
  */
 
 /**
+ * @defgroup leo LEO Mobility
+ * @ingroup mobility
+ * Low Earth Orbit mobility models, helpers, orbit definitions, and examples.
+ */
+
+/**
  * @addtogroup mobility Mobility
  *
  * The mobility support includes:

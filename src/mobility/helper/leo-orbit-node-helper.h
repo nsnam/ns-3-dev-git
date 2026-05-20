@@ -8,9 +8,9 @@
 #ifndef LEO_ORBIT_NODE_HELPER_H
 #define LEO_ORBIT_NODE_HELPER_H
 
-#include "ns3/leo-circular-orbit-mobility-model.h"
-#include "ns3/leo-orbit.h"
+#include "ns3/leo-orbital-shell.h"
 #include "ns3/node-container.h"
+#include "ns3/nstime.h"
 #include "ns3/object-factory.h"
 
 #include <string>
@@ -18,6 +18,7 @@
 /**
  * @file
  * @ingroup leo
+ * LeoOrbitNodeHelper class declaration.
  */
 
 namespace ns3
@@ -27,53 +28,81 @@ namespace ns3
  * @ingroup leo
  * @brief Builds a node container of nodes with LEO positions using a list of
  * orbit definitions.
- *
- * Adds orbits with from a file for each node.
  */
 class LeoOrbitNodeHelper
 {
   public:
     /**
-     * Construct a LEO Orbit Node Helper which is used to make life easier when working
-     * with mobility models.
-     * @param timeStep the time precision for the mobility, which determines the granularity of
-     * positions generated in a given orbit (the faster the orbital speed, the smallest
+     * @brief Construct a LEO Orbit Node Helper.
+     *
+     * @param resolution time interval between CourseChange notifications
+     *        on the installed mobility models.  Smaller values produce
+     *        more frequent notifications.  Zero disables periodic
+     *        notifications.
      */
-    LeoOrbitNodeHelper(const Time& timeStep);
+    LeoOrbitNodeHelper(const Time& resolution = Seconds(0));
 
     /// destructor
-    virtual ~LeoOrbitNodeHelper();
+    virtual ~LeoOrbitNodeHelper() = default;
 
     /**
-     * @brief Install orbits from orbitFile.
+     * @brief Install orbital mobility on a node container using an orbit definition.
+     * @param nodes node container
+     * @param orbit orbit definition
+     */
+    void Install(NodeContainer nodes, const LeoOrbitalShell& orbit);
+
+    /**
+     * @brief Calculates the total number of satellites in a given LEO orbit.
      *
-     * Install orbits from orbitFile containing one or more lines, each with 4 columns separated by
-     * colons (:). The first column contains the orbit altitude (from the surface of the earth). The
-     * second column contains the orbital plane inclination. The third column contains the number of
-     * orbital planes, uniformly distributed (180/orbital planes). The fourth column contains the
-     * number of satellites per orbital plane.
+     * This method determines the total number of satellites by multiplying
+     * the number of orbital planes by the number of satellites per plane.
      *
-     * One example: 1150.0:53.0:32:50, represents 32 orbits with 50 satellites each, with 53 degrees
-     * of inclination in respect to the equator, and with an altitude of 1150 km.
+     * @param orbit Orbit definition containing the number of planes
+     *        and the number of satellites per plane.
+     * @return The total number of satellites in the specified orbit.
+     */
+    std::size_t CalculateNumberOfOrbitSatellites(const LeoOrbitalShell& orbit);
+
+    /**
+     * @brief Create satellite nodes and install orbital mobility from a CSV file.
+     *
+     * The CSV file contains one or more lines, each with 4-6 comma-separated columns:
+     *   - altitude (km, from earth surface)
+     *   - inclination (degrees relative to equator)
+     *   - number of orbital planes
+     *   - number of satellites per plane
+     *   - phasing factor (optional, defaults to 0)
+     *   - RAAN span in degrees (optional, defaults to 360)
+     *
+     * See LeoOrbitalShell for the definition of these parameters.
+     *
+     * Planes are evenly spaced by 360 degrees divided by the number of planes, starting from the
+     * prime meridian.
+     *
+     * One example: 1150.0,53.0,32,50, represents 32 orbital planes with 50 satellites each, with 53
+     * degrees of inclination in respect to the equator, and with an altitude of 1150 km.
      *
      * @param orbitFile path to orbit definitions file
-     * @returns a node container containing nodes using the specified attributes
+     * @returns a node container containing the created nodes
      */
-    NodeContainer Install(const std::string& orbitFile);
+    NodeContainer CreateNodesAndInstallMobility(const std::string& orbitFile);
 
     /**
-     *
+     * @brief Create satellite nodes and install orbital mobility from a vector
+     *        of orbital parameters.
      * @param orbits orbit definitions
-     * @returns a node container containing nodes using the specified attributes
+     * @returns a node container containing the created nodes
      */
-    NodeContainer Install(const std::vector<LeoOrbit>& orbits);
+    NodeContainer CreateNodesAndInstallMobility(const std::vector<LeoOrbitalShell>& orbits);
 
     /**
-     *
+     * @brief Create satellite nodes and install orbital mobility from a single
+     *        orbit definition.
      * @param orbit orbit definition
-     * @returns a node container containing nodes using the specified attributes
+     * @returns a node container containing the created nodes
      */
-    NodeContainer Install(const LeoOrbit& orbit);
+    NodeContainer CreateNodesAndInstallMobility(const LeoOrbitalShell& orbit);
 
     /**
      * Set an attribute for each node
@@ -84,22 +113,16 @@ class LeoOrbitNodeHelper
     void SetAttribute(std::string name, const AttributeValue& value);
 
     /**
-     * Generates a Progress Vector and makes ptr point to the newly created vector.
-     * A progress vector holds all positions that a node may be along its orbit. It is an
-     * offset value regarding the node itself and its orbit.
-     *
-     * @param orbit a LeoOrbit object that holds orbit information
-     * @returns a shared pointer to the vector containing positions of satellites for the specified
-     * LEO orbit
+     * @brief Set the time resolution for course change notifications.
+     * @param resolution the time resolution
      */
-    std::shared_ptr<std::vector<double>> GenerateProgressVector(const LeoOrbit& orbit) const;
+    void SetResolution(Time resolution);
 
   private:
     ObjectFactory m_nodeFactory; ///< Node factory
 
-    /// The period at which the mobility model is updated. Higher orbital speeds require smaller
-    /// steps.
-    Time m_timeStep;
+    /// Time interval between CourseChange notifications
+    Time m_resolution;
 };
 
 }; // namespace ns3

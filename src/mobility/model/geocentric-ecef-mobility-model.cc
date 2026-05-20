@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: GPL-2.0-only
  *
- *
+ * Author: Jesse Chiu <jessest94106@gmail.com>
  */
 
 #include "geocentric-ecef-mobility-model.h"
@@ -25,16 +25,6 @@ GeocentricEcefMobilityModel::GetTypeId()
                             .SetGroupName("Mobility")
                             .AddConstructor<GeocentricEcefMobilityModel>();
     return tid;
-}
-
-GeocentricEcefMobilityModel::GeocentricEcefMobilityModel()
-{
-    NS_LOG_FUNCTION(this);
-}
-
-GeocentricEcefMobilityModel::~GeocentricEcefMobilityModel()
-{
-    NS_LOG_FUNCTION(this);
 }
 
 Vector

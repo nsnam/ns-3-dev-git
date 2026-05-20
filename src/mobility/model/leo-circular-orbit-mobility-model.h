@@ -22,9 +22,6 @@
  * Declaration of LeoCircularOrbitMobilityModel
  */
 
-/// geocentric gravitational constant in KM^3/s^2 https://ntrs.nasa.gov/citations/19760058274
-constexpr double LEO_EARTH_GGC = 398600.7;
-
 namespace ns3
 {
 
@@ -33,7 +30,14 @@ namespace ns3
  * @brief Keep track of the orbital position and velocity of a satellite.
  *
  * This uses simple circular orbits based on the inclination of the orbital
- * plane and the height of the satellite.
+ * plane and the altitude of the satellite. Assumes earth is a perfect sphere.
+ *
+ * Note: Position in `DoSetPosition()` is in degrees, not the usual meters.
+ * Note: Altitude is stored in km, _not_ the usual ns-3 m.
+ *
+ * This model is distinct from `GeocentricEcefMobilityModel` in that it
+ * implements a dynamic circular orbital model, whereas `GeocentricEcefMobilityModel`
+ * is intended for ECEF coordinates that do not evolve according to orbital dynamics.
  */
 class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityModel
 {
@@ -45,6 +49,8 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     static TypeId GetTypeId();
     /// constructor
     LeoCircularOrbitMobilityModel();
+    /// destructor
+    ~LeoCircularOrbitMobilityModel() override;
 
     /**
      * @brief Gets the speed of the node
@@ -53,50 +59,59 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     double GetSpeed() const;
 
     /**
-     * @brief Gets the altitude in km
-     * @return the altitude in km
+     * @brief Get the orbital angular velocity.
+     *
+     * Computed from Keplerian mechanics: omega = sqrt(GM / r^3).
+     * Negated for retrograde orbits (inclination > 90 degrees).
+     *
+     * If the user set an orbital angular velocity >= 0,
+     * it will be used instead.
+     *
+     * @return angular velocity in rad/s
+     */
+    double GetAngularVelocity() const;
+
+    /**
+     * @brief Gets the altitude in m
+     *
+     * @return the altitude in m (above Earth surface)
      */
     double GetAltitude() const;
     /**
-     * @brief Sets the altitude in km
-     * @param h the altitude km
+     * @brief Sets the altitude in m
+     *
+     * @param h the altitude in m (above Earth surface)
      */
     void SetAltitude(double h);
 
     /**
+     * @brief Gets the altitude in km (not the usual meters used in ns-3)
+     *
+     * @return the altitude in km (above Earth surface)
+     */
+    double GetAltitudeKm() const;
+    /**
+     * @brief Sets the altitude in km (not the usual meters used in ns-3)
+     *
+     * @param h the altitude in km (above Earth surface)
+     */
+    void SetAltitudeKm(double h);
+
+    /**
      * @brief Gets the inclination
-     * @return the inclination
+     * @return the inclination in degrees
      */
     double GetInclination() const;
 
     /**
      * @brief Sets the inclination
-     * @param incl the inclination
+     * @param incl the inclination in degrees
      */
     void SetInclination(double incl);
 
     /**
-     * @brief Sets the index of the node at the Progress Vector
-     * @param index the node's index at the Progress Vector
-     */
-    void SetNodeIndexAtProgressVector(uint64_t index);
-
-    /**
-     * @brief Links this node to a certain Progress Vector - probably shared among other nodes
-     * @param ptr a pointer to the Progress Vector container
-     */
-    void SetProgressVectorPointer(const std::shared_ptr<std::vector<double>>& ptr);
-
-    /**
-     * @brief Orders the calculation of the node position, notifies course change, advances
-     * the node index at the Progress Vector and schedules the next update event.
-     * @return position that will be returned upon next call to DoGetPosition
-     */
-    Vector UpdateNodePositionAndScheduleEvent();
-
-    /**
      * @brief Returns the Geocentric Position of the Node in ECEF (cartesian)
-     * @return a vector representing the node position
+     * @return ECEF position in meters
      */
     Vector DoGetGeocentricPosition() const override;
 
@@ -107,6 +122,9 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     }
 
   private:
+    void DoInitialize() override;
+    void DoDispose() override;
+
     /// Orbit height in km
     double m_orbitHeight;
 
@@ -116,36 +134,48 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     /// Longitudinal offset in rad
     double m_longitude;
 
-    /// Offset on the orbital plane in rad
-    double m_offset;
+    /// Argument of latitude in rad
+    double m_argumentOfLatitude;
 
-    /// Current position
-    Vector3D m_position;
+    /// Orbital speed in m/s; negative means compute from gravity
+    double m_orbitalSpeed;
 
-    /// Time precision for positions
-    Time m_precision;
+    /// Time interval between CourseChange notifications; zero disables
+    /// periodic notifications
+    Time m_resolutionTimeStep;
 
-    /// The index of the node in the Progress Vector
-    uint16_t m_nodeIndexAtProgressVector = 0;
+    /// Event for course change notification
+    EventId m_courseChangeEvent;
 
-    /// A pointer to a progress vector that is shared among all nodes that have the same altitude
-    std::shared_ptr<std::vector<double>> m_progressVector;
+    /**
+     * @brief Fire NotifyCourseChange and reschedule at m_resolutionTimeStep.
+     */
+    void NotifyCourseChangeAndReschedule();
 
     /**
      * @brief Returns the node current position.
-     * @return the current position.
+     * @return ECEF position in meters
      */
     Vector DoGetPosition() const override;
 
     /**
      * @brief Sets the node position via argument.
-     * @param position the position to set.
+     *
+     * Note: This method deviates from the `MobilityModel` interface which typically
+     * expects position in meters. For this model, position is interpreted as angular
+     * coordinates (degrees) because specifying orbital parameters (longitude of
+     * ascending node and offset) is more intuitive in degrees than in meters
+     * relative to the earth's center.
+     *
+     * @param position position.x is the longitude of the ascending node
+     *        in degrees; position.y is the argument of latitude on the orbital plane
+     *        in degrees.  Both are converted to radians internally.
      */
     void DoSetPosition(const Vector& position) override;
 
     /**
      * @brief Returns the current velocity of the node.
-     * @return the current velocity.
+     * @return velocity vector in m/s (ECEF)
      */
     Vector DoGetVelocity() const override;
 
@@ -157,27 +187,44 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     Vector3D PlaneNorm(Time t) const;
 
     /**
-     * @brief Advances a satellite by 'a' degrees inside the orbital plane
-     * @param a angle by which to rotate
-     * @param x vector to rotate
-     * @param t time passed since simulation start (used to calculate rotation offset)
-     * @return rotated vector.
+     * @brief Rotates a position vector by angle 'a' around the orbital plane
+     * normal, using the Rodrigues rotation formula
+     * (see https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula ).
+     *
+     * @param theta angle by which to rotate, in radians
+     * @param v position vector to rotate, in meters (ECEF)
+     * @param t time passed since simulation start (used to compute the
+     *        current orbital plane normal)
+     * @return rotated position vector in meters (ECEF)
      */
-    Vector3D RotatePlane(double a, const Vector3D& x, Time t) const;
+    Vector3D RotatePlane(double theta, const Vector3D& v, Time t) const;
 
     /**
      * @brief Calculate the position at time t
-     * @param t time
-     * @return position at time t
+     *
+     * The returned Vector contains Cartesian ECEF coordinates in meters.
+     * Note that this differs from DoSetPosition(), where the Vector
+     * encodes angular orbital parameters (longitude and offset in
+     * degrees); that discrepancy is a consequence of the MobilityModel
+     * base class interface, which uses a single Vector type for both
+     * input and output.
+     *
+     * @param t simulation time
+     * @return ECEF position in meters
      */
     Vector CalcPosition(Time t) const;
 
     /**
-     * @brief Calculate the latitude depending on simulation time
+     * @brief Calculate the ECEF longitude of the ascending node at simulation time t
+     *
+     * The orbital plane drifts westward in the ECEF frame because the Earth
+     * rotates eastward, so this returns m_longitude minus the Earth-rotation
+     * angle accumulated over time t.
+     *
      * @param t time
-     * @return latitude
+     * @return longitude of the ascending node in radians (ECEF)
      */
-    double CalcLatitude(Time t) const;
+    double CalcLongitude(Time t) const;
 };
 } // namespace ns3
 

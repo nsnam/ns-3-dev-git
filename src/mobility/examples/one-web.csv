@@ -1,0 +1,4 @@
+# OneWeb LEO Constellation configuration
+#
+altitudeKm,inclinationDegrees,numberOfPlanes,numberOfSatellitesPerPlane,phasingFactor,raanSpanDeg
+1200.0,87.9,12,56,11,180
