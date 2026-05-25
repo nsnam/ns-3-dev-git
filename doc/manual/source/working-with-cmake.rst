@@ -2639,7 +2639,7 @@ test-runner executable.
   function(build_lib)
     # ...
     build_lib_tests(
-        "${BLIB_LIBNAME}" "${BLIB_IGNORE_PCH}" "${FOLDER}" "${BLIB_TEST_SOURCES}"
+        "${BLIB_LIBNAME}" "${BLIB_IGNORE_PCH}" "${FOLDER}" "${BLIB_TEST_SOURCES}" "${BLIB_TEST_LIBRARIES_TO_LINK}"
       )
     # ...
   endfunction()
@@ -2704,6 +2704,29 @@ test-runner executable.
       endif()
     endif()
   endfunction()
+
+The ``build_lib_tests`` macro links the test library to the module library
+and to the module's ``LIBRARIES_TO_LINK``. In some cases, test sources need
+additional libraries that are not required by the module itself. For example,
+a wifi test suite may use ``OnOffHelper`` from the ``applications`` module
+without the ``wifi`` module depending on ``applications`` at runtime. To
+handle this, ``build_lib`` accepts a ``TEST_LIBRARIES_TO_LINK`` argument
+that is passed through to ``build_lib_tests`` and linked only to the
+``module-test`` shared library, not to the module library itself.
+
+.. sourcecode:: cmake
+
+  build_lib(
+    LIBNAME wifi
+    SOURCE_FILES ...
+    HEADER_FILES ...
+    LIBRARIES_TO_LINK network internet
+    TEST_SOURCES ...
+    TEST_LIBRARIES_TO_LINK applications
+  )
+
+In this example, the ``wifi-test`` library will be linked to ``applications``,
+while the main ``wifi`` library remains free of that dependency.
 
 
 The following block checks for examples subdirectories and add them to parse their
