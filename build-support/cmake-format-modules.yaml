@@ -20,6 +20,7 @@ additional_commands:
             PRIVATE_HEADER_FILES : '*'
             LIBRARIES_TO_LINK : '*'
             TEST_SOURCES : '*'
+            TEST_LIBRARIES_TO_LINK : '*'
             DEPRECATED_HEADER_FILES : '*'
             MODULE_ENABLED_FEATURES : '*'
 

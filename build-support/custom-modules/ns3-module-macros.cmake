@@ -143,6 +143,7 @@ function(build_lib)
       HEADER_FILES
       LIBRARIES_TO_LINK
       TEST_SOURCES
+      TEST_LIBRARIES_TO_LINK
       DEPRECATED_HEADER_FILES
       MODULE_ENABLED_FEATURES
       PRIVATE_HEADER_FILES
@@ -264,6 +265,7 @@ function(build_lib)
   # Build tests if requested
   build_lib_tests(
     "${BLIB_LIBNAME}" "${BLIB_IGNORE_PCH}" "${FOLDER}" "${BLIB_TEST_SOURCES}"
+    "${BLIB_TEST_LIBRARIES_TO_LINK}"
   )
 
   if(${MSVC})
@@ -510,8 +512,11 @@ endfunction()
 # This macro builds the test library for the module library
 #
 # Arguments: libname (e.g. core), ignore_pch (TRUE/FALSE), folder (src/contrib),
-# sources (list of .cc's)
-function(build_lib_tests libname ignore_pch folder test_sources)
+# sources (list of .cc's), test_libraries_to_link (additional libs for test
+# target)
+function(build_lib_tests libname ignore_pch folder test_sources
+         test_libraries_to_link
+)
   if(${ENABLE_TESTS})
     # Check if the module tests should be built
     build_lib_check_examples_and_tests_filtered_in(${libname} filtered_in)
@@ -544,9 +549,15 @@ function(build_lib_tests libname ignore_pch folder test_sources)
             ${LIB_AS_NEEDED_POST}
           )
         else()
+          # Keep linking the module's full LIBRARIES_TO_LINK alongside any extra
+          # TEST_LIBRARIES_TO_LINK: third-party libs declared as PRIVATE module
+          # deps (e.g. GSL) do not propagate transitively when
+          # NS3_REEXPORT_THIRD_PARTY_LIBRARIES is OFF, and would otherwise leave
+          # test sources that #include them unresolvable.
           target_link_libraries(
             ${test${libname}} ${LIB_AS_NEEDED_PRE} ${libname}
-            "${BLIB_LIBRARIES_TO_LINK}" ${LIB_AS_NEEDED_POST}
+            "${BLIB_LIBRARIES_TO_LINK}" "${test_libraries_to_link}"
+            ${LIB_AS_NEEDED_POST}
           )
         endif()
         set_target_properties(
