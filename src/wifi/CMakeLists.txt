@@ -5,6 +5,25 @@ if(${GSL_FOUND})
   )
 endif()
 
+# Conditionally link to applications module (needed by
+# wifi-mlo-udp-test-suite.cc)
+set(applications_lib)
+set(applications_test_sources)
+if(applications
+   IN_LIST
+   ns3-all-enabled-modules
+)
+  set(applications_lib
+      applications
+  )
+  set(applications_test_sources
+      test/wifi-issue-211-test-suite.cc
+      test/wifi-ac-mapping-test-suite.cc
+      test/wifi-msdu-aggregator-test-suite.cc
+      test/wifi-mlo-udp-test-suite.cc
+  )
+endif()
+
 set(source_files
     helper/athstats-helper.cc
     helper/spectrum-wifi-helper.cc
@@ -369,7 +388,6 @@ set(header_files
     model/yans-wifi-channel.h
     model/yans-wifi-phy.h
     model/wifi-spectrum-value-helper.h
-    test/wifi-mlo-test.h
 )
 
 build_lib(
@@ -425,5 +443,7 @@ build_lib(
     test/wifi-phy-mu-mimo-test.cc
     test/wifi-operating-channel-test.cc
     test/wifi-tx-stats-helper-test.cc
+    ${applications_test_sources}
+  TEST_LIBRARIES_TO_LINK ${applications_lib}
   GENERATE_EXPORT_HEADER
 )

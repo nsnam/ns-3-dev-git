@@ -11,7 +11,6 @@ endif()
 
 set(application_sources)
 set(csma_sources)
-set(wifi_sources)
 if(applications
    IN_LIST
    ns3-all-enabled-modules
@@ -29,18 +28,6 @@ if(applications
         ns3tcp/ns3tcp-state-test-suite.cc
     )
     # cmake-format: on
-  endif()
-  if(wifi
-     IN_LIST
-     ns3-all-enabled-modules
-  )
-    set(wifi_sources
-        ns3wifi/wifi-issue-211-test-suite.cc
-        ns3wifi/wifi-ac-mapping-test-suite.cc
-        ns3wifi/wifi-mlo-udp-test-suite.cc
-        ns3wifi/wifi-msdu-aggregator-test-suite.cc
-        # ns3wifi/wifi-mlo-udp-test-suite.cc
-    )
   endif()
   if((csma-layout
       IN_LIST
@@ -101,7 +88,6 @@ add_library(
   ${internet_sources}
   ${network_sources}
   ${traffic-control_sources}
-  ${wifi_sources}
 )
 
 add_dependencies(

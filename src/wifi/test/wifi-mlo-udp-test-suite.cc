@@ -6,6 +6,8 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "wifi-mlo-test.h"
+
 #include "ns3/arp-header.h"
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/config.h"
@@ -27,7 +29,6 @@
 #include "ns3/udp-client-server-helper.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-mac.h"
-#include "ns3/wifi-mlo-test.h"
 #include "ns3/wifi-net-device.h"
 
 #include <array>
