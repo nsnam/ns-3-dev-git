@@ -1378,7 +1378,6 @@ def configuration_step(
 
 def build_step(
     args,
-    build_and_run,
     target_to_run,
     current_cmake_cache_folder,
     ns3_modules,
@@ -1386,7 +1385,7 @@ def build_step(
     build_profile,
     output,
 ):
-    # There is one scenario where we build everything: ./ns3 build
+    # There is one scenario where we build everything: ./ns3 build (no targets)
     if len(args.build) == 0:
         cmake_build(
             current_cmake_cache_folder,
@@ -1395,66 +1394,54 @@ def build_step(
             dry_run=args.dry_run,
             build_verbose=args.verbose,
         )
+        return
 
-    # If we are building specific targets, we build them one by one
-    else:
-        non_executable_targets = [
-            "assemble-introspected-command-line",
-            "check-version",
-            "cmake-format",
-            "cmake-format-check",
-            "coverage_cobertura",
-            "coverage_gcc",
-            "coverage_html",
-            "docs",
-            "doxygen",
-            "doxygen-no-build",
-            "installation",
-            "sphinx",
-            "manual",
-            "models",
-            "ninjaTrace",
-            "timeTraceReport",
-            "tutorial",
-            "contributing",
-            "install",
-            "uninstall",
-        ]
-        # Build targets in the list
-        for target in args.build:
-            if target in ns3_modules:
-                pass
-            elif target not in non_executable_targets:
-                target = get_target_to_build(target, ns3_version, build_profile)
-            else:
-                # Sphinx target should have the sphinx prefix
-                if target in ["contributing", "installation", "manual", "models", "tutorial"]:
-                    target = "sphinx_%s" % target
+    non_executable_targets = [
+        "assemble-introspected-command-line",
+        "check-version",
+        "cmake-format",
+        "cmake-format-check",
+        "coverage_cobertura",
+        "coverage_gcc",
+        "coverage_html",
+        "docs",
+        "doxygen",
+        "doxygen-no-build",
+        "installation",
+        "sphinx",
+        "manual",
+        "models",
+        "ninjaTrace",
+        "timeTraceReport",
+        "tutorial",
+        "contributing",
+        "install",
+        "uninstall",
+    ]
+    # Build targets in the list
+    for target in args.build:
+        if target in ns3_modules:
+            pass
+        elif target not in non_executable_targets:
+            target = get_target_to_build(target, ns3_version, build_profile)
+        else:
+            # Sphinx target should have the sphinx prefix
+            if target in ["contributing", "installation", "manual", "models", "tutorial"]:
+                target = "sphinx_%s" % target
 
-                # Docs should build both doxygen and sphinx based docs
-                if target == "docs":
-                    target = "sphinx"
-                    args.build.append("doxygen")
+            # Docs should build both doxygen and sphinx based docs
+            if target == "docs":
+                target = "sphinx"
+                args.build.append("doxygen")
 
-                if target == "check-version":
-                    global run_verbose
-                    run_verbose = False  # Do not print the equivalent cmake command
+            if target == "check-version":
+                global run_verbose
+                run_verbose = False  # Do not print the equivalent cmake command
 
-            cmake_build(
-                current_cmake_cache_folder,
-                jobs=args.jobs,
-                target=target,
-                output=output,
-                dry_run=args.dry_run,
-                build_verbose=args.verbose,
-            )
-
-    # The remaining case is when we want to build something to run
-    if build_and_run:
         cmake_build(
             current_cmake_cache_folder,
             jobs=args.jobs,
-            target=get_target_to_build(target_to_run, ns3_version, build_profile),
+            target=target,
             output=output,
             dry_run=args.dry_run,
             build_verbose=args.verbose,
@@ -2202,7 +2189,6 @@ def main():
     if not run_only:
         build_step(
             args,
-            build_and_run,
             target_to_run,
             current_cmake_cache_folder,
             ns3_modules,
