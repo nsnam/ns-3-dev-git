@@ -1083,8 +1083,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
             self.assertIn("ns3-lte", enabled_modules)
             self.assertTrue(get_test_enabled())
+            # Account for additional executables (fatal-command-line-duplicate-non-option-example,
+            # fatal-command-line-duplicate-option-example)and platform-specific executables
             self.assertLessEqual(
-                len(get_programs_list()), len(self.ns3_executables) + (win32 or macos)
+                len(get_programs_list()),
+                len(self.ns3_executables) + 2 + (win32 or macos),
+                msg=set(get_programs_list()).difference(self.ns3_executables),
             )
 
             # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
