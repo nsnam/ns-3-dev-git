@@ -1598,8 +1598,10 @@ def run_step(args, target_to_run, target_args):
         if args.command_template:
             commands = args.command_template % f'"{target_to_run}"'
             commands = list(re.findall(r'(?:".*?"|\S)+', commands))
-            commands = list(map(lambda x: x.replace('"', ""), commands))
-            target_to_run = commands[0]
+            # Keep quotes on remaining args so the dry-run/verbose output
+            # shows the substituted path quoted; they are stripped again
+            # before execution because execvp would pass them verbatim.
+            target_to_run = commands[0].replace('"', "")
             commands = commands[1:]
             check_program_installed(target_to_run)
             target_args = commands + target_args
@@ -1636,9 +1638,12 @@ def run_step(args, target_to_run, target_args):
         )
 
     if not args.dry_run:
+        # Strip literal quotes left in for the dry-run display: execvp
+        # would pass them as part of the argument, which Open MPI rejects.
+        exec_arguments = [arg.replace('"', "") for arg in program_arguments]
         try:
             subprocess.run(
-                program_arguments, env=proc_env, cwd=working_dir, shell=use_shell, check=True
+                exec_arguments, env=proc_env, cwd=working_dir, shell=use_shell, check=True
             )
         except subprocess.CalledProcessError as e:
             # Replace list of arguments with a single string
