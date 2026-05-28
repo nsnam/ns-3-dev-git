@@ -359,13 +359,19 @@ InterferenceHelper::AppendEvent(Ptr<Event> event,
             // HE TB PPDU transmission and the start of HE TB payload.
             bandIt->second.firstPower = previousPowerStart;
         }
-        auto first =
+        // With NiChanges backed by a sorted vector, a second insert may invalidate the
+        // iterator returned by the first. Capture both insert positions as indices --
+        // since GetStartTime() <= GetEndTime(), the second insert lands at an index
+        // >= the first, so the first index remains stable across the second insert.
+        const auto firstIt =
             AddNiChangeEvent(event->GetStartTime(), NiChange(previousPowerStart, event), bandIt);
-        auto last =
+        const auto firstIdx = std::distance(niChanges.begin(), firstIt);
+        const auto lastIt =
             AddNiChangeEvent(event->GetEndTime(), NiChange(previousPowerEnd, event), bandIt);
-        for (auto i = first; i != last; ++i)
+        const auto lastIdx = std::distance(niChanges.begin(), lastIt);
+        for (auto i = firstIdx; i != lastIdx; ++i)
         {
-            i->second.AddPower(power);
+            niChanges.at(i).second.AddPower(power);
         }
     }
 }

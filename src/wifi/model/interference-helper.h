@@ -15,7 +15,11 @@
 
 #include "ns3/object.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <map>
+#include <utility>
+#include <vector>
 
 namespace ns3
 {
@@ -395,9 +399,204 @@ class InterferenceHelper : public Object
     };
 
     /**
-     * typedef for a multimap of NiChange
+     * Sorted-by-time list of NI changes for a single band.
+     *
+     * Entries are kept in non-decreasing time order and duplicate times are
+     * allowed. The backing std::vector amortises allocations across growth;
+     * insert/erase shift the tail, which is cheap because the steady-state
+     * size is small (a handful of in-flight events per band).
      */
-    using NiChanges = std::multimap<Time, NiChange>;
+    class NiChanges
+    {
+      public:
+        using value_type = std::pair<Time, NiChange>;                   //!< (time, NI change) entry
+        using iterator = std::vector<value_type>::iterator;             //!< iterator type
+        using const_iterator = std::vector<value_type>::const_iterator; //!< const iterator type
+        using size_type = std::size_t;                                  //!< size type
+
+        /// @return an iterator to the first entry
+        iterator begin()
+        {
+            return m_data.begin();
+        }
+
+        /// @return an iterator one past the last entry
+        iterator end()
+        {
+            return m_data.end();
+        }
+
+        /// @return a const iterator to the first entry
+        const_iterator begin() const
+        {
+            return m_data.begin();
+        }
+
+        /// @return a const iterator one past the last entry
+        const_iterator end() const
+        {
+            return m_data.end();
+        }
+
+        /// @return a const iterator to the first entry
+        const_iterator cbegin() const
+        {
+            return m_data.cbegin();
+        }
+
+        /// @return a const iterator one past the last entry
+        const_iterator cend() const
+        {
+            return m_data.cend();
+        }
+
+        /// @return the number of entries
+        size_type size() const
+        {
+            return m_data.size();
+        }
+
+        /**
+         * Access the i-th entry.
+         * @param i the index of the entry
+         * @return reference to the i-th entry
+         */
+        value_type& operator[](size_type i)
+        {
+            return m_data[i];
+        }
+
+        /**
+         * Bounds-checked access the i-th entry.
+         * @param i the index of the entry
+         * @return reference to the i-th entry
+         */
+        value_type& at(size_type i)
+        {
+            return m_data.at(i);
+        }
+
+        /**
+         * Locate the first entry with time strictly greater than @p t.
+         * @param t the time to search for
+         * @return iterator to the first entry with time strictly greater than @p t
+         */
+        iterator upper_bound(Time t)
+        {
+            return std::upper_bound(m_data.begin(), m_data.end(), t, TimeLess{});
+        }
+
+        /**
+         * Locate the first entry with time strictly greater than @p t.
+         * @param t the time to search for
+         * @return const iterator to the first entry with time strictly greater than @p t
+         */
+        const_iterator upper_bound(Time t) const
+        {
+            return std::upper_bound(m_data.cbegin(), m_data.cend(), t, TimeLess{});
+        }
+
+        /**
+         * Locate the first entry with time greater than or equal to @p t.
+         * @param t the time to search for
+         * @return iterator to the first entry with time greater than or equal to @p t
+         */
+        iterator lower_bound(Time t)
+        {
+            return std::lower_bound(m_data.begin(), m_data.end(), t, TimeLess{});
+        }
+
+        /**
+         * Locate the first entry with time greater than or equal to @p t.
+         * @param t the time to search for
+         * @return const iterator to the first entry with time greater than or equal to @p t
+         */
+        const_iterator lower_bound(Time t) const
+        {
+            return std::lower_bound(m_data.cbegin(), m_data.cend(), t, TimeLess{});
+        }
+
+        /**
+         * Insert at a caller-provided position (typically the result of
+         * upper_bound(t)). May invalidate other iterators if the vector reallocates.
+         *
+         * @param hint the position to insert at
+         * @param value the entry to insert
+         * @return iterator to the inserted entry
+         */
+        iterator insert(const_iterator hint, value_type value)
+        {
+            return m_data.insert(hint, std::move(value));
+        }
+
+        /**
+         * Sorted insert: the position is located via upper_bound, so entries
+         * with equal times keep their insertion order.
+         *
+         * @param v the entry to insert
+         * @return iterator to the inserted entry
+         */
+        iterator insert(const value_type& v)
+        {
+            return m_data.insert(upper_bound(v.first), v);
+        }
+
+        /**
+         * Construct a value_type from @p args and insert it at its sorted
+         * position.
+         *
+         * @tparam Args types of the value_type constructor arguments
+         * @param args the value_type constructor arguments
+         * @return iterator to the inserted entry
+         */
+        template <typename... Args>
+        iterator emplace(Args&&... args)
+        {
+            value_type v(std::forward<Args>(args)...);
+            return m_data.insert(upper_bound(v.first), std::move(v));
+        }
+
+        /**
+         * Erase the entries in the range [first, last).
+         *
+         * @param first the first entry to erase
+         * @param last one past the last entry to erase
+         * @return iterator to the entry following the last erased one
+         */
+        iterator erase(const_iterator first, const_iterator last)
+        {
+            return m_data.erase(first, last);
+        }
+
+      private:
+        /// Comparator for heterogeneous lookup of entries by Time
+        struct TimeLess
+        {
+            /**
+             * Compare an entry against a time.
+             * @param a the entry
+             * @param b the time
+             * @return true if the entry's time is lower than @p b
+             */
+            bool operator()(const value_type& a, Time b) const
+            {
+                return a.first < b;
+            }
+
+            /**
+             * Compare a time against an entry.
+             * @param a the time
+             * @param b the entry
+             * @return true if @p a is lower than the entry's time
+             */
+            bool operator()(Time a, const value_type& b) const
+            {
+                return a < b.first;
+            }
+        };
+
+        std::vector<value_type> m_data; //!< storage, kept in non-decreasing time order
+    };
 
     /**
      * Per-band interference state: the NI changes timeline together with the noise+interference
