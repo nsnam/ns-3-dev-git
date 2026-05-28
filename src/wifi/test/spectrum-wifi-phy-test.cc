@@ -92,7 +92,7 @@ class ExtInterferenceHelper : public InterferenceHelper
      */
     bool IsBandTracked(const std::vector<WifiSpectrumBandFrequencies>& startStopFreqs) const
     {
-        for (const auto& [band, nis] : m_niChanges)
+        for (const auto& [band, state] : m_bandStates)
         {
             if (band.frequencies == startStopFreqs)
             {
