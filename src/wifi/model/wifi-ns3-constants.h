@@ -11,6 +11,8 @@
 
 #include "ns3/nstime.h"
 
+#include <cstddef>
+
 /**
  * @file
  * @ingroup wifi
@@ -19,6 +21,10 @@
 
 namespace ns3
 {
+
+/// Maximum number of segments a WiFi spectrum band can hold. The current
+/// design needs at most 2 (single contiguous range; 80+80 split RUs use 2).
+inline constexpr std::size_t WIFI_SPECTRUM_BAND_MAX_SEGMENTS = 2;
 
 /// UL MU Data Disable flag at non-AP STA
 static constexpr bool DEFAULT_WIFI_UL_MU_DATA_DISABLE{false};

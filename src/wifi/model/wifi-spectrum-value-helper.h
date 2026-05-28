@@ -15,6 +15,7 @@
 
 #include "ns3/spectrum-value.h"
 
+#include <span>
 #include <vector>
 
 namespace ns3
@@ -217,7 +218,7 @@ class WifiSpectrumValueHelper
         MHz_u channelWidth,
         Watt_u txPower,
         MHz_u guardBandwidth,
-        const std::vector<WifiSpectrumBandIndices>& ru);
+        std::span<const WifiSpectrumBandIndices> ru);
 
     /**
      * Create a transmit power spectral density corresponding to OFDM
@@ -297,7 +298,7 @@ class WifiSpectrumValueHelper
      * @return band power
      */
     static Watt_u GetBandPowerW(Ptr<SpectrumValue> psd,
-                                const std::vector<WifiSpectrumBandIndices>& segments);
+                                std::span<const WifiSpectrumBandIndices> segments);
 };
 
 /**

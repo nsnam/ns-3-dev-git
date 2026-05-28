@@ -94,7 +94,10 @@ class ExtInterferenceHelper : public InterferenceHelper
     {
         for (const auto& [band, state] : m_bandStates)
         {
-            if (band.frequencies == startStopFreqs)
+            if (band.frequencies.size() == startStopFreqs.size() &&
+                std::equal(band.frequencies.cbegin(),
+                           band.frequencies.cend(),
+                           startStopFreqs.cbegin()))
             {
                 return true;
             }

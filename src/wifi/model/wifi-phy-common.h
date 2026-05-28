@@ -11,15 +11,23 @@
 #ifndef WIFI_PHY_COMMON_H
 #define WIFI_PHY_COMMON_H
 
+#include "wifi-ns3-constants.h"
 #include "wifi-spectrum-value-helper.h"
 #include "wifi-standards.h"
 #include "wifi-types.h"
 
+#include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
 #include <ostream>
 #include <set>
+#include <utility>
 #include <vector>
 
 /**
@@ -45,13 +53,168 @@ class Time;
  */
 using WifiSpectrumBandFrequencies = std::pair<Hz_u, Hz_u>;
 
+/**
+ * @ingroup wifi
+ * Fixed-capacity inline vector holding the per-segment data of a
+ * WifiSpectrumBandInfo. A band has at most a small known number of segments
+ * (a single contiguous range in the common case, two for 80+80 split RUs),
+ * so inline storage covers every case without heap allocations and keeps
+ * band copies cheap.
+ *
+ * @tparam T element type
+ * @tparam N maximum number of elements
+ */
+template <typename T, std::size_t N>
+class WifiBandSegments
+{
+  public:
+    using value_type = T;                                             //!< element type
+    using size_type = std::size_t;                                    //!< size type
+    using iterator = typename std::array<T, N>::iterator;             //!< iterator type
+    using const_iterator = typename std::array<T, N>::const_iterator; //!< const iterator type
+
+    /// Default constructor (empty).
+    WifiBandSegments() = default;
+
+    /**
+     * Initializer-list constructor so existing call sites can write
+     * @code{.cpp} WifiBandSegments<T, N>{{a, b, c}} @endcode.
+     * @param init the elements to copy in
+     */
+    WifiBandSegments(std::initializer_list<T> init)
+    {
+        NS_ASSERT(init.size() <= N);
+        for (const auto& v : init)
+        {
+            m_data[m_size++] = v;
+        }
+    }
+
+    /// @return number of elements currently held
+    size_type size() const
+    {
+        return m_size;
+    }
+
+    /// @return true if no elements are held
+    bool empty() const
+    {
+        return m_size == 0;
+    }
+
+    /**
+     * Access the i-th element.
+     * @param i the index of the element
+     * @return reference to the i-th element
+     */
+    T& at(size_type i)
+    {
+        return m_data[i];
+    }
+
+    /**
+     * Access the i-th element.
+     * @param i the index of the element
+     * @return const reference to the i-th element
+     */
+    const T& at(size_type i) const
+    {
+        return m_data[i];
+    }
+
+    /// @return reference to the first element
+    T& front()
+    {
+        return m_data[0];
+    }
+
+    /// @return const reference to the first element
+    const T& front() const
+    {
+        return m_data[0];
+    }
+
+    /// @return reference to the last element
+    T& back()
+    {
+        return m_data[m_size - 1];
+    }
+
+    /// @return const reference to the last element
+    const T& back() const
+    {
+        return m_data[m_size - 1];
+    }
+
+    /**
+     * Append a new element constructed in-place.
+     * @param args constructor arguments
+     */
+    template <typename... Args>
+    void emplace_back(Args&&... args)
+    {
+        NS_ASSERT(m_size < N);
+        m_data[m_size++] = T(std::forward<Args>(args)...);
+    }
+
+    /// @return iterator to the first element
+    iterator begin()
+    {
+        return m_data.begin();
+    }
+
+    /// @return iterator one past the last element
+    iterator end()
+    {
+        return m_data.begin() + m_size;
+    }
+
+    /// @return const_iterator to the first element
+    const_iterator begin() const
+    {
+        return m_data.cbegin();
+    }
+
+    /// @return const_iterator one past the last element
+    const_iterator end() const
+    {
+        return m_data.cbegin() + m_size;
+    }
+
+    /// @return const_iterator to the first element
+    const_iterator cbegin() const
+    {
+        return m_data.cbegin();
+    }
+
+    /// @return const_iterator one past the last element
+    const_iterator cend() const
+    {
+        return m_data.cbegin() + m_size;
+    }
+
+    /**
+     * Equality compares size and elements element-wise.
+     * @param other the other vector to compare against
+     * @return true if the two vectors have the same content
+     */
+    bool operator==(const WifiBandSegments& other) const
+    {
+        return m_size == other.m_size && std::equal(cbegin(), cend(), other.cbegin());
+    }
+
+  private:
+    std::array<T, N> m_data{}; //!< inline storage
+    std::uint8_t m_size{0};    //!< number of elements currently held
+};
+
 /// WifiSpectrumBandInfo structure containing info about a spectrum band
 struct WifiSpectrumBandInfo
 {
-    std::vector<WifiSpectrumBandIndices>
-        indices; //!< the start and stop indices for each segment of the band
-    std::vector<WifiSpectrumBandFrequencies>
-        frequencies; //!< the start and stop frequencies for each segment of the band
+    /// Start and stop indices per segment of the band.
+    WifiBandSegments<WifiSpectrumBandIndices, WIFI_SPECTRUM_BAND_MAX_SEGMENTS> indices;
+    /// Start and stop frequencies per segment of the band.
+    WifiBandSegments<WifiSpectrumBandFrequencies, WIFI_SPECTRUM_BAND_MAX_SEGMENTS> frequencies;
 };
 
 /// vector of spectrum bands

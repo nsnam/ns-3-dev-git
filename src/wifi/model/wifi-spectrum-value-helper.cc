@@ -637,9 +637,9 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     MHz_u channelWidth,
     Watt_u txPower,
     MHz_u guardBandwidth,
-    const std::vector<WifiSpectrumBandIndices>& ru)
+    std::span<const WifiSpectrumBandIndices> ru)
 {
-    auto printRuIndices = [](const std::vector<WifiSpectrumBandIndices>& v) {
+    auto printRuIndices = [](std::span<const WifiSpectrumBandIndices> v) {
         std::stringstream ss;
         for (const auto& [start, stop] : v)
         {
@@ -657,7 +657,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     auto vit = c->ValuesBegin();
     auto bit = c->ConstBandsBegin();
     const auto numSubcarriers =
-        std::accumulate(ru.cbegin(), ru.cend(), 0, [](uint32_t sum, const auto& p) {
+        std::accumulate(ru.begin(), ru.end(), 0, [](uint32_t sum, const auto& p) {
             return sum + (p.second - p.first) + 1;
         });
     const auto txPowerPerBand = (txPower / numSubcarriers); // FIXME: null subcarriers
@@ -665,7 +665,7 @@ WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity(
     const auto psd = txPowerPerBand / (bit->fh - bit->fl);
     for (size_t i = 0; i < numBands; i++, vit++, bit++)
     {
-        const auto allocated = std::any_of(ru.cbegin(), ru.cend(), [i](const auto& p) {
+        const auto allocated = std::any_of(ru.begin(), ru.end(), [i](const auto& p) {
             return (i >= p.first && i <= p.second);
         });
         *vit = allocated ? psd : 0.0;
@@ -1088,7 +1088,7 @@ WifiSpectrumValueHelper::NormalizeSpectrumMask(Ptr<SpectrumValue> c, Watt_u txPo
 
 Watt_u
 WifiSpectrumValueHelper::GetBandPowerW(Ptr<SpectrumValue> psd,
-                                       const std::vector<WifiSpectrumBandIndices>& segments)
+                                       std::span<const WifiSpectrumBandIndices> segments)
 {
     auto powerWattPerHertz{0.0};
     auto bandIt = psd->ConstBandsBegin() + segments.front().first; // all bands have same width
