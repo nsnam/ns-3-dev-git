@@ -220,9 +220,6 @@ struct WifiSpectrumBandInfo
 /// vector of spectrum bands
 using WifiSpectrumBands = std::vector<WifiSpectrumBandInfo>;
 
-/// A map of the received power for each band
-using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
-
 /**
  * @ingroup wifi
  * Compare two bands.
@@ -244,6 +241,146 @@ operator<(const WifiSpectrumBandInfo& lhs, const WifiSpectrumBandInfo& rhs)
     }
     return lhs.frequencies.front() < rhs.frequencies.front();
 }
+
+/**
+ * @ingroup wifi
+ * Received power (W) per spectrum band.
+ *
+ * Map from WifiSpectrumBandInfo to Watt_u, backed by a band-sorted
+ * std::vector to avoid a node allocation per inserted band. Lookups are
+ * O(log n) via binary search.
+ */
+class RxPowerWattPerChannelBand
+{
+  public:
+    using value_type = std::pair<WifiSpectrumBandInfo, Watt_u>; //!< (band, power) entry
+    using container_type = std::vector<value_type>;             //!< backing container type
+    using iterator = container_type::iterator;                  //!< iterator type
+    using const_iterator = container_type::const_iterator;      //!< const iterator type
+    using size_type = std::size_t;                              //!< size type
+
+    /// @return an iterator to the first entry
+    iterator begin()
+    {
+        return m_data.begin();
+    }
+
+    /// @return an iterator one past the last entry
+    iterator end()
+    {
+        return m_data.end();
+    }
+
+    /// @return a const iterator to the first entry
+    const_iterator begin() const
+    {
+        return m_data.begin();
+    }
+
+    /// @return a const iterator one past the last entry
+    const_iterator end() const
+    {
+        return m_data.end();
+    }
+
+    /// @return a const iterator to the first entry
+    const_iterator cbegin() const
+    {
+        return m_data.cbegin();
+    }
+
+    /// @return a const iterator one past the last entry
+    const_iterator cend() const
+    {
+        return m_data.cend();
+    }
+
+    /// @return the number of entries
+    size_type size() const
+    {
+        return m_data.size();
+    }
+
+    /// @return true if no entries are held
+    bool empty() const
+    {
+        return m_data.empty();
+    }
+
+    /**
+     * Map-like find by band.
+     * @param band the band to look up
+     * @return iterator to the entry, or end() if not found
+     */
+    iterator find(const WifiSpectrumBandInfo& band)
+    {
+        auto it = std::lower_bound(m_data.begin(), m_data.end(), band, BandLess{});
+        if (it != m_data.end() && !(band < it->first))
+        {
+            return it;
+        }
+        return m_data.end();
+    }
+
+    /**
+     * Map-like find by band.
+     * @param band the band to look up
+     * @return const iterator to the entry, or cend() if not found
+     */
+    const_iterator find(const WifiSpectrumBandInfo& band) const
+    {
+        auto it = std::lower_bound(m_data.cbegin(), m_data.cend(), band, BandLess{});
+        if (it != m_data.cend() && !(band < it->first))
+        {
+            return it;
+        }
+        return m_data.cend();
+    }
+
+    /**
+     * Map-like sorted insert. No-op if a value with the same key is already present.
+     * @param v the (band, power) pair to insert
+     * @return pair of iterator to the entry and bool indicating whether the insertion happened
+     */
+    std::pair<iterator, bool> insert(value_type v)
+    {
+        auto it = std::lower_bound(m_data.begin(), m_data.end(), v.first, BandLess{});
+        if (it != m_data.end() && !(v.first < it->first))
+        {
+            return {it, false};
+        }
+        return {m_data.insert(it, std::move(v)), true};
+    }
+
+  private:
+    /// Comparator for heterogeneous lookup of entries by band
+    struct BandLess
+    {
+        /**
+         * Compare an entry against a band.
+         * @param a the entry
+         * @param b the band
+         * @return true if the entry's band is lower than @p b
+         */
+        bool operator()(const value_type& a, const WifiSpectrumBandInfo& b) const
+        {
+            return a.first < b;
+        }
+
+        /**
+         * Compare a band against an entry.
+         * @param a the band
+         * @param b the entry
+         * @return true if @p a is lower than the entry's band
+         */
+        bool operator()(const WifiSpectrumBandInfo& a, const value_type& b) const
+        {
+            return a < b.first;
+        }
+    };
+
+    container_type m_data; //!< storage, kept in sorted-by-band order
+};
 
 /**
  * @brief Stream insertion operator.
