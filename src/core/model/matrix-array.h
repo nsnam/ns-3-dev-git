@@ -286,10 +286,8 @@ template <class T>
 inline MatrixArray<T>
 MatrixArray<T>::operator*(const T& rhs) const
 {
-    return MatrixArray<T>(m_numRows,
-                          m_numCols,
-                          m_numPages,
-                          m_values * std::valarray<T>(rhs, m_numRows * m_numCols * m_numPages));
+    // Scalar multiply via valarray, avoiding a temporary valarray(rhs, N).
+    return MatrixArray<T>(m_numRows, m_numCols, m_numPages, m_values * rhs);
 }
 
 template <class T>
