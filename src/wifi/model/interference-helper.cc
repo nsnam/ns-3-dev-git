@@ -49,13 +49,13 @@ Event::GetPpdu() const
     return m_ppdu;
 }
 
-Time
+const Time&
 Event::GetStartTime() const
 {
     return m_startTime;
 }
 
-Time
+const Time&
 Event::GetEndTime() const
 {
     return m_endTime;
@@ -786,20 +786,22 @@ InterferenceHelper::CalculatePhyHeaderSnrPer(Ptr<Event> event,
 }
 
 InterferenceHelper::NiChanges::iterator
-InterferenceHelper::GetNextPosition(Time moment, BandStateMap::iterator bandIt) const
+InterferenceHelper::GetNextPosition(const Time& moment, BandStateMap::iterator bandIt) const
 {
     return bandIt->second.niChanges.upper_bound(moment);
 }
 
 InterferenceHelper::NiChanges::iterator
-InterferenceHelper::GetPreviousPosition(Time moment, BandStateMap::iterator bandIt) const
+InterferenceHelper::GetPreviousPosition(const Time& moment, BandStateMap::iterator bandIt) const
 {
     // This is safe since there is always an NiChange at time 0, before moment.
     return std::prev(GetNextPosition(moment, bandIt));
 }
 
 InterferenceHelper::NiChanges::iterator
-InterferenceHelper::AddNiChangeEvent(Time moment, NiChange change, BandStateMap::iterator bandIt)
+InterferenceHelper::AddNiChangeEvent(const Time& moment,
+                                     NiChange change,
+                                     BandStateMap::iterator bandIt)
 {
     return bandIt->second.niChanges.insert(GetNextPosition(moment, bandIt), {moment, change});
 }

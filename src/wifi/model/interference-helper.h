@@ -57,13 +57,13 @@ class Event : public SimpleRefCount<Event>
      *
      * @return the start time of the signal
      */
-    Time GetStartTime() const;
+    const Time& GetStartTime() const;
     /**
      * Return the end time of the signal.
      *
      * @return the end time of the signal
      */
-    Time GetEndTime() const;
+    const Time& GetEndTime() const;
     /**
      * Return the duration of the signal.
      *
@@ -481,7 +481,7 @@ class InterferenceHelper : public Object
          * @param t the time to search for
          * @return iterator to the first entry with time strictly greater than @p t
          */
-        iterator upper_bound(Time t)
+        iterator upper_bound(const Time& t)
         {
             return std::upper_bound(m_data.begin(), m_data.end(), t, TimeLess{});
         }
@@ -491,7 +491,7 @@ class InterferenceHelper : public Object
          * @param t the time to search for
          * @return const iterator to the first entry with time strictly greater than @p t
          */
-        const_iterator upper_bound(Time t) const
+        const_iterator upper_bound(const Time& t) const
         {
             return std::upper_bound(m_data.cbegin(), m_data.cend(), t, TimeLess{});
         }
@@ -501,7 +501,7 @@ class InterferenceHelper : public Object
          * @param t the time to search for
          * @return iterator to the first entry with time greater than or equal to @p t
          */
-        iterator lower_bound(Time t)
+        iterator lower_bound(const Time& t)
         {
             return std::lower_bound(m_data.begin(), m_data.end(), t, TimeLess{});
         }
@@ -511,7 +511,7 @@ class InterferenceHelper : public Object
          * @param t the time to search for
          * @return const iterator to the first entry with time greater than or equal to @p t
          */
-        const_iterator lower_bound(Time t) const
+        const_iterator lower_bound(const Time& t) const
         {
             return std::lower_bound(m_data.cbegin(), m_data.cend(), t, TimeLess{});
         }
@@ -578,7 +578,7 @@ class InterferenceHelper : public Object
              * @param b the time
              * @return true if the entry's time is lower than @p b
              */
-            bool operator()(const value_type& a, Time b) const
+            bool operator()(const value_type& a, const Time& b) const
             {
                 return a.first < b;
             }
@@ -589,7 +589,7 @@ class InterferenceHelper : public Object
              * @param b the entry
              * @return true if @p a is lower than the entry's time
              */
-            bool operator()(Time a, const value_type& b) const
+            bool operator()(const Time& a, const value_type& b) const
             {
                 return a < b.first;
             }
@@ -734,7 +734,7 @@ class InterferenceHelper : public Object
      * @param bandIt iterator of the band to check
      * @returns an iterator to the list of NiChanges
      */
-    NiChanges::iterator GetNextPosition(Time moment, BandStateMap::iterator bandIt) const;
+    NiChanges::iterator GetNextPosition(const Time& moment, BandStateMap::iterator bandIt) const;
     /**
      * Returns an iterator to the last NiChange that is before than moment
      *
@@ -742,7 +742,8 @@ class InterferenceHelper : public Object
      * @param bandIt iterator of the band to check
      * @returns an iterator to the list of NiChanges
      */
-    NiChanges::iterator GetPreviousPosition(Time moment, BandStateMap::iterator bandIt) const;
+    NiChanges::iterator GetPreviousPosition(const Time& moment,
+                                            BandStateMap::iterator bandIt) const;
 
     /**
      * Add NiChange to the list at the appropriate position and
@@ -753,7 +754,7 @@ class InterferenceHelper : public Object
      * @param bandIt iterator of the band to check
      * @returns the iterator of the new event
      */
-    NiChanges::iterator AddNiChangeEvent(Time moment,
+    NiChanges::iterator AddNiChangeEvent(const Time& moment,
                                          NiChange change,
                                          BandStateMap::iterator bandIt);
 
