@@ -772,10 +772,20 @@ class CORE_EXPORT Time
      *  The inline Time ctors need to check if g_markingTimes is allocated
      *  before calling Mark(). Likewise, the dtor also needs to check before
      *  calling Clear(). On Windows, attempting to access g_markingTimes
-     *  directly from outside the compilation unit is an access violation so
-     *  this method is provided to work around that limitation.
+     *  directly from outside the compilation unit is an access violation, so
+     *  on that platform we fall back to a non-inline function call. On other
+     *  platforms (Linux, macOS, BSD, ...) the static is directly accessible,
+     *  so the check is inlined, since it fires on every Time construction,
+     *  copy, move and destruction.
      */
+#ifdef _WIN32
     static bool MarkingTimes();
+#else
+    static bool MarkingTimes() noexcept
+    {
+        return g_markingTimes != nullptr;
+    }
+#endif
 
   public:
     /**
