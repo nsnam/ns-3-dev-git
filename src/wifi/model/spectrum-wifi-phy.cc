@@ -644,7 +644,11 @@ SpectrumWifiPhy::StartRx(Ptr<SpectrumSignalParameters> rxParams,
     }
 
     NS_LOG_INFO("Received Wi-Fi signal");
-    StartReceivePreamble(ppdu, rxPowers, rxDuration);
+    // Use ScheduleNow so StartReceivePreamble runs after all cleanup callbacks
+    // Capture by value to avoid dangling references after this function returns
+    Simulator::ScheduleNow([this, ppdu, rxPowers, rxDuration]() mutable {
+        StartReceivePreamble(ppdu, rxPowers, rxDuration);
+    });
 }
 
 Ptr<const WifiPpdu>

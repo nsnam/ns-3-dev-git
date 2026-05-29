@@ -5025,6 +5025,189 @@ TestPhyDropDueToTx::DoRun()
  * @ingroup wifi-test
  * @ingroup tests
  *
+ * @brief Regression test for issue #1244
+ * Send one packet, then a second one at T+24us, which coincides with the start
+ * of the HE-SIG-A field (the boundary after L-SIG/RL-SIG). At that instant,
+ * m_endCcaBusy == Now(), so WifiPhyStateHelper::GetState() strict > comparison
+ * returns IDLE while m_currentEvent is still set because EndReceiveField has
+ * not yet executed. This triggers NS_ASSERT(!m_currentEvent) in the IDLE case
+ * of StartReceivePreamble.
+ */
+class TestPpduArrivalAtCcaEnd : public WifiPhyReceptionTest
+{
+  public:
+    TestPpduArrivalAtCcaEnd()
+        : WifiPhyReceptionTest("Regression test for issue #1244: CCA_BUSY expires at same time as "
+                               "new PPDU arrival")
+    {
+    }
+
+  private:
+    void DoRun() override
+    {
+        RngSeedManager::SetSeed(1);
+        RngSeedManager::SetRun(1);
+        m_phy->AssignStreams(0);
+
+        dBm_u rxPower{-50};
+        const uint32_t msduBytes{1000};
+        const uint8_t mcs{7};
+
+        const WifiTxVector txVector(HePhy::GetHeMcs(mcs),
+                                    WIFI_MIN_TX_PWR_LEVEL,
+                                    WIFI_PREAMBLE_HE_SU,
+                                    NanoSeconds(800),
+                                    1,
+                                    1,
+                                    0,
+                                    MHz_u{20},
+                                    false);
+        WifiMacHeader hdr(WIFI_MAC_QOSDATA);
+        hdr.SetQosTid(0);
+        const uint32_t psduBytes = hdr.GetSerializedSize() + msduBytes + WIFI_MAC_FCS_LENGTH;
+        const auto txDuration =
+            SpectrumWifiPhy::CalculateTxDuration(psduBytes, txVector, m_phy->GetPhyBand());
+
+        // The second PPDU is made to arrive at the start of the first PPDU's HE-SIG-A
+        // field, where its CCA_BUSY period ends (m_endCcaBusy == Now()). No public API
+        // exposes this field boundary, so it is kept as a literal offset.
+        const auto sigAStart = NanoSeconds(24000);
+
+        Simulator::Schedule(Seconds(1),
+                            &TestPpduArrivalAtCcaEnd::SendPacket,
+                            this,
+                            rxPower,
+                            msduBytes,
+                            mcs);
+        Simulator::Schedule(Seconds(1) + sigAStart - TimeStep(1),
+                            &TestPpduArrivalAtCcaEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::CCA_BUSY);
+        Simulator::Schedule(Seconds(1) + sigAStart,
+                            &TestPpduArrivalAtCcaEnd::SendPacket,
+                            this,
+                            rxPower,
+                            msduBytes,
+                            mcs);
+        // Second packet dropped but still interferes on SIG-A -> first packet fails ->
+        // stays CCA_BUSY. Check at the first packet's payload start.
+        Simulator::Schedule(Seconds(1) + WifiPhy::CalculatePhyPreambleAndHeaderDuration(txVector),
+                            &TestPpduArrivalAtCcaEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::CCA_BUSY);
+        Simulator::Schedule(Seconds(1) + txDuration - TimeStep(1),
+                            &TestPpduArrivalAtCcaEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::CCA_BUSY);
+        // Second packet's signal ends one TX duration after it arrived
+        Simulator::Schedule(Seconds(1) + sigAStart + txDuration - TimeStep(1),
+                            &TestPpduArrivalAtCcaEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::CCA_BUSY);
+        Simulator::Schedule(Seconds(1) + sigAStart + txDuration,
+                            &TestPpduArrivalAtCcaEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::IDLE);
+
+        Simulator::Run();
+        Simulator::Destroy();
+    }
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Regression test for issue #1324
+ * Send one packet, then a second one at T+152800ns (when the first
+ * packet's RX ends). At that instant m_endRx == Now(), so
+ * WifiPhyStateHelper::GetState() strict > comparison returns IDLE while
+ * m_currentEvent is still set because DoEndReceivePayload has not yet
+ * executed. This triggers NS_ASSERT(!m_currentEvent) in the IDLE case of
+ * StartReceivePreamble.
+ */
+class TestPpduArrivalAtRxEnd : public WifiPhyReceptionTest
+{
+  public:
+    TestPpduArrivalAtRxEnd()
+        : WifiPhyReceptionTest("Regression test for issue #1324: RX ends at same time as new PPDU "
+                               "arrival")
+    {
+    }
+
+  private:
+    void DoRun() override
+    {
+        RngSeedManager::SetSeed(1);
+        RngSeedManager::SetRun(1);
+        m_phy->AssignStreams(0);
+
+        dBm_u rxPower{-50};
+        const uint32_t msduBytes{1000};
+        const uint8_t mcs{7};
+
+        const WifiTxVector txVector(HePhy::GetHeMcs(mcs),
+                                    WIFI_MIN_TX_PWR_LEVEL,
+                                    WIFI_PREAMBLE_HE_SU,
+                                    NanoSeconds(800),
+                                    1,
+                                    1,
+                                    0,
+                                    MHz_u{20},
+                                    false);
+        WifiMacHeader hdr(WIFI_MAC_QOSDATA);
+        hdr.SetQosTid(0);
+        const uint32_t psduBytes = hdr.GetSerializedSize() + msduBytes + WIFI_MAC_FCS_LENGTH;
+        const auto txDuration =
+            SpectrumWifiPhy::CalculateTxDuration(psduBytes, txVector, m_phy->GetPhyBand());
+
+        Simulator::Schedule(Seconds(1),
+                            &TestPpduArrivalAtRxEnd::SendPacket,
+                            this,
+                            rxPower,
+                            msduBytes,
+                            mcs);
+        // Second packet arrives when the first packet's RX ends (m_endRx == Now())
+        Simulator::Schedule(Seconds(1) + txDuration,
+                            &TestPpduArrivalAtRxEnd::SendPacket,
+                            this,
+                            rxPower,
+                            msduBytes,
+                            mcs);
+        // Check for RX, one timestep before the PPDU is over
+        Simulator::Schedule(Seconds(1) + txDuration - TimeStep(1),
+                            &TestPpduArrivalAtRxEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::RX);
+        // Check for IDLE, one timestep after the PPDU is over
+        Simulator::Schedule(Seconds(1) + txDuration + TimeStep(1),
+                            &TestPpduArrivalAtRxEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::IDLE);
+        // After ScheduleNow calls StartReceivePreamble, preamble detection completes
+        Simulator::Schedule(Seconds(1) + txDuration + WifiPhy::GetPreambleDetectionDuration(),
+                            &TestPpduArrivalAtRxEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::CCA_BUSY);
+        // Second packet ends one TX duration after it arrived
+        Simulator::Schedule(Seconds(1) + txDuration + txDuration - TimeStep(1),
+                            &TestPpduArrivalAtRxEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::RX); // was incorrectly CCA_BUSY
+        Simulator::Schedule(Seconds(1) + txDuration + txDuration,
+                            &TestPpduArrivalAtRxEnd::CheckPhyState,
+                            this,
+                            WifiPhyState::IDLE);
+
+        Simulator::Run();
+        Simulator::Destroy();
+    }
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
  * @brief wifi PHY reception Test Suite
  */
 class WifiPhyReceptionTestSuite : public TestSuite
@@ -5061,6 +5244,9 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite()
                 TestCase::Duration::QUICK);
     AddTestCase(new TestPhyDropDueToTx(MicroSeconds(5), RECEPTION_ABORTED_BY_TX),
                 TestCase::Duration::QUICK);
+
+    AddTestCase(new TestPpduArrivalAtCcaEnd, TestCase::Duration::QUICK);
+    AddTestCase(new TestPpduArrivalAtRxEnd, TestCase::Duration::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite
