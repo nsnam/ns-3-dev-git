@@ -306,7 +306,11 @@ class GcrUrTest : public GcrTestBase
                              ///< (including retries) per original groupcast frame
 
     Ptr<WifiMpdu> m_currentMpdu; ///< current MPDU
-    uint64_t m_currentUid;       ///< current UID
+    std::optional<uint16_t>
+        m_currentSeqNo; ///< sequence number of the groupcast frame currently being
+                        ///< (re)transmitted (empty if none); used to tell the initial
+                        ///< transmission of a new groupcast frame apart from its
+                        ///< retries, robustly against packet UID reuse
 };
 
 /**

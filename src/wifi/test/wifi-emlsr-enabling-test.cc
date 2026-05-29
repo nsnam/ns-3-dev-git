@@ -175,7 +175,7 @@ EmlOmnExchangeTest::Transmit(Ptr<WifiMac> mac,
                 m_staMacs[0]->GetLinkIdByAddress(psdu->GetAddr2()) == linkId)
             {
                 // transmitted by non-AP MLD, we need to corrupt it
-                m_uidList.push_front(psdu->GetPacket()->GetUid());
+                m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
                 m_errorModel->SetList(m_uidList);
             }
             break;

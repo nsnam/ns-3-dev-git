@@ -1639,9 +1639,12 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                      " a SIFS after the end of fourth BlockAck");
             }
         });
-        // corrupt this BlockAck so that the AP MLD sends a BlockAckReq later on
+        // corrupt this BlockAck so that the AP MLD sends a BlockAckReq later on.
+        // Use the UID of the MPDU's payload (which is what the post-reception error model
+        // checks at the receiver), not WifiPsdu::GetPacket(), which returns a freshly built
+        // aggregate packet whose UID does not match the received MPDU.
         {
-            auto uid = psduMap.cbegin()->second->GetPacket()->GetUid();
+            auto uid = (*psduMap.cbegin()->second->begin())->GetPacket()->GetUid();
             m_errorModel->SetList({uid});
         }
         break;

@@ -1845,7 +1845,7 @@ MultiLinkTxTest::Transmit(Ptr<WifiMac> mac,
         {
             // corrupt all management action frames (ADDBA Request frames) to prevent
             // the establishment of a BA agreement
-            m_uidList.push_front(psdu->GetPacket()->GetUid());
+            m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
             m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
             NS_LOG_INFO("CORRUPTED");
         }
@@ -1921,7 +1921,7 @@ MultiLinkTxTest::Transmit(Ptr<WifiMac> mac,
         if (m_blockAckCount == 2)
         {
             // corrupt the second BlockAck frame to simulate a missed BlockAck
-            m_uidList.push_front(psdu->GetPacket()->GetUid());
+            m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
             NS_LOG_INFO("CORRUPTED");
             m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
         }
@@ -2380,7 +2380,7 @@ MultiLinkMuTxTest::Transmit(Ptr<WifiMac> mac,
             if (m_blockAckCount == 5)
             {
                 // corrupt the third BlockAck frame to simulate a missed BlockAck
-                m_uidList.push_front(psdu->GetPacket()->GetUid());
+                m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
                 NS_LOG_INFO("CORRUPTED");
                 m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
             }
@@ -2825,7 +2825,7 @@ ReleaseSeqNoAfterCtsTimeoutTest::Transmit(Ptr<WifiMac> mac,
 
     if (psdu->GetHeader(0).IsRts() && !m_rtsCorrupted)
     {
-        m_errorModel->SetList({psdu->GetPacket()->GetUid()});
+        m_errorModel->SetList({(*psdu->begin())->GetPacket()->GetUid()});
         m_rtsCorrupted = true;
         // generate other packets when the first RTS is transmitted
         m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(m_sockAddr, 4, 1000));
@@ -3022,10 +3022,13 @@ StartSeqNoUpdateAfterAddBaTimeoutTest::Transmit(Ptr<WifiMac> mac,
     }
     else if (hdr.IsQosData())
     {
-        // corrupt the reception of the data frame the first time it is sent
+        // corrupt the reception of the data frame the first time it is sent.
+        // Use the UID of the MPDU's payload (which is what the post-reception error model
+        // checks at the receiver), not WifiPsdu::GetPacket(), which returns a freshly built
+        // aggregate packet whose UID does not match the received MPDU.
         if (m_nQosDataCount++ == 0)
         {
-            m_staErrorModel->SetList({psdu->GetPacket()->GetUid()});
+            m_staErrorModel->SetList({(*psdu->begin())->GetPacket()->GetUid()});
         }
         else
         {

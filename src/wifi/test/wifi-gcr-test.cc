@@ -1039,7 +1039,7 @@ GcrUrTest::GcrUrTest(const std::string& testName,
                      const GcrUrParameters& gcrUrParams)
     : GcrTestBase(testName, commonParams),
       m_gcrUrParams{gcrUrParams},
-      m_currentUid{0}
+      m_currentSeqNo{}
 {
     m_rngRun = 2;
 }
@@ -1077,10 +1077,15 @@ GcrUrTest::Transmit(std::string context,
     auto addr1 = mpdu->GetHeader().GetAddr1();
     if (addr1.IsGroup() && !addr1.IsBroadcast() && mpdu->GetHeader().IsQosData())
     {
-        if (const auto uid = mpdu->GetPacket()->GetUid(); m_currentUid != uid)
+        // A new groupcast frame is identified by its sequence number: all (unsolicited)
+        // retries of a groupcast frame carry the same sequence number, whereas a new
+        // groupcast frame uses the next one. Relying on the packet UID here is not robust,
+        // as a retransmitted frame may be carried by a different packet instance (and hence
+        // report a different UID) depending on unrelated packet allocations in the process.
+        if (const auto seqNo = mpdu->GetHeader().GetSequenceNumber(); m_currentSeqNo != seqNo)
         {
             m_totalTxGroupcasts.push_back(0);
-            m_currentUid = uid;
+            m_currentSeqNo = seqNo;
             m_currentMpdu = nullptr;
         }
         if (m_totalTxGroupcasts.back() == 0)

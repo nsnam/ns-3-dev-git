@@ -234,7 +234,7 @@ WifiTxopTest::Transmit(std::string context,
         m_txPsdus.back().header.GetAddr1() == m_staDevices.Get(0)->GetAddress())
     {
         corrupted = m_apCorrupted = true;
-        m_apErrorModel->SetList({psduMap.begin()->second->GetPacket()->GetUid()});
+        m_apErrorModel->SetList({(*psduMap.begin()->second->begin())->GetPacket()->GetUid()});
     }
 
     // The second station does not correctly receive the first QoS data frame sent by the AP
@@ -248,7 +248,7 @@ WifiTxopTest::Transmit(std::string context,
         }
         if (corrupted)
         {
-            m_staErrorModel->SetList({psduMap.begin()->second->GetPacket()->GetUid()});
+            m_staErrorModel->SetList({(*psduMap.begin()->second->begin())->GetPacket()->GetUid()});
         }
         else
         {
