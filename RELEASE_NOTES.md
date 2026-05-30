@@ -25,6 +25,8 @@ requirements (Note: not all ns-3 features are available on all systems):
 - (macOS only) Xcode 16.2 or later
 - (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
 
+This release raised the minimum CMake version from 3.20 to 3.25.
+
 The version of clang-format enforced by the check-style-clang-format.py script for
 this release is version 20 only.
 
@@ -36,22 +38,30 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### New user-visible features
 
-- (wifi) Add support for Power Save mode.
-- (spectrum) Add the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, enabling ray-traced phased-array spectrum propagation via `sionna.rt` scenes and solver integration.
 - (network) The `SequenceNumber` template class has been changed to allow sequence numbers with an arbitrary number of bits (e.g., 10 bits).
-- (mobility) Add the `LeoCircularOrbitMobilityModel` for satellite-based mobility. Orbital shells can be defined via `LeoOrbitalShell`, loaded from files via `LeoOrbitNodeHelper`.
+- (mobility) Added the `LeoCircularOrbitMobilityModel` for satellite-based mobility. Orbital shells can be defined via `LeoOrbitalShell`, loaded from files via `LeoOrbitNodeHelper`.
+- (sixlowpan) Added support for 6LoWPAN Neighbor Discovery (RFC 6775), including address registration (NS/NA with EARO), multicast Router Solicitation with binary backoff, the 6CIO option, ROVR generation and validation, and a binding table. Border routers and nodes can be installed via `SixLowPanHelper::InstallSixLowPanNdBorderRouter()` and `InstallSixLowPanNdNode()`.
+- (spectrum) Added the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, enabling ray-traced phased-array spectrum propagation via `sionna.rt` scenes and solver integration.
+- (wifi) Added a round-robin MAC queue scheduler (`RrWifiQueueScheduler`).
+- (wifi) Added support for Power Save mode.
 
 ### Bugs fixed
 
 - (internet) !2863 Fixes missing `ECN_DISABLED` check in IPv6 `ForwardUp6()` ECN handling
+- (internet) !2792 Prevents Ipv[4,6]ListRouting from using wrong output interface and add test.
+- (internet) Fixes an off-by-one error in the `Print()` output of `Icmpv4DestinationUnreachable` and `Icmpv4TimeExceeded`.
+- (internet) Exports the `ArpL3Protocol` class so that its protocol number is found on Windows.
+- (internet-apps) Fixes duplicate "Trace Complete" output in `V4TraceRoute`.
 - (lr-wpan) !2860 Fixes packet drop when CheckSumEnabled and correct.
-- (internet) !2792 Prevent Ipv[4,6]ListRouting from using wrong output interface and add test.
+- (network) #1239 Adds checks for impossible values in `Ipv4Mask`.
+- (network) #1300 Fixes an integer overflow in SequenceNumbers, so that the sign of the difference and the direct comparison would not match.
 - (spectrum) !2774 `MultiModelSpectrumChannel` will now omit an existing precoding matrix if its dimensions do not match those of the receiver. This is necessary because we do not convert it in the same way as the PSD.
 - (tcp) #1319 TCP CongestionStateSet() was not being called upon entering or leaving CA_CWR state
 - (wifi) APs unblock transmissions to stations that are in power save mode when they disassociate, otherwise they will not be able to associate again
 - (wifi) APs record disassociation on all links setup with a non-AP MLD
-- (wifi) Prevent AP's counter of STAs in PS mode from being updated incorrectly
-- (network) #1300 Fixed an integer overflow in SequenceNumbers, so that the sign of the difference and the direct comparison would not match.
+- (wifi) Prevents AP's counter of STAs in PS mode from being updated incorrectly
+- (wifi) #1244 #1324 Fixes a PHY state machine race in `WifiPhy`.
+- (wifi) #1318 Fixes an incorrect `InterferenceHelper` lookup caused by a change to `std::find` behavior in libc++ 22.
 
 ## Release 3.47
 

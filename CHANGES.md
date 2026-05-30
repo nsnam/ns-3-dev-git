@@ -16,28 +16,44 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
-* (wifi) Add the `PsmTimeout` attribute to `DefaultPowerSaveManager` to keep STAs in PS mode awake for extra time before going to sleep
-* (wifi) Add the `ListenAdvance` attribute to `DefaultPowerSaveManager` to make STAs in PS mode wake up some time in advance prior to the TBTT
+* (core) The `Ptr` smart pointer class now provides a move constructor and a move assignment operator.
+* (core) Added 3D and 2D Vector cross-product functions `CrossProduct()`.
+* (lr-wpan) Added the `macCoordExtendedAddress` to the list of PIB attributes.
+* (mobility) Added `LeoCircularOrbitMobilityModel` for simulating satellite mobility in circular Low Earth Orbit (LEO) using geocentric coordinates.
+* (mobility) Added `GeocentricEcefMobilityModel` that extends `GeocentricConstantPositionMobilityModel` to return ECEF (Earth-Centered Earth-Fixed) coordinates from `GetPosition()` instead of ENU coordinates.
+* (mobility) Added `LeoOrbitalShell` class for defining Walker Delta/Star orbital shells with altitude, inclination, number of orbital planes, and satellites per plane, with CSV serialization support.
+* (mobility) Added a mobility model and helper for LEO satellite constellations
+  * (mobility) Added `LeoCircularOrbitPositionAllocator` for allocating initial positions of satellites along a circular orbit, computing Right ascension of ascending node (RAAN) and perigee argument.
+  * (mobility) Added `LeoOrbitNodeHelper` helper class for installing LEO satellite nodes from orbit definition files or `LeoOrbitalShell` objects.
+  * (mobility) Added `GeographicPositions::LEO_EARTH_GGC` constant for the geocentric gravitational constant.
+* (sixlowpan) Added support for 6LoWPAN Neighbor Discovery (RFC 6775), including the `SixLowPanNdProtocol` and a binding table for address registration. Border routers and nodes are installed via `SixLowPanHelper::InstallSixLowPanNdBorderRouter()` and `SixLowPanHelper::InstallSixLowPanNdNode()`.
 * (spectrum) Added the Sionna RT channel model, including `SionnaRtChannelModel` and `SionnaRtSpectrumPropagationLossModel`, with scene loading, path solver configuration, delay normalization, and phased-array spectrum loss integration.
-* (core) Add 3D and 2D Vector cross-product functions `CrossProduct()`.
-* (mobility) Add `LeoCircularOrbitMobilityModel` for simulating satellite mobility in circular Low Earth Orbit (LEO) using geocentric coordinates. Supports configurable altitude and inclination parameters.
-* (mobility) Add `GeocentricEcefMobilityModel` that extends `GeocentricConstantPositionMobilityModel` to return ECEF (Earth-Centered Earth-Fixed) coordinates from `GetPosition()` instead of ENU coordinates, useful for scenarios where both satellite and ground station need to use the same coordinate system.
-* (mobility) Add `LeoOrbitalShell` class for defining Walker Delta/Star orbital shells with altitude, inclination, number of orbital planes, and satellites per plane, with CSV serialization support.
-* (mobility) Add `LeoCircularOrbitPositionAllocator` for allocating initial positions of satellites along a circular orbit, computing Right ascension of ascending node (RAAN) and perigee argument.
-* (mobility) Add `LeoOrbitNodeHelper` helper class for installing LEO satellite nodes from orbit definition files or `LeoOrbitalShell` objects.
-* (mobility) Add `GeographicPositions::LEO_EARTH_GGC` constant for the geocentric gravitational constant.
-* (mobility) Add unified LEO satellite example (`leo-satellite-example`) demonstrating mobility tracing, antenna pointing toward ground station, and full 3GPP NTN propagation loss estimation in a single program controlled by `--mode` switch.
+* (wifi) Added the `PsmTimeout` attribute to `DefaultPowerSaveManager` to keep STAs in PS mode awake for extra time before going to sleep
+* (wifi) Added the `ListenAdvance` attribute to `DefaultPowerSaveManager` to make STAs in PS mode wake up some time in advance prior to the TBTT
+* (wifi) Added `RrWifiQueueScheduler`, a round-robin MAC queue scheduler.
 
 ### Changes to existing API
 
+* (network) The `Buffer::Iterator` methods `WriteHtolsbU[16,32,64]()` and `ReadLsbtohU[16,32,64]()` have been deprecated; use the documented `WriteU[16,32,64]()`/`ReadU[16,32,64]()` little-endian methods instead.
+* (network) The `SequenceNumber` template class has been changed to allow sequence numbers with an arbitrary number of bits (e.g., 10 bits). As a consequence, the template signature is slightly changed, but the `typedef` versions `SequenceNumber[8,16,32]` are working as usual. Sequence numbers larger than 63 bits are not supported due to internal representation limitations.
 * (sixlowpan) The boolean `Rfc6282` attribute of the `SixLowPanNetDevice` class has been removed and replaced by the `CompressionType` enum attribute, with values `HC1` (RFC4944) and `IPHC` (RFC6282). The default value (`IPHC`) preserves existing behavior. Scripts that previously set `Rfc6282` to `false` to select HC1 must now set `CompressionType` to `HC1`.
+* (spectrum) `MultiModelSpectrumChannel::StartRx()` now takes a parameter struct instead of a list of arguments, for API stability.
 * (wifi) The `PowerSaveMode` attribute of the `StaWifiMac` class has been deprecated in favor of the `PowerSaveMode` attribute of the `PowerSaveManager` class.
 * (wifi) The `BeaconJitter` attribute of the `ApWifiMac` class is no longer constrained to be a uniform random variable, but it can be a random variable of any type (provided that generated values are comprised between 0 and 1).
-* (network) The `SequenceNumber` template class has been changed to allow sequence numbers with an arbitrary number of bits (e.g., 10 bits). As a consequence, the template signature is slightly changed, but the `typedef` versions `SequenceNumber[8,16,32]` are working as usual. Sequence numbers larger than 63 bits are not supported due to internal representation limitations.
 
 ### Changes to build system
 
+* The minimum supported version of CMake was raised to version 3.25.
+* The `./ns3 configure` command accepts a new `--preset <name>` option to load a configuration from a `CMakePresets.json` file. When a program is run via `./ns3 run`, the environment variables defined by the configured preset are also applied.
+* Three-character aliases were added for the `./ns3` subcommands (for example, `bld` for `build`, `cfg` for `configure`, `cln` for `clean`, and `shw` for `show`) and for several `./ns3 show` subcommands (for example, `ver` for `version` and `tgt` for `targets`).
+* `./ns3 run` now adds the active Python environment's site-packages directories to `PYTHONPATH`, so that installed Python modules are available to executed programs.
+
 ### Changed behavior
+
+* (core) `CommandLine` now aborts when a duplicate parameter or option name is registered, rather than silently ignoring the duplicate.
+* (network) `Ipv4Mask` now rejects impossible mask values.
+* (wifi) An MLD now uses its link address (instead of its MLD address) when communicating with single-link devices (SLDs).
+* (spectrum) Spectrum reception is skipped, and unnecessary spectrum conversions are avoided, when the transmitter and receiver spectrum models are orthogonal or fully aligned, improving performance without changing results.
 
 ## Changes from ns-3.46.1 to ns-3.47
 
