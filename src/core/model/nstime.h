@@ -580,7 +580,15 @@ class CORE_EXPORT Time
         int64_t v = m_data;
         if (info->toMul)
         {
-            v *= info->factor;
+            // Perform the multiplication in unsigned arithmetic to avoid signed
+            // integer overflow (undefined behavior) when the converted value does
+            // not fit in int64_t. The wraparound result matches both the previous
+            // behavior on two's-complement platforms and the FromInteger() path,
+            // which already multiplies in unsigned arithmetic.
+            // If there is no overflow, static_cast<int64_t> recovers the correct
+            // signed result via two's-complement bit reinterpretation.
+            v = static_cast<int64_t>(static_cast<uint64_t>(v) *
+                                     static_cast<uint64_t>(info->factor));
         }
         else
         {
