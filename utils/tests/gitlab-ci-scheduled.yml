@@ -282,12 +282,12 @@ weekly-sionna-ubuntu-22.04:
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
-      g++ cmake ninja-build ccache git
+      g++ ninja-build ccache git
       python3 libpython3-dev python3-pip python3-venv
       llvm # Required by Dr. Jit, a Sionna-RT dependency for CPU compute
     - $PYTHON -m venv ./venv
     - . ./venv/bin/activate
-    - $PYTHON -m pip install cppyy
+    - $PYTHON -m pip install cppyy cmake==3.25.2
   variables:
     PYTHON: "python3"
 
