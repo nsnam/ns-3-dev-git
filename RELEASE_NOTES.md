@@ -12,7 +12,36 @@ a [GitLab.com issue tracker](https://gitlab.com/nsnam/ns-3-dev/-/issues) number,
 and references prefixed by '!' refer to a
 [GitLab.com merge request](https://gitlab.com/nsnam/ns-3-dev/-/merge_requests) number.
 
+## Release 3-dev
+
+### Supported platforms
+
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+
+- g++-11.1 or later, or LLVM/clang++-17 or later
+- Python 3.10 or later
+- CMake 3.25 or later
+- (macOS only) Xcode 16.2 or later
+- (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
+
+The version of clang-format enforced by the check-style-clang-format.py script for
+this release is version 20 only.
+
+Version 22 of the clang-tidy linter is now supported and recommended, although
+versions 17 to 21 are still compatible.
+
+Python API requires [Cppyy](https://cppyy.readthedocs.io/en/latest/installation.html) and has only
+been tested on Linux. As of this release, the latest known version to work with ns-3 is cppyy==3.5.0.
+
+### New user-visible features
+
+### Bugs fixed
+
 ## Release 3.48
+
+This release is available from:
+<https://www.nsnam.org/release/ns-3.48.tar.bz2>
 
 ### Supported platforms
 
