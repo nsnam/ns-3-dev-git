@@ -1152,6 +1152,28 @@ TypeId::SetAttributeInitialValue(std::size_t i, Ptr<const AttributeValue> initia
     return true;
 }
 
+bool
+TypeId::SetAttributeInitialValue(std::string name, Ptr<const AttributeValue> initialValue)
+{
+    NS_LOG_FUNCTION(this << name << initialValue);
+    // Walk the inheritance chain to the TypeId that declares the attribute; the
+    // initial value must be recorded there so ObjectBase::ConstructSelf reads it
+    // back for a derived instance (issue #147).
+    auto [found, declaringTid, info] = FindAttribute(*this, name);
+    if (!found)
+    {
+        return false;
+    }
+    for (std::size_t i = 0; i < declaringTid.GetAttributeN(); ++i)
+    {
+        if (declaringTid.GetAttribute(i).name == name)
+        {
+            return declaringTid.SetAttributeInitialValue(i, initialValue);
+        }
+    }
+    return false;
+}
+
 Callback<ObjectBase*>
 TypeId::GetConstructor() const
 {
