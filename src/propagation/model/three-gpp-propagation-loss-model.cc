@@ -252,7 +252,7 @@ ComputeClutterLoss(double freq,
     return loss;
 }
 
-constexpr double M_C = 3.0e8; //!< propagation velocity in free space
+constexpr double M_C = 299792458.0; //!< speed of light in vacuum [m/s] (@issueid{1092})
 
 } // namespace
 
