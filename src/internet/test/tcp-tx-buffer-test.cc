@@ -42,6 +42,9 @@ class TcpTxBufferTestCase : public TestCase
     /** @brief Test the logic of merging items in GetTransmittedSegment()
      * which is triggered by CopyFromSequence()*/
     void TestMergeItemsWhenGetTransmittedSegment();
+    /** @brief Test that the retransmit accounting is cleared when a
+     * retransmitted segment is SACKed (@issueid{1190}) */
+    void TestRetransmittedSegmentSacked();
     /**
      * @brief Callback to provide a value of receiver window
      * @returns the receiver window size
@@ -88,6 +91,8 @@ TcpTxBufferTestCase::DoRun()
     Simulator::Schedule(Seconds(0),
                         &TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment,
                         this);
+
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestRetransmittedSegmentSacked, this);
 
     Simulator::Run();
     Simulator::Destroy();
@@ -406,6 +411,61 @@ TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment()
     // GetTransmittedSegment() will be called and handle the case that two items
     // have different m_lost value.
     txBuf.CopyFromSequence(2000, SequenceNumber32(1));
+}
+
+void
+TcpTxBufferTestCase::TestRetransmittedSegmentSacked()
+{
+    // @issueid{1190}: when a retransmitted segment is SACKed (before its cumulative
+    // ACK), the retransmit byte counter must be decremented; otherwise
+    // BytesInFlight() keeps over-counting that segment.
+    const uint32_t segmentSize = 1000;
+    Ptr<TcpTxBuffer> txBuf = CreateObject<TcpTxBuffer>();
+    txBuf->SetRWndCallback(MakeCallback(&TcpTxBufferTestCase::GetRWnd, this));
+    txBuf->SetHeadSequence(SequenceNumber32(1));
+    txBuf->SetSegmentSize(segmentSize);
+    txBuf->SetDupAckThresh(3);
+
+    // Send 10 segments (seq 1..10000).
+    txBuf->Add(Create<Packet>(10 * segmentSize));
+    for (uint8_t i = 0; i < 10; ++i)
+    {
+        txBuf->CopyFromSequence(segmentSize, SequenceNumber32((i * segmentSize) + 1));
+    }
+    NS_TEST_ASSERT_MSG_EQ(txBuf->GetRetransmitsCount(), 0, "No retransmits yet");
+    NS_TEST_ASSERT_MSG_EQ(txBuf->BytesInFlight(), 10 * segmentSize, "All segments in flight");
+
+    // SACK segments 6, 7 and 8 so that the earlier segments (including seg 2) are
+    // declared lost while the head (seq 1) remains unacknowledged. The head is
+    // never SACKed: it advances only via cumulative ACK.
+    Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack>();
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(5001), SequenceNumber32(6001)));
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(6001), SequenceNumber32(7001)));
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(7001), SequenceNumber32(8001)));
+    txBuf->Update(sack->GetSackList());
+    NS_TEST_ASSERT_MSG_EQ(txBuf->IsLost(SequenceNumber32(1001)), true, "Segment 2 should be lost");
+
+    // Retransmit segment 2 (a non-head segment): it is now accounted as a
+    // retransmission.
+    txBuf->CopyFromSequence(segmentSize, SequenceNumber32(1001));
+    NS_TEST_ASSERT_MSG_EQ(txBuf->GetRetransmitsCount(),
+                          segmentSize,
+                          "Retransmitted segment must be counted in m_retrans");
+
+    // The retransmitted segment is now SACKed. Its retransmit accounting must be
+    // cleared, and it must no longer be counted as bytes in flight.
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(1001), SequenceNumber32(2001)));
+    txBuf->Update(sack->GetSackList());
+    NS_TEST_ASSERT_MSG_EQ(txBuf->GetRetransmitsCount(),
+                          0,
+                          "m_retrans must be cleared when the retransmitted segment is SACKed");
+    // Of the 10 segments: 4 are SACKed (2, 6, 7, 8) and 4 are lost (1, 3, 4, 5),
+    // leaving 2 genuinely in flight (9, 10). With the retransmit accounting
+    // correctly cleared this is 2 * segmentSize; the bug left it inflated by the
+    // stale retransmit (one extra segment).
+    NS_TEST_ASSERT_MSG_EQ(txBuf->BytesInFlight(),
+                          2 * segmentSize,
+                          "SACKed retransmitted segment must not inflate BytesInFlight");
 }
 
 void

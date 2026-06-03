@@ -813,6 +813,17 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
                         m_lostOut -= (*item_it)->m_packet->GetSize();
                     }
 
+                    if ((*item_it)->m_retrans)
+                    {
+                        // The retransmission of this segment has been SACKed, so
+                        // it is no longer in flight as a retransmit. Clear the
+                        // retransmit accounting, otherwise m_retrans keeps
+                        // counting it and BytesInFlight() over-estimates the pipe
+                        // until the cumulative ACK arrives (@issueid{1190}).
+                        (*item_it)->m_retrans = false;
+                        m_retrans -= (*item_it)->m_packet->GetSize();
+                    }
+
                     (*item_it)->m_sacked = true;
                     m_sackedOut += (*item_it)->m_packet->GetSize();
                     bytesSacked += (*item_it)->m_packet->GetSize();
