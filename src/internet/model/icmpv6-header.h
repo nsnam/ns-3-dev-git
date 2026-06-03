@@ -193,16 +193,35 @@ class Icmpv6Header : public Header
 
     /**
      * @brief Calculate pseudo header checksum for IPv6.
+     *
+     * The upper-layer protocol in the pseudo header is always ICMPv6.
+     *
      * @param src source address
      * @param dst destination address
      * @param length length
-     * @param protocol the protocol number to use in the
-     * underlying IPv6 packet.
      */
-    void CalculatePseudoHeaderChecksum(Ipv6Address src,
-                                       Ipv6Address dst,
-                                       uint16_t length,
-                                       uint8_t protocol);
+    void CalculatePseudoHeaderChecksum(Ipv6Address src, Ipv6Address dst, uint16_t length);
+
+    /**
+     * @brief Initialize the IPv6 pseudo header used for checksum verification.
+     *
+     * Stores the pseudo header addresses so that the checksum of a received
+     * message is verified during Deserialize. The verification result is
+     * reported by IsChecksumOk. The upper-layer protocol is always ICMPv6.
+     *
+     * @param source the IPv6 source address
+     * @param destination the IPv6 destination address
+     * @see UdpHeader::InitializeChecksum
+     */
+    void InitializeChecksum(Ipv6Address source, Ipv6Address destination);
+
+    /**
+     * @brief Checks if the message checksum is correct.
+     * @return true if the checksum is correct, false otherwise. Returns true
+     * by default if InitializeChecksum has not been called before
+     * deserializing this header.
+     */
+    bool IsChecksumOk() const;
 
   protected:
     /**
@@ -217,6 +236,13 @@ class Icmpv6Header : public Header
 
   private:
     /**
+     * @brief Calculate the partial checksum of the IPv6 pseudo header.
+     * @param size the size of the ICMPv6 message (header and payload)
+     * @return the non-complemented pseudo header checksum
+     */
+    uint16_t CalculateHeaderChecksum(uint16_t size) const;
+
+    /**
      * @brief The type.
      */
     uint8_t m_type;
@@ -225,6 +251,11 @@ class Icmpv6Header : public Header
      * @brief The code.
      */
     uint8_t m_code;
+
+    Ipv6Address m_source;      //!< Source address of the IPv6 pseudo header
+    Ipv6Address m_destination; //!< Destination address of the IPv6 pseudo header
+    bool m_verifyChecksum;     //!< true if the checksum must be verified during Deserialize
+    bool m_goodChecksum;       //!< true if the checksum is correct
 };
 
 /**

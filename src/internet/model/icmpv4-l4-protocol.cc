@@ -289,7 +289,21 @@ Icmpv4L4Protocol::Receive(Ptr<Packet> p,
     NS_LOG_FUNCTION(this << p << header << incomingInterface);
 
     Icmpv4Header icmp;
+    if (Node::ChecksumEnabled())
+    {
+        icmp.EnableChecksum();
+    }
     p->RemoveHeader(icmp);
+
+    // RFC 792: an ICMP message with an invalid checksum is discarded. Only
+    // verify when checksum computation is enabled for the simulation
+    // (consistent with UDP and TCP).
+    if (!icmp.IsChecksumOk())
+    {
+        NS_LOG_LOGIC("Bad checksum, dropping ICMPv4 packet");
+        return IpL4Protocol::RX_CSUM_FAILED;
+    }
+
     switch (icmp.GetType())
     {
     case Icmpv4Header::ICMPV4_ECHO: {

@@ -286,8 +286,7 @@ Ipv6RawSocketImpl::SendTo(Ptr<Packet> p, uint32_t flags, const Address& toAddres
                     p->RemoveHeader(hdr);
                     hdr.CalculatePseudoHeaderChecksum(route->GetSource(),
                                                       dst,
-                                                      p->GetSize() + hdr.GetSerializedSize(),
-                                                      Icmpv6L4Protocol::GetStaticProtocolNumber());
+                                                      p->GetSize() + hdr.GetSerializedSize());
                     p->AddHeader(hdr);
                 }
             }

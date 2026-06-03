@@ -279,8 +279,7 @@ SixLowPanNdProtocol::SendSixLowPanMulticastRS(Ipv6Address src, Address hardwareA
 
     rs.CalculatePseudoHeaderChecksum(src,
                                      Ipv6Address::GetAllRoutersMulticast(),
-                                     p->GetSize() + rs.GetSerializedSize(),
-                                     iana::internetprotocolnumbers::ICMPV6);
+                                     p->GetSize() + rs.GetSerializedSize());
     p->AddHeader(rs);
 
     m_rsRetransmissionCount++;
@@ -1466,10 +1465,7 @@ SixLowPanNdProtocol::MakeNsEaroPacket(Ipv6Address src,
     p->AddHeader(tlla);
     p->AddHeader(slla);
 
-    nsHdr.CalculatePseudoHeaderChecksum(src,
-                                        dst,
-                                        p->GetSize() + nsHdr.GetSerializedSize(),
-                                        iana::internetprotocolnumbers::ICMPV6);
+    nsHdr.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + nsHdr.GetSerializedSize());
     p->AddHeader(nsHdr);
 
     return p;
@@ -1484,10 +1480,7 @@ SixLowPanNdProtocol::MakeNaEaroPacket(Ipv6Address src,
     Ptr<Packet> p = Create<Packet>();
     p->AddHeader(earo);
 
-    naHdr.CalculatePseudoHeaderChecksum(src,
-                                        dst,
-                                        p->GetSize() + naHdr.GetSerializedSize(),
-                                        iana::internetprotocolnumbers::ICMPV6);
+    naHdr.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + naHdr.GetSerializedSize());
     p->AddHeader(naHdr);
 
     return p;
@@ -1543,10 +1536,7 @@ SixLowPanNdProtocol::MakeRaPacket(Ipv6Address src,
     }
 
     // Compute checksum after everything is added
-    ra.CalculatePseudoHeaderChecksum(src,
-                                     dst,
-                                     p->GetSize() + ra.GetSerializedSize(),
-                                     iana::internetprotocolnumbers::ICMPV6);
+    ra.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + ra.GetSerializedSize());
     p->AddHeader(ra);
 
     return p;

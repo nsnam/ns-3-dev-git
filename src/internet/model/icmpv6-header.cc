@@ -12,6 +12,7 @@
 
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -42,7 +43,9 @@ Icmpv6Header::Icmpv6Header()
     : m_calcChecksum(true),
       m_checksum(0),
       m_type(0),
-      m_code(0)
+      m_code(0),
+      m_verifyChecksum(false),
+      m_goodChecksum(true)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -121,6 +124,15 @@ Icmpv6Header::Deserialize(Buffer::Iterator start)
 #if 0
   i.ReadU32 (); /* padding */
 #endif
+
+    if (m_verifyChecksum)
+    {
+        uint16_t headerChecksum = CalculateHeaderChecksum(start.GetRemainingSize());
+        i = start;
+        uint16_t checksum = i.CalculateIpChecksum(start.GetRemainingSize(), headerChecksum);
+        m_goodChecksum = (checksum == 0);
+    }
+
     return GetSerializedSize();
 }
 
@@ -148,12 +160,29 @@ Icmpv6Header::Serialize(Buffer::Iterator start) const
 }
 
 void
-Icmpv6Header::CalculatePseudoHeaderChecksum(Ipv6Address src,
-                                            Ipv6Address dst,
-                                            uint16_t length,
-                                            uint8_t protocol)
+Icmpv6Header::CalculatePseudoHeaderChecksum(Ipv6Address src, Ipv6Address dst, uint16_t length)
 {
-    NS_LOG_FUNCTION(this << src << dst << length << static_cast<uint32_t>(protocol));
+    NS_LOG_FUNCTION(this << src << dst << length);
+
+    m_source = src;
+    m_destination = dst;
+    m_checksum = CalculateHeaderChecksum(length);
+}
+
+void
+Icmpv6Header::InitializeChecksum(Ipv6Address source, Ipv6Address destination)
+{
+    NS_LOG_FUNCTION(this << source << destination);
+
+    m_source = source;
+    m_destination = destination;
+    m_verifyChecksum = true;
+}
+
+uint16_t
+Icmpv6Header::CalculateHeaderChecksum(uint16_t size) const
+{
+    NS_LOG_FUNCTION(this << size);
 
     Buffer buf = Buffer(40);
     uint8_t tmp[16];
@@ -162,19 +191,26 @@ Icmpv6Header::CalculatePseudoHeaderChecksum(Ipv6Address src,
     buf.AddAtStart(40);
     it = buf.Begin();
 
-    src.Serialize(tmp);
+    m_source.Serialize(tmp);
     it.Write(tmp, 16); /* source IPv6 address */
-    dst.Serialize(tmp);
-    it.Write(tmp, 16);         /* destination IPv6 address */
-    it.WriteU16(0);            /* length */
-    it.WriteU8(length >> 8);   /* length */
-    it.WriteU8(length & 0xff); /* length */
-    it.WriteU16(0);            /* zero */
-    it.WriteU8(0);             /* zero */
-    it.WriteU8(protocol);      /* next header */
+    m_destination.Serialize(tmp);
+    it.Write(tmp, 16);                                 /* destination IPv6 address */
+    it.WriteU16(0);                                    /* length */
+    it.WriteU8(size >> 8);                             /* length */
+    it.WriteU8(size & 0xff);                           /* length */
+    it.WriteU16(0);                                    /* zero */
+    it.WriteU8(0);                                     /* zero */
+    it.WriteU8(iana::internetprotocolnumbers::ICMPV6); /* next header */
 
     it = buf.Begin();
-    m_checksum = ~(it.CalculateIpChecksum(40));
+    return ~(it.CalculateIpChecksum(40));
+}
+
+bool
+Icmpv6Header::IsChecksumOk() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_goodChecksum;
 }
 
 NS_OBJECT_ENSURE_REGISTERED(Icmpv6NS);

@@ -35,7 +35,8 @@ Icmpv4Header::GetTypeId()
 Icmpv4Header::Icmpv4Header()
     : m_type(0),
       m_code(0),
-      m_calcChecksum(false)
+      m_calcChecksum(false),
+      m_goodChecksum(true)
 {
     NS_LOG_FUNCTION(this);
 }
@@ -50,6 +51,13 @@ Icmpv4Header::EnableChecksum()
 {
     NS_LOG_FUNCTION(this);
     m_calcChecksum = true;
+}
+
+bool
+Icmpv4Header::IsChecksumOk() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_goodChecksum;
 }
 
 TypeId
@@ -88,9 +96,18 @@ uint32_t
 Icmpv4Header::Deserialize(Buffer::Iterator start)
 {
     NS_LOG_FUNCTION(this << &start);
-    m_type = start.ReadU8();
-    m_code = start.ReadU8();
-    start.Next(2); // uint16_t checksum = start.ReadNtohU16 ();
+    Buffer::Iterator i = start;
+    m_type = i.ReadU8();
+    m_code = i.ReadU8();
+    i.Next(2); // uint16_t checksum = i.ReadNtohU16 ();
+
+    if (m_calcChecksum)
+    {
+        i = start;
+        uint16_t checksum = i.CalculateIpChecksum(start.GetRemainingSize());
+        m_goodChecksum = (checksum == 0);
+    }
+
     return 4;
 }
 
