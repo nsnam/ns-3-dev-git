@@ -50,8 +50,9 @@ class GeocentricConstantPositionMobilityModel : public MobilityModel
      * After calculating the plane perpendicular to a cartesian position vector,
      * the elevation angle is calculated using
      * https://www.w3schools.blog/angle-between-a-line-and-a-plane.
-     * The altitude of the position passed as a parameter must be higher than that of the reference
-     * point.
+     * The elevation is measured at the lower of the two terminals (the one closer
+     * to the Earth's centre); the result is independent of the argument order. A
+     * negative value indicates that the other terminal is below the local horizon.
      * @param other pointer to the HAPS/satellite mobility model
      * @return the elevation angle
      * in degrees

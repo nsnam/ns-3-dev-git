@@ -61,6 +61,7 @@ build_lib(
     test/box-line-intersection-test.cc
     test/geo-to-cartesian-test.cc
     test/geocentric-topocentric-conversion-test.cc
+    test/geocentric-elevation-angle-test.cc
     test/mobility-test-suite.cc
     test/mobility-trace-test-suite.cc
     test/ns2-mobility-helper-test-suite.cc
