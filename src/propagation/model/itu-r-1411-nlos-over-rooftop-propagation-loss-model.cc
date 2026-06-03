@@ -119,7 +119,8 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss(Ptr<MobilityModel> a,
     }
     else // m_streetsOrientation >= 55
     {
-        Lori = 2.5 + 0.075 * (m_streetsOrientation - 55);
+        // ITU-R P.1411 eq. (13) for 55 <= phi <= 90 (@issueid{1164})
+        Lori = 4.0 - 0.114 * (m_streetsOrientation - 55);
     }
 
     double distance = a->GetDistanceFrom(b);
@@ -146,7 +147,9 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss(Ptr<MobilityModel> a,
         else
         {
             Lbsh = 0;
-            kd = 18.0 - 15 * Dhb / a->GetPosition().z;
+            // ITU-R P.1411 eq. (20): kd = 18 - 15 * Dhb / hr, where hr is the
+            // rooftop height, not the height of one of the terminals (@issueid{1164})
+            kd = 18.0 - 15 * Dhb / m_rooftopHeight;
             if (distance < 500)
             {
                 ka = 54.0 - 1.6 * Dhb * distance / 1000;
@@ -162,11 +165,13 @@ ItuR1411NlosOverRooftopPropagationLossModel::GetLoss(Ptr<MobilityModel> a,
         }
         else if ((m_environment == UrbanEnvironment) && (m_citySize == LargeCity))
         {
-            kf = -4 + 0.7 * (fmhz / 925.0 - 1);
+            // ITU-R P.1411: metropolitan centres use 1.5, medium-sized cities /
+            // suburban centres use 0.7 (@issueid{1164})
+            kf = -4 + 1.5 * (fmhz / 925.0 - 1);
         }
         else
         {
-            kf = -4 + 1.5 * (fmhz / 925.0 - 1);
+            kf = -4 + 0.7 * (fmhz / 925.0 - 1);
         }
 
         Lmsd = Lbsh + ka + kd * std::log10(distance / 1000.0) + kf * std::log10(fmhz) -

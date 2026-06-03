@@ -37,6 +37,8 @@ class ItuR1411NlosOverRooftopPropagationLossModelTestCase : public TestCase
      * @param hm height of UT in meters
      * @param env environment type
      * @param city city type
+     * @param streetsOrientation street orientation in degrees [0,90]
+     * @param rooftopHeight rooftop level height in meters
      * @param refValue reference loss value
      * @param name TestCase name
      */
@@ -46,6 +48,8 @@ class ItuR1411NlosOverRooftopPropagationLossModelTestCase : public TestCase
                                                         double hm,
                                                         EnvironmentType env,
                                                         CitySize city,
+                                                        double streetsOrientation,
+                                                        double rooftopHeight,
                                                         double refValue,
                                                         std::string name);
     ~ItuR1411NlosOverRooftopPropagationLossModelTestCase() override;
@@ -60,13 +64,15 @@ class ItuR1411NlosOverRooftopPropagationLossModelTestCase : public TestCase
      */
     Ptr<MobilityModel> CreateMobilityModel(uint16_t index);
 
-    double m_freq;         //!< carrier frequency in Hz
-    double m_dist;         //!< 2D distance between UT and BS in meters
-    double m_hb;           //!< height of BS in meters
-    double m_hm;           //!< height of UT in meters
-    EnvironmentType m_env; //!< environment type
-    CitySize m_city;       //!< city type
-    double m_lossRef;      //!< reference loss
+    double m_freq;               //!< carrier frequency in Hz
+    double m_dist;               //!< 2D distance between UT and BS in meters
+    double m_hb;                 //!< height of BS in meters
+    double m_hm;                 //!< height of UT in meters
+    EnvironmentType m_env;       //!< environment type
+    CitySize m_city;             //!< city type
+    double m_streetsOrientation; //!< street orientation in degrees [0,90]
+    double m_rooftopHeight;      //!< rooftop level height in meters
+    double m_lossRef;            //!< reference loss
 };
 
 ItuR1411NlosOverRooftopPropagationLossModelTestCase::
@@ -76,6 +82,8 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::
                                                         double hm,
                                                         EnvironmentType env,
                                                         CitySize city,
+                                                        double streetsOrientation,
+                                                        double rooftopHeight,
                                                         double refValue,
                                                         std::string name)
     : TestCase(name),
@@ -85,6 +93,8 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::
       m_hm(hm),
       m_env(env),
       m_city(city),
+      m_streetsOrientation(streetsOrientation),
+      m_rooftopHeight(rooftopHeight),
       m_lossRef(refValue)
 {
 }
@@ -110,6 +120,8 @@ ItuR1411NlosOverRooftopPropagationLossModelTestCase::DoRun()
     propagationLossModel->SetAttribute("Frequency", DoubleValue(m_freq));
     propagationLossModel->SetAttribute("Environment", EnumValue(m_env));
     propagationLossModel->SetAttribute("CitySize", EnumValue(m_city));
+    propagationLossModel->SetAttribute("StreetsOrientation", DoubleValue(m_streetsOrientation));
+    propagationLossModel->SetAttribute("RooftopLevel", DoubleValue(m_rooftopHeight));
 
     double loss = propagationLossModel->GetLoss(mma, mmb);
 
@@ -145,6 +157,8 @@ ItuR1411NlosOverRooftopPropagationLossModelTestSuite::
                     1,
                     UrbanEnvironment,
                     LargeCity,
+                    45.0,
+                    20.0,
                     143.68,
                     "f=2114Mhz, dist=900, urban large city"),
                 TestCase::Duration::QUICK);
@@ -155,8 +169,52 @@ ItuR1411NlosOverRooftopPropagationLossModelTestSuite::
                     1,
                     UrbanEnvironment,
                     LargeCity,
+                    45.0,
+                    20.0,
                     132.84,
-                    "f=2114Mhz, dist=900, urban large city"),
+                    "f=1865Mhz, dist=500, urban large city"),
+                TestCase::Duration::QUICK);
+    // The following three cases exercise the formula paths corrected for @issueid{1164}.
+    // Reference values computed from src/propagation/test/reference/
+    // loss_ITU1411_NLOS_over_rooftop.m with the matching parameters.
+    // Lori branch for street orientation phi >= 55 degrees (eq. 13).
+    AddTestCase(new ItuR1411NlosOverRooftopPropagationLossModelTestCase(
+                    2.1140e9,
+                    900,
+                    30,
+                    1,
+                    UrbanEnvironment,
+                    LargeCity,
+                    80.0,
+                    20.0,
+                    141.59,
+                    "f=2114Mhz, dist=900, urban large city, streets orientation 80 deg"),
+                TestCase::Duration::QUICK);
+    // kd branch for base station below rooftop level (eq. 20, kd scaled by rooftop height).
+    AddTestCase(new ItuR1411NlosOverRooftopPropagationLossModelTestCase(
+                    2.1140e9,
+                    500,
+                    15,
+                    1,
+                    UrbanEnvironment,
+                    LargeCity,
+                    45.0,
+                    40.0,
+                    163.87,
+                    "f=2114Mhz, dist=500, urban large city, BS below rooftop"),
+                TestCase::Duration::QUICK);
+    // kf branch for metropolitan centre (large city), f <= 2 GHz (coefficient 1.5).
+    AddTestCase(new ItuR1411NlosOverRooftopPropagationLossModelTestCase(
+                    1.865e9,
+                    100,
+                    30,
+                    1,
+                    UrbanEnvironment,
+                    LargeCity,
+                    45.0,
+                    20.0,
+                    112.67,
+                    "f=1865Mhz, dist=100, urban large city, metropolitan kf"),
                 TestCase::Duration::QUICK);
 }
 
