@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <regex>
 #include <sstream>
+#include <system_error>
 #include <tuple>
 
 #ifdef __APPLE__
@@ -343,44 +344,8 @@ bool
 Exists(const std::string path)
 {
     NS_LOG_FUNCTION(path);
-
-    bool err;
-    auto dirpath = Dirname(path);
-    std::list<std::string> files;
-    tie(files, err) = ReadFilesNoThrow(dirpath);
-    if (err)
-    {
-        // Directory doesn't exist
-        NS_LOG_LOGIC("directory doesn't exist: " << dirpath);
-        return false;
-    }
-    NS_LOG_LOGIC("directory exists: " << dirpath);
-
-    // Check if the file itself exists
-    auto tokens = Split(path);
-    const std::string& file = tokens.back();
-
-    if (file.empty())
-    {
-        // Last component was a directory, not a file name
-        // We already checked that the directory exists,
-        // so return true
-        NS_LOG_LOGIC("directory path exists: " << path);
-        return true;
-    }
-
-    files = ReadFiles(dirpath);
-
-    auto it = std::find(files.begin(), files.end(), file);
-    if (it == files.end())
-    {
-        // File itself doesn't exist
-        NS_LOG_LOGIC("file itself doesn't exist: " << file);
-        return false;
-    }
-
-    NS_LOG_LOGIC("file itself exists: " << file);
-    return true;
+    [[maybe_unused]] std::error_code ec;
+    return std::filesystem::exists(path, ec);
 }
 
 std::string
