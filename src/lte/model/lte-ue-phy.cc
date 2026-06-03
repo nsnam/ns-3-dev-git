@@ -721,7 +721,8 @@ LteUePhy::GenerateMixedCqiReport(const SpectrumValue& sinr)
     m_ctrlSinrForRlf = sinr;
 
     SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear);
-    if (m_dataInterferencePowerUpdated)
+    if (m_dataInterferencePowerUpdated &&
+        mixedSinr.GetSpectrumModel() == m_dataInterferencePower.GetSpectrumModel())
     {
         // we have a measurement of interf + noise for the denominator
         // of SINR = S/(I+N)
@@ -729,12 +730,26 @@ LteUePhy::GenerateMixedCqiReport(const SpectrumValue& sinr)
         m_dataInterferencePowerUpdated = false;
         NS_LOG_LOGIC("data interf measurement available, SINR = " << mixedSinr);
     }
-    else
+    else if (mixedSinr.GetSpectrumModel() == m_noisePsd->GetSpectrumModel())
     {
         // we did not see any interference on data, so interference is
         // there and we have only noise at the denominator of SINR
         mixedSinr /= (*m_noisePsd);
         NS_LOG_LOGIC("no data interf measurement available, SINR = " << mixedSinr);
+    }
+    else
+    {
+        // During a handover the UE PHY is reconfigured to the target cell's
+        // EARFCN/bandwidth, which changes the spectrum model of m_noisePsd
+        // (and m_dataInterferencePower). A control reception that started on
+        // the previous cell can complete after this reconfiguration, leaving
+        // m_rsReceivedPower on a different spectrum model than the denominator.
+        // Dividing mismatched spectrum values would abort (@issueid{447}); the
+        // resulting measurement is meaningless, so skip this CQI report.
+        m_dataInterferencePowerUpdated = false;
+        NS_LOG_LOGIC("spectrum model mismatch (handover reconfiguration), "
+                     "skipping mixed CQI report");
+        return;
     }
 
     /*
