@@ -1156,7 +1156,17 @@ LteUeRrc::DoRecvRrcConnectionReestablishment(LteRrcSap::RrcConnectionReestablish
     break;
 
     default:
-        NS_FATAL_ERROR("method unexpected in state " << m_state);
+        // The UE-side RRC Connection Reestablishment procedure (3GPP TS 36.331
+        // Section 5.3.7) is not implemented: the UE never sends a
+        // RrcConnectionReestablishmentRequest nor enters CONNECTED_REESTABLISHING.
+        // If the eNB nonetheless sends a RrcConnectionReestablishment while the
+        // UE is e.g. CONNECTED_NORMALLY, do not abort the simulation; log the
+        // limitation and treat it as a radio link failure so the connection is
+        // released gracefully (@issueid{1096}).
+        NS_LOG_WARN("RRC Connection Reestablishment is not implemented; treating it as a "
+                    "radio link failure (state "
+                    << m_state << ")");
+        RadioLinkFailureDetected();
         break;
     }
 }
@@ -1178,7 +1188,13 @@ LteUeRrc::DoRecvRrcConnectionReestablishmentReject(
     break;
 
     default:
-        NS_FATAL_ERROR("method unexpected in state " << m_state);
+        // As above (@issueid{1096}): reestablishment is not implemented, so an
+        // unexpected reject is treated as a radio link failure instead of
+        // aborting the simulation.
+        NS_LOG_WARN("RRC Connection Reestablishment Reject received in unexpected state; "
+                    "treating it as a radio link failure (state "
+                    << m_state << ")");
+        RadioLinkFailureDetected();
         break;
     }
 }
