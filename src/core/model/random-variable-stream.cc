@@ -744,7 +744,7 @@ NormalRandomVariable::GetValue(double mean, double variance, double bound)
         double v1 = 2 * u1 - 1;
         double v2 = 2 * u2 - 1;
         double w = v1 * v1 + v2 * v2;
-        if (w <= 1.0)
+        if (0.0 < w && w < 1.0)
         { // Got good pair
             double y = std::sqrt((-2 * std::log(w)) / w);
             double x1 = mean + v1 * y * std::sqrt(variance);
@@ -1061,7 +1061,7 @@ GammaRandomVariable::GetNormalValue(double mean, double variance, double bound)
         double v1 = 2 * u1 - 1;
         double v2 = 2 * u2 - 1;
         double w = v1 * v1 + v2 * v2;
-        if (w <= 1.0)
+        if (0.0 < w && w < 1.0)
         { // Got good pair
             double y = std::sqrt((-2 * std::log(w)) / w);
             double x1 = mean + v1 * y * std::sqrt(variance);
