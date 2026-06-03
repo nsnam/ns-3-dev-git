@@ -342,11 +342,13 @@ CommandLineStringTestCase::DoRun()
     CommandLine cmd;
     uint32_t myUint32 = 10;
     std::string myStr = "MyStr";
+    std::string mySpacedStr = "My Spaced Str";
 
     cmd.AddValue("my-uint32", "help", myUint32);
     cmd.AddValue("my-str", "help", myStr);
+    cmd.AddValue("my-spaced-str", "help", mySpacedStr);
 
-    Parse(cmd, 2, "--my-uint32=9", "--my-str=XX");
+    Parse(cmd, 3, "--my-uint32=9", "--my-str=XX", "--my-spaced-str=Hello World Issue Id 1181");
 
     NS_TEST_ASSERT_MSG_EQ(myUint32,
                           9,
@@ -354,6 +356,11 @@ CommandLineStringTestCase::DoRun()
     NS_TEST_ASSERT_MSG_EQ(myStr,
                           "XX",
                           "CommandLine did not correctly set a string value to \"XX\"");
+    // Regression test for issue #1181: a string value containing spaces must be
+    // captured in full, not truncated at the first whitespace.
+    NS_TEST_ASSERT_MSG_EQ(mySpacedStr,
+                          "Hello World Issue Id 1181",
+                          "CommandLine did not capture a string value containing spaces");
 }
 
 /**

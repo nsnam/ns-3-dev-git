@@ -738,6 +738,23 @@ bool UserItemParse<bool>(const std::string& value, bool& dest);
  */
 template <>
 bool UserItemParse<uint8_t>(const std::string& value, uint8_t& dest);
+/**
+ * @brief Specialization of CommandLine::UserItem::Parse() to \c std::string
+ *
+ * @param [in] value The argument value
+ * @param [out] dest The string variable to set
+ * @return \c true if parsing was successful
+ *
+ * @see @issueid{1181}
+ *
+ * @internal
+ * Unlike the generic implementation, which uses \c operator>> and therefore
+ * stops at the first whitespace, this assigns the whole argument value so that
+ * strings containing spaces are captured in full.
+ * @endinternal
+ */
+template <>
+bool UserItemParse<std::string>(const std::string& value, std::string& dest);
 
 /**
  * @ingroup commandlinehelper

@@ -999,6 +999,18 @@ CommandLineHelper::UserItemParse<uint8_t>(const std::string& value, uint8_t& des
     return true;
 }
 
+// Doxygen parses incorrectly the qualified name of this out-of-line specialization
+// and would otherwise report as undocumented.
+/** @copydoc ns3::CommandLineHelper::UserItemParse<std::string> */
+template <>
+bool
+CommandLineHelper::UserItemParse<std::string>(const std::string& value, std::string& dest)
+{
+    // Assign the whole value verbatim; see the header for the rationale.
+    dest = value;
+    return true;
+}
+
 std::ostream&
 operator<<(std::ostream& os, const CommandLine& cmd)
 {
