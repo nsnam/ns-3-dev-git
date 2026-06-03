@@ -278,7 +278,8 @@ RealtimeSimulatorImpl::ProcessOneEvent()
         //
         if (m_synchronizer->Synchronize(tsNow, tsDelay))
         {
-            NS_LOG_LOGIC("Interrupted ...");
+            // Synchronize returned true: the wait completed, so break.
+            NS_LOG_LOGIC("Synchronized");
             break;
         }
 
