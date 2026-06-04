@@ -333,7 +333,9 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
                                                             << " " << m_osRoute.str() << "\n";
                             }
 
+                            m_osRoute.str("");
                             m_osRoute.clear();
+                            m_routeIpv4.str("");
                             m_routeIpv4.clear();
                         }
                         else
