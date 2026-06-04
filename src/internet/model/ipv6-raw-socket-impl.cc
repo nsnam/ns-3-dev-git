@@ -114,6 +114,15 @@ Ipv6RawSocketImpl::Bind(const Address& address)
     }
     Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom(address);
     m_src = ad.GetIpv6();
+    if (m_src.IsMulticast())
+    {
+        // Register the multicast group so that the L3 protocol delivers groups
+        // other than all-nodes to this socket. Without this a raw socket bound
+        // to a multicast group never receives any packet (@issueid{1039}). Using
+        // the socket's own join machinery means Close() -> Ipv6LeaveGroup()
+        // cleans it up automatically.
+        Ipv6JoinGroup(m_src, Socket::EXCLUDE, std::vector<Ipv6Address>());
+    }
     return 0;
 }
 
