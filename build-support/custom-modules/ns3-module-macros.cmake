@@ -376,6 +376,16 @@ function(build_lib_export_definitions_as_interface_definitions libname)
   set(exported_definitions "${target_definitions};${dir_definitions}")
   list(REMOVE_DUPLICATES exported_definitions)
   list(REMOVE_ITEM exported_definitions "")
+  # Never propagate the module's own dll-export marker (<libname>_EXPORTS, added
+  # PRIVATE for MSVC/ClangCL builds) to consumers. That macro is what flips the
+  # generated <LIB>_EXPORT macros to __declspec(dllexport): it means "I am
+  # building this DLL" and must only ever be set for the module's own sources.
+  # Leaking it into INTERFACE_COMPILE_DEFINITIONS makes every module that links
+  # this one compile its headers as if it were building the DLL (dllexport)
+  # instead of importing it (dllimport), which is wrong and, for modules that
+  # annotate their whole API with hidden default visibility (e.g. wifi), breaks
+  # the build outright.
+  list(REMOVE_ITEM exported_definitions "${libname}_EXPORTS")
   set_target_properties(
     ${libname} PROPERTIES INTERFACE_COMPILE_DEFINITIONS
                           "${exported_definitions}"
