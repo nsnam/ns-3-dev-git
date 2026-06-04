@@ -168,6 +168,12 @@ PcapHelper::SinkWithHeader(Ptr<PcapFileWrapper> file, const Header& header, Ptr<
     file->Write(Simulator::Now(), header, p);
 }
 
+CallbackBase
+PcapHelper::MakeSinkCallback(Ptr<PcapFileWrapper> file)
+{
+    return MakeBoundCallback(&DefaultSink, file);
+}
+
 AsciiTraceHelper::AsciiTraceHelper()
 {
     NS_LOG_FUNCTION_NOARGS();
@@ -403,6 +409,23 @@ AsciiTraceHelper::DefaultReceiveSinkWithContext(Ptr<OutputStreamWrapper> stream,
     NS_LOG_FUNCTION(stream << p);
     *stream->GetStream() << "r " << Simulator::Now().GetSeconds() << " " << context << " " << *p
                          << std::endl;
+}
+
+CallbackBase
+AsciiTraceHelper::MakeSinkWithoutContextCallback(void (*sink)(Ptr<OutputStreamWrapper>,
+                                                              Ptr<const Packet>),
+                                                 Ptr<OutputStreamWrapper> stream)
+{
+    return MakeBoundCallback(sink, stream);
+}
+
+CallbackBase
+AsciiTraceHelper::MakeSinkWithContextCallback(void (*sink)(Ptr<OutputStreamWrapper>,
+                                                           std::string,
+                                                           Ptr<const Packet>),
+                                              Ptr<OutputStreamWrapper> stream)
+{
+    return MakeBoundCallback(sink, stream);
 }
 
 void
