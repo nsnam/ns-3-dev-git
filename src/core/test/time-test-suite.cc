@@ -11,6 +11,7 @@
 #include "ns3/int64x64.h"
 #include "ns3/nstime.h"
 #include "ns3/test.h"
+#include "ns3/time-span.h"
 
 #include <array>
 #include <cstdint>
@@ -522,6 +523,29 @@ TimeInputOutputTestCase::DoRun()
     CheckAs(t * 1e+6, "+36.361026d");
     CheckAs(t * 1e+7, "+363.610261d");
     CheckAs(t * 1e+8, "+9.961925y");
+
+    std::stringstream timeSpanStream{" { 50ms , 100ms } "};
+    TimeSpan timeSpan(Seconds(0), Seconds(0));
+    timeSpanStream >> timeSpan;
+    NS_TEST_EXPECT_MSG_EQ(timeSpan.Begin(), MilliSeconds(50), "Unexpected TimeSpan begin time");
+    NS_TEST_EXPECT_MSG_EQ(timeSpan.End(), MilliSeconds(100), "Unexpected TimeSpan end time");
+
+    std::stringstream timeSpanOutput;
+    timeSpanOutput << TimeSpan(NanoSeconds(50), NanoSeconds(100));
+    NS_TEST_EXPECT_MSG_EQ(timeSpanOutput.str(), "{+50ns, +100ns}", "Unexpected TimeSpan output");
+
+    TimeSpan timeSpanString(" { 50ms , 100ms } ");
+    NS_TEST_EXPECT_MSG_EQ(timeSpanString.Begin(),
+                          MilliSeconds(50),
+                          "Unexpected string TimeSpan begin time");
+    NS_TEST_EXPECT_MSG_EQ(timeSpanString.End(),
+                          MilliSeconds(100),
+                          "Unexpected string TimeSpan end time");
+
+    NS_TEST_EXPECT_MSG_EQ(timeSpan == timeSpanString, true, "Equivalent TimeSpan objects differ");
+    NS_TEST_EXPECT_MSG_EQ(timeSpan == TimeSpan(MilliSeconds(50), MilliSeconds(150)),
+                          false,
+                          "Different TimeSpan objects compare equal");
 }
 
 /**

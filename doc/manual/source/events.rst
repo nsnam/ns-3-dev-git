@@ -429,6 +429,21 @@ duration.
     - 1 fs
     - ~2.6 hours
 
+A time interval can be represented through the ``TimeSpan`` class. A ``TimeSpan`` object
+can be created by defining the begin time and the end time (where the former must be less
+than or equal to the latter). An example of common usage follows:
+
+.. sourcecode:: cpp
+
+    TimeSpan interval(MilliSeconds(500), Seconds(1));
+    // alternatively, TimeSpan interval("{500ms, 1s}");
+
+    std::cout << interval.Duration() << std::endl; // prints "500ms"
+
+A ``TimeSpan`` object can be set/get via the attribute system using the ``TimeSpanValue``
+attribute value. The example `src/core/examples/timespan-example.cc` shows how a
+``TimeSpan`` object can be set via the attribute system or via the CommandLine system.
+
 Scheduler
 *********
 

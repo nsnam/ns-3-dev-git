@@ -178,6 +178,7 @@ set(source_files
     model/node-printer.cc
     model/show-progress.cc
     model/time-printer.cc
+    model/time-span.cc
     model/system-wall-clock-ms.cc
     model/system-wall-clock-timestamp.cc
     model/length.cc
@@ -275,6 +276,7 @@ set(header_files
     model/system-wall-clock-timestamp.h
     model/test.h
     model/time-printer.h
+    model/time-span.h
     model/timer-impl.h
     model/timer.h
     model/trace-source-accessor.h

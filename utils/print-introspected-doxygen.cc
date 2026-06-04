@@ -1595,6 +1595,7 @@ PrintAttributeImplementations(std::ostream& os)
       { "Integer",        "int64_t",        false, "integer.h"          },
       { "String",         "std::string",    false, "string.h"           },
       { "Time",           "Time",           true,  "nstime.h"           },
+      { "TimeSpan",       "TimeSpan",       true,  "time-span.h"        },
       { "Uinteger",       "uint64_t",       false, "uinteger.h"         },
       { "",               "",               false, "last placeholder"   }
     };
