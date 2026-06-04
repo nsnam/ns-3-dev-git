@@ -13,6 +13,7 @@
 
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-units.h"
 
 namespace ns3
@@ -33,7 +34,7 @@ class WifiNetDevice;
  * OBSS_PD is an 802.11ax feature that allows a STA, under specific
  * conditions, to ignore an inter-BSS PPDU.
  */
-class ObssPdAlgorithm : public Object
+class WIFI_EXPORT ObssPdAlgorithm : public Object
 {
   public:
     /**

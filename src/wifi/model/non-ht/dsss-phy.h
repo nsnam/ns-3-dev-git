@@ -12,6 +12,7 @@
 #define DSSS_PHY_H
 
 #include "ns3/phy-entity.h"
+#include "ns3/wifi-export.h"
 
 #include <vector>
 
@@ -32,7 +33,7 @@ namespace ns3
  * Note that DSSS rates (clause 15) are a subset
  * of HR/DSSS rates.
  */
-class DsssPhy : public PhyEntity
+class WIFI_EXPORT DsssPhy : public PhyEntity
 {
   public:
     /**

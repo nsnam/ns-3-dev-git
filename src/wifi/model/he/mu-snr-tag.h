@@ -10,6 +10,7 @@
 #define MU_SNR_TAG_H
 
 #include "ns3/tag.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 
@@ -22,7 +23,7 @@ namespace ns3
  * A tag to be attached to a response to a multi-user UL frame, that carries the SNR
  * values with which the individual frames have been received.
  */
-class MuSnrTag : public Tag
+class WIFI_EXPORT MuSnrTag : public Tag
 {
   public:
     /**

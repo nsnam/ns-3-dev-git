@@ -10,6 +10,7 @@
 #define EHT_PHY_H
 
 #include "ns3/he-phy.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -33,7 +34,7 @@ namespace ns3
  *
  * Refer to P802.11be/D1.5.
  */
-class EhtPhy : public HePhy
+class WIFI_EXPORT EhtPhy : public HePhy
 {
   public:
     /**

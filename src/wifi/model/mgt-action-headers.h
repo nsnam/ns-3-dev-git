@@ -19,6 +19,7 @@
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -35,7 +36,7 @@ class Packet;
  * Header format: | category: 1 | action value: 1 |
  *
  */
-class WifiActionHeader : public Header
+class WIFI_EXPORT WifiActionHeader : public Header
 {
   public:
     WifiActionHeader();
@@ -294,7 +295,7 @@ class WifiActionHeader : public Header
  * @ingroup wifi
  * Implement the header for management frames of type Add Block Ack request.
  */
-class MgtAddBaRequestHeader : public Header
+class WIFI_EXPORT MgtAddBaRequestHeader : public Header
 {
   public:
     /**
@@ -434,7 +435,7 @@ class MgtAddBaRequestHeader : public Header
  * @ingroup wifi
  * Implement the header for management frames of type Add Block Ack response.
  */
-class MgtAddBaResponseHeader : public Header
+class WIFI_EXPORT MgtAddBaResponseHeader : public Header
 {
   public:
     /**
@@ -562,7 +563,7 @@ class MgtAddBaResponseHeader : public Header
  * @ingroup wifi
  * Implement the header for management frames of type Delete Block Ack.
  */
-class MgtDelBaHeader : public Header
+class WIFI_EXPORT MgtDelBaHeader : public Header
 {
   public:
     /**
@@ -639,7 +640,7 @@ class MgtDelBaHeader : public Header
  * @ingroup wifi
  * Implement the header for Action frames of type EML Operating Mode Notification.
  */
-class MgtEmlOmn : public Header
+class WIFI_EXPORT MgtEmlOmn : public Header
 {
   public:
     MgtEmlOmn() = default;
@@ -658,7 +659,7 @@ class MgtEmlOmn : public Header
     /**
      * EML Control field.
      */
-    struct EmlControl
+    struct WIFI_EXPORT EmlControl
     {
         uint8_t emlsrMode : 1;                  //!< EMLSR Mode
         uint8_t emlmrMode : 1;                  //!< EMLMR Mode
@@ -672,7 +673,7 @@ class MgtEmlOmn : public Header
     /**
      * EMLSR Parameter Update field.
      */
-    struct EmlsrParamUpdate
+    struct WIFI_EXPORT EmlsrParamUpdate
     {
         uint8_t paddingDelay : 3;    //!< EMLSR Padding Delay
         uint8_t transitionDelay : 3; //!< EMLSR Transition Delay
@@ -699,7 +700,7 @@ class MgtEmlOmn : public Header
  * Implement the FILS (Fast Initial Link Setup) action frame.
  * See sec. 9.6.7.36 of IEEE 802.11-2020 and IEEE 802.11ax-2021.
  */
-class FilsDiscHeader : public Header
+class WIFI_EXPORT FilsDiscHeader : public Header
 {
   public:
     FilsDiscHeader();
@@ -747,7 +748,7 @@ class FilsDiscHeader : public Header
     void SetLengthSubfield();
 
     /// FILS Discovery Frame Control subfield of FILS Discovery Information field
-    struct FilsDiscFrameControl // 2 octets
+    struct WIFI_EXPORT FilsDiscFrameControl // 2 octets
     {
         uint8_t m_ssidLen : 5 {0};               ///< SSID Length
         bool m_capPresenceInd{false};            ///< Capability Presence Indicator
@@ -777,7 +778,7 @@ class FilsDiscHeader : public Header
     };
 
     /// FD Capability subfield of FILS Discovery Information field
-    struct FdCapability // 2 octets
+    struct WIFI_EXPORT FdCapability // 2 octets
     {
         uint8_t m_ess : 1 {0};                   ///< ESS
         uint8_t m_privacy : 1 {0};               ///< Privacy
@@ -867,7 +868,8 @@ class FilsDiscHeader : public Header
  * @param control the Fils Discovery Frame Control field
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FilsDiscFrameControl& control);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os,
+                                     const FilsDiscHeader::FilsDiscFrameControl& control);
 
 /**
  * @brief Stream insertion operator.
@@ -876,7 +878,8 @@ std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FilsDiscFrameCo
  * @param capability the Fils Discovery Frame Capability field
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const FilsDiscHeader::FdCapability& capability);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os,
+                                     const FilsDiscHeader::FdCapability& capability);
 
 } // namespace ns3
 

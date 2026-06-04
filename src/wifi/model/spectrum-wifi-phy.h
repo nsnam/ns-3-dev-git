@@ -17,6 +17,7 @@
 #include "wifi-phy.h"
 
 #include "ns3/antenna-model.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <optional>
@@ -48,7 +49,7 @@ using RuBands = std::set<WifiSpectrumBandInfo>;
  * and ns3::PropagationDelayModel classes.
  *
  */
-class SpectrumWifiPhy : public WifiPhy
+class WIFI_EXPORT SpectrumWifiPhy : public WifiPhy
 {
   public:
     /// allow SpectrumWifiPhyFilterTest class access

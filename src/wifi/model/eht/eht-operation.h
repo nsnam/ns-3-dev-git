@@ -9,6 +9,7 @@
 #ifndef EHT_OPERATION_H
 #define EHT_OPERATION_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 #include <optional>
@@ -51,14 +52,14 @@ constexpr uint8_t WIFI_DEFAULT_GRP_BU_EXP = 0;
  * IEEE 802.11be D2.0 9.4.2.311
  *
  */
-class EhtOperation : public WifiInformationElement
+class WIFI_EXPORT EhtOperation : public WifiInformationElement
 {
   public:
     /**
      * EHT Operation Parameters subfield
      * IEEE 802.11be D2.0 Figure 9-1002b
      */
-    struct EhtOpParams
+    struct WIFI_EXPORT EhtOpParams
     {
         /// EHT Operation Information Present
         uint8_t opInfoPresent{WIFI_DEFAULT_EHT_OP_INFO_PRESENT};
@@ -90,7 +91,7 @@ class EhtOperation : public WifiInformationElement
      * EHT Operation Information Control subfield
      * IEEE 802.11be D2.0 Figure 9-1002D
      */
-    struct EhtOpControl
+    struct WIFI_EXPORT EhtOpControl
     {
         uint8_t channelWidth : 3; ///< EHT BSS bandwidth
     };
@@ -99,7 +100,7 @@ class EhtOperation : public WifiInformationElement
      * EHT Operation Information subfield
      * IEEE 802.11be D2.0 Figure 9-1002c
      */
-    struct EhtOpInfo
+    struct WIFI_EXPORT EhtOpInfo
     {
         EhtOpControl control;                    ///< Control subfield
         uint8_t ccfs0;                           ///< Channel center frequency segment 0
@@ -126,7 +127,7 @@ class EhtOperation : public WifiInformationElement
      * Basic EHT-MCS and NSS Set subfield
      * IEEE 802.11be D2.0 Figure 9-1002ai
      */
-    struct EhtBasicMcsNssSet
+    struct WIFI_EXPORT EhtBasicMcsNssSet
     {
         std::vector<uint8_t> maxRxNss{}; ///< Max Rx NSS per MCS
         std::vector<uint8_t> maxTxNss{}; ///< Max Tx NSS per MCS

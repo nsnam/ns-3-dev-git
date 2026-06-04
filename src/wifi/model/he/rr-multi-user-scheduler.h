@@ -11,6 +11,8 @@
 
 #include "multi-user-scheduler.h"
 
+#include "ns3/wifi-export.h"
+
 #include <functional>
 #include <list>
 
@@ -31,7 +33,7 @@ namespace ns3
  * @todo Take the supported channel width of the stations into account while selecting
  * stations and assigning RUs to them.
  */
-class RrMultiUserScheduler : public MultiUserScheduler
+class WIFI_EXPORT RrMultiUserScheduler : public MultiUserScheduler
 {
   public:
     /**
@@ -47,7 +49,7 @@ class RrMultiUserScheduler : public MultiUserScheduler
     /**
      * Information used to sort stations
      */
-    struct MasterInfo
+    struct WIFI_EXPORT MasterInfo
     {
         uint16_t aid{0};      //!< station's AID
         Mac48Address address; //!< station's MAC Address

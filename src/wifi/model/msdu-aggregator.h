@@ -15,6 +15,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 
@@ -32,7 +33,7 @@ class WifiTxParameters;
  * @brief Aggregator used to construct A-MSDUs
  * @ingroup wifi
  */
-class MsduAggregator : public Object
+class WIFI_EXPORT MsduAggregator : public Object
 {
   public:
     /// EDCA queues typedef

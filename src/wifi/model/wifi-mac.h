@@ -17,6 +17,7 @@
 #include "wifi-standards.h"
 
 #include "ns3/uniform-random-bit-generator.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <list>
@@ -112,7 +113,7 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
  * (association/disassociation state machines).
  *
  */
-class WifiMac : public Object
+class WIFI_EXPORT WifiMac : public Object
 {
   public:
     friend class WifiStaticSetupHelper;
@@ -902,7 +903,7 @@ class WifiMac : public Object
     std::set<linkId_t> GetDisabledLinks(Mac48Address mldAddr);
 
     /// Information reported by ICF drop trace
-    struct IcfDropInfo
+    struct WIFI_EXPORT IcfDropInfo
     {
         WifiIcfDrop reason{}; ///< the reason why the ICF was dropped by the EMLSR client
         uint8_t linkId{};     ///< the ID of the link on which the ICF was dropped
@@ -1100,7 +1101,7 @@ class WifiMac : public Object
      * to be confused with the general concept of link for a NetDevice (used by the
      * m_linkUp and m_linkDown callbacks).
      */
-    struct LinkEntity
+    struct WIFI_EXPORT LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         virtual ~LinkEntity();

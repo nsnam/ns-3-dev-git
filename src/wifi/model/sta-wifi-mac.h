@@ -14,6 +14,7 @@
 #include "wifi-mac.h"
 
 #include "ns3/eht-configuration.h"
+#include "ns3/wifi-export.h"
 
 #include <set>
 #include <variant>
@@ -60,7 +61,7 @@ enum class WifiScanType : uint8_t
  *
  * Structure holding scan parameters
  */
-struct WifiScanParams
+struct WIFI_EXPORT WifiScanParams
 {
     /**
      * Struct identifying a channel to scan.
@@ -68,7 +69,7 @@ struct WifiScanParams
      * an unspecified band (WIFI_PHY_BAND_UNSPECIFIED) indicates to scan
      * all the supported PHY bands.
      */
-    struct Channel
+    struct WIFI_EXPORT Channel
     {
         uint16_t number{0};                          ///< channel number
         WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
@@ -142,7 +143,7 @@ enum WifiPowerManagementMode : uint8_t
  * 7. The transition from Associated to Unassociated occurs if the number
  *    of missed beacons exceeds the threshold.
  */
-class StaWifiMac : public WifiMac
+class WIFI_EXPORT StaWifiMac : public WifiMac
 {
   public:
     /// Allow test cases to access private members
@@ -155,12 +156,12 @@ class StaWifiMac : public WifiMac
      * Struct to hold information regarding observed AP through
      * active/passive scanning
      */
-    struct ApInfo
+    struct WIFI_EXPORT ApInfo
     {
         /**
          * Information about links to setup
          */
-        struct SetupLinksInfo
+        struct WIFI_EXPORT SetupLinksInfo
         {
             uint8_t localLinkId; ///< local link ID
             uint8_t apLinkId;    ///< AP link ID
@@ -409,7 +410,7 @@ class StaWifiMac : public WifiMac
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created.
      */
-    struct StaLinkEntity : public WifiMac::LinkEntity
+    struct WIFI_EXPORT StaLinkEntity : public WifiMac::LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         ~StaLinkEntity() override;
@@ -649,7 +650,7 @@ class StaWifiMac : public WifiMac
     /**
      * EDCA Parameters
      */
-    struct EdcaParams
+    struct WIFI_EXPORT EdcaParams
     {
         AcIndex ac;     //!< the access category
         uint32_t cwMin; //!< the minimum contention window size
@@ -669,7 +670,7 @@ class StaWifiMac : public WifiMac
     /**
      * MU EDCA Parameters
      */
-    struct MuEdcaParams
+    struct WIFI_EXPORT MuEdcaParams
     {
         AcIndex ac;       //!< the access category
         uint32_t cwMin;   //!< the minimum contention window size
@@ -764,7 +765,7 @@ class StaWifiMac : public WifiMac
  * @param apInfo the AP information
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const StaWifiMac::ApInfo& apInfo);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const StaWifiMac::ApInfo& apInfo);
 
 /**
  * @brief Stream insertion operator.
@@ -773,7 +774,7 @@ std::ostream& operator<<(std::ostream& os, const StaWifiMac::ApInfo& apInfo);
  * @param pmMode the power management mode
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, WifiPowerManagementMode pmMode);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiPowerManagementMode pmMode);
 
 } // namespace ns3
 

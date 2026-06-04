@@ -74,7 +74,7 @@ class WIFI_EXPORT PhyEntity
     /**
      * Status of the reception of the PPDU field.
      */
-    struct PhyFieldRxStatus
+    struct WIFI_EXPORT PhyFieldRxStatus
     {
         bool isSuccess{true};                   //!< outcome (\c true if success) of the reception
         WifiPhyRxfailureReason reason{UNKNOWN}; //!< failure reason
@@ -935,7 +935,7 @@ class WIFI_EXPORT PhyEntity
  * @param action the action to perform in case of failure
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& action);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& action);
 /**
  * @brief Stream insertion operator.
  *
@@ -943,7 +943,7 @@ std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& 
  * @param status the status of the reception of a PPDU field
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyFieldRxStatus& status);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyFieldRxStatus& status);
 
 } // namespace ns3
 

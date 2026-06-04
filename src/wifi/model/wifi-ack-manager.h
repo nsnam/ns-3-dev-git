@@ -12,6 +12,7 @@
 #include "wifi-acknowledgment.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <memory>
 
@@ -30,7 +31,7 @@ class WifiRemoteStationManager;
  * WifiAckManager is an abstract base class. Each subclass defines a logic
  * to select the acknowledgment method for a given frame.
  */
-class WifiAckManager : public Object
+class WIFI_EXPORT WifiAckManager : public Object
 {
   public:
     /**

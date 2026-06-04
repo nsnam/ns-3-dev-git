@@ -12,6 +12,8 @@
 
 #include "wifi-phy-common.h"
 
+#include "ns3/wifi-export.h"
+
 #include <vector>
 
 namespace ns3
@@ -22,7 +24,7 @@ class WifiTxVector;
 /**
  * @brief receive notifications about PHY events.
  */
-class WifiPhyListener
+class WIFI_EXPORT WifiPhyListener
 {
   public:
     /****************************************************************

@@ -13,6 +13,7 @@
 
 #include "ns3/event-id.h"
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -22,7 +23,7 @@ namespace ns3
  * @brief Maintains information for a block ack agreement.
  * @ingroup wifi
  */
-class BlockAckAgreement
+class WIFI_EXPORT BlockAckAgreement
 {
     friend class HtFrameExchangeManager;
 

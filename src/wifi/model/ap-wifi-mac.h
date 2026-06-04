@@ -19,6 +19,7 @@
 #include "ns3/attribute-container.h"
 #include "ns3/enum.h"
 #include "ns3/pair.h"
+#include "ns3/wifi-export.h"
 
 #include <unordered_map>
 #include <variant>
@@ -58,7 +59,7 @@ using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHe
  * with some jitter to de-synchronize beacon transmissions in
  * multi-BSS scenarios.
  */
-class ApWifiMac : public WifiMac
+class WIFI_EXPORT ApWifiMac : public WifiMac
 {
   public:
     friend class WifiStaticSetupHelper;
@@ -328,7 +329,7 @@ class ApWifiMac : public WifiMac
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created.
      */
-    struct ApLinkEntity : public WifiMac::LinkEntity
+    struct WIFI_EXPORT ApLinkEntity : public WifiMac::LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         ~ApLinkEntity() override;
@@ -789,7 +790,7 @@ class ApWifiMac : public WifiMac
                                 //!< completes association, to update a learning bridge
 
     /// store value and timestamp for each Buffer Status Report
-    struct BsrType
+    struct WIFI_EXPORT BsrType
     {
         uint8_t value;  //!< value of BSR
         Time timestamp; //!< timestamp of BSR

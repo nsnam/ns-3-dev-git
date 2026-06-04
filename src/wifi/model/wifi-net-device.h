@@ -13,6 +13,7 @@
 
 #include "ns3/net-device.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 #include <vector>
@@ -42,7 +43,7 @@ class EhtConfiguration;
  * This class holds together ns3::Channel, ns3::WifiPhy,
  * ns3::WifiMac, and, ns3::WifiRemoteStationManager.
  */
-class WifiNetDevice : public NetDevice
+class WIFI_EXPORT WifiNetDevice : public NetDevice
 {
   public:
     /**

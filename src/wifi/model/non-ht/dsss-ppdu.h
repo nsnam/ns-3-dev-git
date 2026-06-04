@@ -11,6 +11,7 @@
 #ifndef DSSS_PPDU_H
 #define DSSS_PPDU_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-ppdu.h"
 
 /**
@@ -30,14 +31,14 @@ class WifiPsdu;
  *
  * DsssPpdu stores a preamble, PHY headers and a PSDU of a PPDU with DSSS modulation.
  */
-class DsssPpdu : public WifiPpdu
+class WIFI_EXPORT DsssPpdu : public WifiPpdu
 {
   public:
     /**
      * DSSS SIG PHY header.
      * See section 16.2.2 in IEEE 802.11-2016.
      */
-    class DsssSigHeader
+    class WIFI_EXPORT DsssSigHeader
     {
       public:
         DsssSigHeader();

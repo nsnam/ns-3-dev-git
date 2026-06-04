@@ -12,6 +12,7 @@
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
 #include "ns3/simulator.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-state.h"
 
 #include <iostream>
@@ -39,7 +40,7 @@ class NetDeviceContainer;
  *
  * This helper supports both single-link devices and multi-link devices (MLD).
  */
-class WifiCoTraceHelper
+class WIFI_EXPORT WifiCoTraceHelper
 {
   public:
     /**
@@ -49,7 +50,7 @@ class WifiCoTraceHelper
      * Data structure to track durations of each WifiPhy state. Elements in m_linkStateDurations are
      * indexed by "linkId".
      */
-    struct DeviceRecord
+    struct WIFI_EXPORT DeviceRecord
     {
         uint32_t m_nodeId;        ///< Id of Node on which the WifiNetDevice is installed.
         std::string m_nodeName;   ///< Name of Node on which the WifiNetDevice is installed. It's

@@ -14,6 +14,7 @@
 #include "wifi-tx-vector.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -33,7 +34,7 @@ class ErrorRateModel;
  * @brief handles interference calculations
  * @brief signal event for a PPDU.
  */
-class Event : public SimpleRefCount<Event>
+class WIFI_EXPORT Event : public SimpleRefCount<Event>
 {
   public:
     /**
@@ -120,13 +121,13 @@ class Event : public SimpleRefCount<Event>
  * @param event the event
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const Event& event);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const Event& event);
 
 /**
  * @ingroup wifi
  * @brief handles interference calculations
  */
-class InterferenceHelper : public Object
+class WIFI_EXPORT InterferenceHelper : public Object
 {
   public:
     InterferenceHelper();
@@ -363,7 +364,7 @@ class InterferenceHelper : public Object
     /**
      * Noise and Interference (thus Ni) event.
      */
-    class NiChange
+    class WIFI_EXPORT NiChange
     {
       public:
         /**

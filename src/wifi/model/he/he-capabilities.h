@@ -9,6 +9,7 @@
 #ifndef HE_CAPABILITIES_H
 #define HE_CAPABILITIES_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3
@@ -19,7 +20,7 @@ namespace ns3
  *
  * The IEEE 802.11ax HE Capabilities
  */
-class HeCapabilities : public WifiInformationElement
+class WIFI_EXPORT HeCapabilities : public WifiInformationElement
 {
   public:
     HeCapabilities();

@@ -16,6 +16,7 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <optional>
@@ -35,7 +36,7 @@ enum WifiPowerManagementMode : uint8_t;
  * PowerSaveManager is an abstract base class. Each subclass defines a logic
  * to switch a STA in powersave mode between active state and doze state.
  */
-class PowerSaveManager : public Object
+class WIFI_EXPORT PowerSaveManager : public Object
 {
   public:
     /**
@@ -159,7 +160,7 @@ class PowerSaveManager : public Object
     /**
      * Information about each STA operating on a given link.
      */
-    struct StaInfo
+    struct WIFI_EXPORT StaInfo
     {
         Time beaconInterval{0};       ///< Beacon interval advertised by the AP
         Time lastBeaconTimestamp{0};  ///< last time a Beacon was received from the AP

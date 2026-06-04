@@ -12,6 +12,7 @@
 #include "wifi-mac-queue-scheduler-impl.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -26,7 +27,8 @@ class WifiMpdu;
  * Management frames have the second highest priority. Hence, data frames are
  * served after control and management frames.
  */
-class FcfsWifiQueueScheduler : public WifiMacQueueSchedulerImpl<WifiSchedPrecedence<Time>>
+class WIFI_EXPORT FcfsWifiQueueScheduler
+    : public WifiMacQueueSchedulerImpl<WifiSchedPrecedence<Time>>
 {
   public:
     /**

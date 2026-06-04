@@ -9,6 +9,7 @@
 #ifndef HE_RU_H
 #define HE_RU_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-common.h"
 
 #include <cstdint>
@@ -22,7 +23,7 @@ namespace ns3
 /**
  * This class stores the subcarrier groups of all the available HE RUs.
  */
-class HeRu
+class WIFI_EXPORT HeRu
 {
   public:
     /**
@@ -33,7 +34,7 @@ class HeRu
      * of RUs of the given type in a channel of the considered width), so that this class
      * contains all the information needed to locate the RU in a 160 MHz channel.
      */
-    class RuSpec
+    class WIFI_EXPORT RuSpec
     {
       public:
         /**
@@ -244,7 +245,7 @@ class HeRu
  * @param ru the RU
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const HeRu::RuSpec& ru);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const HeRu::RuSpec& ru);
 
 } // namespace ns3
 

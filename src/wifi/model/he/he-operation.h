@@ -10,6 +10,7 @@
 #ifndef HE_OPERATION_H
 #define HE_OPERATION_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 #include "ns3/wifi-opt-field.h"
 
@@ -23,7 +24,7 @@ namespace ns3
  * This class knows how to serialize and deserialize
  * the HE Operation Information Element
  */
-class HeOperation : public WifiInformationElement
+class WIFI_EXPORT HeOperation : public WifiInformationElement
 {
   public:
     HeOperation();
@@ -49,7 +50,7 @@ class HeOperation : public WifiInformationElement
     void Print(std::ostream& os) const override;
 
     /// HE Operation Parameters field
-    struct HeOperationParams
+    struct WIFI_EXPORT HeOperationParams
     {
         uint8_t m_defaultPeDuration : 3 {0};  ///< Default PE Duration
         uint8_t m_twtRequired : 1 {0};        ///< TWT Required
@@ -89,7 +90,7 @@ class HeOperation : public WifiInformationElement
     };
 
     /// BSS Color Information field
-    struct BssColorInfo
+    struct WIFI_EXPORT BssColorInfo
     {
         uint8_t m_bssColor : 6 {0};         ///< BSS Color
         uint8_t m_partialBssColor : 1 {0};  ///< Partial BSS Color
@@ -124,7 +125,7 @@ class HeOperation : public WifiInformationElement
     };
 
     /// 6 GHz Operation Information field
-    struct OpInfo6GHz
+    struct WIFI_EXPORT OpInfo6GHz
     {
         uint8_t m_primCh{0};         ///< Primary Channel
         uint8_t m_chWid : 2 {0};     ///< Channel Width

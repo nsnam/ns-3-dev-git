@@ -11,6 +11,8 @@
 
 #include "ap-emlsr-manager.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -19,7 +21,7 @@ namespace ns3
  *
  * DefaultApEmlsrManager is the default AP EMLSR manager.
  */
-class DefaultApEmlsrManager : public ApEmlsrManager
+class WIFI_EXPORT DefaultApEmlsrManager : public ApEmlsrManager
 {
   public:
     /**

@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -20,7 +22,7 @@ namespace ns3
  *
  * This class knows how to serialize and deserialize the Extended Capabilities Information Element
  */
-class ExtendedCapabilities : public WifiInformationElement
+class WIFI_EXPORT ExtendedCapabilities : public WifiInformationElement
 {
   public:
     WifiInformationElementId ElementId() const override;

@@ -16,6 +16,7 @@
 #include "txop.h"
 
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -48,7 +49,7 @@ class WifiTxParameters;
  * This class also implements block ack sessions and MSDU aggregation (A-MSDU).
  */
 
-class QosTxop : public Txop
+class WIFI_EXPORT QosTxop : public Txop
 {
   public:
     /**
@@ -406,7 +407,7 @@ class QosTxop : public Txop
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created.
      */
-    struct QosLinkEntity : public Txop::LinkEntity
+    struct WIFI_EXPORT QosLinkEntity : public Txop::LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         ~QosLinkEntity() override = default;

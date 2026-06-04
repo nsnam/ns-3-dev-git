@@ -10,6 +10,7 @@
 #define WIFI_NS3_CONSTANTS_H
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <cstddef>
 
@@ -43,7 +44,7 @@ static constexpr bool DEFAULT_WIFI_UL_MU_DATA_DISABLE_RX{true};
  *
  *  @return the default beacon interval
  */
-Time DEFAULT_BEACON_INTERVAL();
+WIFI_EXPORT Time DEFAULT_BEACON_INTERVAL();
 
 } // namespace ns3
 

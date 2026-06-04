@@ -11,6 +11,7 @@
 
 #include "ns3/he-frame-exchange-manager.h"
 #include "ns3/mgt-headers.h"
+#include "ns3/wifi-export.h"
 
 #include <unordered_map>
 
@@ -66,7 +67,7 @@ operator<<(std::ostream& os, WifiIcfDrop reason)
  * EhtFrameExchangeManager handles the frame exchange sequences
  * for EHT stations.
  */
-class EhtFrameExchangeManager : public HeFrameExchangeManager
+class WIFI_EXPORT EhtFrameExchangeManager : public HeFrameExchangeManager
 {
   public:
     /**

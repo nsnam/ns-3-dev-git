@@ -9,6 +9,7 @@
 #ifndef EHT_RU_H
 #define EHT_RU_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-common.h"
 
 #include <cstdint>
@@ -24,13 +25,13 @@ namespace ns3
 /**
  * This class stores the subcarrier groups of all the available EHT RUs.
  */
-class EhtRu
+class WIFI_EXPORT EhtRu
 {
   public:
     /**
      * RU Specification.
      */
-    class RuSpec
+    class WIFI_EXPORT RuSpec
     {
       public:
         /**
@@ -259,7 +260,7 @@ class EhtRu
  * @param ru the RU
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const EhtRu::RuSpec& ru);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const EhtRu::RuSpec& ru);
 
 } // namespace ns3
 

@@ -13,6 +13,7 @@
 
 #include "ns3/he-phy.h"
 #include "ns3/spectrum-phy.h"
+#include "ns3/wifi-export.h"
 
 #include <vector>
 
@@ -32,7 +33,7 @@ class SpectrumWifiPhy;
  * direction, the class SpectrumWifiPhy constructs signal parameters
  * and directly accesses the SpectrumChannel
  */
-class WifiSpectrumPhyInterface : public SpectrumPhy
+class WIFI_EXPORT WifiSpectrumPhyInterface : public SpectrumPhy
 {
   public:
     /**

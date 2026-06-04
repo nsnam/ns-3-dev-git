@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -21,7 +23,7 @@ namespace ns3
  *
  * @see attribute_Ssid
  */
-class Ssid : public WifiInformationElement
+class WIFI_EXPORT Ssid : public WifiInformationElement
 {
   public:
     /**
@@ -80,9 +82,43 @@ class Ssid : public WifiInformationElement
  *
  * @return std::istream
  */
-std::istream& operator>>(std::istream& is, Ssid& ssid);
+WIFI_EXPORT std::istream& operator>>(std::istream& is, Ssid& ssid);
 
-ATTRIBUTE_HELPER_HEADER(Ssid);
+// Hand-expanded ATTRIBUTE_HELPER_HEADER(Ssid): the attribute value class is
+// spelled out so it can carry WIFI_EXPORT. The wifi library is built with
+// hidden symbol visibility on MinGW (see src/wifi/CMakeLists.txt), and SsidValue
+// is constructed by user code outside the library, so it must be exported. The
+// accessor and checker remain macro-generated because they are used only within
+// the wifi library.
+/**
+ * @ingroup attribute_Ssid
+ * AttributeValue implementation for Ssid.
+ */
+class WIFI_EXPORT SsidValue : public AttributeValue
+{
+  public:
+    SsidValue() = default;
+    SsidValue(const Ssid& value); //!< Constructor
+    void Set(const Ssid& value);  //!< Set the value
+    Ssid Get() const;             //!< @return the value
+
+    template <typename T>
+    bool GetAccessor(T& value) const
+    {
+        value = T(m_value);
+        return true;
+    }
+
+    Ptr<AttributeValue> Copy() const override;
+    std::string SerializeToString(Ptr<const AttributeChecker> checker) const override;
+    bool DeserializeFromString(std::string value, Ptr<const AttributeChecker> checker) override;
+
+  private:
+    Ssid m_value; //!< the value
+};
+
+ATTRIBUTE_ACCESSOR_DEFINE(Ssid);
+ATTRIBUTE_CHECKER_DEFINE(Ssid);
 
 } // namespace ns3
 

@@ -11,6 +11,8 @@
 
 #include "gcr-manager.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -24,7 +26,7 @@ namespace ns3
  * transmission. The default implementation decides to pick the address of the first associated
  * GCR-capable STA.
  */
-class WifiDefaultGcrManager : public GcrManager
+class WIFI_EXPORT WifiDefaultGcrManager : public GcrManager
 {
   public:
     /**

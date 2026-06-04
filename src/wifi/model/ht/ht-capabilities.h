@@ -10,6 +10,7 @@
 #ifndef HT_CAPABILITIES_H
 #define HT_CAPABILITIES_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 /**
@@ -27,7 +28,7 @@ namespace ns3
  *
  * This class knows how to serialize and deserialize the HT Capabilities Information Element
  */
-class HtCapabilities : public WifiInformationElement
+class WIFI_EXPORT HtCapabilities : public WifiInformationElement
 {
   public:
     HtCapabilities();

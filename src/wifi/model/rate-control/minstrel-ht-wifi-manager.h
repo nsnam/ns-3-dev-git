@@ -16,6 +16,7 @@
 
 #include "minstrel-wifi-manager.h"
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-types.h"
 
@@ -73,7 +74,7 @@ operator<<(std::ostream& os, McsGroupType type)
  * A group is a collection of MCS defined by the number of spatial streams,
  * if it uses or not Short Guard Interval, and the channel width used.
  */
-struct McsGroup
+struct WIFI_EXPORT McsGroup
 {
     uint8_t streams;   ///< number of spatial streams
     Time gi;           ///< guard interval duration
@@ -97,7 +98,7 @@ struct MinstrelHtWifiRemoteStation;
 /**
  * A struct to contain all statistics information related to a data rate.
  */
-struct MinstrelHtRateInfo
+struct WIFI_EXPORT MinstrelHtRateInfo
 {
     /**
      * Perfect transmission time calculation, or frame calculation.
@@ -138,7 +139,7 @@ typedef std::vector<MinstrelHtRateInfo> MinstrelHtRate;
 /**
  * A struct to contain information of a group.
  */
-struct GroupInfo
+struct WIFI_EXPORT GroupInfo
 {
     /**
      * MCS rates are divided into groups based on the number of streams and flags that they use.
@@ -202,7 +203,7 @@ typedef std::vector<GroupInfo> McsGroupData;
  * When this rate control is configured but non-legacy modes are not supported,
  * Minstrel-HT uses legacy Minstrel (minstrel-wifi-manager) for rate control.
  */
-class MinstrelHtWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT MinstrelHtWifiManager : public WifiRemoteStationManager
 {
   public:
     /**
@@ -220,7 +221,7 @@ class MinstrelHtWifiManager : public WifiRemoteStationManager
     /**
      * A struct to contain information of a standard.
      */
-    struct StandardInfo
+    struct WIFI_EXPORT StandardInfo
     {
         McsGroupType groupType{}; //!< group type associated to the given standard in Minstrel HT
         uint8_t maxMcs{};         //!< maximum MCS index (for 1 SS if 802.11n)

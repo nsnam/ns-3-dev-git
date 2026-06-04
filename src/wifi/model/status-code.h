@@ -10,6 +10,7 @@
 #define STATUS_CODE_H
 
 #include "ns3/buffer.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -17,7 +18,7 @@ namespace ns3
 /**
  * Status code for association response.
  */
-class StatusCode
+class WIFI_EXPORT StatusCode
 {
   public:
     StatusCode();
@@ -78,7 +79,7 @@ class StatusCode
  *
  * @return std::ostream
  */
-std::ostream& operator<<(std::ostream& os, const StatusCode& code);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const StatusCode& code);
 
 } // namespace ns3
 

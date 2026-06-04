@@ -15,6 +15,7 @@
 
 #include "ns3/callback.h"
 #include "ns3/vht-phy.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-band.h"
 #include "ns3/wifi-types.h"
 
@@ -40,7 +41,7 @@ class ObssPdAlgorithm;
 /**
  * Parameters for received HE-SIG-A for OBSS_PD based SR
  */
-struct HeSigAParameters
+struct WIFI_EXPORT HeSigAParameters
 {
     dBm_u rssi;       ///< RSSI
     uint8_t bssColor; ///< BSS color
@@ -54,7 +55,7 @@ struct HeSigAParameters
  *
  * Refer to P802.11ax/D4.0, clause 27.
  */
-class HePhy : public VhtPhy
+class WIFI_EXPORT HePhy : public VhtPhy
 {
   public:
     /**
@@ -405,7 +406,7 @@ class HePhy : public VhtPhy
 
     /// structure containing the information about the RU subcarriers to be able to converted to the
     /// indices used by the Spectrum model
-    struct RuSubcarriersInfo
+    struct WIFI_EXPORT RuSubcarriersInfo
     {
         MHz_u bandWidth; ///< width of the band used for the OFDMA transmission. Must be a multiple
                          ///< of 20 MHz

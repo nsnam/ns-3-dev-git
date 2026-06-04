@@ -9,6 +9,7 @@
 #ifndef HE_6GHZ_BAND_CAPABILITIES_H
 #define HE_6GHZ_BAND_CAPABILITIES_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3
@@ -19,7 +20,7 @@ namespace ns3
  *
  * The HE 6 GHz Band Capabilities (IEEE 802.11ax-2021 9.4.2.263)
  */
-class He6GhzBandCapabilities : public WifiInformationElement
+class WIFI_EXPORT He6GhzBandCapabilities : public WifiInformationElement
 {
   public:
     He6GhzBandCapabilities();
@@ -29,7 +30,7 @@ class He6GhzBandCapabilities : public WifiInformationElement
     void Print(std::ostream& os) const override;
 
     /// Capabilities Information field
-    struct CapabilitiesInfo
+    struct WIFI_EXPORT CapabilitiesInfo
     {
         uint8_t m_minMpduStartSpacing : 3;         ///< Minimum MPDU Start Spacing
         uint8_t m_maxAmpduLengthExponent : 3;      ///< Maximum A-MPDU Length Exponent (can

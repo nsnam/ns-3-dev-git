@@ -13,6 +13,7 @@
 #include "wifi-mpdu.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <set>
 #include <unordered_map>
@@ -29,7 +30,7 @@ class Packet;
  * WifiPsdu stores an MPDU, S-MPDU or A-MPDU, by keeping header(s) and
  * payload(s) separate for each constituent MPDU.
  */
-class WifiPsdu : public SimpleRefCount<WifiPsdu>
+class WIFI_EXPORT WifiPsdu : public SimpleRefCount<WifiPsdu>
 {
   public:
     /**
@@ -259,7 +260,7 @@ class WifiPsdu : public SimpleRefCount<WifiPsdu>
  * @param psdu the PSDU
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiPsdu& psdu);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiPsdu& psdu);
 
 /// Map of PSDUs indexed by STA-ID
 using WifiPsduMap = std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */>;
@@ -274,7 +275,7 @@ using WifiConstPsduMap = std::unordered_map<uint16_t /* staId */, Ptr<const Wifi
  * @param psduMap the PSDU map
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiPsduMap& psduMap);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiPsduMap& psduMap);
 
 /**
  * @brief Stream insertion operator.
@@ -283,7 +284,7 @@ std::ostream& operator<<(std::ostream& os, const WifiPsduMap& psduMap);
  * @param psduMap the PSDU map
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiConstPsduMap& psduMap);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiConstPsduMap& psduMap);
 
 } // namespace ns3
 

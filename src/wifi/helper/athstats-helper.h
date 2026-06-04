@@ -13,6 +13,7 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/type-id.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-common.h"
 #include "ns3/wifi-phy-state.h"
 
@@ -35,7 +36,7 @@ class WifiMode;
  *
  *
  */
-class AthstatsHelper
+class WIFI_EXPORT AthstatsHelper
 {
   public:
     AthstatsHelper();
@@ -90,7 +91,7 @@ class AthstatsHelper
  *
  * - AthstatsWifiTraceSink does never produce a cumulative report.
  */
-class AthstatsWifiTraceSink : public Object
+class WIFI_EXPORT AthstatsWifiTraceSink : public Object
 {
   public:
     /**

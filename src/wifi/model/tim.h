@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 #include <set>
 
 namespace ns3
@@ -25,7 +27,7 @@ namespace ns3
  * Note: The current implementation does not support S1G operation, or
  * multiple BSSID.
  */
-class Tim : public WifiInformationElement
+class WIFI_EXPORT Tim : public WifiInformationElement
 {
   public:
     WifiInformationElementId ElementId() const override;

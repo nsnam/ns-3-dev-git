@@ -11,6 +11,8 @@
 
 #include "power-save-manager.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -19,7 +21,7 @@ namespace ns3
  *
  * DefaultPowerSaveManager is the default power save manager.
  */
-class DefaultPowerSaveManager : public PowerSaveManager
+class WIFI_EXPORT DefaultPowerSaveManager : public PowerSaveManager
 {
   public:
     /**

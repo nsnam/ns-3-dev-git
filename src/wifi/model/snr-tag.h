@@ -14,13 +14,14 @@
 #define SNR_TAG_H
 
 #include "ns3/tag.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
 
 class Tag;
 
-class SnrTag : public Tag
+class WIFI_EXPORT SnrTag : public Tag
 {
   public:
     /**

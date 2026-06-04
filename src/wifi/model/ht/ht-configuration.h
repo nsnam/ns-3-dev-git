@@ -11,6 +11,7 @@
 
 #include "ns3/deprecated.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -23,7 +24,7 @@ namespace ns3
  * AP or STA behavior and for constructing HT-related information elements.
  *
  */
-class HtConfiguration : public Object
+class WIFI_EXPORT HtConfiguration : public Object
 {
   public:
     HtConfiguration();

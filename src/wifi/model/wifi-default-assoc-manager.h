@@ -11,6 +11,8 @@
 
 #include "wifi-assoc-manager.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -21,7 +23,7 @@ class StaWifiMac;
  *
  * Default wifi Association Manager.
  */
-class WifiDefaultAssocManager : public WifiAssocManager
+class WIFI_EXPORT WifiDefaultAssocManager : public WifiAssocManager
 {
   public:
     /**
@@ -66,7 +68,7 @@ class WifiDefaultAssocManager : public WifiAssocManager
                                       ///< be retained and used afterwards to avoid new scanning
 
     /** Channel switch info */
-    struct ChannelSwitchInfo
+    struct WIFI_EXPORT ChannelSwitchInfo
     {
         EventId timer;              ///< timer
         Mac48Address apLinkAddress; ///< AP link address

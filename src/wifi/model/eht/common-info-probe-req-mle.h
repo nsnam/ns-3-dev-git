@@ -10,6 +10,7 @@
 #define COMMON_INFO_PROBE_REQ_MLE_H
 
 #include "ns3/buffer.h"
+#include "ns3/wifi-export.h"
 
 #include <cstdint>
 #include <optional>
@@ -21,7 +22,7 @@ namespace ns3
  * Common Info field of Multi-link Element Probe Request variant.
  * IEEE 802.11be D6.0 9.4.2.321.3
  */
-struct CommonInfoProbeReqMle
+struct WIFI_EXPORT CommonInfoProbeReqMle
 {
     std::optional<uint8_t> m_apMldId; ///< AP MLD ID
 

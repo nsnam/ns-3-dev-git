@@ -12,6 +12,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-tx-parameters.h"
 
@@ -35,7 +36,7 @@ class HeFrameExchangeManager;
  * However, given that DL MU-MIMO is not yet supported, a MultiUserScheduler can
  * only be aggregated to HE APs.
  */
-class MultiUserScheduler : public Object
+class WIFI_EXPORT MultiUserScheduler : public Object
 {
   public:
     /**
@@ -56,14 +57,14 @@ class MultiUserScheduler : public Object
     };
 
     /// Information to be provided in case of DL MU transmission
-    struct DlMuInfo
+    struct WIFI_EXPORT DlMuInfo
     {
         WifiPsduMap psduMap;       //!< the DL MU PPDU to transmit
         WifiTxParameters txParams; //!< the transmission parameters
     };
 
     /// Information to be provided in case of UL MU transmission
-    struct UlMuInfo
+    struct WIFI_EXPORT UlMuInfo
     {
         CtrlTriggerHeader trigger; //!< the Trigger Frame used to solicit TB PPDUs
         WifiMacHeader macHdr;      //!< the MAC header for the Trigger Frame
@@ -313,7 +314,7 @@ class MultiUserScheduler : public Object
     /**
      * Type for the information about the last transmission
      */
-    struct LastTxInfo
+    struct WIFI_EXPORT LastTxInfo
     {
         TxFormat lastTxFormat{NO_TX}; ///< the format of last transmission
         DlMuInfo dlInfo;              ///< information required to perform a DL MU transmission

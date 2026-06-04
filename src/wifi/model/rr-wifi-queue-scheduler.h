@@ -13,6 +13,7 @@
 #include "wifi-psdu.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <unordered_map>
 #include <vector>
@@ -33,7 +34,7 @@ class WifiMpdu;
  * therefore sorted in increasing order of last serving time and, every time an AC of this device
  * can transmit, the container queue at the front of the list for that AC is served.
  */
-class RrWifiQueueScheduler : public WifiMacQueueSchedulerImpl<WifiSchedPrecedence<Time>>
+class WIFI_EXPORT RrWifiQueueScheduler : public WifiMacQueueSchedulerImpl<WifiSchedPrecedence<Time>>
 {
   public:
     /**

@@ -14,6 +14,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <vector>
 
@@ -33,7 +34,7 @@ class HtFrameExchangeManager;
  * @brief Aggregator used to construct A-MPDUs
  * @ingroup wifi
  */
-class MpduAggregator : public Object
+class WIFI_EXPORT MpduAggregator : public Object
 {
   public:
     /**

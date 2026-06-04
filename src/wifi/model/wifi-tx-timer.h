@@ -13,6 +13,7 @@
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <unordered_map>
@@ -34,7 +35,7 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
  * a frame that solicits a response. The timeout can be rescheduled (multiple times)
  * when the RXSTART.indication is received from the PHY.
  */
-class WifiTxTimer
+class WIFI_EXPORT WifiTxTimer
 {
   public:
     /**

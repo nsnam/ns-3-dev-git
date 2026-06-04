@@ -13,6 +13,7 @@
 #include "wifi-mac-queue-container.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <bitset>
 #include <optional>
@@ -84,7 +85,7 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
  * WifiMacQueueScheduler is an abstract base class defining the public interface
  * for a wifi MAC queue scheduler.
  */
-class WifiMacQueueScheduler : public Object
+class WIFI_EXPORT WifiMacQueueScheduler : public Object
 {
   public:
     /**

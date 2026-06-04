@@ -36,6 +36,7 @@
 #include "ns3/tid-to-link-mapping-element.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -219,7 +220,7 @@ extern template class MgtHeaderInPerStaProfile<MgtProbeResponseHeader, ProbeResp
  * @ingroup wifi
  * Implement the header for management frames of type association request.
  */
-class MgtAssocRequestHeader
+class WIFI_EXPORT MgtAssocRequestHeader
     : public MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>
 {
     friend class WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>;
@@ -281,7 +282,7 @@ class MgtAssocRequestHeader
  * @ingroup wifi
  * Implement the header for management frames of type reassociation request.
  */
-class MgtReassocRequestHeader
+class WIFI_EXPORT MgtReassocRequestHeader
     : public MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>
 {
     friend class WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>;
@@ -346,7 +347,7 @@ class MgtReassocRequestHeader
  * @ingroup wifi
  * Implement the header for management frames of type association and reassociation response.
  */
-class MgtAssocResponseHeader
+class WIFI_EXPORT MgtAssocResponseHeader
     : public MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>
 {
     friend class WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>;
@@ -411,7 +412,7 @@ class MgtAssocResponseHeader
  * @ingroup wifi
  * Implement the header for management frames of type reassociation request.
  */
-class MgtDisassociationHeader : public Header
+class WIFI_EXPORT MgtDisassociationHeader : public Header
 {
   public:
     /**
@@ -435,7 +436,8 @@ class MgtDisassociationHeader : public Header
  * @ingroup wifi
  * Implement the header for management frames of type probe request.
  */
-class MgtProbeRequestHeader : public WifiMgtHeader<MgtProbeRequestHeader, ProbeRequestElems>
+class WIFI_EXPORT MgtProbeRequestHeader
+    : public WifiMgtHeader<MgtProbeRequestHeader, ProbeRequestElems>
 {
   public:
     ~MgtProbeRequestHeader() override = default;
@@ -454,7 +456,7 @@ class MgtProbeRequestHeader : public WifiMgtHeader<MgtProbeRequestHeader, ProbeR
  * @ingroup wifi
  * Implement the header for management frames of type probe response.
  */
-class MgtProbeResponseHeader
+class WIFI_EXPORT MgtProbeResponseHeader
     : public MgtHeaderInPerStaProfile<MgtProbeResponseHeader, ProbeResponseElems>
 {
     friend class WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>;
@@ -526,7 +528,7 @@ class MgtProbeResponseHeader
  * @ingroup wifi
  * Implement the header for management frames of type beacon.
  */
-class MgtBeaconHeader : public WifiMgtHeader<MgtBeaconHeader, BeaconElems>
+class WIFI_EXPORT MgtBeaconHeader : public WifiMgtHeader<MgtBeaconHeader, BeaconElems>
 {
     friend class WifiMgtHeader<MgtBeaconHeader, BeaconElems>;
 

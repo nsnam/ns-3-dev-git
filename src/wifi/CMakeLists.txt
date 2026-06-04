@@ -452,3 +452,69 @@ build_lib(
   TEST_LIBRARIES_TO_LINK ${applications_lib}
   GENERATE_EXPORT_HEADER
 )
+
+# Manual symbol export for the wifi library on Windows.
+#
+# The default behaviour on Windows is to export *every* globally visible symbol
+# into the PE import library (the GNU linker does this automatically on MinGW;
+# CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS does it on MSVC/ClangCL). With template-heavy
+# code (Callback<>, std::function, the ns-3 attribute system) the symbol count
+# for the wifi DLL in a debug build has grown past the PE 16-bit export-ordinal
+# limit of 65535 entries, breaking the link with "export ordinal too large".
+#
+if(WIN32)
+  set_target_properties(
+    wifi
+    PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS
+               OFF
+  )
+
+  if(NOT
+     MSVC
+  )
+    # -fvisibility=hidden makes hidden the default for symbols that are not
+    # annotated; -fvisibility-inlines-hidden additionally hides every inline
+    # function (including template instantiations) regardless of annotation,
+    # which is what trims the std::/Callback<> bulk out of the export table. The
+    # public API is then re-exported explicitly through the WIFI_EXPORT macro,
+    # which the generated wifi-export.h only activates when NS_MSVC is defined.
+    target_compile_options(
+      wifi
+      PRIVATE -fvisibility=hidden
+              -fvisibility-inlines-hidden
+    )
+    target_compile_definitions(
+      wifi
+      PRIVATE NS_MSVC
+    )
+  elseif(
+    CMAKE_CXX_COMPILER_ID
+    MATCHES
+    "Clang"
+  )
+    # ClangCL. By default clang-cl matches MSVC and dllexports the *inline*
+    # member functions of a WIFI_EXPORT class, which forces the compiler to
+    # instantiate them (including the implicitly-defined copy constructor and
+    # destructor) at the point of the class definition. Many wifi classes hold
+    # Ptr<>/STL members of types that are only forward-declared in the header
+    # (e.g. ErrorRateModel, WifiMacQueue, FrameExchangeManager, the .cc-local
+    # OriginatorRxStatus), so that eager instantiation fails to compile.
+    #
+    # -fno-dllexport-inlines stops inline members from being exported, so they
+    # are emitted on use (in a .cc where the types are complete) like ordinary
+    # inline functions instead of at the class definition. Only the out-of-line
+    # API ends up in the export table. This is the MSVC-side equivalent of the
+    # -fvisibility-inlines-hidden used for MinGW above, and it further trims the
+    # export table. (Plain MSVC cl.exe has no equivalent flag; the supported
+    # Windows non-MinGW toolchain is ClangCL.)
+    #
+    # -fno-dllexport-inlines is a clang frontend (cc1) flag, so it must be
+    # passed via -Xclang; the SHELL: prefix keeps the two tokens together and
+    # unsorted. Passing it as a bare clang-cl argument trips
+    # -Werror=unknown-argument.
+    target_compile_options(
+      wifi
+      PRIVATE "SHELL:-Xclang -fno-dllexport-inlines"
+    )
+  endif()
+endif()

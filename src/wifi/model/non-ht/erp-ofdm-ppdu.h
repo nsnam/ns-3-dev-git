@@ -12,6 +12,8 @@
 
 #include "ofdm-ppdu.h"
 
+#include "ns3/wifi-export.h"
+
 /**
  * @file
  * @ingroup wifi
@@ -30,7 +32,7 @@ class WifiPsdu;
  * ErpOfdmPpdu stores a preamble, PHY headers and a PSDU of a PPDU with non-HT header,
  * i.e., PPDU that uses ERP-OFDM modulation.
  */
-class ErpOfdmPpdu : public OfdmPpdu
+class WIFI_EXPORT ErpOfdmPpdu : public OfdmPpdu
 {
   public:
     /**

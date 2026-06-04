@@ -11,6 +11,7 @@
 #include "ns3/deprecated.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -23,7 +24,7 @@ namespace ns3
  * AP or STA behavior and for constructing HE-related information elements.
  *
  */
-class HeConfiguration : public Object
+class WIFI_EXPORT HeConfiguration : public Object
 {
   public:
     HeConfiguration();

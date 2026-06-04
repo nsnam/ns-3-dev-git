@@ -11,6 +11,7 @@
 #ifndef OFDM_PPDU_H
 #define OFDM_PPDU_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-band.h"
 #include "ns3/wifi-ppdu.h"
 
@@ -32,14 +33,14 @@ class WifiPsdu;
  * OfdmPpdu stores a preamble, PHY headers and a PSDU of a PPDU with non-HT header,
  * i.e., PPDU that uses OFDM modulation.
  */
-class OfdmPpdu : public WifiPpdu
+class WIFI_EXPORT OfdmPpdu : public WifiPpdu
 {
   public:
     /**
      * OFDM and ERP OFDM L-SIG PHY header.
      * See section 17.3.4 in IEEE 802.11-2016.
      */
-    class LSigHeader
+    class WIFI_EXPORT LSigHeader
     {
       public:
         LSigHeader();

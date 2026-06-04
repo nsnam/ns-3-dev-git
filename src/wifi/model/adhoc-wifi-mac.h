@@ -13,6 +13,8 @@
 
 #include "wifi-mac.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -39,7 +41,7 @@ class EhtOperation;
  *
  * Note that The first TBTT may be further delayed by BeaconJitter.
  */
-class AdhocWifiMac : public WifiMac
+class WIFI_EXPORT AdhocWifiMac : public WifiMac
 {
   public:
     /**

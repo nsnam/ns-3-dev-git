@@ -19,6 +19,7 @@
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
+#include "ns3/wifi-export.h"
 
 #include <algorithm>
 #include <array>
@@ -209,7 +210,7 @@ class WifiBandSegments
 };
 
 /// WifiSpectrumBandInfo structure containing info about a spectrum band
-struct WifiSpectrumBandInfo
+struct WIFI_EXPORT WifiSpectrumBandInfo
 {
     /// Start and stop indices per segment of the band.
     WifiBandSegments<WifiSpectrumBandIndices, WIFI_SPECTRUM_BAND_MAX_SEGMENTS> indices;
@@ -898,7 +899,7 @@ operator<<(std::ostream& os, WifiChannelWidthType width)
  *
  * @return the guard interval duration to use for the mode
  */
-Time GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device);
+WIFI_EXPORT Time GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device);
 
 /**
  * Get the guard interval for a given WifiMode.
@@ -909,7 +910,9 @@ Time GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device);
  *
  * @return the guard interval duration to use for the mode
  */
-Time GetGuardIntervalForMode(WifiMode mode, bool htShortGuardInterval, Time heGuardInterval);
+WIFI_EXPORT Time GetGuardIntervalForMode(WifiMode mode,
+                                         bool htShortGuardInterval,
+                                         Time heGuardInterval);
 
 /**
  * Return the preamble to be used for the transmission.
@@ -929,7 +932,7 @@ WifiPreamble GetPreambleForTransmission(WifiModulationClass modulation,
  * @param preamble the given preamble type (must be one defined by HT standard or later)
  * @return the modulation class corresponding to the given preamble type
  */
-WifiModulationClass GetModulationClassForPreamble(WifiPreamble preamble);
+WIFI_EXPORT WifiModulationClass GetModulationClassForPreamble(WifiPreamble preamble);
 
 /**
  * Return whether the modulation class of the selected mode for the
@@ -953,7 +956,7 @@ bool IsAllowedControlAnswerModulationClass(WifiModulationClass modClassReq,
  *
  * @return the maximum PPDU duration, if defined, and zero otherwise
  */
-Time GetPpduMaxTime(WifiPreamble preamble);
+WIFI_EXPORT Time GetPpduMaxTime(WifiPreamble preamble);
 
 /**
  * Return true if a preamble corresponds to a multi-user transmission.
@@ -961,7 +964,7 @@ Time GetPpduMaxTime(WifiPreamble preamble);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to a multi-user transmission
  */
-bool IsMu(WifiPreamble preamble);
+WIFI_EXPORT bool IsMu(WifiPreamble preamble);
 
 /**
  * Return true if a preamble corresponds to a downlink multi-user transmission.
@@ -969,7 +972,7 @@ bool IsMu(WifiPreamble preamble);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to a downlink multi-user transmission
  */
-bool IsDlMu(WifiPreamble preamble);
+WIFI_EXPORT bool IsDlMu(WifiPreamble preamble);
 
 /**
  * Return true if a preamble corresponds to a uplink multi-user transmission.
@@ -977,7 +980,7 @@ bool IsDlMu(WifiPreamble preamble);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to a uplink multi-user transmission
  */
-bool IsUlMu(WifiPreamble preamble);
+WIFI_EXPORT bool IsUlMu(WifiPreamble preamble);
 
 /**
  * Return the modulation class corresponding to a given standard.
@@ -989,7 +992,7 @@ bool IsUlMu(WifiPreamble preamble);
  * @param standard the standard
  * @return the modulation class corresponding to the standard
  */
-WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
+WIFI_EXPORT WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
 
 /**
  * Get the supported channel width set that can be advertised in PHY capabilities.
@@ -998,7 +1001,7 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  * @param band the PHY band
  * @return the supported channel width set that can be advertised for the given standard and band
  */
-std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band);
+WIFI_EXPORT std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band);
 
 /**
  * Get the maximum channel width allowed for the given modulation class.
@@ -1006,7 +1009,7 @@ std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand b
  * @param modulation the modulation class
  * @return the maximum channel width allowed for the given modulation class
  */
-MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
+WIFI_EXPORT MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
 
 /**
  * Get the total channel width for the channel width type.
@@ -1014,7 +1017,7 @@ MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
  * @param width the channel width type
  * @return the total channel width for the channel width type
  */
-MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
+WIFI_EXPORT MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
 
 /**
  * Return true if a preamble corresponds to an EHT transmission.
@@ -1022,7 +1025,7 @@ MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to an EHT transmission
  */
-bool IsEht(WifiPreamble preamble);
+WIFI_EXPORT bool IsEht(WifiPreamble preamble);
 
 /**
  * @brief map a given channel list type to the corresponding scaling factor
@@ -1038,7 +1041,7 @@ const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
 /**
  * A struct for both SNR and PER
  */
-struct SnrPer
+struct WIFI_EXPORT SnrPer
 {
     double snr{0.0}; ///< SNR in linear scale
     double per{1.0}; ///< PER

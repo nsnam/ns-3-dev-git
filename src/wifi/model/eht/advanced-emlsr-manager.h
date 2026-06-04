@@ -12,6 +12,7 @@
 #include "default-emlsr-manager.h"
 
 #include "ns3/channel-access-manager.h"
+#include "ns3/wifi-export.h"
 
 #include <memory>
 
@@ -27,7 +28,7 @@ class WifiPhyListener;
  *
  * AdvancedEmlsrManager is an advanced EMLSR manager.
  */
-class AdvancedEmlsrManager : public DefaultEmlsrManager
+class WIFI_EXPORT AdvancedEmlsrManager : public DefaultEmlsrManager
 {
     /// Allow test cases to access private members
     friend class ::EmlsrSwitchMainPhyBackTest;
@@ -196,7 +197,8 @@ class AdvancedEmlsrManager : public DefaultEmlsrManager
  * Struct to trace that main PHY switched to leave a link on which an aux PHY was expected to gain
  * a TXOP but the main PHY did not manage to gain a TXOP in the pre-configured amount of time.
  */
-struct EmlsrSwitchMainPhyBackTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrSwitchMainPhyBackTrace>
+struct WIFI_EXPORT EmlsrSwitchMainPhyBackTrace
+    : public EmlsrMainPhySwitchTraceImpl<EmlsrSwitchMainPhyBackTrace>
 {
     static constexpr std::string_view m_name = "TxopNotGainedOnAuxPhyLink"; //!< trace name
 

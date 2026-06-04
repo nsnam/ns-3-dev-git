@@ -12,6 +12,7 @@
 #define HT_PPDU_H
 
 #include "ns3/ofdm-ppdu.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -30,14 +31,14 @@ class WifiPsdu;
  *
  * HtPpdu stores a preamble, PHY headers and a PSDU of a PPDU with HT header
  */
-class HtPpdu : public OfdmPpdu
+class WIFI_EXPORT HtPpdu : public OfdmPpdu
 {
   public:
     /**
      * HT PHY header (HT-SIG1/2).
      * See section 19.3.9 in IEEE 802.11-2016.
      */
-    class HtSigHeader
+    class WIFI_EXPORT HtSigHeader
     {
       public:
         HtSigHeader();

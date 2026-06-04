@@ -12,6 +12,7 @@
 #define HE_PPDU_H
 
 #include "ns3/ofdm-ppdu.h"
+#include "ns3/wifi-export.h"
 
 #include <variant>
 
@@ -32,11 +33,11 @@ class WifiPsdu;
  *
  * HePpdu stores a preamble, PHY headers and a map of PSDUs of a PPDU with HE header
  */
-class HePpdu : public OfdmPpdu
+class WIFI_EXPORT HePpdu : public OfdmPpdu
 {
   public:
     /// User Specific Fields in HE-SIG-Bs.
-    struct HeSigBUserSpecificField
+    struct WIFI_EXPORT HeSigBUserSpecificField
     {
         uint16_t staId : 11; ///< STA-ID
         uint8_t nss : 4;     ///< number of spatial streams
@@ -49,7 +50,7 @@ class HePpdu : public OfdmPpdu
     /**
      * HE-SIG PHY header for HE SU PPDUs (HE-SIG-A1/A2)
      */
-    struct HeSuSigHeader
+    struct WIFI_EXPORT HeSuSigHeader
     {
         uint8_t m_format{1};    ///< Format bit
         uint8_t m_bssColor{0};  ///< BSS color field
@@ -62,7 +63,7 @@ class HePpdu : public OfdmPpdu
     /**
      * HE-SIG PHY header for HE TB PPDUs (HE-SIG-A1/A2)
      */
-    struct HeTbSigHeader
+    struct WIFI_EXPORT HeTbSigHeader
     {
         uint8_t m_format{0};    ///< Format bit
         uint8_t m_bssColor{0};  ///< BSS color field
@@ -72,7 +73,7 @@ class HePpdu : public OfdmPpdu
     /**
      * HE-SIG PHY header for HE MU PPDUs (HE-SIG-A1/A2/B)
      */
-    struct HeMuSigHeader
+    struct WIFI_EXPORT HeMuSigHeader
     {
         // HE-SIG-A fields
         uint8_t m_bssColor{0};        ///< BSS color field
@@ -392,7 +393,7 @@ class HePpdu : public OfdmPpdu
  * @param flag the transmit power spectral density flag
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const HePpdu::TxPsdFlag& flag);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const HePpdu::TxPsdFlag& flag);
 
 } // namespace ns3
 

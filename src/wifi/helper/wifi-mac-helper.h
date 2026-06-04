@@ -11,6 +11,7 @@
 
 #include "ns3/object-factory.h"
 #include "ns3/qos-utils.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-standards.h"
 
 #include <map>
@@ -36,7 +37,7 @@ class WifiNetDevice;
  * This class may be further subclassed (WaveMacHelper is an example of this).
  *
  */
-class WifiMacHelper
+class WIFI_EXPORT WifiMacHelper
 {
   public:
     /**

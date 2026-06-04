@@ -10,6 +10,7 @@
 #define WIFI_STATIC_SETUP_HELPER_H
 
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-utils.h"
 
 #include <optional>
@@ -34,7 +35,7 @@ class WifiMacHeader;
  * - block ack agreement(s)
  * - enabling EMLSR mode on EMLSR client links
  */
-class WifiStaticSetupHelper
+class WIFI_EXPORT WifiStaticSetupHelper
 {
   public:
     /// Bypass static capabilities exchange for input devices

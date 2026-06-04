@@ -15,6 +15,7 @@
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -38,7 +39,7 @@ enum AcIndex : uint8_t;
  *  For now only basic BlockAckReq, compressed BlockAckReq and GCR BlockAckReq are supported.
  *  Basic BlockAckReq is the default variant.
  */
-class CtrlBAckRequestHeader : public Header
+class WIFI_EXPORT CtrlBAckRequestHeader : public Header
 {
   public:
     CtrlBAckRequestHeader();
@@ -192,7 +193,7 @@ class CtrlBAckRequestHeader : public Header
  *  are supported.
  *  Basic BlockAck is also default variant.
  */
-class CtrlBAckResponseHeader : public Header
+class WIFI_EXPORT CtrlBAckResponseHeader : public Header
 {
   public:
     CtrlBAckResponseHeader();
@@ -530,7 +531,7 @@ class CtrlBAckResponseHeader : public Header
      * (which includes the AID TID Info, Block Ack Starting Sequence Control and
      * Block Ack Bitmap subfields).
      */
-    struct BaInfoInstance
+    struct WIFI_EXPORT BaInfoInstance
     {
         uint16_t m_aidTidInfo;         //!< Reserved for Basic and Compressed
                                        //!< Per TID Info subfield for Multi-TID
@@ -579,7 +580,7 @@ enum class TriggerFrameVariant : uint8_t
  * include one or more User Info fields, each of which carries information about the
  * HE TB PPDU that the addressed station sends in response to the Trigger frame.
  */
-class CtrlTriggerUserInfoField
+class WIFI_EXPORT CtrlTriggerUserInfoField
 {
   public:
     /**
@@ -920,7 +921,7 @@ class CtrlTriggerUserInfoField
  * is located immediately after the Common Info field, it does not carry user specific information
  * but carries extended common information not provided in the Common Info field.
  */
-class CtrlTriggerSpecialUserInfoField
+class WIFI_EXPORT CtrlTriggerSpecialUserInfoField
 {
   public:
     /**
@@ -1032,7 +1033,7 @@ class CtrlTriggerSpecialUserInfoField
  * padding, aggregating other MPDUs in the A-MPDU) are available to satisfy the
  * minimum time requirement. The size in bytes of the Padding field is configurable.
  */
-class CtrlTriggerHeader : public Header
+class WIFI_EXPORT CtrlTriggerHeader : public Header
 {
   public:
     CtrlTriggerHeader();

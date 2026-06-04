@@ -11,6 +11,7 @@
 
 #include "wifi-helper.h"
 
+#include "ns3/wifi-export.h"
 #include "ns3/yans-wifi-channel.h"
 
 namespace ns3
@@ -24,7 +25,7 @@ namespace ns3
  * in "Yet Another Network Simulator"; an author-prepared version of this paper  * is at:
  * https://hal.inria.fr/file/index/docid/78318/filename/yans-rr.pdf
  */
-class YansWifiChannelHelper
+class WIFI_EXPORT YansWifiChannelHelper
 {
   public:
     /**
@@ -105,7 +106,7 @@ class YansWifiChannelHelper
  * in this class correspond to PHY-level traces and come to us via WifiPhyHelper
  *
  */
-class YansWifiPhyHelper : public WifiPhyHelper
+class WIFI_EXPORT YansWifiPhyHelper : public WifiPhyHelper
 {
   public:
     /**

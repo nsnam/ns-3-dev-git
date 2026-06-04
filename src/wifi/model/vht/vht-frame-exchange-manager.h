@@ -10,6 +10,7 @@
 #define VHT_FRAME_EXCHANGE_MANAGER_H
 
 #include "ns3/ht-frame-exchange-manager.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -20,7 +21,7 @@ namespace ns3
  * VhtFrameExchangeManager handles the frame exchange sequences
  * for VHT stations.
  */
-class VhtFrameExchangeManager : public HtFrameExchangeManager
+class WIFI_EXPORT VhtFrameExchangeManager : public HtFrameExchangeManager
 {
   public:
     /**

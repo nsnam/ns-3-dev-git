@@ -13,6 +13,8 @@
 
 #include "ofdm-phy.h"
 
+#include "ns3/wifi-export.h"
+
 /**
  * @file
  * @ingroup wifi
@@ -31,7 +33,7 @@ namespace ns3
  *
  * Refer to IEEE 802.11-2016, clause 18.
  */
-class ErpOfdmPhy : public OfdmPhy
+class WIFI_EXPORT ErpOfdmPhy : public OfdmPhy
 {
   public:
     /**

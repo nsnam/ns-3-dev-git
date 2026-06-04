@@ -8,11 +8,12 @@
 #define WIFI_BANDWIDTH_FILTER_H
 
 #include "ns3/spectrum-transmit-filter.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
 
-class WifiBandwidthFilter : public SpectrumTransmitFilter
+class WIFI_EXPORT WifiBandwidthFilter : public SpectrumTransmitFilter
 {
   public:
     WifiBandwidthFilter();

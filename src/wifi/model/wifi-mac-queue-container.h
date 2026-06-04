@@ -14,6 +14,7 @@
 
 #include "ns3/deprecated.h"
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -86,7 +87,7 @@ static constexpr auto WIFI_GROUPCAST = WifiRcvAddr::GROUPCAST;
  *
  * The TID is only specified for container queue types holding QoS data frames.
  */
-struct WifiContainerQueueId
+struct WIFI_EXPORT WifiContainerQueueId
 {
     /**
      * Constructor.
@@ -248,7 +249,7 @@ struct std::hash<ns3::WifiContainerQueueId>
      * @param queueId The QueueId value to hash.
      * @return the hash
      */
-    std::size_t operator()(ns3::WifiContainerQueueId queueId) const;
+    WIFI_EXPORT std::size_t operator()(ns3::WifiContainerQueueId queueId) const;
 };
 
 namespace ns3
@@ -261,7 +262,7 @@ namespace ns3
  * This container holds multiple container queues organized in an hash table
  * whose keys are WifiContainerQueueId tuples identifying the container queues.
  */
-class WifiMacQueueContainer
+class WIFI_EXPORT WifiMacQueueContainer
 {
   public:
     /// Type of a queue held by the container
@@ -392,7 +393,7 @@ class WifiMacQueueContainer
  * @param [in] queueType the container queue type
  * @return a reference to the output stream
  */
-std::ostream& operator<<(std::ostream& os, WifiContainerQueueType queueType);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiContainerQueueType queueType);
 
 /**
  * @brief Stream insertion operator.
@@ -400,7 +401,7 @@ std::ostream& operator<<(std::ostream& os, WifiContainerQueueType queueType);
  * @param [in] rcvAddrType the receiver address type
  * @return a reference to the output stream
  */
-std::ostream& operator<<(std::ostream& os, WifiRcvAddr rcvAddrType);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiRcvAddr rcvAddrType);
 
 /**
  * @brief Stream insertion operator.
@@ -408,7 +409,7 @@ std::ostream& operator<<(std::ostream& os, WifiRcvAddr rcvAddrType);
  * @param [in] queueId the container queue ID
  * @return a reference to the output stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiContainerQueueId& queueId);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiContainerQueueId& queueId);
 
 } // namespace ns3
 

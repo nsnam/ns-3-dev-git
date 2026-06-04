@@ -14,6 +14,7 @@
 #include "wifi-units.h"
 
 #include "ns3/spectrum-value.h"
+#include "ns3/wifi-export.h"
 
 #include <span>
 #include <vector>
@@ -33,7 +34,7 @@ using WifiSpectrumBandIndices = std::pair<uint32_t, uint32_t>;
  *  Wi-Fi based on a a spectral model aligned with an OFDM subcarrier
  *  spacing of 312.5 KHz (model also reused for DSSS modulations)
  */
-class WifiSpectrumValueHelper
+class WIFI_EXPORT WifiSpectrumValueHelper
 {
   public:
     /**

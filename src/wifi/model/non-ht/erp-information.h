@@ -9,6 +9,7 @@
 #ifndef ERP_INFORMATION_H
 #define ERP_INFORMATION_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3
@@ -20,7 +21,7 @@ namespace ns3
  *
  * This class knows how to serialize and deserialize the ErpInformation Information Element.
  */
-class ErpInformation : public WifiInformationElement
+class WIFI_EXPORT ErpInformation : public WifiInformationElement
 {
   public:
     ErpInformation();

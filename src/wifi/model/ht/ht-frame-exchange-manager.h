@@ -12,6 +12,7 @@
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/msdu-aggregator.h"
 #include "ns3/qos-frame-exchange-manager.h"
+#include "ns3/wifi-export.h"
 
 class AmpduAggregationTest;
 
@@ -27,7 +28,7 @@ class RecipientBlockAckAgreement;
  * HtFrameExchangeManager handles the frame exchange sequences
  * for HT stations.
  */
-class HtFrameExchangeManager : public QosFrameExchangeManager
+class WIFI_EXPORT HtFrameExchangeManager : public QosFrameExchangeManager
 {
   public:
     /// allow AmpduAggregationTest class access

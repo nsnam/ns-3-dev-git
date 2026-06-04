@@ -13,6 +13,7 @@
 #include "wifi-phy-common.h"
 
 #include "ns3/spectrum-signal-parameters.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -24,7 +25,7 @@ class WifiPpdu;
  *
  * Signal parameters for wifi
  */
-struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
+struct WIFI_EXPORT WifiSpectrumSignalParameters : public SpectrumSignalParameters
 {
     Ptr<SpectrumSignalParameters> Copy() const override;
 

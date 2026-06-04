@@ -13,6 +13,7 @@
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -83,7 +84,7 @@ enum WifiMacType
  *
  * Implements the IEEE 802.11 MAC header
  */
-class WifiMacHeader : public Header
+class WIFI_EXPORT WifiMacHeader : public Header
 {
   public:
     /**

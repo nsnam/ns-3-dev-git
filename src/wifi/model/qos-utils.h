@@ -29,7 +29,7 @@ typedef std::pair<Mac48Address, uint8_t> WifiAddressTidPair; //!< (MAC address, 
 /**
  * Function object to compute the hash of a (MAC address, TID) pair
  */
-struct WifiAddressTidHash
+struct WIFI_EXPORT WifiAddressTidHash
 {
     /**
      * Functional operator for (MAC address, TID) hash computation.
@@ -43,7 +43,7 @@ struct WifiAddressTidHash
 /**
  * Function object to compute the hash of a MAC address
  */
-struct WifiAddressHash
+struct WIFI_EXPORT WifiAddressHash
 {
     /**
      * Functional operator for MAC address hash computation.
@@ -114,7 +114,7 @@ operator<<(std::ostream& os, const AcIndex& acIndex)
  * @ingroup wifi
  * This class stores the pair of TIDs of an Access Category.
  */
-class WifiAc
+class WIFI_EXPORT WifiAc
 {
   public:
     /**
@@ -158,7 +158,7 @@ class WifiAc
  * @param right the AC on the right of operator>
  * @return true if the AC on the left has higher priority than the AC on the right
  */
-bool operator>(AcIndex left, AcIndex right);
+WIFI_EXPORT bool operator>(AcIndex left, AcIndex right);
 
 /**
  * @ingroup wifi
@@ -180,7 +180,7 @@ bool operator>=(AcIndex left, AcIndex right);
  * @param right the AC on the right of operator<
  * @return true if the AC on the left has lower priority than the AC on the right
  */
-bool operator<(AcIndex left, AcIndex right);
+WIFI_EXPORT bool operator<(AcIndex left, AcIndex right);
 
 /**
  * @ingroup wifi
@@ -210,7 +210,7 @@ inline const std::list<AcIndex> edcaAcIndices = {AC_VI, AC_VO, AC_BE, AC_BK};
  * @param tid the Traffic ID to be mapped to Access class
  * @return the access class for the given TID
  */
-AcIndex QosUtilsMapTidToAc(uint8_t tid);
+WIFI_EXPORT AcIndex QosUtilsMapTidToAc(uint8_t tid);
 
 /**
  * @ingroup wifi
@@ -223,7 +223,8 @@ AcIndex QosUtilsMapTidToAc(uint8_t tid);
  *
  * @return a unique integer for the given sequence control and end sequence
  */
-uint32_t QosUtilsMapSeqControlToUniqueInteger(uint16_t seqControl, uint16_t endSequence);
+WIFI_EXPORT uint32_t QosUtilsMapSeqControlToUniqueInteger(uint16_t seqControl,
+                                                          uint16_t endSequence);
 
 /**
  * @ingroup wifi
@@ -262,7 +263,7 @@ uint32_t QosUtilsMapSeqControlToUniqueInteger(uint16_t seqControl, uint16_t endS
  *
  * @return true if the packet is old, false otherwise
  */
-bool QosUtilsIsOldPacket(uint16_t startingSeq, uint16_t seqNumber);
+WIFI_EXPORT bool QosUtilsIsOldPacket(uint16_t startingSeq, uint16_t seqNumber);
 
 /**
  * @ingroup wifi
@@ -272,7 +273,7 @@ bool QosUtilsIsOldPacket(uint16_t startingSeq, uint16_t seqNumber);
  * @param hdr 802.11 header for packet to check
  * @return the TID of different packet types
  */
-uint8_t GetTid(Ptr<const Packet> packet, const WifiMacHeader hdr);
+WIFI_EXPORT uint8_t GetTid(Ptr<const Packet> packet, const WifiMacHeader hdr);
 
 /**
  * @ingroup wifi
@@ -317,7 +318,7 @@ uint8_t GetTid(Ptr<const Packet> packet, const WifiMacHeader hdr);
  * packet in the queue disc, if a queue disc is installed on the outgoing
  * device, or passing a packet to the device, otherwise.
  */
-uint8_t SelectQueueByDSField(Ptr<QueueItem> item);
+WIFI_EXPORT uint8_t SelectQueueByDSField(Ptr<QueueItem> item);
 
 } // namespace ns3
 

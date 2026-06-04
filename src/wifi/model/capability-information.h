@@ -10,6 +10,7 @@
 #define CAPABILITY_INFORMATION_H
 
 #include "ns3/buffer.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -19,7 +20,7 @@ namespace ns3
  *
  * Capability information
  */
-class CapabilityInformation
+class WIFI_EXPORT CapabilityInformation
 {
   public:
     CapabilityInformation();

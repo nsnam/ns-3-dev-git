@@ -11,6 +11,8 @@
 
 #include "frame-exchange-manager.h"
 
+#include "ns3/wifi-export.h"
+
 #include <optional>
 
 namespace ns3
@@ -23,7 +25,7 @@ namespace ns3
  * for QoS stations.
  * Note that Basic Block Ack is not supported.
  */
-class QosFrameExchangeManager : public FrameExchangeManager
+class WIFI_EXPORT QosFrameExchangeManager : public FrameExchangeManager
 {
   public:
     /**

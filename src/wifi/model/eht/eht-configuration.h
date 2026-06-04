@@ -12,6 +12,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-utils.h"
 
 #include <list>
@@ -45,7 +46,7 @@ enum class WifiTidToLinkMappingNegSupport : uint8_t
  * @param [in] negsupport The WifiTidToLinkMappingNegSupport.
  * @return The reference to the output stream.
  */
-std::ostream& operator<<(std::ostream& os, WifiTidToLinkMappingNegSupport negsupport);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiTidToLinkMappingNegSupport negsupport);
 
 /**
  * @brief EHT configuration
@@ -55,7 +56,7 @@ std::ostream& operator<<(std::ostream& os, WifiTidToLinkMappingNegSupport negsup
  * AP or STA behavior and for constructing EHT-related information elements.
  *
  */
-class EhtConfiguration : public Object
+class WIFI_EXPORT EhtConfiguration : public Object
 {
   public:
     EhtConfiguration();

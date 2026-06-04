@@ -17,6 +17,7 @@
 #include "wifi-mpdu.h"
 
 #include "ns3/queue.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <optional>
@@ -52,7 +53,7 @@ extern template class Queue<WifiMpdu, ns3::WifiMacQueueContainer>;
  * Compiling python bindings fails if the namespace (ns3) is not
  * specified for WifiMacQueueContainerT.
  */
-class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
+class WIFI_EXPORT WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
 {
   public:
     /**

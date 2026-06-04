@@ -11,6 +11,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -23,7 +24,7 @@ class Time;
  * @brief the interface for Wifi's frame capture models
  *
  */
-class FrameCaptureModel : public Object
+class WIFI_EXPORT FrameCaptureModel : public Object
 {
   public:
     /**

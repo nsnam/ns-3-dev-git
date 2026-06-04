@@ -11,6 +11,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/uinteger.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -21,7 +22,7 @@ namespace ns3
  * Structure is similar to struct sta_info in Linux kernel (see
  * net/mac80211/sta_info.h)
  */
-class WifiRemoteStationInfo
+class WIFI_EXPORT WifiRemoteStationInfo
 {
   public:
     WifiRemoteStationInfo();

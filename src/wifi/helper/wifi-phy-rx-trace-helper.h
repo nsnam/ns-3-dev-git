@@ -11,6 +11,7 @@
 #include "ns3/object.h"
 #include "ns3/phy-entity.h"
 #include "ns3/ptr.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-common.h"
 #include "ns3/wifi-phy-state.h"
 #include "ns3/wifi-ppdu.h"
@@ -46,7 +47,7 @@ class WifiTxVector;
  * communication, including the number of successful and failed PPDUs containing unicast data,
  * and unicast data MPDU receptions.
  */
-struct WifiPhyTraceStatistics
+struct WIFI_EXPORT WifiPhyTraceStatistics
 {
     uint64_t m_overlappingPpdus{
         0}; ///< Number of PPDUs that overlapped in time with at least one other PPDU.
@@ -66,7 +67,7 @@ struct WifiPhyTraceStatistics
  * This structure contains various details about the received PPDU, such as signal strength,
  * identifiers for the sender and receiver, timing information, and reception status.
  */
-struct WifiPpduRxRecord
+struct WIFI_EXPORT WifiPpduRxRecord
 {
     Ptr<const WifiPpdu> m_ppdu{nullptr}; ///< Pointer to the received PPDU.
     double m_rssi{0};                    ///< Received Signal Strength Indicator (RSSI) in dBm.
@@ -113,7 +114,7 @@ struct WifiPpduRxRecord
  * PPDU records are kept for all frame types because it is possible for non-data frames to
  * collide with data frames.
  */
-class WifiPhyRxTraceHelper
+class WIFI_EXPORT WifiPhyRxTraceHelper
 {
     friend class ::TestWifiPhyRxTraceHelper;
     friend class ::TestWifiPhyRxTraceHelperMloStr;
@@ -272,7 +273,7 @@ class WifiPhyRxTraceHelper
  * - Handling of PHY signal transmission and reception events for detailed outcome logging.
  * - Tracking and analysis of overlapping reception events for interference assessment.
  */
-class WifiPhyRxTraceSink : public Object
+class WIFI_EXPORT WifiPhyRxTraceSink : public Object
 {
   public:
     /**
@@ -293,7 +294,7 @@ class WifiPhyRxTraceSink : public Object
      * WifiPpdu.  The WifiPpdu UID is not sufficient because there can be more than one
      * record per WifiPpdu.
      */
-    class UniqueTagGenerator
+    class WIFI_EXPORT UniqueTagGenerator
     {
       public:
         /**
@@ -746,8 +747,8 @@ bool operator!=(const WifiPhyTraceStatistics& lhs, const WifiPhyTraceStatistics&
  * @param rhs The right-hand side WifiPhyTraceStatistics object to be added.
  * @return A new WifiPhyTraceStatistics object that is the result of the addition.
  */
-WifiPhyTraceStatistics operator+(const WifiPhyTraceStatistics& lhs,
-                                 const WifiPhyTraceStatistics& rhs);
+WIFI_EXPORT WifiPhyTraceStatistics operator+(const WifiPhyTraceStatistics& lhs,
+                                             const WifiPhyTraceStatistics& rhs);
 
 } // namespace ns3
 

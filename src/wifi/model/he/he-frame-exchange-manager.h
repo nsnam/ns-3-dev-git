@@ -12,6 +12,7 @@
 #include "mu-snr-tag.h"
 
 #include "ns3/vht-frame-exchange-manager.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <unordered_map>
@@ -27,14 +28,14 @@ class CtrlTriggerHeader;
  * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame
  */
-bool IsTrigger(const WifiPsduMap& psduMap);
+WIFI_EXPORT bool IsTrigger(const WifiPsduMap& psduMap);
 
 /**
  * @param psduMap a PSDU map
  * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame
  */
-bool IsTrigger(const WifiConstPsduMap& psduMap);
+WIFI_EXPORT bool IsTrigger(const WifiConstPsduMap& psduMap);
 
 /**
  * @ingroup wifi
@@ -42,7 +43,7 @@ bool IsTrigger(const WifiConstPsduMap& psduMap);
  * HeFrameExchangeManager handles the frame exchange sequences
  * for HE stations.
  */
-class HeFrameExchangeManager : public VhtFrameExchangeManager
+class WIFI_EXPORT HeFrameExchangeManager : public VhtFrameExchangeManager
 {
   public:
     /**

@@ -12,6 +12,8 @@
 #include "error-rate-model.h"
 #include "wifi-mode.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -23,7 +25,7 @@ namespace ns3
  * http://www.nsnam.org/~pei/80211ofdm.pdf.  For DSSS modulations (802.11b),
  * the model uses the DsssErrorRateModel.
  */
-class NistErrorRateModel : public ErrorRateModel
+class WIFI_EXPORT NistErrorRateModel : public ErrorRateModel
 {
   public:
     /**

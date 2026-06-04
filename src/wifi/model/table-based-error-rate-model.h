@@ -14,6 +14,7 @@
 #include "wifi-mode.h"
 
 #include "ns3/error-rate-tables.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -27,7 +28,7 @@ class WifiTxVector;
  * @brief the interface for the table-driven OFDM error model
  *
  */
-class TableBasedErrorRateModel : public ErrorRateModel
+class WIFI_EXPORT TableBasedErrorRateModel : public ErrorRateModel
 {
   public:
     /**

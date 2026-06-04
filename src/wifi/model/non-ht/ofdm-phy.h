@@ -12,6 +12,7 @@
 #define OFDM_PHY_H
 
 #include "ns3/phy-entity.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -46,7 +47,7 @@ enum OfdmPhyVariant
  *
  * Refer to IEEE 802.11-2016, clause 17.
  */
-class OfdmPhy : public PhyEntity
+class WIFI_EXPORT OfdmPhy : public PhyEntity
 {
   public:
     /**

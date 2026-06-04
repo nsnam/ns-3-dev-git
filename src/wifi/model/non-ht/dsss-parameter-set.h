@@ -9,6 +9,7 @@
 #ifndef DSSS_PARAMETER_SET_H
 #define DSSS_PARAMETER_SET_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3
@@ -20,7 +21,7 @@ namespace ns3
  *
  * This class knows how to serialize and deserialize the DSSS Parameter Set.
  */
-class DsssParameterSet : public WifiInformationElement
+class WIFI_EXPORT DsssParameterSet : public WifiInformationElement
 {
   public:
     DsssParameterSet();

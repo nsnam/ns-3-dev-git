@@ -1708,7 +1708,7 @@ class WIFI_EXPORT WifiPhy : public Object
  * @param rxSignalInfo received signal info to stringify
  * @return output stream
  */
-std::ostream& operator<<(std::ostream& os, RxSignalInfo rxSignalInfo);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, RxSignalInfo rxSignalInfo);
 
 } // namespace ns3
 

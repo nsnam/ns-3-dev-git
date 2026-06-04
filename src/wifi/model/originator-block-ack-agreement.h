@@ -12,6 +12,8 @@
 #include "block-ack-agreement.h"
 #include "block-ack-window.h"
 
+#include "ns3/wifi-export.h"
+
 #include <set>
 
 class OriginatorBlockAckWindowTest;
@@ -53,7 +55,7 @@ class WifiMpdu;
  *
  * See also OriginatorBlockAckAgreement::State
  */
-class OriginatorBlockAckAgreement : public BlockAckAgreement
+class WIFI_EXPORT OriginatorBlockAckAgreement : public BlockAckAgreement
 {
     /// allow BlockAckManager class access
     friend class BlockAckManager;

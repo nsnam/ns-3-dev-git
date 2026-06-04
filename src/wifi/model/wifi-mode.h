@@ -15,6 +15,7 @@
 
 #include "ns3/attribute-helper.h"
 #include "ns3/callback.h"
+#include "ns3/wifi-export.h"
 
 #include <vector>
 
@@ -34,7 +35,7 @@ class WifiTxVector;
  *
  * @see attribute_WifiMode
  */
-class WifiMode
+class WIFI_EXPORT WifiMode
 {
   public:
     /**
@@ -200,7 +201,7 @@ class WifiMode
  * @return true if the two WifiModes are identical,
  *         false otherwise
  */
-bool operator==(const WifiMode& a, const WifiMode& b);
+WIFI_EXPORT bool operator==(const WifiMode& a, const WifiMode& b);
 
 /**
  * Check if the two WifiModes are different.
@@ -232,7 +233,7 @@ bool operator<(const WifiMode& a, const WifiMode& b);
  *
  * @return std::ostream
  */
-std::ostream& operator<<(std::ostream& os, const WifiMode& mode);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiMode& mode);
 /**
  * Serialize WifiMode from istream (human-readable).
  *
@@ -241,9 +242,43 @@ std::ostream& operator<<(std::ostream& os, const WifiMode& mode);
  *
  * @return std::istream
  */
-std::istream& operator>>(std::istream& is, WifiMode& mode);
+WIFI_EXPORT std::istream& operator>>(std::istream& is, WifiMode& mode);
 
-ATTRIBUTE_HELPER_HEADER(WifiMode);
+// Hand-expanded ATTRIBUTE_HELPER_HEADER(WifiMode): the attribute value class is
+// spelled out so it can carry WIFI_EXPORT. The wifi library is built with
+// hidden symbol visibility on MinGW (see src/wifi/CMakeLists.txt), and
+// WifiModeValue is constructed by user code outside the library, so it must be
+// exported. The accessor and checker remain macro-generated because they are
+// used only within the wifi library.
+/**
+ * @ingroup attribute_WifiMode
+ * AttributeValue implementation for WifiMode.
+ */
+class WIFI_EXPORT WifiModeValue : public AttributeValue
+{
+  public:
+    WifiModeValue() = default;
+    WifiModeValue(const WifiMode& value); //!< Constructor
+    void Set(const WifiMode& value);      //!< Set the value
+    WifiMode Get() const;                 //!< @return the value
+
+    template <typename T>
+    bool GetAccessor(T& value) const
+    {
+        value = T(m_value);
+        return true;
+    }
+
+    Ptr<AttributeValue> Copy() const override;
+    std::string SerializeToString(Ptr<const AttributeChecker> checker) const override;
+    bool DeserializeFromString(std::string value, Ptr<const AttributeChecker> checker) override;
+
+  private:
+    WifiMode m_value; //!< the value
+};
+
+ATTRIBUTE_ACCESSOR_DEFINE(WifiMode);
+ATTRIBUTE_CHECKER_DEFINE(WifiMode);
 
 /**
  * In various parts of the code, folk are interested in maintaining a
@@ -263,7 +298,7 @@ typedef WifiModeList::const_iterator WifiModeListIterator;
  * This factory ensures that each WifiMode created has a unique name
  * and assigns to each of them a unique integer.
  */
-class WifiModeFactory
+class WIFI_EXPORT WifiModeFactory
 {
   public:
     // Typedefs for callbacks used by WifiModeItem
@@ -382,7 +417,7 @@ class WifiModeFactory
   private:
     /// allow WifiMode class access
     friend class WifiMode;
-    friend std::istream& operator>>(std::istream& is, WifiMode& mode);
+    friend WIFI_EXPORT std::istream& operator>>(std::istream& is, WifiMode& mode);
 
     /**
      * Return a WifiModeFactory
@@ -397,7 +432,7 @@ class WifiModeFactory
      * The integer stored in a WifiMode is in fact an index
      * in an array of WifiModeItem objects.
      */
-    struct WifiModeItem
+    struct WIFI_EXPORT WifiModeItem
     {
         std::string uniqueUid;        ///< unique UID
         WifiModulationClass modClass; ///< modulation class

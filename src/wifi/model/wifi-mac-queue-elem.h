@@ -13,6 +13,7 @@
 
 #include "ns3/callback.h"
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 
@@ -36,7 +37,7 @@ class WifiMpdu;
  * For consistency, also data frame transmitted by non-MLDs have an alias, which is
  * simply a pointer to the original version of the data frame.
  */
-struct WifiMacQueueElem
+struct WIFI_EXPORT WifiMacQueueElem
 {
     Ptr<WifiMpdu> mpdu;                         ///< MPDU stored by this element
     Time expiryTime{0};                         ///< expiry time of the MPDU (set by WifiMacQueue)

@@ -11,6 +11,7 @@
 #define VHT_PHY_H
 
 #include "ns3/ht-phy.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -34,7 +35,7 @@ namespace ns3
  *
  * Refer to IEEE 802.11-2016, clause 21.
  */
-class VhtPhy : public HtPhy
+class WIFI_EXPORT VhtPhy : public HtPhy
 {
   public:
     /**

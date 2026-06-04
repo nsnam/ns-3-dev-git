@@ -12,6 +12,8 @@
 #include "qos-utils.h"
 #include "sta-wifi-mac.h"
 
+#include "ns3/wifi-export.h"
+
 #include <optional>
 #include <set>
 #include <unordered_map>
@@ -26,14 +28,14 @@ namespace ns3
  * scanning and association for single link devices and ML discovery
  * and setup for multi-link devices.
  */
-class WifiAssocManager : public Object
+class WIFI_EXPORT WifiAssocManager : public Object
 {
     /**
      * Struct providing a function call operator to compare two ApInfo objects.
      * This struct is used as the Compare template type parameter of the set of
      * ApInfo objects maintained by the Association Manager.
      */
-    struct ApInfoCompare
+    struct WIFI_EXPORT ApInfoCompare
     {
         /**
          * Constructor.
@@ -61,7 +63,7 @@ class WifiAssocManager : public Object
      * Struct to identify a specific TBTT Information field of a Neighbor AP Information
      * field in a Reduced Neighbor Report element.
      */
-    struct RnrLinkInfo
+    struct WIFI_EXPORT RnrLinkInfo
     {
         std::size_t m_nbrApInfoId;     ///< Neighbor AP Information field index
         std::size_t m_tbttInfoFieldId; ///< TBTT Information field index

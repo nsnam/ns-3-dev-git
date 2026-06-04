@@ -10,6 +10,7 @@
 #define EHT_PPDU_H
 
 #include "ns3/he-ppdu.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -28,13 +29,13 @@ namespace ns3
  *
  * EhtPpdu is currently identical to HePpdu
  */
-class EhtPpdu : public HePpdu
+class WIFI_EXPORT EhtPpdu : public HePpdu
 {
   public:
     /**
      * PHY header for EHT TB PPDUs
      */
-    struct EhtTbPhyHeader
+    struct WIFI_EXPORT EhtTbPhyHeader
     {
         // U-SIG fields
         uint8_t m_phyVersionId : 3 {0}; ///< PHY Version Identifier field
@@ -46,7 +47,7 @@ class EhtPpdu : public HePpdu
     /**
      * PHY header for EHT MU PPDUs
      */
-    struct EhtMuPhyHeader
+    struct WIFI_EXPORT EhtMuPhyHeader
     {
         // U-SIG fields
         uint8_t m_phyVersionId : 3 {0};         ///< PHY Version Identifier field

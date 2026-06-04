@@ -13,6 +13,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/object.h"
 #include "ns3/sta-wifi-mac.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-operating-channel.h"
 
 #include <map>
@@ -35,7 +36,7 @@ class WifiMpdu;
  * @ingroup wifi
  * Base struct for EMLSR Main PHY switch traces.
  */
-struct EmlsrMainPhySwitchTrace
+struct WIFI_EXPORT EmlsrMainPhySwitchTrace
 {
     virtual ~EmlsrMainPhySwitchTrace() = default;
 
@@ -76,7 +77,7 @@ struct EmlsrMainPhySwitchTraceImpl : public EmlsrMainPhySwitchTrace
  * EmlsrManager is an abstract base class defining the API that EHT non-AP MLDs
  * with EMLSR activated can use to handle the operations on the EMLSR links
  */
-class EmlsrManager : public Object
+class WIFI_EXPORT EmlsrManager : public Object
 {
     /// Allow test cases to access private members
     friend class ::EmlsrCcaBusyTest;
@@ -501,7 +502,7 @@ class EmlsrManager : public Object
     void CancelAllSleepEvents();
 
     /// Store information about a main PHY switch.
-    struct MainPhySwitchInfo
+    struct WIFI_EXPORT MainPhySwitchInfo
     {
         Time start;               //!< start of channel switching
         bool disconnected{false}; //!< true if the main PHY is not connected to any link, i.e., it
@@ -654,7 +655,7 @@ class EmlsrManager : public Object
     /**
      * Information about the status of the MediumSyncDelay timer associated with a link.
      */
-    struct MediumSyncDelayStatus
+    struct WIFI_EXPORT MediumSyncDelayStatus
     {
         EventId timer;                        //!< the MediumSyncDelay timer
         std::optional<uint8_t> msdNTxopsLeft; //!< number of TXOP attempts left while the
@@ -710,7 +711,7 @@ class EmlsrManager : public Object
 /**
  * Struct to trace that main PHY switched to start a DL TXOP after that an aux PHY received an ICF.
  */
-struct EmlsrDlTxopIcfReceivedByAuxPhyTrace
+struct WIFI_EXPORT EmlsrDlTxopIcfReceivedByAuxPhyTrace
     : public EmlsrMainPhySwitchTraceImpl<EmlsrDlTxopIcfReceivedByAuxPhyTrace>
 {
     static constexpr std::string_view m_name = "DlTxopIcfReceivedByAuxPhy"; //!< trace name
@@ -720,7 +721,7 @@ struct EmlsrDlTxopIcfReceivedByAuxPhyTrace
  * Struct to trace that main PHY switched to start an UL TXOP after that an aux PHY transmitted an
  * RTS.
  */
-struct EmlsrUlTxopRtsSentByAuxPhyTrace
+struct WIFI_EXPORT EmlsrUlTxopRtsSentByAuxPhyTrace
     : public EmlsrMainPhySwitchTraceImpl<EmlsrUlTxopRtsSentByAuxPhyTrace>
 {
     static constexpr std::string_view m_name = "UlTxopRtsSentByAuxPhy"; //!< trace name
@@ -732,7 +733,7 @@ struct EmlsrUlTxopRtsSentByAuxPhyTrace
  * This trace is called when aux PHYs do not switch link and the main PHY switches back to the
  * preferred link when a TXOP carried out on another link ends.
  */
-struct EmlsrTxopEndedTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrTxopEndedTrace>
+struct WIFI_EXPORT EmlsrTxopEndedTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrTxopEndedTrace>
 {
     static constexpr std::string_view m_name = "TxopEnded"; //!< trace name
 };
@@ -766,7 +767,7 @@ struct EmlsrTxopEndedTrace : public EmlsrMainPhySwitchTraceImpl<EmlsrTxopEndedTr
  * elapsed since the CTS timeout occurred is zero). This holds true for both the case aux PHYs do
  * not switch link and the case aux PHYs switch link.
  */
-struct EmlsrCtsAfterRtsTimeoutTrace
+struct WIFI_EXPORT EmlsrCtsAfterRtsTimeoutTrace
     : public EmlsrMainPhySwitchTraceImpl<EmlsrCtsAfterRtsTimeoutTrace>
 {
     static constexpr std::string_view m_name = "CtsAfterRtsTimeout"; //!< trace name
@@ -789,7 +790,7 @@ struct EmlsrCtsAfterRtsTimeoutTrace
  * Struct to trace that main PHY switched to operate on a link on which an aux PHY that is not
  * TX capable has gained or is expected to shortly gain a TXOP.
  */
-struct EmlsrUlTxopAuxPhyNotTxCapableTrace
+struct WIFI_EXPORT EmlsrUlTxopAuxPhyNotTxCapableTrace
     : public EmlsrMainPhySwitchTraceImpl<EmlsrUlTxopAuxPhyNotTxCapableTrace>
 {
     static constexpr std::string_view m_name = "UlTxopAuxPhyNotTxCapable"; //!< trace name

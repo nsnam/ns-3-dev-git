@@ -13,6 +13,7 @@
 
 #include "ns3/mac48-address.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <set>
 #include <unordered_set>
@@ -45,7 +46,7 @@ enum GroupcastProtectionMode : uint8_t
  *
  * GcrManager is a base class defining the API to handle 802.11aa GCR.
  */
-class GcrManager : public Object
+class WIFI_EXPORT GcrManager : public Object
 {
   public:
     /**

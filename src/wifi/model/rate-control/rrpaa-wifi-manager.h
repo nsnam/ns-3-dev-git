@@ -11,6 +11,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3
@@ -43,7 +44,7 @@ struct RrpaaWifiRemoteStation;
  * For each rate there is a Opportunistic Rate Increase threshold,
  * a Maximum Tolerable Loss threshold and an Evaluation Window.
  */
-struct WifiRrpaaThresholds
+struct WIFI_EXPORT WifiRrpaaThresholds
 {
     double m_ori;    //!< The Opportunistic Rate Increase threshold.
     double m_mtl;    //!< The Maximum Tolerable Loss threshold.
@@ -60,7 +61,7 @@ typedef std::vector<std::pair<WifiRrpaaThresholds, WifiMode>> RrpaaThresholdsTab
  */
 typedef std::vector<std::vector<double>> RrpaaProbabilitiesTable;
 
-class RrpaaWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT RrpaaWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

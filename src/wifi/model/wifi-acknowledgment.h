@@ -15,6 +15,7 @@
 #include "wifi-tx-vector.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <memory>
@@ -32,7 +33,7 @@ class Mac48Address;
  * method and stores the information needed to perform acknowledgment according to
  * that method.
  */
-struct WifiAcknowledgment
+struct WIFI_EXPORT WifiAcknowledgment
 {
     /**
      * @enum Method
@@ -117,7 +118,7 @@ struct WifiAcknowledgment
  *
  * WifiNoAck specifies that no acknowledgment is required.
  */
-struct WifiNoAck : public WifiAcknowledgment
+struct WIFI_EXPORT WifiNoAck : public WifiAcknowledgment
 {
     WifiNoAck();
 
@@ -133,7 +134,7 @@ struct WifiNoAck : public WifiAcknowledgment
  *
  * WifiNormalAck specifies that acknowledgment via Normal Ack is required.
  */
-struct WifiNormalAck : public WifiAcknowledgment
+struct WIFI_EXPORT WifiNormalAck : public WifiAcknowledgment
 {
     WifiNormalAck();
 
@@ -151,7 +152,7 @@ struct WifiNormalAck : public WifiAcknowledgment
  *
  * WifiBlockAck specifies that acknowledgment via Block Ack is required.
  */
-struct WifiBlockAck : public WifiAcknowledgment
+struct WIFI_EXPORT WifiBlockAck : public WifiAcknowledgment
 {
     WifiBlockAck();
 
@@ -170,7 +171,7 @@ struct WifiBlockAck : public WifiAcknowledgment
  *
  * WifiBarBlockAck specifies that a BlockAckReq is sent to solicit a Block Ack response.
  */
-struct WifiBarBlockAck : public WifiAcknowledgment
+struct WIFI_EXPORT WifiBarBlockAck : public WifiAcknowledgment
 {
     WifiBarBlockAck();
 
@@ -193,7 +194,7 @@ struct WifiBarBlockAck : public WifiAcknowledgment
  * sequence of BlockAckReq and BlockAck frames. Only one station may be allowed
  * to reply a SIFS after the DL MU PPDU by sending either a Normal Ack or a BlockAck.
  */
-struct WifiDlMuBarBaSequence : public WifiAcknowledgment
+struct WIFI_EXPORT WifiDlMuBarBaSequence : public WifiAcknowledgment
 {
     WifiDlMuBarBaSequence();
 
@@ -204,20 +205,20 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
     void Print(std::ostream& os) const override;
 
     /// information related to an Ack frame sent by a station
-    struct AckInfo
+    struct WIFI_EXPORT AckInfo
     {
         WifiTxVector ackTxVector; //!< TXVECTOR for the Ack frame
     };
 
     /// information related to a BlockAck frame sent by a station
-    struct BlockAckInfo
+    struct WIFI_EXPORT BlockAckInfo
     {
         WifiTxVector blockAckTxVector; //!< TXVECTOR for the BlockAck frame
         BlockAckType baType;           //!< BlockAck type
     };
 
     /// information related to a BlockAckReq frame sent to a station
-    struct BlockAckReqInfo
+    struct WIFI_EXPORT BlockAckReqInfo
     {
         WifiTxVector blockAckReqTxVector; //!< TXVECTOR for the BlockAckReq frame
         BlockAckReqType barType;          //!< BlockAckReq type
@@ -240,7 +241,7 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
  * by a MU-BAR Trigger Frame (sent as single user frame) soliciting BlockAck
  * frames sent as HE TB PPDUs.
  */
-struct WifiDlMuTfMuBar : public WifiAcknowledgment
+struct WIFI_EXPORT WifiDlMuTfMuBar : public WifiAcknowledgment
 {
     WifiDlMuTfMuBar();
 
@@ -251,7 +252,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
     void Print(std::ostream& os) const override;
 
     /// information related to a BlockAck frame sent by a station
-    struct BlockAckInfo
+    struct WIFI_EXPORT BlockAckInfo
     {
         CtrlBAckRequestHeader barHeader; //!< BlockAckReq header
         WifiTxVector blockAckTxVector;   //!< TXVECTOR for the BlockAck frame
@@ -272,7 +273,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
  * a MU-BAR Trigger Frame is acknowledged through BlockAck frames sent as
  * HE TB PPDUs.
  */
-struct WifiDlMuAggregateTf : public WifiAcknowledgment
+struct WIFI_EXPORT WifiDlMuAggregateTf : public WifiAcknowledgment
 {
     WifiDlMuAggregateTf();
 
@@ -283,7 +284,7 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
     void Print(std::ostream& os) const override;
 
     /// information related to a BlockAck frame sent by a station
-    struct BlockAckInfo
+    struct WIFI_EXPORT BlockAckInfo
     {
         uint32_t muBarSize;              //!< size in bytes of a MU-BAR Trigger Frame
         CtrlBAckRequestHeader barHeader; //!< BlockAckReq header
@@ -302,7 +303,7 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
  * WifiUlMuMultiStaBa specifies that a Basic Trigger Frame is being sent to
  * solicit TB PPDUs that will be acknowledged through a multi-STA BlockAck frame.
  */
-struct WifiUlMuMultiStaBa : public WifiAcknowledgment
+struct WIFI_EXPORT WifiUlMuMultiStaBa : public WifiAcknowledgment
 {
     WifiUlMuMultiStaBa();
 
@@ -328,7 +329,7 @@ struct WifiUlMuMultiStaBa : public WifiAcknowledgment
  * in the duration indicated by the Trigger Frame. The QoS ack policy instead
  * must be Normal Ack/Implicit Block Ack Request.
  */
-struct WifiAckAfterTbPpdu : public WifiAcknowledgment
+struct WIFI_EXPORT WifiAckAfterTbPpdu : public WifiAcknowledgment
 {
     WifiAckAfterTbPpdu();
 
@@ -346,7 +347,7 @@ struct WifiAckAfterTbPpdu : public WifiAcknowledgment
  * @param acknowledgment the acknowledgment method
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiAcknowledgment* acknowledgment);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiAcknowledgment* acknowledgment);
 
 } // namespace ns3
 

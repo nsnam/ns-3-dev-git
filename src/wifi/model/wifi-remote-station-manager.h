@@ -29,6 +29,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
+#include "ns3/wifi-export.h"
 
 #include <array>
 #include <list>
@@ -62,7 +63,7 @@ struct RxSignalInfo;
  * This class is typically subclassed and extended by
  * rate control implementations
  */
-struct WifiRemoteStation
+struct WIFI_EXPORT WifiRemoteStation
 {
     virtual ~WifiRemoteStation()
     {
@@ -77,7 +78,7 @@ struct WifiRemoteStation
 /**
  * A struct that holds information about each remote station.
  */
-struct WifiRemoteStationState
+struct WIFI_EXPORT WifiRemoteStationState
 {
     /**
      * State of the station
@@ -142,7 +143,7 @@ struct WifiRemoteStationState
  *
  * @sa ns3::WifiRemoteStation.
  */
-class WifiRemoteStationManager : public Object
+class WIFI_EXPORT WifiRemoteStationManager : public Object
 {
   public:
     /**

@@ -13,6 +13,7 @@
 #include "common-info-probe-req-mle.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 #include "ns3/wifi-mac-header.h"
 
@@ -41,7 +42,7 @@ using AssocReqRefVariant = std::variant<std::reference_wrapper<MgtAssocRequestHe
  * TODO:
  * - Add support for variants other than the Basic and Probe Request.
  */
-class MultiLinkElement : public WifiInformationElement
+class WIFI_EXPORT MultiLinkElement : public WifiInformationElement
 {
   public:
     /**
@@ -273,7 +274,7 @@ class MultiLinkElement : public WifiInformationElement
      * TODO:
      * - complete the implementation of STA Control and STA Info subfields
      */
-    class PerStaProfileSubelement : public WifiInformationElement
+    class WIFI_EXPORT PerStaProfileSubelement : public WifiInformationElement
     {
       public:
         /**

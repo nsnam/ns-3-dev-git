@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 #include <optional>
 #include <vector>
 
@@ -26,7 +28,7 @@ namespace ns3
  *
  * The \c ExtendedSupportedRatesIE class deals with rates beyond the first 8.
  */
-class SupportedRates : public WifiInformationElement
+class WIFI_EXPORT SupportedRates : public WifiInformationElement
 {
     friend struct AllSupportedRates;
 
@@ -61,7 +63,7 @@ class SupportedRates : public WifiInformationElement
  * Supported Rates Element that holds (non-HT) rates beyond the 8 that
  * the original Supported Rates element can carry.
  */
-class ExtendedSupportedRatesIE : public SupportedRates
+class WIFI_EXPORT ExtendedSupportedRatesIE : public SupportedRates
 {
   public:
     // Implementations of pure virtual methods of WifiInformationElement
@@ -73,7 +75,7 @@ class ExtendedSupportedRatesIE : public SupportedRates
  * @ingroup wifi
  *
  */
-struct AllSupportedRates
+struct WIFI_EXPORT AllSupportedRates
 {
     /**
      * Add the given rate to the supported rates.

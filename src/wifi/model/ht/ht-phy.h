@@ -11,6 +11,7 @@
 #define HT_PHY_H
 
 #include "ns3/ofdm-phy.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -39,7 +40,7 @@ constexpr uint8_t HT_MAX_NSS = 4;
  *
  * Refer to IEEE 802.11-2016, clause 19.
  */
-class HtPhy : public OfdmPhy
+class WIFI_EXPORT HtPhy : public OfdmPhy
 {
   public:
     /**

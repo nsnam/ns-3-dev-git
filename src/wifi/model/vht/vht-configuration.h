@@ -11,6 +11,7 @@
 
 #include "ns3/deprecated.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-units.h"
 
 #include <map>
@@ -27,7 +28,7 @@ namespace ns3
  * AP or STA behavior and for constructing VHT-related information elements.
  *
  */
-class VhtConfiguration : public Object
+class WIFI_EXPORT VhtConfiguration : public Object
 {
   public:
     VhtConfiguration();

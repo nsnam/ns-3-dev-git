@@ -16,6 +16,7 @@
 #include "wifi-ru.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -26,7 +27,7 @@ namespace ns3
 {
 
 /// HE MU specific user transmission parameters.
-struct HeMuUserInfo
+struct WIFI_EXPORT HeMuUserInfo
 {
     WifiRu::RuSpec ru; ///< RU specification
     uint8_t mcs;       ///< MCS index
@@ -94,7 +95,7 @@ enum Center26ToneRuIndication : uint8_t
  * purposes, and furthermore it seems close to the way real devices
  * work (e.g., madwifi).
  */
-class WifiTxVector
+class WIFI_EXPORT WifiTxVector
 {
   public:
     /// map of HE MU specific user info parameters indexed by STA-ID
@@ -593,7 +594,7 @@ class WifiTxVector
  *
  * @return output stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiTxVector& v);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiTxVector& v);
 
 } // namespace ns3
 
