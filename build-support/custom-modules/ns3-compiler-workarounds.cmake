@@ -7,8 +7,12 @@
 include(CheckCXXSourceCompiles)
 
 # Some versions of clang (17) have issues with stdlibc++, so we check if we can
-# fallback to libc++ instead
-if(CLANG)
+# fallback to libc++ instead. This only concerns clang targeting libstdc++ or
+# libc++; ClangCL uses the MSVC STL, where the -stdlib= flag is meaningless (it
+# is silently ignored, so both probes "succeed" using the MSVC STL anyway). Skip
+# them there: they are two compiler invocations (~5s of first-configure time)
+# that test nothing relevant on Windows.
+if(CLANG AND NOT (CMAKE_CXX_SIMULATE_ID MATCHES "MSVC"))
   try_compile(
     CLANG_STDLIBCPP_WORKS
     SOURCES ${PROJECT_SOURCE_DIR}/build-support/test-clang17-stdlibcpp-map.cc
@@ -66,38 +70,49 @@ check_cxx_source_compiles(
 mark_as_advanced(stacktrace_flags)
 set(stacktrace_flags "" CACHE INTERNAL "")
 if(STACKTRACE_LIBRARY_ENABLED)
-  if(GCC)
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.0.0")
-      # GCC does not support stacktracing
-    elseif(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14.0.0")
-      set(stacktrace_flags -lstdc++_libbacktrace CACHE INTERNAL "")
-    else()
-      set(stacktrace_flags -lstdc++exp CACHE INTERNAL "")
-    endif()
-  elseif(CLANG AND (NOT ("${CMAKE_CXX_SIMULATE_ID}" MATCHES "MSVC")))
-    set(stacktrace_flags -lstdc++_libbacktrace CACHE INTERNAL "")
-  else()
-    # Most likely MSVC, which does not need custom flags for this
-  endif()
-  set(CMAKE_REQUIRED_LIBRARIES ${stacktrace_flags})
+  # std::stacktrace may need an extra backend library, and which one is required
+  # depends on the standard library in use, not just on the compiler. libstdc++
+  # 13 and newer ships the backend in libstdc++exp; libstdc++ 12 to 13 used
+  # libstdc++_libbacktrace; libc++ and the MSVC STL need no extra library. Since
+  # clang can be paired with any of these, probe the candidates in order and
+  # keep the first that actually links, instead of hard-coding one library per
+  # compiler (which left clang + modern libstdc++ without a working backend,
+  # silently disabling stacktraces).
   string(REPLACE ";" " " CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
-  check_cxx_source_compiles(
-    "
-    #include <iostream>
-    #include <stacktrace>
+  set(stacktrace_candidates "DEFAULT" "-lstdc++exp" "-lstdc++_libbacktrace")
+  set(stacktrace_candidate_idx 0)
+  foreach(stacktrace_candidate IN LISTS stacktrace_candidates)
+    if(stacktrace_candidate STREQUAL "DEFAULT")
+      set(CMAKE_REQUIRED_LIBRARIES)
+      set(stacktrace_flag_value "")
+    else()
+      set(CMAKE_REQUIRED_LIBRARIES ${stacktrace_candidate})
+      set(stacktrace_flag_value "${stacktrace_candidate}")
+    endif()
+    check_cxx_source_compiles(
+      "
+      #include <iostream>
+      #include <stacktrace>
 
-    int main()
-    {
-      std::cout << std::stacktrace::current() << std::endl;
-      return 0;
-    }
-    "
-    STACKTRACE_LIBRARY_IS_LINKED
-  )
+      int main()
+      {
+        std::cout << std::stacktrace::current() << std::endl;
+        return 0;
+      }
+      "
+      STACKTRACE_LIBRARY_IS_LINKED_${stacktrace_candidate_idx}
+    )
+    if(STACKTRACE_LIBRARY_IS_LINKED_${stacktrace_candidate_idx})
+      set(stacktrace_flags "${stacktrace_flag_value}" CACHE INTERNAL "" FORCE)
+      set(STACKTRACE_LIBRARY_IS_LINKED TRUE)
+      break()
+    endif()
+    math(EXPR stacktrace_candidate_idx "${stacktrace_candidate_idx} + 1")
+  endforeach()
   set(CMAKE_REQUIRED_LIBRARIES)
   if(STACKTRACE_LIBRARY_IS_LINKED)
     add_definitions(-DSTACKTRACE_LIBRARY_IS_LINKED=1)
   else()
-    set(stacktrace_flags "" CACHE INTERNAL "")
+    set(stacktrace_flags "" CACHE INTERNAL "" FORCE)
   endif()
 endif()
