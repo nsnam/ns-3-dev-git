@@ -457,7 +457,13 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_NATIVE_OPTIMIZATIONS} AND ${GCC})
+  if(${NS3_NATIVE_OPTIMIZATIONS} AND (${GCC} OR ${CLANG}))
+    # -march=native / -mtune=native work for GCC, Clang on Linux/macOS, and
+    # ClangCL on Windows. ClangCL accepts the flag directly (it is a clang
+    # driver flag, not an MSVC /arch: flag) and enables AVX2/FMA/etc. just as it
+    # does on Linux. Previously only GCC was listed here, so ClangCL builds
+    # never got native CPU features, contributing to the large runtime gap
+    # between ClangCL and MinGW.
     add_compile_options(-march=native -mtune=native)
   endif()
 

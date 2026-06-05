@@ -118,10 +118,6 @@ if(${MSVC})
     _CRT_SECURE_NO_WARNINGS NS_MSVC NOMINMAX
   )
 
-  # Disable inlining (trust me, it is either that or moving every single inlined
-  # code to .cc)
-  add_compile_options(/Ob0)
-
   # ClangCL only. The wifi module manually exports its public API (it disables
   # CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS to stay under the 65535 PE export-ordinal
   # limit) by annotating its classes with WIFI_EXPORT, which expands to
