@@ -558,4 +558,19 @@ MgtAssocResponseHeader::DeserializeFromPerStaProfileImpl(Buffer::Iterator start,
                           DeserializeFromPerStaProfileImpl(i, length - distance, frame);
 }
 
+// Explicit instantiation definitions; see the extern template declarations in
+// mgt-headers.h (active on Linux/macOS only; see comment there for rationale).
+#if !defined(_WIN32)
+template class WifiMgtHeader<MgtProbeRequestHeader, ProbeRequestElems>;
+template class WifiMgtHeader<MgtBeaconHeader, BeaconElems>;
+template class WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>;
+template class WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>;
+template class WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>;
+template class WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>;
+template class MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>;
+template class MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>;
+template class MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>;
+template class MgtHeaderInPerStaProfile<MgtProbeResponseHeader, ProbeResponseElems>;
+#endif // !_WIN32
+
 } // namespace ns3

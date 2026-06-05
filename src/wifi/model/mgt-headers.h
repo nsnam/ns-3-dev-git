@@ -174,6 +174,47 @@ using AssocResponseElems = std::tuple<SupportedRates,
                                       std::optional<EhtOperation>,
                                       std::vector<TidToLinkMapping>>;
 
+// Explicit instantiation declarations.
+//
+// The WifiMgtHeader / MgtHeaderInPerStaProfile (de)serialization members are
+// instantiated over the large std::tuple<std::optional<IE>...> packs above and
+// are among the most expensive templates to instantiate in the whole build.
+// Declaring them extern here suppresses re-instantiation in every TU that
+// includes this header; the single definition lives in mgt-headers.cc.
+//
+// Excluded on Windows (_WIN32, covers both MSVC/ClangCL and MinGW):
+// - MSVC/ClangCL: -fno-dllexport-inlines keeps inline members out of the
+//   export table so consumers instantiate them locally; that flag is
+//   incompatible with extern template class __declspec(dllimport), which would
+//   suppress the local instantiation consumers need.
+// - MinGW: wifi-export.h redefines WIFI_EXPORT to empty on non-NS_MSVC builds,
+//   so the explicit instantiation in mgt-headers.cc carries no dllexport
+//   attribute. Combined with -fvisibility=hidden the vtable is hidden and
+//   absent from the .dll.a import library, causing undefined-symbol errors when
+//   downstream modules (e.g. mesh) link against wifi.dll.
+// On Windows, PCH already amortises most of the header-parsing cost.
+// On Linux/macOS the extern template saves the duplicate instantiation work;
+// ld can resolve hidden symbols in .so files at link time so no export is needed.
+#if !defined(_WIN32)
+class MgtAssocRequestHeader;
+class MgtReassocRequestHeader;
+class MgtAssocResponseHeader;
+class MgtProbeRequestHeader;
+class MgtProbeResponseHeader;
+class MgtBeaconHeader;
+
+extern template class WifiMgtHeader<MgtProbeRequestHeader, ProbeRequestElems>;
+extern template class WifiMgtHeader<MgtBeaconHeader, BeaconElems>;
+extern template class WifiMgtHeader<MgtAssocRequestHeader, AssocRequestElems>;
+extern template class WifiMgtHeader<MgtReassocRequestHeader, AssocRequestElems>;
+extern template class WifiMgtHeader<MgtAssocResponseHeader, AssocResponseElems>;
+extern template class WifiMgtHeader<MgtProbeResponseHeader, ProbeResponseElems>;
+extern template class MgtHeaderInPerStaProfile<MgtAssocRequestHeader, AssocRequestElems>;
+extern template class MgtHeaderInPerStaProfile<MgtReassocRequestHeader, AssocRequestElems>;
+extern template class MgtHeaderInPerStaProfile<MgtAssocResponseHeader, AssocResponseElems>;
+extern template class MgtHeaderInPerStaProfile<MgtProbeResponseHeader, ProbeResponseElems>;
+#endif // !_WIN32
+
 /**
  * @ingroup wifi
  * Implement the header for management frames of type association request.
