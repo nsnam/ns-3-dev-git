@@ -52,9 +52,16 @@ endif()
 
 set(cat_command cat)
 if(WIN32)
-  set(NS3_PRECOMPILE_HEADERS OFF
-      CACHE BOOL "Precompile module headers to speed up compilation" FORCE
-  )
+  # Precompiled headers work fine with ClangCL and give a large compile-time win
+  # there (the std headers, which on the MSVC STL are very heavy under
+  # /std:c++latest, are parsed once instead of in every translation unit). Only
+  # force them off for the other Windows compilers (MSVC cl.exe), where they
+  # have historically misbehaved.
+  if(NOT (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+    set(NS3_PRECOMPILE_HEADERS OFF
+        CACHE BOOL "Precompile module headers to speed up compilation" FORCE
+    )
+  endif()
 
   # For whatever reason getting M_PI and other math.h definitions from cmath
   # requires this definition
