@@ -243,7 +243,10 @@ function(build_lib)
 
   # Write a module header that includes all headers from that module
   write_module_header("${BLIB_LIBNAME}" "${BLIB_HEADER_FILES}")
-
+  # Require upstream module libraries not to use module headers
+  if(DEFINED FOLDER AND "${FOLDER}" MATCHES "src")
+    target_compile_definitions("${BLIB_LIBNAME}" PRIVATE NS3_MODULE_COMPILATION)
+  endif()
   # Check if headers actually exist to prevent copying errors during
   # installation (includes the module header created above)
   build_lib_check_headers(${BLIB_LIBNAME})
@@ -376,6 +379,7 @@ function(build_lib_export_definitions_as_interface_definitions libname)
   set(exported_definitions "${target_definitions};${dir_definitions}")
   list(REMOVE_DUPLICATES exported_definitions)
   list(REMOVE_ITEM exported_definitions "")
+  list(REMOVE_ITEM exported_definitions "NS3_MODULE_COMPILATION")
   # Never propagate the module's own dll-export marker (<libname>_EXPORTS, added
   # PRIVATE for MSVC/ClangCL builds) to consumers. That macro is what flips the
   # generated <LIB>_EXPORT macros to __declspec(dllexport): it means "I am
@@ -551,7 +555,12 @@ function(build_lib_tests libname ignore_pch folder test_sources
             CACHE INTERNAL "list of test libraries"
         )
         add_library(${test${libname}} SHARED "${test_sources}")
-
+        # Require upstream test libraries not to use module headers
+        if(DEFINED folder AND "${folder}" MATCHES "src")
+          target_compile_definitions(
+            ${test${libname}} PRIVATE NS3_MODULE_COMPILATION
+          )
+        endif()
         # Link test library to the module library
         if(${NS3_MONOLIB})
           target_link_libraries(
@@ -646,7 +655,7 @@ function(write_module_header name header_files)
     APPEND
     contents
     "
-    error \"Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts.\" "
+    #error \"Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts.\" "
   )
   list(APPEND contents "
 #endif "
