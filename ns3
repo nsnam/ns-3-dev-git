@@ -1202,6 +1202,29 @@ def cmake_build(
     if jobs:
         cmake_args.extend(["-j", str(jobs)])
 
+    # Multi-config generators (VS, Xcode) ignore CMAKE_BUILD_TYPE at build time and
+    # always pick the first CMAKE_CONFIGURATION_TYPES entry unless --config is given.
+    # Read the cache to detect this case and pass the correct --config explicitly.
+    cmake_cache_path = os.path.join(current_cmake_cache_folder, "CMakeCache.txt")
+    if os.path.exists(cmake_cache_path):
+        with open(cmake_cache_path, "r", encoding="utf-8") as _f:
+            _cache = _f.read()
+        _gen = re.search(r"CMAKE_GENERATOR:.*=(.*)", _cache)
+        _btype = re.search(r"CMAKE_BUILD_TYPE:.*=(.*)", _cache)
+        if _gen and _btype:
+            _gen_name = _gen.group(1).strip()
+            _btype_val = _btype.group(1).strip().lower()
+            if "Visual Studio" in _gen_name or "Xcode" in _gen_name:
+                _config_map = {
+                    "debug": "Debug",
+                    "default": "RelWithDebInfo",
+                    "release": "Release",
+                    "optimized": "Release",
+                    "relwithdebinfo": "RelWithDebInfo",
+                    "minsizerel": "MinSizeRel",
+                }
+                cmake_args.extend(["--config", _config_map.get(_btype_val, "Release")])
+
     if target:
         cmake_args.extend(["--target", target])
 

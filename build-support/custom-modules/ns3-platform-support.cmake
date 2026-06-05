@@ -89,7 +89,7 @@ if(${MSVC} OR ${XCODE})
   # Prevent multi-config generators from placing output files into per
   # configuration directory
   if(NOT (DEFINED CMAKE_CONFIGURATION_TYPES))
-    set(CMAKE_CONFIGURATION_TYPES DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
+    set(CMAKE_CONFIGURATION_TYPES Debug Release RelWithDebInfo MinSizeRel)
   endif()
   foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
