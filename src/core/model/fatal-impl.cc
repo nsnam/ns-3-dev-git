@@ -15,6 +15,10 @@
 #include <iostream>
 #include <list>
 
+#ifdef STACKTRACE_LIBRARY_IS_LINKED
+#include <stacktrace>
+#endif
+
 #ifdef __WIN32__
 struct sigaction
 {
@@ -77,6 +81,14 @@ NS_LOG_COMPONENT_DEFINE("FatalImpl");
 
 namespace FatalImpl
 {
+
+void
+PrintStackTrace()
+{
+#ifdef STACKTRACE_LIBRARY_IS_LINKED
+    std::cerr << std::stacktrace::current() << std::endl;
+#endif
+}
 
 /**
  * @ingroup fatalimpl

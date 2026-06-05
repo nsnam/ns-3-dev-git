@@ -83,6 +83,20 @@ void UnregisterStream(std::ostream* stream);
  */
 void FlushStreams();
 
+/**
+ * @ingroup fatalimpl
+ *
+ * @brief Print the current stack trace to \c std::cerr.
+ *
+ * @internal Defined out-of-line so that \c \<stacktrace\> stays out of the ubiquitously
+ * included fatal-error.h / assert.h chain. On some standard libraries (notably
+ * the MSVC STL) \c \<stacktrace\> transitively drags in the very heavy
+ * \c \<format\> / \c \<charconv\> machinery, which would then be parsed by almost
+ * every translation unit in the project. Does nothing if the stacktrace
+ * library is not linked.
+ */
+void PrintStackTrace();
+
 } // namespace FatalImpl
 } // namespace ns3
 

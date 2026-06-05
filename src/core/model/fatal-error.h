@@ -17,16 +17,19 @@
 #include <iostream>
 #include <string_view>
 
-// If stacktrace is available, print it on fatal errors
 #ifdef STACKTRACE_LIBRARY_IS_LINKED
-#include <stacktrace>
 /**
  * @brief Macro prints the current stack trace to standard error.
  *
  * This macro is defined only if the stacktrace library is linked.
+ *
+ * @internal Delegates to ns3::FatalImpl::PrintStackTrace(), which is defined out-of-line
+ * (in fatal-impl.cc) so that the heavy \c <stacktrace> header -- and the
+ * \c <format> / \c <charconv> machinery it transitively drags in on some
+ * standard libraries -- stays out of this ubiquitously included header. The
+ * call is a no-op at runtime if the stacktrace library is not linked.
  */
-
-#define PRINT_STACKTRACE std::cerr << std::stacktrace::current() << std::endl
+#define PRINT_STACKTRACE ::ns3::FatalImpl::PrintStackTrace()
 #else
 /**
  * @brief Macro does nothing if stacktrace library is not available.
