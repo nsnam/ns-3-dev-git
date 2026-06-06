@@ -6,7 +6,7 @@
  * Author: Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "ns3/core-module.h"
+#include "ns3/command-line.h"
 
 #include <iomanip>
 #include <iostream>

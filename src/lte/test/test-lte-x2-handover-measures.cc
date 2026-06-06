@@ -8,16 +8,29 @@
  *   Manuel Requena <manuel.requena@cttc.es>
  */
 
+#include "ns3/boolean.h"
 #include "ns3/bulk-send-helper.h"
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/config.h"
+#include "ns3/constant-velocity-mobility-model.h"
+#include "ns3/double.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-helper.h"
+#include "ns3/lte-radio-bearer-info.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-ue-rrc.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/object-map.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
-#include "ns3/point-to-point-module.h"
+#include "ns3/point-to-point-epc-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/uinteger.h"
 
 using namespace ns3;
 

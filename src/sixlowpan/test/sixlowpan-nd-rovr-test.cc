@@ -6,12 +6,10 @@
  * Author: Boh Jie Qi <jieqiboh5836@gmail.com>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"
-#include "ns3/sixlowpan-module.h"
+#include "ns3/sixlowpan-helper.h"
 #include "ns3/sixlowpan-nd-protocol.h"
 #include "ns3/test.h"
 

@@ -9,10 +9,11 @@
 #ifndef SIXLOWPAN_HELPER_H
 #define SIXLOWPAN_HELPER_H
 
-#include "ns3/core-module.h"
 #include "ns3/net-device-container.h"
+#include "ns3/nstime.h"
 #include "ns3/object-factory.h"
 #include "ns3/output-stream-wrapper.h"
+#include "ns3/ptr.h"
 
 #include <string>
 

@@ -3,15 +3,28 @@
  *
  */
 
-#include "ns3/brite-module.h"
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/network-module.h"
+#include "ns3/address.h"
+#include "ns3/application-container.h"
+#include "ns3/brite-topology-helper.h"
+#include "ns3/data-rate.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv4-interface-container.h"
+#include "ns3/net-device-container.h"
+#include "ns3/node-container.h"
+#include "ns3/nstime.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
-#include "ns3/point-to-point-module.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 
 #include <fstream>

@@ -6,31 +6,38 @@
  * Author:  Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/dsr-module.h"      // DsrOPtionSRHeader
-#include "ns3/internet-module.h" // Ipv4, Ipv4L3Protocol, Ipv4PacketProbe
+#include "ns3/dsr-option-header.h"
+#include "ns3/epc-ue-nas.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv6-l3-protocol.h"
+#include "ns3/lr-wpan-mac.h"
+#include "ns3/lte-enb-mac.h"
+#include "ns3/lte-enb-phy.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-pdcp.h"
+#include "ns3/lte-rlc.h"
+#include "ns3/lte-ue-phy.h"
+#include "ns3/lte-ue-rrc.h"
+#include "ns3/olsr-header.h"
+#include "ns3/olsr-routing-protocol.h"
+#include "ns3/peer-management-protocol.h"
+#include "ns3/sixlowpan-net-device.h"
 #include "ns3/test.h"
+#include "ns3/time-series-adaptor.h"
+#include "ns3/uan-mac-cw.h"
+#include "ns3/uan-mac-rc.h"
+#include "ns3/uan-mac.h"
+#include "ns3/uan-net-device.h"
+#include "ns3/uan-phy.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/wifi-phy-state-helper.h"
+#include "ns3/wifi-remote-station-manager.h"
 
 #include <iostream>
 #include <set>
 #include <sstream>
 #include <string>
 #include <type_traits>
-// Ipv6L3Protocol, Ipv6PacketProbe
-#include "ns3/lr-wpan-mac.h"      // LrWpanMac
-#include "ns3/lte-module.h"       // PhyReceptionStatParameters,
-                                  // PhyTransmissionStatParameters,
-                                  // LteUePowerControl
-#include "ns3/mesh-module.h"      // PeerManagementProtocol
-#include "ns3/mobility-module.h"  // MobilityModel
-#include "ns3/network-module.h"   // Packet, PacketBurst
-#include "ns3/olsr-module.h"      // olsr::RoutingProtocol
-#include "ns3/sixlowpan-module.h" // SixLowPanNetDevice
-#include "ns3/spectrum-module.h"  // SpectrumValue
-#include "ns3/stats-module.h"     // TimeSeriesAdapter
-#include "ns3/uan-module.h"       // UanPhy
-#include "ns3/wifi-mac-header.h"
-#include "ns3/wifi-phy-state-helper.h"
 
 using namespace ns3;
 

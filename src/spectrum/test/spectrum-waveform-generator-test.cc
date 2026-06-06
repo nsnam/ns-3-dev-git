@@ -5,9 +5,19 @@
  *
  * Author: Luis Pacheco <luisbelem@gmail.com>
  */
-#include "ns3/core-module.h"
-#include "ns3/spectrum-module.h"
+#include "ns3/double.h"
+#include "ns3/microwave-oven-spectrum-value-helper.h"
+#include "ns3/node.h"
+#include "ns3/non-communicating-net-device.h"
+#include "ns3/nstime.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
+#include "ns3/spectrum-channel.h"
+#include "ns3/spectrum-helper.h"
+#include "ns3/spectrum-value.h"
 #include "ns3/test.h"
+#include "ns3/waveform-generator-helper.h"
+#include "ns3/waveform-generator.h"
 
 NS_LOG_COMPONENT_DEFINE("WaveformGeneratorTest");
 

@@ -5,10 +5,14 @@
  *
  */
 
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/network-module.h"
+#include "ns3/address.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+#include "ns3/socket.h"
+#include "ns3/tcp-socket-factory.h"
 #include "ns3/test.h"
+#include "ns3/type-id.h"
 
 #include <iostream>
 

@@ -6,9 +6,13 @@
  * Author: Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
  * Based on the works of Andrea Sacco (2010)
  */
-
-#include "ns3/core-module.h"
-#include "ns3/energy-module.h"
+#include "ns3/generic-battery-model-helper.h"
+#include "ns3/generic-battery-model.h"
+#include "ns3/node.h"
+#include "ns3/nstime.h"
+#include "ns3/simple-device-energy-model.h"
+#include "ns3/simulator.h"
+#include "ns3/test.h"
 
 using namespace ns3;
 using namespace ns3::energy;

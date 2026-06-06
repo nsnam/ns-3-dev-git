@@ -7,10 +7,18 @@
  *         Budiarto Herman <budiarto.herman@magister.fi>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-helper.h"
+#include "ns3/lte-net-device.h"
+#include "ns3/lte-radio-bearer-info.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-ue-rrc.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/net-device.h"
+#include "ns3/object-map.h"
+#include "ns3/ptr.h"
+#include "ns3/test.h"
 
 #include <cmath>
 

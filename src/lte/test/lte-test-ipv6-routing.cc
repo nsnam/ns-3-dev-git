@@ -7,17 +7,20 @@
  */
 
 #include "ns3/config-store.h"
-#include "ns3/core-module.h"
 #include "ns3/epc-helper.h"
-#include "ns3/internet-module.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv6-static-routing-helper.h"
 #include "ns3/ipv6-static-routing.h"
 #include "ns3/lte-helper.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/point-to-point-epc-helper.h"
 #include "ns3/point-to-point-helper.h"
+#include "ns3/test.h"
 #include "ns3/udp-echo-helper.h"
+#include "ns3/udp-header.h"
+#include "ns3/udp-l4-protocol.h"
 
 #include <algorithm>
 
