@@ -122,3 +122,4 @@ include:
   - "utils/tests/gitlab-ci-release.yml"
   - "utils/tests/gitlab-ci-build.yml"
   - "utils/tests/gitlab-ci-macos.yml"
+  - "utils/tests/gitlab-ci-windows.yml"
