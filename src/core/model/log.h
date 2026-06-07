@@ -94,20 +94,20 @@ enum LogLevel
     LOG_ERROR = 0x00000001,       //!< Serious error messages only.
     LOG_LEVEL_ERROR = 0x00000001, //!< LOG_ERROR and above.
 
-    LOG_WARN = 0x00000002,       //!< Warning messages.
+    LOG_WARN = 0x00000002,       //!< Non-fatal warnings such as atypical configuration or state.
     LOG_LEVEL_WARN = 0x00000003, //!< LOG_WARN and above.
 
-    LOG_INFO = 0x00000004,       //!< Something happened to change state.
+    LOG_INFO = 0x00000004,       //!< State changes and other coarse-grained progress.
     LOG_LEVEL_INFO = 0x00000007, //!< LOG_INFO and above.
 
-    LOG_FUNCTION = 0x00000008,       //!< Function tracing for non-trivial function calls.
-    LOG_LEVEL_FUNCTION = 0x0000000f, //!< LOG_FUNCTION and above.
+    LOG_LOGIC = 0x00000008,       //!< Key decision points and conditional branches in a function.
+    LOG_LEVEL_LOGIC = 0x0000000f, //!< LOG_LOGIC and above.
 
-    LOG_LOGIC = 0x00000010,       //!< Debugging logs for key branches and decisions in a function.
-    LOG_LEVEL_LOGIC = 0x0000001f, //!< LOG_LOGIC and above.
+    LOG_DEBUG = 0x00000010,       //!< Fine-grained diagnostic detail not covered by other levels.
+    LOG_LEVEL_DEBUG = 0x0000001f, //!< LOG_DEBUG and above.
 
-    LOG_DEBUG = 0x00000020,       //!< Full voluminous logging to support debugging.
-    LOG_LEVEL_DEBUG = 0x0000003f, //!< LOG_DEBUG and above.
+    LOG_FUNCTION = 0x00000020,       //!< Function entry for non-trivial, non-getter methods.
+    LOG_LEVEL_FUNCTION = 0x0000003f, //!< LOG_FUNCTION and above.
 
     LOG_ALL = 0x0fffffff,    //!< Print everything.
     LOG_LEVEL_ALL = LOG_ALL, //!< Print everything.

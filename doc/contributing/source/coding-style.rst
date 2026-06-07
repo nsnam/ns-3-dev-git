@@ -1172,6 +1172,13 @@ as "Optimization: Ternary if operator is faster than std::max()" or
 "Avoid (...) due to rounding issues. See issue #..." are appropriate
 to leave behind).
 
+Conventions for the logging facility itself, including the meaning of each
+log level (``LOG_INFO``, ``LOG_LOGIC``, ``LOG_DEBUG``, etc.) and
+guidance on the use of ``NS_LOG_FUNCTION`` and when to choose between
+different levels (including logging in constructors and destructors), are
+documented in the Logging chapter of the manual
+(``doc/manual/source/logging-asserts.rst``).
+
 Short one-line comments and long comments can use the C++ comment style;
 that is, ``//``, but longer comments may use C-style comments.
 Use one space after ``//`` or ``/*``.

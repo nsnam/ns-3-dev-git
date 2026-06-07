@@ -571,21 +571,21 @@ LogComponentPrintList()
             {
                 std::cout << "|warn";
             }
-            if (component->IsEnabled(LOG_DEBUG))
-            {
-                std::cout << "|debug";
-            }
             if (component->IsEnabled(LOG_INFO))
             {
                 std::cout << "|info";
             }
-            if (component->IsEnabled(LOG_FUNCTION))
-            {
-                std::cout << "|function";
-            }
             if (component->IsEnabled(LOG_LOGIC))
             {
                 std::cout << "|logic";
+            }
+            if (component->IsEnabled(LOG_DEBUG))
+            {
+                std::cout << "|debug";
+            }
+            if (component->IsEnabled(LOG_FUNCTION))
+            {
+                std::cout << "|function";
             }
         }
         if (component->IsEnabled(LOG_PREFIX_ALL))

@@ -94,6 +94,7 @@ The full coding style guide is documented in `doc/contributing/source/coding-sty
 - **Clang-format**: Formatting rules and current C++ standard alignment are in .clang-format
 - **No Unicode symbols**: Do not use Unicode mathematical symbols (e.g., ≤, ≥, ×, ÷, ∑, π) or arrows (e.g., →, ←, ⇒, ↑) in comments or Doxygen documentation; use ASCII equivalents instead (e.g., `<=`, `>=`, `*`, `/`, `->`, `=>`)
 - **Comments**: Comment judiciously. Add an inline comment only when code involves nuance or non-obvious handling - not for every statement, and not to explain straightforward operation. Avoid writing comments that narrate the change you are making (unless requested by the human reviewer) or describe what the previous/replaced code did. Full guidance is in `doc/contributing/source/coding-style.rst` (Comments section).
+- **Logging**: Conventions for including log statements and for choosing log levels (the meanings of `LOG_INFO`, `LOG_LOGIC`, `LOG_DEBUG`, etc.) and for using `NS_LOG_FUNCTION`, including logging in constructors and destructors, are in `doc/manual/source/logging-asserts.rst` (Guidelines section).
 
 ### Sphinx/reStructuredText Documentation
 

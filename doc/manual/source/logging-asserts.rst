@@ -141,17 +141,17 @@ creating the message.  In the example above,
 
 The following severity classes are defined as ``enum`` constants:
 
-================  =========================================================
+================  ============================================================================================
 Severity Class    Meaning
-================  =========================================================
-``LOG_NONE``      The default, no logging
-``LOG_ERROR``     Serious error messages only
-``LOG_WARN``      Warning messages
-``LOG_INFO``      Info about the model changing state
-``LOG_FUNCTION``  Function tracing
-``LOG_LOGIC``     For tracing key decision points or branches in a function
-``LOG_DEBUG``     For use in debugging
-================  =========================================================
+================  ============================================================================================
+``LOG_NONE``      The default, no logging.
+``LOG_ERROR``     Serious error messages only. Seldom used; an error usually merits a program exit with error.
+``LOG_WARN``      Non-fatal warnings such as atypical configuration or state.
+``LOG_INFO``      State changes and other coarse-grained progress.
+``LOG_LOGIC``     Key decision points and conditional branches taken during model execution.
+``LOG_DEBUG``     Fine-grained diagnostic detail not covered by other levels.
+``LOG_FUNCTION``  Function entry for non-trivial and non-getter methods.
+================  ============================================================================================
 
 Typically one wants to see messages at a given severity class *and higher*.
 This is done by defining inclusive logging "levels":
@@ -162,9 +162,9 @@ Level                   Meaning
 ``LOG_LEVEL_ERROR``     Only ``LOG_ERROR`` severity class messages.
 ``LOG_LEVEL_WARN``      ``LOG_WARN`` and above.
 ``LOG_LEVEL_INFO``      ``LOG_INFO`` and above.
-``LOG_LEVEL_FUNCTION``  ``LOG_FUNCTION`` and above.
 ``LOG_LEVEL_LOGIC``     ``LOG_LOGIC`` and above.
 ``LOG_LEVEL_DEBUG``     ``LOG_DEBUG`` and above.
+``LOG_LEVEL_FUNCTION``  ``LOG_FUNCTION`` and above.
 ``LOG_LEVEL_ALL``       All severity classes.
 ``LOG_ALL``             Synonym for ``LOG_LEVEL_ALL``
 ======================  ===========================================
@@ -178,9 +178,9 @@ Class         Level
 ``error``     ``level_error``
 ``warn``      ``level_warn``
 ``info``      ``level_info``
-``function``  ``level_function``
 ``logic``     ``level_logic``
 ``debug``     ``level_debug``
+``function``  ``level_function``
 ..            | ``level_all``
               | ``all``
               | ``*``
@@ -193,7 +193,17 @@ For example, ``NS_LOG="*=warn"`` won't output messages with severity ``error``.
 
 Severity classes and levels can be combined with the \`|' operator:
 ``NS_LOG="*=level_warn|debug"`` will output messages at severity levels
-``error``, ``warn`` and ``debug``, but not ``info``, ``function``, or ``logic``.
+``error``, ``warn`` and ``debug``, but not ``info``, ``logic``, or ``function``.
+
+Because ``function`` is the most verbose class, function tracing is
+effectively opt-in, and there are two ways to enable it.  The level
+``level_function`` enables every log class, including ``logic`` and
+``debug``.  Adding the class token ``function`` to a lower level adds
+function tracing to that level without enabling the classes in between.
+For example, ``NS_LOG="*=level_logic|function"`` outputs ``error``,
+``warn``, ``info``, ``logic`` and ``function`` messages,
+but not ``debug``, whereas ``NS_LOG="*=level_function"`` also outputs
+``debug`` messages.
 
 The ``NS_LOG`` severity level wildcard \`*' and ``all``
 are synonyms for ``level_all``.
@@ -265,9 +275,9 @@ class (``|prefix_level``).
    [ERROR] error message
    [WARN] warn message
    [INFO] info message
-   [FUNCT] function message
    [LOGIC] logic message
    [DEBUG] debug message
+   [FUNCT] function message
 
 Time Prefix
 ###########
@@ -415,9 +425,9 @@ Logging Macros
   ``LOG_ERROR``     ``NS_LOG_ERROR(...);``
   ``LOG_WARN``      ``NS_LOG_WARN(...);``
   ``LOG_INFO``      ``NS_LOG_INFO(...);``
-  ``LOG_FUNCTION``  ``NS_LOG_FUNCTION(...);``
   ``LOG_LOGIC``     ``NS_LOG_LOGIC(...);``
   ``LOG_DEBUG``     ``NS_LOG_DEBUG(...);``
+  ``LOG_FUNCTION``  ``NS_LOG_FUNCTION(...);``
   ================  ==========================
 
   The macros function as output streamers, so anything you can send to
@@ -504,6 +514,13 @@ Guidelines
     * With arguments use ``NS_LOG_FUNCTION(...);`` as normal.
     * Without arguments use ``NS_LOG_FUNCTION_NOARGS();``
 
+  * Function logging in constructors and destructors is encouraged for
+    classes that do not have many instances in a typical simulation, since
+    it helps to trace the object lifecycle.  For classes that may have many
+    instances (e.g., per-node or per-packet objects whose constructor and
+    destructor logging would flood the output), the ``NS_LOG_FUNCTION`` call
+    in the constructor and destructor may be omitted.
+
 * Use ``NS_LOG_ERROR`` for serious error conditions that probably
   invalidate the simulation execution.  Note that in |ns3|, we typically
   abort the simulation under such conditions rather than log it as
@@ -530,16 +547,21 @@ Guidelines
   user to examine the normal operation of a model without becoming overwhelmed
   by the output.
 
-* ``NS_LOG_LOGIC`` is used to trace important logic branches or decision points
-  within a function, without dumping all details of the variable states,
-  called function return values, individual iterations, etc.  It may be useful
-  to think of it as a less granular level of function logging than ``DEBUG,``
-  and may not be used by all models (some authors may choose to only use
-  ``DEBUG`` level for full logging).
+  * A good convention is to place an ``NS_LOG_INFO`` statement at the point
+    where a trace source is fired (e.g., alongside the corresponding trace
+    callback invocation).  Trace sources mark the model's significant events,
+    so logging at the same points lets a user follow the same events at
+    ``INFO`` level without having to connect a trace sink.
 
-* ``NS_LOG_DEBUG`` is usually used for full voluminous debugging, and contains
-  much more information than ``NS_LOG_INFO``, such as the detailed execution
-  logic of functions and the values that variables take within those functions.
+* ``NS_LOG_LOGIC`` traces key decision points and conditional branches taken
+  during model execution, without dumping all of the underlying variable
+  states, called function return values, individual loop iterations, etc.
+  This level is not used by all models (some authors may choose to only use
+  ``DEBUG`` level for detailed logging).
+
+* ``NS_LOG_DEBUG`` provides fine-grained diagnostic detail not covered by the
+  other levels, such as the values that variables take within a function.  It
+  contains much more information than ``NS_LOG_INFO``.
 
 * Test that your logging changes do not break the code.
   Run some example programs with all log components turned on (e.g.

@@ -44,13 +44,13 @@ defined in the system.
 * LOG_WARN --- Log warning messages (associated macro: NS_LOG_WARN);
 * LOG_INFO --- Log informational messages about program progress
   (associated macro: NS_LOG_INFO);
+* LOG_LOGIC --- Log messages describing key decision points and branches
+  taken within a function (associated macro: NS_LOG_LOGIC);
+* LOG_DEBUG --- Log fine-grained diagnostic detail, such as the values of
+  variables within a function (associated macro: NS_LOG_DEBUG);
 * LOG_FUNCTION --- Log a message describing each function called
   (two associated macros: NS_LOG_FUNCTION, used for member functions,
   and NS_LOG_FUNCTION_NOARGS, used for static functions);
-* LOG_LOGIC -- Log messages describing logical flow within a function
-  (associated macro: NS_LOG_LOGIC);
-* LOG_DEBUG --- Log relatively rare, ad-hoc debugging messages
-  (associated macro: NS_LOG_DEBUG);
 * LOG_ALL --- Log everything mentioned above (no associated macro).
 
 For each LOG_TYPE there is also LOG_LEVEL_TYPE that, if used, enables
@@ -59,7 +59,7 @@ consequence of this, LOG_ERROR and LOG_LEVEL_ERROR and also LOG_ALL
 and LOG_LEVEL_ALL are functionally equivalent.)  For example,
 enabling LOG_INFO will only enable messages provided by NS_LOG_INFO macro,
 while enabling LOG_LEVEL_INFO will also enable messages provided by
-NS_LOG_DEBUG, NS_LOG_WARN and NS_LOG_ERROR macros.
+NS_LOG_WARN and NS_LOG_ERROR macros.
 
 We also provide an unconditional logging macro that is always displayed,
 irrespective of logging levels or component selection.
