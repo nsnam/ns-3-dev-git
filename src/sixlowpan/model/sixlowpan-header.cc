@@ -2103,6 +2103,7 @@ SixLowPanMesh::Deserialize(Buffer::Iterator start)
         addrSize = 8;
     }
     i.Read(buffer, addrSize);
+    m_src.SetType("MacAddress", addrSize);
     m_src.CopyFrom(buffer, addrSize);
 
     if (m_f)
@@ -2114,6 +2115,7 @@ SixLowPanMesh::Deserialize(Buffer::Iterator start)
         addrSize = 8;
     }
     i.Read(buffer, addrSize);
+    m_dst.SetType("MacAddress", addrSize);
     m_dst.CopyFrom(buffer, addrSize);
 
     return GetSerializedSize();
