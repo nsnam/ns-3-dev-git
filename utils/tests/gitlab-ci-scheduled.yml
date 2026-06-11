@@ -296,7 +296,6 @@ weekly-sionna-macos:
   needs: [ "daily-macos" ]
   before_script:
     - brew update
-    - brew upgrade
     - brew install ninja cmake ccache git
     - curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
     - bash ./Miniconda3-latest-MacOSX-arm64.sh -b -c -u

@@ -15,7 +15,6 @@
     - nsnam
   before_script:
     - brew update
-    - brew upgrade
     - brew install ninja cmake ccache libxml2 eigen git
   rules:
     - if: $RELEASE == "weekly"
