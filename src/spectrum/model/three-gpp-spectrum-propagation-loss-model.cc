@@ -20,6 +20,8 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 
+#include <algorithm>
+
 namespace ns3
 {
 
@@ -99,6 +101,44 @@ ThreeGppSpectrumPropagationLossModel::GetChannelModelAttribute(const std::string
     m_channelModel->GetAttribute(name, value);
 }
 
+namespace
+{
+
+/**
+ * Compute the array-index offsets, relative to a port's first element, of all
+ * elements belonging to one port of a phased array.
+ *
+ * The sub-array partition model is adopted for TXRU virtualization, as
+ * described in Section 5.2.2 of 3GPP TR 36.897: each port drives a rectangular
+ * sub-grid of elements (with equal beam weights for all ports), so consecutive
+ * elements of a port walk a sub-grid row and then jump to the next array row.
+ * The resulting offsets are the same for every port of the array, which lets
+ * the caller compute them once and reuse them across ports.
+ * Support of the full-connection model for TXRU virtualization would need
+ * extensions.
+ *
+ * @param antenna the phased array
+ * @return offsets of a port's elements, relative to the port's first element
+ */
+std::vector<size_t>
+PortElementOffsets(Ptr<const PhasedArrayModel> antenna)
+{
+    const size_t portElems = antenna->GetNumElemsPerPort();
+    const size_t hElemsPerPort = antenna->GetHElemsPerPort();
+    const size_t rowStride = antenna->GetNumColumns();
+    std::vector<size_t> offsets(portElems);
+    for (size_t i = 0; i < portElems; ++i)
+    {
+        // Element i of a port sits at sub-grid row (i / hElemsPerPort) and
+        // column (i % hElemsPerPort); rows are rowStride elements apart.
+        offsets[i] =
+            (hElemsPerPort > 0) ? (i / hElemsPerPort) * rowStride + (i % hElemsPerPort) : i;
+    }
+    return offsets;
+}
+
+} // namespace
+
 Ptr<const MatrixBasedChannelModel::Complex3DVector>
 ThreeGppSpectrumPropagationLossModel::CalcLongTerm(
     Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
@@ -110,90 +150,86 @@ ThreeGppSpectrumPropagationLossModel::CalcLongTerm(
     NS_ASSERT_MSG(sAnt != nullptr && uAnt != nullptr, "Improper call to the method");
     const PhasedArrayModel::ComplexVector& sW = sAnt->GetBeamformingVectorRef();
     const PhasedArrayModel::ComplexVector& uW = uAnt->GetBeamformingVectorRef();
-    const size_t sAntNumElems = sW.GetSize();
-    const size_t uAntNumElems = uW.GetSize();
-    NS_ASSERT(uAntNumElems == channelMatrix->m_channel.GetNumRows());
-    NS_ASSERT(sAntNumElems == channelMatrix->m_channel.GetNumCols());
-    NS_LOG_DEBUG("CalcLongTerm with " << uW.GetSize() << " u antenna elements and " << sW.GetSize()
-                                      << " s antenna elements, and with "
-                                      << " s ports: " << sAnt->GetNumPorts()
-                                      << " u ports: " << uAnt->GetNumPorts());
-    size_t numClusters = channelMatrix->m_channel.GetNumPages();
-    // create and initialize the size of the longTerm 3D matrix
+    NS_ASSERT(uW.GetSize() == channelMatrix->m_channel.GetNumRows());
+    NS_ASSERT(sW.GetSize() == channelMatrix->m_channel.GetNumCols());
+    const size_t numClusters = channelMatrix->m_channel.GetNumPages();
+    const auto sPorts = static_cast<uint16_t>(sAnt->GetNumPorts());
+    const auto uPorts = static_cast<uint16_t>(uAnt->GetNumPorts());
     Ptr<MatrixBasedChannelModel::Complex3DVector> longTerm =
-        Create<MatrixBasedChannelModel::Complex3DVector>(uAnt->GetNumPorts(),
-                                                         sAnt->GetNumPorts(),
-                                                         numClusters);
-    // Calculate long term uW * Husn * sW, the result is a matrix
-    // with the dimensions #uPorts, #sPorts, #cluster
-    for (auto sPortIdx = 0; sPortIdx < sAnt->GetNumPorts(); sPortIdx++)
+        Create<MatrixBasedChannelModel::Complex3DVector>(uPorts, sPorts, numClusters);
+
+    // Calculate the long term uW^H * Husn * sW for each port pair and cluster;
+    // the result is a matrix with dimensions #uPorts, #sPorts, #clusters.
+    //
+    // The element walk within a port is the same for every port (sub-array
+    // partition model, see PortElementOffsets), so precompute it once per
+    // side. This also keeps the inner loops free of the row-hop bookkeeping.
+    const std::vector<size_t> sOffsets = PortElementOffsets(sAnt);
+    const std::vector<size_t> uOffsets = PortElementOffsets(uAnt);
+
+    // Copy the beamforming weights into plain vectors, with the rx side
+    // already conjugated, so the inner loops use indexed loads instead of
+    // a ValArray accessor and a std::conj per element.
+    // Note that the weight of a port's i-th element is indexed by the same
+    // array offset as the element itself, per the sub-array partition model.
+    std::vector<std::complex<double>> uWeightsConj(uW.GetSize());
+    for (size_t k = 0; k < uW.GetSize(); ++k)
     {
-        for (auto uPortIdx = 0; uPortIdx < uAnt->GetNumPorts(); uPortIdx++)
+        uWeightsConj[k] = std::conj(uW[k]);
+    }
+    std::vector<std::complex<double>> sWeights(sW.GetSize());
+    for (size_t k = 0; k < sW.GetSize(); ++k)
+    {
+        sWeights[k] = sW[k];
+    }
+
+    // Each cluster page of the channel matrix is column-major: element
+    // (uIndex, sIndex) lives at pagePtr[uIndex + numRows * sIndex].
+    const size_t numRows = channelMatrix->m_channel.GetNumRows();
+    const size_t sPortElems = sOffsets.size();
+    const size_t uPortElems = uOffsets.size();
+    for (uint16_t sPortIdx = 0; sPortIdx < sPorts; ++sPortIdx)
+    {
+        const size_t startS = sAnt->ArrayIndexFromPortIndex(sPortIdx, 0);
+        for (uint16_t uPortIdx = 0; uPortIdx < uPorts; ++uPortIdx)
         {
-            for (size_t cIndex = 0; cIndex < numClusters; cIndex++)
+            const size_t startU = uAnt->ArrayIndexFromPortIndex(uPortIdx, 0);
+            for (size_t cIndex = 0; cIndex < numClusters; ++cIndex)
             {
-                longTerm->Elem(uPortIdx, sPortIdx, cIndex) =
-                    CalculateLongTermComponent(channelMatrix,
-                                               sAnt,
-                                               uAnt,
-                                               sPortIdx,
-                                               uPortIdx,
-                                               cIndex);
+                const auto* pagePtr = channelMatrix->m_channel.GetPagePtr(cIndex);
+                std::complex<double> txSum(0, 0);
+                if (uPortElems == 1)
+                {
+                    // One rx element per port (the typical NR UE layout):
+                    // the rx-side reduction is a single multiply.
+                    const std::complex<double> uWeightConj0 = uWeightsConj[0];
+                    for (size_t tIndex = 0; tIndex < sPortElems; ++tIndex)
+                    {
+                        const size_t sIndex = startS + sOffsets[tIndex];
+                        txSum += sWeights[sOffsets[tIndex]] *
+                                 (uWeightConj0 * pagePtr[startU + numRows * sIndex]);
+                    }
+                }
+                else
+                {
+                    for (size_t tIndex = 0; tIndex < sPortElems; ++tIndex)
+                    {
+                        const size_t sIndex = startS + sOffsets[tIndex];
+                        const auto* column = &pagePtr[numRows * sIndex];
+                        std::complex<double> rxSum(0, 0);
+                        for (size_t rIndex = 0; rIndex < uPortElems; ++rIndex)
+                        {
+                            rxSum +=
+                                uWeightsConj[uOffsets[rIndex]] * column[startU + uOffsets[rIndex]];
+                        }
+                        txSum += sWeights[sOffsets[tIndex]] * rxSum;
+                    }
+                }
+                longTerm->Elem(uPortIdx, sPortIdx, cIndex) = txSum;
             }
         }
     }
     return longTerm;
-}
-
-std::complex<double>
-ThreeGppSpectrumPropagationLossModel::CalculateLongTermComponent(
-    Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
-    Ptr<const PhasedArrayModel> sAnt,
-    Ptr<const PhasedArrayModel> uAnt,
-    const uint16_t sPortIdx,
-    const uint16_t uPortIdx,
-    const uint16_t cIndex) const
-{
-    NS_LOG_FUNCTION(this);
-    const PhasedArrayModel::ComplexVector& sW = sAnt->GetBeamformingVectorRef();
-    const PhasedArrayModel::ComplexVector& uW = uAnt->GetBeamformingVectorRef();
-    const auto sPortElems = sAnt->GetNumElemsPerPort();
-    const auto uPortElems = uAnt->GetNumElemsPerPort();
-    const auto startS = sAnt->ArrayIndexFromPortIndex(sPortIdx, 0);
-    const auto startU = uAnt->ArrayIndexFromPortIndex(uPortIdx, 0);
-    std::complex<double> txSum(0, 0);
-    // limiting multiplication operations to the port location
-    auto sIndex = startS;
-    // The sub-array partition model is adopted for TXRU virtualization,
-    // as described in Section 5.2.2 of 3GPP TR 36.897,
-    // and so equal beam weights are used for all the ports.
-    // Support of the full-connection model for TXRU virtualization would need extensions.
-    const auto uElemsPerPort = uAnt->GetHElemsPerPort();
-    const auto sElemsPerPort = sAnt->GetHElemsPerPort();
-    for (size_t tIndex = 0; tIndex < sPortElems; tIndex++, sIndex++)
-    {
-        std::complex<double> rxSum(0, 0);
-        auto uIndex = startU;
-        for (size_t rIndex = 0; rIndex < uPortElems; rIndex++, uIndex++)
-        {
-            rxSum += std::conj(uW[uIndex - startU]) * params->m_channel(uIndex, sIndex, cIndex);
-            const auto testV = rIndex % uElemsPerPort;
-            if (const auto ptInc = uElemsPerPort - 1; testV == ptInc)
-            {
-                const auto incVal = uAnt->GetNumColumns() - uElemsPerPort;
-                uIndex += incVal; // Increment by a factor to reach next column in a port
-            }
-        }
-
-        txSum += sW[sIndex - startS] * rxSum;
-        const auto testV = tIndex % sElemsPerPort;
-        if (const auto ptInc = sElemsPerPort - 1; testV == ptInc)
-        {
-            const size_t incVal = sAnt->GetNumColumns() - sElemsPerPort;
-            sIndex += incVal; // Increment by a factor to reach next column in a port
-        }
-    }
-    return txSum;
 }
 
 Ptr<SpectrumSignalParameters>
@@ -277,7 +313,8 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
              (zod[cIndex].first * aod[cIndex].second * sSpeed.x +
               zod[cIndex].first * aod[cIndex].first * sSpeed.y + zod[cIndex].second * sSpeed.z) +
              2 * alpha * D);
-        doppler[cIndex] = std::complex(cos(tempDoppler), sin(tempDoppler));
+        // std::polar folds cos+sin into one sincos on modern libstdc++.
+        doppler[cIndex] = std::polar(1.0, tempDoppler);
     }
 
     NS_ASSERT(numCluster <= doppler.GetSize());
@@ -301,49 +338,54 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain(
                   "Unexpected mismatch in the number of RBs and channel matrix and precoding "
                   "matrix. MultiModelSpectrumChannel conversion is not yet supported.");
 
-    // Calculate RX PSD from the spectrum channel matrix H and
-    // the precoding matrix P as: PSD = (H*P)^h * (H*P)
-    Ptr<const ComplexMatrixArray> p;
+    // Calculate the RX PSD from the spectrum channel matrix H and the
+    // precoding matrix P as PSD = Trace((H*P)^h * (H*P)), i.e., per RB:
+    //   PSD[rb] = sum_rx sum_txStream |(H*P)[rx, txStream, rb]|^2
+    auto specMat = rxParams->spectrumChannelMatrix;
+    const uint32_t numRb = rxParams->psd->GetValuesN();
     if (!rxParams->precodingMatrix)
     {
-        // When the precoding matrix P is not set, we create one with a single column
-        auto page = ComplexMatrixArray(rxParams->spectrumChannelMatrix->GetNumCols(), 1, 1);
-        // Initialize it to the inverse square of the number of txPorts
-        page.Elem(0, 0, 0) = 1.0 / sqrt(rxParams->spectrumChannelMatrix->GetNumCols());
-        for (size_t rowI = 0; rowI < rxParams->spectrumChannelMatrix->GetNumCols(); rowI++)
+        // When no precoding matrix is set, the default is a single isotropic
+        // column P[tx, 0, rb] = 1/sqrt(numTx). In that case H*P reduces to
+        // the row sums of H scaled by 1/sqrt(numTx), so
+        //   PSD[rb] = (1/numTx) * sum_rx |sum_tx H[rx, tx, rb]|^2
+        // and the H*P product never needs to be formed.
+        const size_t numRxPorts = specMat->GetNumRows();
+        const size_t numTxPorts = specMat->GetNumCols();
+        const double invNumTxPorts = 1.0 / static_cast<double>(numTxPorts);
+        for (uint32_t rb = 0; rb < numRb; ++rb)
         {
-            page.Elem(rowI, 0, 0) = page.Elem(0, 0, 0);
+            // Each per-RB page is column-major: (rx, tx) is page[rx + numRxPorts * tx].
+            const std::complex<double>* page = specMat->GetPagePtr(rb);
+            double psd = 0.0;
+            for (size_t rx = 0; rx < numRxPorts; ++rx)
+            {
+                std::complex<double> rowSum(0.0, 0.0);
+                for (size_t tx = 0; tx < numTxPorts; ++tx)
+                {
+                    rowSum += page[rx + numRxPorts * tx];
+                }
+                psd += std::norm(rowSum);
+            }
+            (*rxParams->psd)[rb] = psd * invNumTxPorts;
         }
-        // Replicate vector to match the number of RBGs
-        p = Create<const ComplexMatrixArray>(
-            page.MakeNCopies(rxParams->spectrumChannelMatrix->GetNumPages()));
     }
     else
     {
-        p = rxParams->precodingMatrix;
-    }
-    // When we have the precoding matrix P, we first do
-    // H(rxPorts,txPorts,numRbs) x P(txPorts,txStreams,numRbs) = HxP(rxPorts,txStreams,numRbs)
-    MatrixBasedChannelModel::Complex3DVector hP = *rxParams->spectrumChannelMatrix * *p;
-
-    // Then (HxP)^h dimensions are (txStreams, rxPorts, numRbs)
-    // MatrixBasedChannelModel::Complex3DVector hPHerm = hP.HermitianTranspose();
-
-    // Finally, (HxP)^h x (HxP) = PSD(txStreams, txStreams, numRbs)
-    // MatrixBasedChannelModel::Complex3DVector psd = hPHerm * hP;
-
-    // And the received psd is the Trace(PSD).
-    // To avoid wasting computations, we only compute the main diagonal of hPHerm*hP
-    for (uint32_t rbIdx = 0; rbIdx < rxParams->psd->GetValuesN(); ++rbIdx)
-    {
-        (*rxParams->psd)[rbIdx] = 0.0;
-        for (size_t rxPort = 0; rxPort < hP.GetNumRows(); ++rxPort)
+        // Explicit precoding matrix: form H*P, then sum the squared
+        // magnitudes. std::norm(z) is |z|^2 without the square root.
+        MatrixBasedChannelModel::Complex3DVector hP = *specMat * *rxParams->precodingMatrix;
+        for (uint32_t rb = 0; rb < numRb; ++rb)
         {
-            for (size_t txStream = 0; txStream < hP.GetNumCols(); ++txStream)
+            double psd = 0.0;
+            for (size_t rx = 0; rx < hP.GetNumRows(); ++rx)
             {
-                (*rxParams->psd)[rbIdx] +=
-                    std::real(std::conj(hP(rxPort, txStream, rbIdx)) * hP(rxPort, txStream, rbIdx));
+                for (size_t txStream = 0; txStream < hP.GetNumCols(); ++txStream)
+                {
+                    psd += std::norm(hP(rx, txStream, rb));
+                }
             }
+            (*rxParams->psd)[rb] = psd;
         }
     }
     return rxParams;
@@ -355,7 +397,7 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
     Ptr<const MatrixBasedChannelModel::Complex3DVector> longTerm,
     Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
     Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
-    PhasedArrayModel::ComplexVector doppler,
+    const PhasedArrayModel::ComplexVector& doppler,
     uint8_t numTxPorts,
     uint8_t numRxPorts,
     const bool isReverse)
@@ -365,7 +407,17 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
     NS_ASSERT_MSG(numCluster <= channelParams->m_delay.size(),
                   "Channel params delays size is smaller than number of clusters");
 
-    auto directionalLongTerm = isReverse ? longTerm->Transpose() : *longTerm;
+    // Avoid the full-copy of `*longTerm` on the (common) non-reverse
+    // path. `directionalLongTerm` is read-only below; in the reverse
+    // case we still need the materialised Transpose, but otherwise
+    // we keep a pointer-aliased view of the cached matrix.
+    MatrixBasedChannelModel::Complex3DVector reversedLongTerm;
+    if (isReverse)
+    {
+        reversedLongTerm = longTerm->Transpose();
+    }
+    const MatrixBasedChannelModel::Complex3DVector& directionalLongTerm =
+        isReverse ? reversedLongTerm : *longTerm;
 
     Ptr<MatrixBasedChannelModel::Complex3DVector> chanSpct =
         Create<MatrixBasedChannelModel::Complex3DVector>(numRxPorts,
@@ -397,46 +449,108 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
         }
     }
 
-    // Compute the product between the doppler and the delay sincos
-    auto delaySincosCopy = channelParams->m_cachedDelaySincos;
-    for (size_t iRb = 0; iRb < inPsd->GetValuesN(); iRb++)
+    // The remaining work is the contraction
+    //
+    //   chanSpct[rx, tx, rb] =
+    //       sqrt(psd[rb]) * sum_c longTerm[rx, tx, c] * delaySincos[rb, c] * doppler[c],
+    //
+    // the dominant cost of CalcRxPowerSpectralDensity at high port counts and
+    // wide bandwidths. To let the compiler autovectorize it, the inputs are
+    // first packed into cluster-contiguous buffers with the real and imaginary
+    // parts split into separate arrays (structure-of-arrays), so the hot loop
+    // reads plain, contiguous double lanes:
+    //   longTermRe/Im[c * rxtx + i] = longTerm[rx, tx, c]  (i = rx + numRxPorts*tx)
+    //   phasorRe/Im[c * numRb + rb] = delaySincos[rb, c] * doppler[c]
+    //
+    // The scratch buffers are thread_local so that this hot path does not pay
+    // a heap allocation per call: resize() only reallocates when the sizes
+    // grow, and every element is overwritten before being read.
+    const size_t rxtx = static_cast<size_t>(numRxPorts) * numTxPorts;
+    thread_local std::vector<double> longTermRe;
+    thread_local std::vector<double> longTermIm;
+    thread_local std::vector<double> phasorRe;
+    thread_local std::vector<double> phasorIm;
+    thread_local std::vector<double> sqrtPsd;
+    thread_local std::vector<double> rbSumRe;
+    thread_local std::vector<double> rbSumIm;
+
+    longTermRe.resize(numCluster * rxtx);
+    longTermIm.resize(numCluster * rxtx);
+    const auto& longTermValues = directionalLongTerm.GetValues();
+    for (size_t k = 0; k < numCluster * rxtx; ++k)
     {
-        for (std::size_t cIndex = 0; cIndex < numCluster; cIndex++)
+        longTermRe[k] = longTermValues[k].real();
+        longTermIm[k] = longTermValues[k].imag();
+    }
+
+    phasorRe.resize(numCluster * numRb);
+    phasorIm.resize(numCluster * numRb);
+    const auto& delaySincos = channelParams->m_cachedDelaySincos.GetValues();
+    for (size_t c = 0; c < numCluster; ++c)
+    {
+        const std::complex<double> dopplerC = doppler[c];
+        for (size_t rb = 0; rb < numRb; ++rb)
         {
-            delaySincosCopy(iRb, cIndex) *= doppler[cIndex];
+            const std::complex<double> phasor = delaySincos[c * numRb + rb] * dopplerC;
+            phasorRe[c * numRb + rb] = phasor.real();
+            phasorIm[c * numRb + rb] = phasor.imag();
         }
     }
 
-    // If "params" (ChannelMatrix) and longTerm were computed for the reverse direction (e.g. this
-    // is a DL transmission but params and longTerm were last updated during UL), then the elements
-    // in longTerm start from different offsets.
-
-    auto vit = inPsd->ValuesBegin(); // psd iterator
-    size_t iRb = 0;
-    // Compute the frequency-domain channel matrix
-    while (vit != inPsd->ValuesEnd())
+    // Precompute sqrt(psd[rb]) for all RBs; subbands with zero TX power keep
+    // a zero channel coefficient.
+    sqrtPsd.resize(numRb);
     {
-        if (*vit != 0.00)
+        auto vit = inPsd->ValuesBegin();
+        for (size_t rb = 0; rb < numRb; ++rb, ++vit)
         {
-            auto sqrtVit = sqrt(*vit);
-            for (auto rxPortIdx = 0; rxPortIdx < numRxPorts; rxPortIdx++)
+            sqrtPsd[rb] = (*vit > 0.0) ? std::sqrt(*vit) : 0.0;
+        }
+    }
+
+    // Per RB, accumulate over all clusters into a small (rxtx-sized,
+    // L1-resident) split re/im buffer, then write that RB page once. The
+    // split layout plus __restrict turn the inner loop into two contiguous
+    // FMA reductions that vectorize over SIMD lanes, and the small
+    // accumulator avoids re-streaming the whole multi-MB output once per
+    // cluster. The summation order (c ascending) matches a straightforward
+    // per-element cluster loop bit for bit, up to FMA contraction.
+    rbSumRe.resize(rxtx);
+    rbSumIm.resize(rxtx);
+    for (size_t rb = 0; rb < numRb; ++rb)
+    {
+        double* __restrict sumRe = rbSumRe.data();
+        double* __restrict sumIm = rbSumIm.data();
+        std::fill_n(sumRe, rxtx, 0.0);
+        std::fill_n(sumIm, rxtx, 0.0);
+        for (size_t c = 0; c < numCluster; ++c)
+        {
+            const double phRe = phasorRe[c * numRb + rb];
+            const double phIm = phasorIm[c * numRb + rb];
+            const double* __restrict ltRe = &longTermRe[c * rxtx];
+            const double* __restrict ltIm = &longTermIm[c * rxtx];
+            for (size_t i = 0; i < rxtx; ++i)
             {
-                for (auto txPortIdx = 0; txPortIdx < numTxPorts; txPortIdx++)
-                {
-                    std::complex subsbandGain(0.0, 0.0);
-                    for (size_t cIndex = 0; cIndex < numCluster; cIndex++)
-                    {
-                        subsbandGain += directionalLongTerm(rxPortIdx, txPortIdx, cIndex) *
-                                        delaySincosCopy(iRb, cIndex);
-                    }
-                    // Multiply with the square root of the input PSD so that the norm (absolute
-                    // value squared) of chanSpct will be the output PSD
-                    chanSpct->Elem(rxPortIdx, txPortIdx, iRb) = sqrtVit * subsbandGain;
-                }
+                // sum[i] += longTerm[i] * phasor, on the split re/im arrays.
+                sumRe[i] += ltRe[i] * phRe - ltIm[i] * phIm;
+                sumIm[i] += ltRe[i] * phIm + ltIm[i] * phRe;
             }
         }
-        ++vit;
-        ++iRb;
+        // Multiply with the square root of the input PSD so that the norm
+        // (absolute value squared) of chanSpct will be the output PSD.
+        const double scale = sqrtPsd[rb];
+        std::complex<double>* page = chanSpct->GetPagePtr(rb);
+        if (scale == 0.0)
+        {
+            std::fill_n(page, rxtx, std::complex<double>(0.0, 0.0));
+        }
+        else
+        {
+            for (size_t i = 0; i < rxtx; ++i)
+            {
+                page[i] = std::complex<double>(sumRe[i] * scale, sumIm[i] * scale);
+            }
+        }
     }
     return chanSpct;
 }

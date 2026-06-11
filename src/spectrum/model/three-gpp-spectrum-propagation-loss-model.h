@@ -153,7 +153,7 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         Ptr<const MatrixBasedChannelModel::Complex3DVector> longTerm,
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
-        PhasedArrayModel::ComplexVector doppler,
+        const PhasedArrayModel::ComplexVector& doppler,
         const uint8_t numTxPorts,
         const uint8_t numRxPorts,
         const bool isReverse);
@@ -188,32 +188,6 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const PhasedArrayModel> sAnt,
         Ptr<const PhasedArrayModel> uAnt) const;
-
-    /**
-     * @brief Computes a longTerm component from a specific port of s device to the
-     * specific port of u device and for a specific cluster index
-     *
-     * The beamformed (long-term) effective channel coefficient:
-     * \f$ h_{\rm eff} = \mathbf{w}_{\rm rx}^H \mathbf{H} \mathbf{w}_{\rm tx} \f$.
-     *
-     * @note The RX beamforming vector is stored on the antenna as \f$\mathbf{w}_{\rm rx}\f$.
-     *       This function applies it as a Hermitian inner product (i.e., uses the complex
-     *       conjugate of the RX weights) when forming \f$\mathbf{w}_{\rm rx}^H\f$.
-     * @param params The params that include the channel matrix
-     * @param sAnt pointer to first antenna
-     * @param uAnt uAnt pointer to second antenna
-     * @param sPortIdx the port index of the s device
-     * @param uPortIdx the port index of the u device
-     * @param cIndex the cluster index
-     * @return longTerm component for port pair and for a specific cluster index
-     */
-    std::complex<double> CalculateLongTermComponent(
-        Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
-        Ptr<const PhasedArrayModel> sAnt,
-        Ptr<const PhasedArrayModel> uAnt,
-        const uint16_t sPortIdx,
-        const uint16_t uPortIdx,
-        const uint16_t cIndex) const;
 
     /**
      * @brief Computes the beamforming gain and applies it to the TX PSD
