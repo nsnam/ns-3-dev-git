@@ -794,6 +794,28 @@ class CORE_EXPORT Time
      */
     constexpr std::strong_ordering operator<=>(const Time& other) const = default;
 
+#ifdef NS_MSVC
+    /**
+     * Equality operator. Normally redundant when operator<=> is defaulted, so do
+     * not delete it as such: it is intentional. Declaring operator== ourselves
+     * (instead of letting the defaulted operator<=> synthesize it) prevents MSVC
+     * 18 (2026) from treating Time as trivially equality-comparable. That trait
+     * would otherwise lead the MSVC STL to select its vectorized std::find path
+     * (e.g. in wifi), which fails to compile because Time is not trivially
+     * copyable.
+     *
+     * The guard is deliberately the broad NS_MSVC rather than a version check:
+     * the operator is semantically identical to the defaulted one, so emitting
+     * it on every MSVC build is harmless.
+     *
+     * @param other Time to compare to this one
+     * @returns \c true if both Time instances have the same number of ticks.
+     */
+    constexpr bool operator==(const Time& other) const
+    {
+        return m_data == other.m_data;
+    }
+#endif
   private:
     /**
      * @cond HIDE_FROM_DOXYGEN
