@@ -115,6 +115,7 @@ set(header_files
     utils/flow-id-tag.h
     utils/generic-phy.h
     utils/header-serialization-test.h
+    utils/iana-link-type-numbers.h
     utils/inet-socket-address.h
     utils/inet6-socket-address.h
     utils/ipv4-address.h
