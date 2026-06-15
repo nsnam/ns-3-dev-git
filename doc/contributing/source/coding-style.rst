@@ -1135,6 +1135,20 @@ identifier begins the sentence. Two spaces after each sentence helps to make
 emacs sentence commands work. Sometimes ``NS_LOG_DEBUG`` statements can
 be also used in place of comments.
 
+Comments should describe the code as it currently stands, not its history.
+Do not write comments that narrate a change or contrast new code with what
+was there before (e.g., "the previous version used std::abs, which forced a
+positive angle"). Such rationale belongs in the Work Item or Merge
+Request description, not in the source, where it becomes stale and misleads
+future readers who never saw the old code. Reserve comments for nuance or
+careful handling that is not evident from the code itself; do not add a
+comment for every statement or to restate what straightforward code plainly
+does.  Comments about previous code are acceptable if pointing to a common
+pitfall, to avoid such code from being reintroduced (e.g., a comment such
+as "Optimization: Ternary if operator is faster than std::max()" or
+"Avoid (...) due to rounding issues. See issue #..." are appropriate
+to leave behind).
+
 Short one-line comments and long comments can use the C++ comment style;
 that is, ``//``, but longer comments may use C-style comments.
 Use one space after ``//`` or ``/*``.

@@ -93,6 +93,7 @@ The full coding style guide is documented in `doc/contributing/source/coding-sty
 
 - **Clang-format**: Formatting rules and current C++ standard alignment are in .clang-format
 - **No Unicode symbols**: Do not use Unicode mathematical symbols (e.g., ≤, ≥, ×, ÷, ∑, π) or arrows (e.g., →, ←, ⇒, ↑) in comments or Doxygen documentation; use ASCII equivalents instead (e.g., `<=`, `>=`, `*`, `/`, `->`, `=>`)
+- **Comments**: Comment judiciously. Add an inline comment only when code involves nuance or non-obvious handling - not for every statement, and not to explain straightforward operation. Avoid writing comments that narrate the change you are making (unless requested by the human reviewer) or describe what the previous/replaced code did. Full guidance is in `doc/contributing/source/coding-style.rst` (Comments section).
 
 ### Sphinx/reStructuredText Documentation
 
@@ -153,6 +154,9 @@ class MyClass
 - 72 character limit for first line
 - Use "(fixes #issue)" for bug fixes, after the list of modules but before
   the summary of the commit, where `#issue` is the number of the issue.
+  If partially fixing an issue, use "(partially fixes #issue)".
+- Avoid adding a commit message body to explain the commit; allow a
+  human reviewer to add one if he or she deems necessary.
 
 ## Common Development Tasks
 
