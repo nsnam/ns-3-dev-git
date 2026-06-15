@@ -75,13 +75,13 @@ weekly-build-gcc-13-default:
     LIBGSL: libgsl27
 
 # Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
-weekly-build-gcc-13-optimized:
+weekly-build-gcc-13-release:
   extends: .weekly-gcc-base
   needs: ["weekly-gcc"]
   image: ubuntu:24.04
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: g++-13
     LIBGSL: libgsl27
     EXTRA_OPTIONS: --disable-eigen
@@ -99,15 +99,15 @@ weekly-test-gcc-13-default:
     LIBGSL: libgsl27
 
 # Aug. 26, 2023: --disable-eigen is needed to prevent a -Werror=unused-variable
-weekly-test-gcc-13-optimized:
+weekly-test-gcc-13-release:
   extends: .weekly-gcc-base
   image: ubuntu:24.04
   stage: test
-  needs: ["weekly-build-gcc-13-optimized"]
+  needs: ["weekly-build-gcc-13-release"]
   dependencies:
-    - weekly-build-gcc-13-optimized
+    - weekly-build-gcc-13-release
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: g++-13
     LIBGSL: libgsl27
     EXTRA_OPTIONS: --disable-eigen

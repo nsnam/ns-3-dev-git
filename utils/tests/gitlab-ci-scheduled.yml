@@ -106,8 +106,8 @@ daily-test-default:
   variables:
     MODE: default
 
-# Run the test.py script with files compiled in optimized mode
-daily-build-optimized:
+# Run the test.py script with files compiled in release mode
+daily-build-release:
   extends: .base-test
   rules:
     - if: $RELEASE == "daily"
@@ -116,20 +116,63 @@ daily-build-optimized:
   stage: build
   needs: ["daily-jobs"]
   variables:
-    MODE: optimized
+    MODE: release
 
-daily-test-optimized:
+daily-test-release:
   extends: .base-test
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   stage: test
-  needs: ["daily-build-optimized"]
+  needs: ["daily-build-release"]
   dependencies:
-    - daily-build-optimized
+    - daily-build-release
+  variables:
+    MODE: release
+
+daily-build-test-optimized-gcc:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: build
+  needs: ["daily-jobs"]
+  dependencies: []
   variables:
     MODE: optimized
+    FORCE_TESTS: Force
+  tags:
+    - nsnam
+    - linux
+
+daily-build-test-optimized-clang-libc++:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: build
+  needs: ["daily-jobs"]
+  dependencies: []
+  before_script:
+    - pacman-key --init
+    - pacman -Sy archlinux-keyring --noconfirm
+    - pacman -Syu --noconfirm
+      base-devel cmake ninja ccache
+      python python-pip
+      clang libc++
+      boost gsl openmpi
+      openssh git
+  variables:
+    MODE: optimized
+    CXX: clang++
+    CXXFLAGS: -stdlib=libc++
+    FORCE_TESTS: Force
+  tags:
+    - nsnam
+    - linux
 
 ### Sanitizer tests
 weekly-build-test-optimized-sanitizers:

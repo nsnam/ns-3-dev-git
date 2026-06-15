@@ -19,11 +19,11 @@
       openssh git
 
 # Build stage
-per-commit-clang-optimized-libc++:
+per-commit-clang-release-libc++:
   extends: .base-per-commit-compile
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: clang++
     CXXFLAGS: -stdlib=libc++
     EXTRA_OPTIONS: --disable-gtk
@@ -42,11 +42,11 @@ per-commit-gcc-default:
     MODE: default
     COMPILER: g++
 
-per-commit-gcc-optimized:
+per-commit-gcc-release:
   extends: .base-per-commit-compile
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: g++
 
 per-commit-disabled-precompiled-headers:
@@ -76,24 +76,24 @@ per-commit-gcc-default-test:
     MODE: default
     COMPILER: g++
 
-per-commit-gcc-optimized-test:
+per-commit-gcc-release-test:
   extends: .base-per-commit-compile
   stage: test
-  needs: ["per-commit-gcc-optimized"]
+  needs: ["per-commit-gcc-release"]
   dependencies:
-    - per-commit-gcc-optimized
+    - per-commit-gcc-release
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: g++
 
-per-commit-clang-optimized-libc++-test:
+per-commit-clang-release-libc++-test:
   extends: .base-per-commit-compile
   stage: test
-  needs: ["per-commit-clang-optimized-libc++"]
+  needs: ["per-commit-clang-release-libc++"]
   dependencies:
-    - per-commit-clang-optimized-libc++
+    - per-commit-clang-release-libc++
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: clang++
     CXXFLAGS: -stdlib=libc++
     EXTRA_OPTIONS: --disable-gtk

@@ -61,13 +61,13 @@ weekly-build-clang-17-default:
     CLANG: 17
     MODE: default
 
-weekly-build-clang-17-optimized:
+weekly-build-clang-17-release:
   extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
     CLANG: 17
-    MODE: optimized
+    MODE: release
 
 weekly-test-clang-17-default:
   extends: .weekly-clang-ubuntu24.04
@@ -79,15 +79,15 @@ weekly-test-clang-17-default:
     CLANG: 17
     MODE: default
 
-weekly-test-clang-17-optimized:
+weekly-test-clang-17-release:
   extends: .weekly-clang-ubuntu24.04
   stage: test
-  needs: ["weekly-build-clang-17-optimized"]
+  needs: ["weekly-build-clang-17-release"]
   dependencies:
-    - weekly-build-clang-17-optimized
+    - weekly-build-clang-17-release
   variables:
     CLANG: 17
-    MODE: optimized
+    MODE: release
 
 # CLANG 18
 weekly-build-clang-18-debug:
@@ -106,13 +106,13 @@ weekly-build-clang-18-default:
     CLANG: 18
     MODE: default
 
-weekly-build-clang-18-optimized:
+weekly-build-clang-18-release:
   extends: .weekly-clang-ubuntu24.04
   needs: ["weekly-clang"]
   stage: build
   variables:
     CLANG: 18
-    MODE: optimized
+    MODE: release
 
 weekly-test-clang-18-default:
   extends: .weekly-clang-ubuntu24.04
@@ -124,12 +124,12 @@ weekly-test-clang-18-default:
     CLANG: 18
     MODE: default
 
-weekly-test-clang-18-optimized:
+weekly-test-clang-18-release:
   extends: .weekly-clang-ubuntu24.04
   stage: test
-  needs: ["weekly-build-clang-18-optimized"]
+  needs: ["weekly-build-clang-18-release"]
   dependencies:
-    - weekly-build-clang-18-optimized
+    - weekly-build-clang-18-release
   variables:
     CLANG: 18
-    MODE: optimized
+    MODE: release

@@ -65,13 +65,13 @@ weekly-build-ubuntu-22.04-default:
     LIBXML2: libxml2
     COMPILER: g++
 
-weekly-build-ubuntu-22.04-optimized:
+weekly-build-ubuntu-22.04-release:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
   image: ubuntu:22.04
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl27
     LIBXML2: libxml2
     COMPILER: g++
@@ -89,15 +89,15 @@ weekly-test-ubuntu-22.04-default:
     LIBXML2: libxml2
     COMPILER: g++
 
-weekly-test-ubuntu-22.04-optimized:
+weekly-test-ubuntu-22.04-release:
   extends: .weekly-base-ubuntu
   image: ubuntu:22.04
   stage: test
-  needs: ["weekly-build-ubuntu-22.04-optimized"]
+  needs: ["weekly-build-ubuntu-22.04-release"]
   dependencies:
-    - weekly-build-ubuntu-22.04-optimized
+    - weekly-build-ubuntu-22.04-release
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl27
     LIBXML2: libxml2
     COMPILER: g++
@@ -125,13 +125,13 @@ weekly-build-ubuntu-24.04-default:
     LIBXML2: libxml2
     COMPILER: g++
 
-weekly-build-ubuntu-24.04-optimized:
+weekly-build-ubuntu-24.04-release:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
   image: ubuntu:24.04
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl27
     LIBXML2: libxml2
     COMPILER: g++
@@ -149,15 +149,15 @@ weekly-test-ubuntu-24.04-default:
     LIBXML2: libxml2
     COMPILER: g++
 
-weekly-test-ubuntu-24.04-optimized:
+weekly-test-ubuntu-24.04-release:
   extends: .weekly-base-ubuntu
   image: ubuntu:24.04
   stage: test
-  needs: ["weekly-build-ubuntu-24.04-optimized"]
+  needs: ["weekly-build-ubuntu-24.04-release"]
   dependencies:
-    - weekly-build-ubuntu-24.04-optimized
+    - weekly-build-ubuntu-24.04-release
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl27
     LIBXML2: libxml2
     COMPILER: g++
@@ -185,13 +185,13 @@ weekly-build-ubuntu-26.04-default:
     LIBXML2: libxml2-16
     COMPILER: g++
 
-weekly-build-ubuntu-26.04-optimized:
+weekly-build-ubuntu-26.04-release:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
   image: ubuntu:26.04
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl28
     LIBXML2: libxml2-16
     COMPILER: g++
@@ -209,15 +209,15 @@ weekly-test-ubuntu-26.04-default:
     LIBXML2: libxml2-16
     COMPILER: g++
 
-weekly-test-ubuntu-26.04-optimized:
+weekly-test-ubuntu-26.04-release:
   extends: .weekly-base-ubuntu
   image: ubuntu:26.04
   stage: test
-  needs: ["weekly-build-ubuntu-26.04-optimized"]
+  needs: ["weekly-build-ubuntu-26.04-release"]
   dependencies:
-    - weekly-build-ubuntu-26.04-optimized
+    - weekly-build-ubuntu-26.04-release
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl28
     LIBXML2: libxml2-16
     COMPILER: g++
@@ -245,13 +245,13 @@ weekly-build-ubuntu-rolling-default:
     LIBXML2: libxml2-16
     COMPILER: g++
 
-weekly-build-ubuntu-rolling-optimized:
+weekly-build-ubuntu-rolling-release:
   extends: .weekly-base-ubuntu
   needs: ["weekly-ubuntu"]
   image: ubuntu:rolling
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl28
     LIBXML2: libxml2-16
     COMPILER: g++
@@ -269,15 +269,15 @@ weekly-test-ubuntu-rolling-default:
     LIBXML2: libxml2-16
     COMPILER: g++
 
-weekly-test-ubuntu-rolling-optimized:
+weekly-test-ubuntu-rolling-release:
   extends: .weekly-base-ubuntu
   image: ubuntu:rolling
   stage: test
-  needs: ["weekly-build-ubuntu-rolling-optimized"]
+  needs: ["weekly-build-ubuntu-rolling-release"]
   dependencies:
-    - weekly-build-ubuntu-rolling-optimized
+    - weekly-build-ubuntu-rolling-release
   variables:
-    MODE: optimized
+    MODE: release
     LIBGSL: libgsl28
     LIBXML2: libxml2-16
     COMPILER: g++

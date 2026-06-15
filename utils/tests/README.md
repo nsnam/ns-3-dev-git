@@ -49,13 +49,13 @@ Normally, stages are executed sequentially (a stage is stared when the previous 
 
 ### Per commit jobs description
 
-After each commit, the infrastructure will test the grammar correctness by doing a build, with tests and examples enabled, in three modes: debug, default, optimized. The build is done with the default GCC of the Arch Linux distribution: more deep check are done daily and weekly. You can see the job script in `gitlab-ci.yml`. If the build stage is passed, the commits done on the master branch will also trigger a documentation update. Currently, we do not use the generated documentation as Gitlab pages, but we use a separate service to display the documentation through the web.
+After each commit, the infrastructure will test the grammar correctness by doing a build, with tests and examples enabled, in three modes: debug, default, release. The build is done with the default GCC of the Arch Linux distribution: more deep check are done daily and weekly. You can see the job script in `gitlab-ci.yml`. If the build stage is passed, the commits done on the master branch will also trigger a documentation update. Currently, we do not use the generated documentation as Gitlab pages, but we use a separate service to display the documentation through the web.
 
 Note that if a commit is pushed to a branch associated to an active merge request, the jobs will be run in a different way, and it will be possible to manually trigger additional jobs. Use this opportunity with caution, as it does consume nsnam minutes (not user minutes).
 
 ### Daily jobs description
 
-Thanks to the "Schedule" feature of Gitlab, we setup pipelines that have to be run once per day. The scheduled pipeline has to define a variable, named `RELEASE`, that should be set to `daily`. In the scripts then, we check for the value of that variable and run the jobs accordingly. As daily jobs, we perform a test run in all the modes (debug, default, optimized) under Arch Linux.
+Thanks to the "Schedule" feature of Gitlab, we setup pipelines that have to be run once per day. The scheduled pipeline has to define a variable, named `RELEASE`, that should be set to `daily`. In the scripts then, we check for the value of that variable and run the jobs accordingly. As daily jobs, we perform a test run in all the modes (debug, default, release, optimized) under Arch Linux.
 
 ### Weekly jobs description
 
