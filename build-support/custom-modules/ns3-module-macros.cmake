@@ -650,37 +650,25 @@ function(write_module_header name header_files)
   string(TOUPPER "${name}" uppercase_name)
   string(REPLACE "-" "_" final_name "${uppercase_name}")
   # Common module_header
-  list(APPEND contents "#ifdef NS3_MODULE_COMPILATION ")
+  list(APPEND contents "#ifdef NS3_MODULE_COMPILATION\n")
   list(
     APPEND
     contents
-    "
-    #error \"Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts.\" "
+    "    #error \"Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts.\"\n"
   )
-  list(APPEND contents "
-#endif "
-  )
-  list(APPEND contents "
-#ifndef NS3_MODULE_"
-  )
-  list(APPEND contents ${final_name})
-  list(APPEND contents "
-    // Module headers: "
-  )
+  list(APPEND contents "#endif\n")
+  list(APPEND contents "#ifndef NS3_MODULE_${final_name}\n")
+  list(APPEND contents "    // Module headers:\n")
 
   # Write each header listed to the contents variable
   foreach(header ${header_files})
     get_filename_component(head ${header} NAME)
-    list(APPEND contents "
-    #include <ns3/${head}>"
-    )
+    list(APPEND contents "    #include <ns3/${head}>\n")
     # include \"ns3/${head}\"")
   endforeach()
 
   # Common module footer
-  list(APPEND contents "
-#endif "
-  )
+  list(APPEND contents "#endif\n")
   if(EXISTS ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h)
     file(READ ${CMAKE_HEADER_OUTPUT_DIRECTORY}/${name}-module.h oldcontents)
     string(REPLACE ";" "" contents "${contents}")
