@@ -1104,7 +1104,15 @@ SixLowPanIphc::Serialize(Buffer::Iterator start) const
         switch (GetDam())
         {
         case HC_INLINE:
-            i.Write(m_dstInlinePart, 16);
+            // Stateful (DAC=1) multicast is the 48-bit form (RFC 6282, Section 3.1.1).
+            if (!GetDac())
+            {
+                i.Write(m_dstInlinePart, 16);
+            }
+            else
+            {
+                i.Write(m_dstInlinePart, 6);
+            }
             break;
         case HC_COMPR_64:
             i.Write(m_dstInlinePart, 6);
@@ -1238,7 +1246,15 @@ SixLowPanIphc::Deserialize(Buffer::Iterator start)
         switch (GetDam())
         {
         case HC_INLINE:
-            i.Read(m_dstInlinePart, 16);
+            // Stateful (DAC=1) multicast is the 48-bit form (RFC 6282, Section 3.1.1).
+            if (!GetDac())
+            {
+                i.Read(m_dstInlinePart, 16);
+            }
+            else
+            {
+                i.Read(m_dstInlinePart, 6);
+            }
             break;
         case HC_COMPR_64:
             i.Read(m_dstInlinePart, 6);
