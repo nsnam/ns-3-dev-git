@@ -37,7 +37,7 @@ PcapHelper::~PcapHelper()
 Ptr<PcapFileWrapper>
 PcapHelper::CreateFile(std::string filename,
                        std::ios::openmode filemode,
-                       DataLinkType dataLinkType,
+                       iana::LinkType dataLinkType,
                        uint32_t snapLen,
                        int32_t tzCorrection)
 {

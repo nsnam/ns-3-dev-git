@@ -9,6 +9,8 @@
  */
 #include "lr-wpan-helper.h"
 
+#include "ns3/global-value.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/log.h"
 #include "ns3/lr-wpan-csmaca.h"
 #include "ns3/lr-wpan-error-model.h"
@@ -362,8 +364,18 @@ LrWpanHelper::EnablePcapInternal(std::string prefix,
         filename = pcapHelper.GetFilenameFromDevice(prefix, device);
     }
 
-    Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_IEEE802_15_4);
+    BooleanValue checksumEnabled;
+    GlobalValue::GetValueByName("ChecksumEnabled", checksumEnabled);
+
+    Ptr<PcapFileWrapper> file;
+    if (checksumEnabled.Get())
+    {
+        file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::IEEE802_15_4_WITHFCS);
+    }
+    else
+    {
+        file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::IEEE802_15_4_NOFCS);
+    }
 
     if (promiscuous)
     {

@@ -12,6 +12,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/callback.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/output-stream-wrapper.h"
 #include "ns3/pcap-file-wrapper.h"
 #include "ns3/simulator.h"
@@ -40,17 +41,17 @@ class PcapHelper
      */
     enum DataLinkType
     {
-        DLT_NULL = 0,
-        DLT_EN10MB = 1,
-        DLT_PPP = 9,
-        DLT_RAW = 101,
-        DLT_IEEE802_11 = 105,
-        DLT_LINUX_SLL = 113,
-        DLT_PRISM_HEADER = 119,
-        DLT_IEEE802_11_RADIO = 127,
-        DLT_IEEE802_15_4 = 195,
-        DLT_NETLINK = 253,
-        DLT_LORATAP = 270
+        DLT_NULL NS_DEPRECATED_3_49("use iana::LinkType::NULL_LINK") = 0,
+        DLT_EN10MB NS_DEPRECATED_3_49("use iana::LinkType::ETHERNET") = 1,
+        DLT_PPP NS_DEPRECATED_3_49("use iana::LinkType::PPP") = 9,
+        DLT_RAW NS_DEPRECATED_3_49("use iana::LinkType::RAW") = 101,
+        DLT_IEEE802_11 NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_11") = 105,
+        DLT_LINUX_SLL NS_DEPRECATED_3_49("use iana::LinkType::LINUX_SLL") = 113,
+        DLT_PRISM_HEADER NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_11_PRISM") = 119,
+        DLT_IEEE802_11_RADIO NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_11_RADIOTAP") = 127,
+        DLT_IEEE802_15_4 NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_15_4_WITHFCS") = 195,
+        DLT_NETLINK NS_DEPRECATED_3_49("use iana::LinkType::NETLINK") = 253,
+        DLT_LORATAP NS_DEPRECATED_3_49("use iana::LinkType::LORATAP") = 270
     };
 
     /**
@@ -103,7 +104,7 @@ class PcapHelper
      */
     Ptr<PcapFileWrapper> CreateFile(std::string filename,
                                     std::ios::openmode filemode,
-                                    DataLinkType dataLinkType,
+                                    iana::LinkType dataLinkType,
                                     uint32_t snapLen = std::numeric_limits<uint32_t>::max(),
                                     int32_t tzCorrection = 0);
     /**

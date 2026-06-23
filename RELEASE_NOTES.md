@@ -38,6 +38,7 @@ been tested on Linux. As of this release, the latest known version to work with 
 
 ### Bugs fixed
 
+- (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
 - (sixlowpan) #1342 Fixed a deserialization error in the MESH header.
 
 ## Release 3.48

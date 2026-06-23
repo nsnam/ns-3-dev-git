@@ -12,6 +12,7 @@
 #include "ns3/abort.h"
 #include "ns3/config.h"
 #include "ns3/fd-net-device.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/object-factory.h"
@@ -76,7 +77,7 @@ FdNetDeviceHelper::EnablePcapInternal(std::string prefix,
     }
 
     Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_EN10MB);
+        pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::ETHERNET);
     if (promiscuous)
     {
         pcapHelper.HookDefaultSink<FdNetDevice>(device, "PromiscSniffer", file);

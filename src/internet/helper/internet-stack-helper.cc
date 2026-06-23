@@ -22,6 +22,7 @@
 #include "ns3/config.h"
 #include "ns3/global-router-interface.h"
 #include "ns3/global-routing.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6-extension-demux.h"
@@ -462,7 +463,7 @@ InternetStackHelper::EnablePcapIpv4Internal(std::string prefix,
         filename = pcapHelper.GetFilenameFromInterfacePair(prefix, ipv4, interface);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_RAW);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::RAW);
 
     //
     // However, we only hook the trace source once to avoid multiple trace sink
@@ -568,7 +569,7 @@ InternetStackHelper::EnablePcapIpv6Internal(std::string prefix,
         filename = pcapHelper.GetFilenameFromInterfacePair(prefix, ipv6, interface);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_RAW);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::RAW);
 
     //
     // However, we only hook the trace source once to avoid multiple trace sink

@@ -20,6 +20,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
+* Pcap helpers now use ``LinkType`` enum contained in the ``iana`` namespace (``iana-link-type-numbers.h``).
+
 ### Changes to build system
 
 ### Changed behavior

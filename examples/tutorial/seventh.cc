@@ -169,7 +169,7 @@ main(int argc, char* argv[])
 
     PcapHelper pcapHelper;
     Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile("seventh.pcap", std::ios::out, PcapHelper::DLT_PPP);
+        pcapHelper.CreateFile("seventh.pcap", std::ios::out, iana::LinkType::PPP);
     devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
     // Use GnuplotHelper to plot the packet byte count over time

@@ -8,6 +8,7 @@
 
 #include "ns3/abort.h"
 #include "ns3/config.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/net-device-queue-interface.h"
@@ -87,7 +88,7 @@ PointToPointHelper::EnablePcapInternal(std::string prefix,
         filename = pcapHelper.GetFilenameFromDevice(prefix, device);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_PPP);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::PPP);
     pcapHelper.HookDefaultSink<PointToPointNetDevice>(device, "PromiscSniffer", file);
 }
 

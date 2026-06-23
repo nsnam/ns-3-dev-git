@@ -167,7 +167,7 @@ AsciiPhyReceiveSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
 }
 
 WifiPhyHelper::WifiPhyHelper(uint8_t nLinks)
-    : m_pcapDlt{PcapHelper::DLT_IEEE802_11},
+    : m_pcapDlt{iana::LinkType::IEEE802_11},
       m_pcapType{PcapCaptureType::PCAP_PER_PHY}
 {
     NS_ABORT_IF(nLinks == 0);
@@ -270,14 +270,14 @@ WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     switch (info->pcapDlt)
     {
-    case PcapHelper::DLT_IEEE802_11:
+    case iana::LinkType::IEEE802_11:
         file->Write(Simulator::Now(), packet);
         return;
-    case PcapHelper::DLT_PRISM_HEADER: {
+    case iana::LinkType::IEEE802_11_PRISM: {
         NS_FATAL_ERROR("PcapSniffTxEvent(): DLT_PRISM_HEADER not implemented");
         return;
     }
-    case PcapHelper::DLT_IEEE802_11_RADIO: {
+    case iana::LinkType::IEEE802_11_RADIOTAP: {
         Ptr<Packet> p = packet->Copy();
         const auto header = GetRadiotapHeader(p,
                                               channelFreqMhz,
@@ -311,14 +311,14 @@ WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     switch (info->pcapDlt)
     {
-    case PcapHelper::DLT_IEEE802_11:
+    case iana::LinkType::IEEE802_11:
         file->Write(Simulator::Now(), packet);
         return;
-    case PcapHelper::DLT_PRISM_HEADER: {
+    case iana::LinkType::IEEE802_11_PRISM: {
         NS_FATAL_ERROR("PcapSniffRxEvent(): DLT_PRISM_HEADER not implemented");
         return;
     }
-    case PcapHelper::DLT_IEEE802_11_RADIO: {
+    case iana::LinkType::IEEE802_11_RADIOTAP: {
         Ptr<Packet> p = packet->Copy();
         const auto header = GetRadiotapHeader(p,
                                               channelFreqMhz,
@@ -820,20 +820,20 @@ WifiPhyHelper::SetPcapDataLinkType(SupportedPcapDataLinkTypes dlt)
     switch (dlt)
     {
     case DLT_IEEE802_11:
-        m_pcapDlt = PcapHelper::DLT_IEEE802_11;
+        m_pcapDlt = iana::LinkType::IEEE802_11;
         return;
     case DLT_PRISM_HEADER:
-        m_pcapDlt = PcapHelper::DLT_PRISM_HEADER;
+        m_pcapDlt = iana::LinkType::IEEE802_11_PRISM;
         return;
     case DLT_IEEE802_11_RADIO:
-        m_pcapDlt = PcapHelper::DLT_IEEE802_11_RADIO;
+        m_pcapDlt = iana::LinkType::IEEE802_11_RADIOTAP;
         return;
     default:
         NS_ABORT_MSG("WifiPhyHelper::SetPcapFormat(): Unexpected format");
     }
 }
 
-PcapHelper::DataLinkType
+iana::LinkType
 WifiPhyHelper::GetPcapDataLinkType() const
 {
     return m_pcapDlt;

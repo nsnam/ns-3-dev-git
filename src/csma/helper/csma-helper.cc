@@ -12,6 +12,7 @@
 #include "ns3/config.h"
 #include "ns3/csma-channel.h"
 #include "ns3/csma-net-device.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/net-device-queue-interface.h"
@@ -85,7 +86,7 @@ CsmaHelper::EnablePcapInternal(std::string prefix,
     }
 
     Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_EN10MB);
+        pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::ETHERNET);
     if (promiscuous)
     {
         pcapHelper.HookDefaultSink<CsmaNetDevice>(device, "PromiscSniffer", file);
