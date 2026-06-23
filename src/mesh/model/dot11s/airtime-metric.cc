@@ -73,6 +73,7 @@ AirtimeLinkMetricCalculator::CalculateMetric(Mac48Address peerAddress,
      */
     NS_ASSERT(!peerAddress.IsGroup());
     // obtain current rate:
+    m_testHeader.SetAddr1(peerAddress);
     WifiMode mode = mac->GetWifiRemoteStationManager()
                         ->GetDataTxVector(m_testHeader, mac->GetWifiPhy()->GetChannelWidth())
                         .GetMode();
