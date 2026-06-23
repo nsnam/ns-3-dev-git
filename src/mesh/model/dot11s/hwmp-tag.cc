@@ -140,7 +140,7 @@ HwmpTag::Print(std::ostream& os) const
 {
     os << "address=" << m_address;
     os << "ttl=" << m_ttl;
-    os << "metrc=" << m_metric;
+    os << "metric=" << m_metric;
     os << "seqno=" << m_seqno;
 }
 
