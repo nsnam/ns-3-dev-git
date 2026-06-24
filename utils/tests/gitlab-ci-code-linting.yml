@@ -55,7 +55,7 @@ clang-tidy-22:
     - if (git remote | grep -qw upstream) ; then
       git remote remove upstream ;
       fi
-    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream "${CI_MERGE_REQUEST_PROJECT_URL:-https://gitlab.com/nsnam/ns-3-dev.git}"
     - git diff --name-only upstream/$CI_DEFAULT_BRANCH > $FILES_CHANGED
 
     # Run clang-tidy on all files in the following cases: 1) default branch, 2) ".clang-tidy" file changed
@@ -95,7 +95,7 @@ spell-check:
     - if (git remote | grep -qw upstream) ; then
       git remote remove upstream ;
       fi
-    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream "${CI_MERGE_REQUEST_PROJECT_URL:-https://gitlab.com/nsnam/ns-3-dev.git}"
 
     - git log --pretty=%B HEAD...upstream/$CI_DEFAULT_BRANCH ^upstream/$CI_DEFAULT_BRANCH > git_messages.txt
     # Check source code and commit messages

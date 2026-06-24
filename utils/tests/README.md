@@ -61,6 +61,28 @@ Thanks to the "Schedule" feature of Gitlab, we setup pipelines that have to be r
 
 As weekly jobs, we perform the build, testing, and documentation stage in every platform we support (Ubuntu, Fedora, Arch Linux, macOS) with all the compilers we support (GCC and CLang). Weekly pipelines should define a variable, named `RELEASE`, as `weekly`. To add the support for your platform, please see how the jobs are constructed (for instance, the GCC jobs are in `gitlab-ci-gcc.yml`). We currently miss the jobs for Windows.
 
+### Pipeline optimization
+
+In order to optimize the CI/CD usage of Merge Request (MR) pipelines, some jobs
+(e.g., code-linting and build jobs) only act on the files modified by the MR.
+The list of files changed by the MR is determined by performing a Git diff relative
+to an upstream ns-3 repository.
+
+The upstream URL is resolved by a two-way variable substitution, in the following order.
+
+1. If this job is triggered by a MR, then the upstream URL is the target repository of the MR.
+   In GitLab, this is represented by the environment variable `$CI_MERGE_REQUEST_PROJECT_URL`.
+   For example, when an MR is opened in the main ns-3-dev repository, the upstream is resolved
+   to `https://gitlab.com/nsnam/ns-3-dev.git`.
+   When an MR is opened to another ns-3 fork, the upstream resolves to that fork's URL.
+1. If the job is not triggered by an MR, `$CI_MERGE_REQUEST_PROJECT_URL` is not populated
+   (which could occur if some scripts like gitlab-ci-local are being used).
+   In that case, the upstream resolves to `https://gitlab.com/nsnam/ns-3-dev.git`.
+   This value is also used in the scheduled CI/CD pipelines of the ns-3-dev repository.
+
+The comparison is performed by comparing the content of the MR with the upstream's default
+branch (i.e., master).
+
 ## Test your changes
 
 When you fork ns-3-dev on Gitlab, you get access to some free hours of execution time on the Gitlab CI infrastructure. You automatically inherit all the scripts as well, so you can test your changes before requesting a merge. As mentioned previously, we store our YML files under the directory ./utils/tests, therefore, to execute per-commit script automatically, Gitlab CI/CD requires a custom path to the YML file.
