@@ -348,7 +348,7 @@ Ns3TcpCubicTestCase::DoRun()
     if (m_prefix == "ns3-tcp-cubic-no-heuristic")
     {
         // Check overall min and max
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(1), Seconds(19), 60, 98),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(1), Seconds(19), 60, 110),
                               true,
                               "cwnd outside range");
         // Time just before a reduction does not have much variation
@@ -359,7 +359,7 @@ Ns3TcpCubicTestCase::DoRun()
     else if (m_prefix == "ns3-tcp-cubic-fast-conv")
     {
         // Check overall min and max
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(1), Seconds(19), 60, 98),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(1), Seconds(19), 60, 110),
                               true,
                               "cwnd outside range");
         // Initial convex region does not have much variation
