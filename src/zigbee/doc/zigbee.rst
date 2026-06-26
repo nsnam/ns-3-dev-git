@@ -54,18 +54,16 @@ The NWK has the following limitations:
 - Data broadcast to low power routers is not supported as the underlying lr-wpan netdevice has no concept of energy consumption.
 - Address duplication detection is not supported.
 - Beacon mode is not througly tested.
-- 16-bit address resolution from a IEEE address at NWK layer is not supported.
 - Route Maintenance is not supported.
 
 
 The APS has the following limitations:
 
-- No binding table support
+- No binding transmission support
 - No security handling
 - No fragmentation support
 - No duplicates detection
 - No acknowledged transmissions
-- No extenended address (64-bit) destinations supported
 - No trace sources
 
 The following Zigbee layers or services are not supported yet:
@@ -364,7 +362,7 @@ The APS layer must transmit data using the ``APSD-DATA.request`` primitive. This
 - **0x00**: No address (Use Binding table to establish destinations) <Not supported>
 - **0x01**: Group address (Groupcasting)
 - **0x02**: 16-bit address with destination endpoint present (Regular Unicast or Broadcast)
-- **0x03**: 64-bit address with destination endpoint not present (Regular Unicast) <Not supported>
+- **0x03**: 64-bit address with destination endpoint not present (Regular Unicast)
 
 
 GroupCasting (Address Mode: 0x01)
@@ -415,8 +413,8 @@ This change improves the efficiency of groupcasting by reducing unnecessary broa
 
 
 
-UniCasting (Address Mode: 0x02)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UniCasting using 16-bit (Address Mode: 0x02)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Unicasting is a method of transmitting data to a single specific device endpoint.
 In Zigbee, this is achieved by using the ``APSDE-DATA.request`` primitive with the appropriate destination address mode and address information.
@@ -438,6 +436,26 @@ The following example demonstrates how to send data to a specific device endpoin
     dataReqParams.m_dstAddr16 = Mac16Address("AB:1C"); // The destination device address
     dataReqParams.m_dstEndPoint = 5; // The destination endpoint, must not be 0
     zstack->GetNwk()->GetAps()->ApsdeDataRequest(dataReqParams, p);
+
+UniCasting using 64-bit destinations(Address Mode: 0x03)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Under some circumstances, it possible to transmit data using a IEEE 64-bit address destination.
+Because the NWK layer does not transmit using IEEE addresses,
+internally the APS layer must first attempt to find the corresponding 16-bit address destination
+for the IEEE address and then pass this network address to the NWK layer.
+The APS layer does this by searching in the ``nwkAddressMap`` contained in the NWK layer.
+
+This mode of transmission is a best effort approach and it is not guaranteed that the IEEE address
+will be found in the device ``nwkAddressMap``. Typically, the usage of this mode of transmission is
+preceded by the usage of multiple ZDO commands that help to populate the network devices ``nwkAddressMaps``.
+
+Usage is similar to previous examples, in the following snippet only relevant parameters are shown::
+
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR64_DST_ENDPOINT_PRESENT; // dstAddrMode 0x03
+    dataReqParams.m_dstAddr64 = Mac64Address("00:00:00:00:00:00:00:01"); // The destination device IEEE address
+    zstack->GetNwk()->GetAps()->ApsdeDataRequest(dataReqParams, p);
+
 
 Usage
 -----
@@ -528,7 +546,7 @@ All the examples listed here shows scenarios in which a quasi-layer implementati
 The following unit test have been developed to ensure the correct behavior of the module:
 
 * ``zigbee-rreq-test``: Test some situations in which RREQ messages should be retried during a route discovery process.
-* ``zigbee-aps-data-test``: Test the APS data transmission
+* ``zigbee-aps-data-test``: Test the APS data transmission using 16-bit and 64-bit destinations.
 
 Validation
 ----------

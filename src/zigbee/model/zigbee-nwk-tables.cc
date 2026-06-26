@@ -1467,5 +1467,93 @@ BroadcastTransactionRecord::Print(Ptr<OutputStreamWrapper> stream) const
     (*os).copyfmt(oldState);
 }
 
+/***********************************************************
+ *                Nwk Address Map
+ ***********************************************************/
+
+bool
+NwkAddressMap::Update(Mac64Address ieeeAddr, Mac16Address nwkAddr)
+{
+    auto ieeeIt = m_ieeeToNwk.find(ieeeAddr.ConvertToInt());
+    if (ieeeIt != m_ieeeToNwk.end())
+    {
+        m_nwkToIeee.erase(ieeeIt->second);
+    }
+
+    auto nwkIt = m_nwkToIeee.find(nwkAddr.ConvertToInt());
+    if (nwkIt != m_nwkToIeee.end())
+    {
+        m_ieeeToNwk.erase(nwkIt->second);
+    }
+
+    m_ieeeToNwk[ieeeAddr.ConvertToInt()] = nwkAddr.ConvertToInt();
+    m_nwkToIeee[nwkAddr.ConvertToInt()] = ieeeAddr.ConvertToInt();
+
+    return true;
+}
+
+bool
+NwkAddressMap::LookupNwkAddress(Mac64Address ieeeAddr, Mac16Address& nwkAddr) const
+{
+    auto it = m_ieeeToNwk.find(ieeeAddr.ConvertToInt());
+
+    if (it == m_ieeeToNwk.end())
+    {
+        return false;
+    }
+
+    nwkAddr = Mac16Address(it->second);
+    return true;
+}
+
+bool
+NwkAddressMap::LookupIeeeAddress(Mac16Address nwkAddr, Mac64Address& ieeeAddr) const
+{
+    auto it = m_nwkToIeee.find(nwkAddr.ConvertToInt());
+
+    if (it == m_nwkToIeee.end())
+    {
+        return false;
+    }
+
+    ieeeAddr = Mac64Address(it->second);
+    return true;
+}
+
+void
+NwkAddressMap::Dispose()
+{
+    m_ieeeToNwk.clear();
+    m_nwkToIeee.clear();
+}
+
+void
+NwkAddressMap::Remove(Mac64Address ieeeAddr)
+{
+    auto it = m_ieeeToNwk.find(ieeeAddr.ConvertToInt());
+
+    if (it == m_ieeeToNwk.end())
+    {
+        return;
+    }
+
+    m_nwkToIeee.erase(it->second);
+    m_ieeeToNwk.erase(it);
+}
+
+void
+NwkAddressMap::Remove(Mac16Address nwkAddr)
+{
+    auto it = m_nwkToIeee.find(nwkAddr.ConvertToInt());
+
+    if (it == m_nwkToIeee.end())
+    {
+        return;
+    }
+
+    m_ieeeToNwk.erase(it->second);
+    m_nwkToIeee.erase(it);
+}
+
 } // namespace zigbee
 } // namespace ns3

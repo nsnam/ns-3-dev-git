@@ -73,13 +73,20 @@ class ZigbeeApsDataTestCase : public TestCase
                                            NlmeNetworkDiscoveryConfirmParams params);
 
     /**
-     * Send data to a unicast destination.
+     * Send data to a unicast 16-bit address destination.
      * This function sends a data packet from stackSrc to stackDst.
      *
      * @param stackSrc The source Zigbee stack
      * @param stackDst The destination Zigbee stack
      */
-    static void SendDataUcstDst(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst);
+    static void SendData16bitUcstDst(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst);
+
+    /**
+     * Send data to a fixed unicast 64-bit address destination
+     *
+     * @param stackSrc The source Zigbee stack (coordinator)
+     */
+    static void SendData64bitUcstDst(Ptr<ZigbeeStack> stackSrc);
 
     void DoRun() override;
 
@@ -131,7 +138,7 @@ ZigbeeApsDataTestCase::NwkNetworkDiscoveryConfirm(ZigbeeApsDataTestCase* testcas
 }
 
 void
-ZigbeeApsDataTestCase::SendDataUcstDst(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst)
+ZigbeeApsDataTestCase::SendData16bitUcstDst(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStack> stackDst)
 {
     // UCST transmission to a single 16-bit address destination
     // Data is transmitted from device stackSrc to device stackDst.
@@ -157,15 +164,50 @@ ZigbeeApsDataTestCase::SendDataUcstDst(Ptr<ZigbeeStack> stackSrc, Ptr<ZigbeeStac
 }
 
 void
+ZigbeeApsDataTestCase::SendData64bitUcstDst(Ptr<ZigbeeStack> stackSrc)
+{
+    // UCST transmission to a single 64-bit address destination
+    // A parent node ALWAYS knows both the nwk address and ieee address of its child after
+    // joining the network. We use this to test transmissions using 64-bit addresses which
+    // internally the APS must translate to a 16-bit address destination using the device
+    // nwkAddressMap.
+    Ptr<Packet> p = Create<Packet>(5);
+
+    // Because we currently do not have ZDO or ZCL or AF, clusterId
+    // and profileId numbers are non-sensical.
+    ApsdeDataRequestParams dataReqParams;
+    // creates a BitMap with transmission options
+    // Default, use 16 bit address destination (No option), equivalent to bitmap 0x00
+    ZigbeeApsTxOptions txOptions;
+    dataReqParams.m_txOptions = txOptions.GetTxOptions();
+    dataReqParams.m_useAlias = false;
+    dataReqParams.m_srcEndPoint = 3;
+    dataReqParams.m_clusterId = 9; // Arbitrary value
+    dataReqParams.m_profileId = 4; // Arbitrary value
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR64_DST_ENDPOINT_PRESENT;
+    dataReqParams.m_dstAddr64 =
+        Mac64Address("00:00:00:00:00:00:00:01"); // Fixed Router IEEE address
+    dataReqParams.m_dstEndPoint = 88;
+
+    Simulator::ScheduleNow(&ZigbeeAps::ApsdeDataRequest, stackSrc->GetAps(), dataReqParams, p);
+}
+
+void
 ZigbeeApsDataTestCase::DoRun()
 {
     // Transmit data using the APS layer.
+    // The topogy includes 3 devices with the following formation:
+    // Zigbee Coordinator ------- Router -------> Zigbee EndDevice (destination endpoint:4)
 
-    // Zigbee Coordinator --------------> Zigbee EndDevice(destination endpoint:4)
+    // This test initially transmit a single packet to an enddevice with endpoint 4
+    // (Coordinator->Endevice). The data transmission is done using the mode
+    //  DST_ADDR16_DST_ENDPOINT_PRESENT (Mode 0x02).
+    //
+    // Then, the Coordinator transmits another packet but using a 64 bit address destination
+    // (Coordinator->Router) to the router's endpoint 88. The data transmission for the second
+    // packet uses the mode DST_ADDR64_DST_ENDPOINT_PRESENT (Mode 0x03).
 
-    // This test transmit a single packet to an enddevice with endpoint 4.
-    // The data transmission is done using the mode DST_ADDR16_DST_ENDPOINT_PRESENT (Mode 0x02).
-    // No fragmentations or Acknowledge is used
+    // No fragmentation or Acknowledgement is used
     // Verification that the devices have join the network is performed
     // (i.e., All devices have valid network addresses).
 
@@ -283,7 +325,7 @@ ZigbeeApsDataTestCase::DoRun()
     // Send data to a single UCST destination (16-bit address)
     // The destination address is unknown until compilation, we extract
     // it from the stack directly.
-    Simulator::Schedule(Seconds(4), &SendDataUcstDst, zstack0, zstack2);
+    Simulator::Schedule(Seconds(4), &SendData16bitUcstDst, zstack0, zstack2);
 
     Simulator::Run();
 
@@ -310,6 +352,17 @@ ZigbeeApsDataTestCase::DoRun()
     NS_TEST_EXPECT_MSG_EQ(m_dstEndpoint,
                           4,
                           "Packet was not received in the correct destination endpoint");
+
+    // Send data to a single UCST destination (64-bit address)
+    // The destination address is fixed to the known 64-bit address of the Router
+    Simulator::Schedule(Seconds(0), &SendData64bitUcstDst, zstack0);
+
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_dstEndpoint,
+                          88,
+                          "Packet was not received by the router"
+                          " in the correct destination endpoint");
 
     zstack1->GetAps()->SetApsdeDataIndicationCallback(
         MakeNullCallback<void, ApsdeDataIndicationParams, Ptr<Packet>>());

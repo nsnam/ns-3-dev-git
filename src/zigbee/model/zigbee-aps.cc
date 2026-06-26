@@ -147,17 +147,24 @@ ZigbeeAps::ApsdeDataRequest(ApsdeDataRequestParams params, Ptr<Packet> asdu)
         break;
     }
     case ApsDstAddressMode::DST_ADDR64_DST_ENDPOINT_PRESENT: {
-        // TODO: Add Extended address transmission support.
-        // The NWK do not accept direct extended address transmissions,
+        // The nwk layer do not accept direct extended address transmissions,
         // therefore, the APS must translate the extended address
-        // to a short address using the nwkAddressMap NIB.
-        if (!m_apsdeDataConfirmCallback.IsNull())
+        // to a short address destination using its nwkAddressMap.
+        Mac16Address obtainedNwkAddr;
+        if (m_nwk->GetNwkAddrByIeeeAddr(params.m_dstAddr64, obtainedNwkAddr))
         {
-            confirmParams.m_status = ApsStatus::NO_SHORT_ADDRESS;
-            confirmParams.m_txTime = Simulator::Now();
-            m_apsdeDataConfirmCallback(confirmParams);
+            params.m_dstAddr16 = obtainedNwkAddr;
+            SendDataUcstBcst(params, asdu);
         }
-        NS_LOG_WARN("Extended address mode not supported");
+        else
+        {
+            if (!m_apsdeDataConfirmCallback.IsNull())
+            {
+                confirmParams.m_status = ApsStatus::NO_SHORT_ADDRESS;
+                confirmParams.m_txTime = Simulator::Now();
+                m_apsdeDataConfirmCallback(confirmParams);
+            }
+        }
         break;
     }
     default:

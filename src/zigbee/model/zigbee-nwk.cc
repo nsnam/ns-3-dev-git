@@ -202,6 +202,7 @@ ZigbeeNwk::DoDispose()
     m_rreqRetryTable.Dispose();
     m_panIdTable.Dispose();
     m_btt.Dispose();
+    m_nwkAddressMap.Dispose();
 
     DisposeTxPktBuffer();
     DisposePendingTx();
@@ -1564,6 +1565,10 @@ ZigbeeNwk::MlmeAssociateConfirm(MlmeAssociateConfirmParams params)
             m_nwkExtendedPanId = m_joinParams.m_extendedPanId;
             m_nwkPanId = m_associateParams.m_coordPanId;
 
+            // Update the device own mapping of 16-bit - 64 bit address
+            // in its nwkAddressMap
+            m_nwkAddressMap.Update(m_nwkIeeeAddress, params.m_assocShortAddr);
+
             // Update relationship
             if (m_associateParams.m_coordAddrMode == lrwpan::AddressMode::EXT_ADDR)
             {
@@ -1660,6 +1665,12 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
         m_nwkExtendedPanId = 0xffffffffffffffed;
         m_nwkNetworkAddress = Mac16Address("ff:ff");
         m_nwkPanId = 0xffff;
+    }
+    else
+    {
+        // Update the coordinator or router device nwkAddressMap
+        // with its own addresses information
+        m_nwkAddressMap.Update(m_nwkIeeeAddress, m_nwkNetworkAddress);
     }
 
     if (m_pendPrimitiveNwk == NLME_NETWORK_FORMATION)
@@ -2160,6 +2171,10 @@ ZigbeeNwk::MlmeAssociateIndication(MlmeAssociateIndicationParams params)
                                        0);
         // Optional parameters
         newEntry->SetExtPanId(m_nwkExtendedPanId);
+
+        // Update the network address map in the router or coordinator
+        // accepting the association.
+        m_nwkAddressMap.Update(params.m_extDevAddr, allocatedAddr);
 
         MlmeAssociateResponseParams responseParams;
         responseParams.m_extDevAddr = params.m_extDevAddr;
@@ -2939,6 +2954,18 @@ ZigbeeNwk::NlmeStartRouterRequest(NlmeStartRouterRequestParams params)
                                m_mac,
                                MacPibAttributeIdentifier::pCurrentChannel);
     }
+}
+
+bool
+ZigbeeNwk::GetNwkAddrByIeeeAddr(Mac64Address ieeeAddr, Mac16Address& nwkAddr)
+{
+    return m_nwkAddressMap.LookupNwkAddress(ieeeAddr, nwkAddr);
+}
+
+bool
+ZigbeeNwk::GetIeeeAddrByNwkAddr(Mac16Address nwkAddr, Mac64Address& ieeeAddr)
+{
+    return m_nwkAddressMap.LookupIeeeAddress(nwkAddr, ieeeAddr);
 }
 
 void

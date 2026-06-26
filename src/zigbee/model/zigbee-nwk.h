@@ -946,6 +946,38 @@ class ZigbeeNwk : public Object
     void NlmeStartRouterRequest(NlmeStartRouterRequestParams params);
 
     /**
+     *  Get a remote device nwkAddress (16-bit) by providing its nwkIeeeAddress (64-bit).
+     *  In essence, the device nwkAddressMap NIB is consulted for a corresponding
+     *  previously registered nwkAddress.
+     *
+     *  This function is not explicitly defined in the Zigbee specification,
+     *  but the APS layer needs a way to transmit data using the IEEE address
+     *  and this information must be extracted from the nwkAddressMap NIB contained
+     *  in the NWK layer.
+     *
+     *  @param ieeeAddr The known IEEE address (64-bit)
+     *  @param nwkAddr The obtained mapped NWK address (16-bit)
+     *  @return True if the NWK address was found, false otherwise
+     */
+    bool GetNwkAddrByIeeeAddr(Mac64Address ieeeAddr, Mac16Address& nwkAddr);
+
+    /**
+     *  Get a remote device nwkIeeeAddress (64-bit) by providing its nwkAddress (16-bit).
+     *  In essence, the device nwkAddressMap NIB is consulted for a corresponding
+     *  previously registered nwkIeeeAddress.
+     *
+     *  This function is not explicitly defined in the Zigbee specification,
+     *  but the APS layer needs a way to transmit data using the IEEE address
+     *  and this information must be extracted from the nwkAddressMap NIB contained
+     *  in the NWK layer.
+     *
+     *  @param nwkAddr The known NWK address (16-bit)
+     *  @param ieeeAddr The obtained mapped IEEE address (64-bit)
+     *  @return True if the IEEE address was found, false otherwise
+     */
+    bool GetIeeeAddrByNwkAddr(Mac16Address nwkAddr, Mac64Address& ieeeAddr);
+
+    /**
      *  Set the callback for the end of a RX, as part of the
      *  interconnections between the NWK and the APS sublayer. The callback
      *  implements the callback used in a NLDE-DATA.indication.
@@ -1267,6 +1299,14 @@ class ZigbeeNwk : public Object
      *  See Zigbee specification r22.1.0, 3.6.5
      */
     BroadcastTransactionTable m_btt;
+
+    /**
+     *  The network address map.
+     *  Keep a record of known mappings between the
+     *  network Address (16-bit) and the IEEE address (64-bit).
+     *  See Zigbee specification r22.1.0, Section 3.5.2 or Table 3-60
+     */
+    NwkAddressMap m_nwkAddressMap;
 
     /**
      *  The Group Table used by this Zigbee NWK.
