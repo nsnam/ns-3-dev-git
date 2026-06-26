@@ -28,6 +28,8 @@
 #include "ns3/uinteger.h"
 #include "ns3/uniform-planar-array.h"
 
+#include <cmath>
+#include <complex>
 #include <valarray>
 
 using namespace ns3;
@@ -1940,6 +1942,170 @@ ThreeGppMimoPolarizationTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case that the total channel power is independent of the order in which
+ * the two endpoints are passed to ThreeGppChannelModel::GetChannel, when a
+ * DIRECTIONAL antenna element is used (channel reciprocity of the Frobenius
+ * norm).
+ *
+ * Channel parameters are generated once per node pair, in canonical node-id
+ * order. GetNewChannel then builds a per-query matrix and, when the query order
+ * differs from the generation order (a "reversed-direction" link), it must swap
+ * the stored departure/arrival ray angles. This is a regression guard for a bug
+ * where the element field pattern (TR 38.901 7.5-22 F_tx/F_rx) was evaluated
+ * with the raw, un-swapped angles while the array phase geometry used the
+ * swapped angles. With a directional element that mispairing applies the
+ * back-null gain to the NLOS clusters and collapses the channel power by ~30 dB
+ * on reversed-direction links. Isotropic elements are direction-independent and
+ * therefore immune, so the other tests in this suite (all isotropic) cannot
+ * detect it.
+ */
+class ThreeGppReversedDirectionFieldPatternTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppReversedDirectionFieldPatternTest();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppReversedDirectionFieldPatternTest() override;
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+
+    /**
+     * Compute the squared Frobenius norm (total power) of a channel matrix,
+     * summed over all clusters and all tx/rx element pairs.
+     * @param m the channel matrix
+     * @return the squared Frobenius norm
+     */
+    static double FrobeniusNormSq(Ptr<const ThreeGppChannelModel::ChannelMatrix> m);
+};
+
+ThreeGppReversedDirectionFieldPatternTest::ThreeGppReversedDirectionFieldPatternTest()
+    : TestCase("Directional-element channel power is reciprocal w.r.t. GetChannel endpoint order")
+{
+}
+
+ThreeGppReversedDirectionFieldPatternTest::~ThreeGppReversedDirectionFieldPatternTest()
+{
+}
+
+double
+ThreeGppReversedDirectionFieldPatternTest::FrobeniusNormSq(
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> m)
+{
+    double normSq = 0;
+    const uint16_t numClusters = m->m_channel.GetNumPages();
+    const uint64_t numRows = m->m_channel.GetNumRows();
+    const uint64_t numCols = m->m_channel.GetNumCols();
+    for (uint16_t c = 0; c < numClusters; c++)
+    {
+        for (uint64_t u = 0; u < numRows; u++)
+        {
+            for (uint64_t s = 0; s < numCols; s++)
+            {
+                normSq += std::pow(std::abs(m->m_channel(u, s, c)), 2);
+            }
+        }
+    }
+    return normSq;
+}
+
+void
+ThreeGppReversedDirectionFieldPatternTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // Always-NLOS so the directional element field pattern (not a dominant LOS
+    // ray) drives the result; this is where the reversed-direction bug shows.
+    Ptr<ChannelConditionModel> channelConditionModel =
+        CreateObject<NeverLosChannelConditionModel>();
+
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(28.0e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    channelModel->AssignStreams(1);
+
+    // Node 0 is the gNB (lower id => canonical "first" endpoint), node 1 the UE.
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> gnbMob = CreateObject<ConstantPositionMobilityModel>();
+    gnbMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    Ptr<MobilityModel> ueMob = CreateObject<ConstantPositionMobilityModel>();
+    ueMob->SetPosition(Vector(60.0, 0.0, 1.5));
+    nodes.Get(0)->AggregateObject(gnbMob);
+    nodes.Get(1)->AggregateObject(ueMob);
+
+    // gNB: 8x8 array with a DIRECTIONAL 3GPP element (front-to-back ~30 dB).
+    // UE: 2x4 isotropic. Two independent antenna objects per side are created so
+    // that the forward and reversed queries use distinct channel-matrix cache
+    // keys (the key GetKey(antA,antB) is reciprocal) and therefore both invoke
+    // GetNewChannel, one with isSameDirection == true and one with == false.
+    auto makeGnbAntenna = [&]() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumRows",
+            UintegerValue(8),
+            "NumColumns",
+            UintegerValue(8),
+            "AntennaElement",
+            PointerValue(CreateObject<ThreeGppAntennaModel>()));
+    };
+    auto makeUeAntenna = [&]() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumRows",
+            UintegerValue(2),
+            "NumColumns",
+            UintegerValue(4),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    Ptr<PhasedArrayModel> gnbAntFwd = makeGnbAntenna();
+    Ptr<PhasedArrayModel> ueAntFwd = makeUeAntenna();
+    Ptr<PhasedArrayModel> gnbAntRev = makeGnbAntenna();
+    Ptr<PhasedArrayModel> ueAntRev = makeUeAntenna();
+
+    // Forward query: endpoints in canonical (gNB=0, UE=1) order
+    // => isSameDirection == true.
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> chanFwd =
+        channelModel->GetChannel(gnbMob, ueMob, gnbAntFwd, ueAntFwd);
+    // Reversed query: endpoints in (UE=1, gNB=0) order, reusing the same cached
+    // channel parameters but a different antenna pair => isSameDirection == false.
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> chanRev =
+        channelModel->GetChannel(ueMob, gnbMob, ueAntRev, gnbAntRev);
+
+    const double normFwd = FrobeniusNormSq(chanFwd);
+    const double normRev = FrobeniusNormSq(chanRev);
+
+    NS_TEST_ASSERT_MSG_GT(normFwd, 0.0, "Forward channel power must be non-zero");
+    NS_TEST_ASSERT_MSG_GT(normRev, 0.0, "Reversed channel power must be non-zero");
+
+    // The two queries describe the same physical channel, so by reciprocity the
+    // total power is identical regardless of endpoint order. The pre-fix bug
+    // collapses the reversed direction by ~30 dB; require the two to agree to
+    // within 1 dB.
+    const double ratioDb = 10.0 * std::log10(normFwd / normRev);
+    NS_TEST_ASSERT_MSG_EQ_TOL(
+        ratioDb,
+        0.0,
+        1.0,
+        "Channel power must be independent of GetChannel endpoint order with "
+        "a directional element (reversed-direction field-pattern regression)");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -2000,6 +2166,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                 TestCase::Duration::QUICK);
 
     AddTestCase(new ThreeGppCalcLongTermMultiPortTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppReversedDirectionFieldPatternTest(), TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are configured face-to-face.
