@@ -84,6 +84,65 @@
 
 /**
  * @ingroup object
+ * @brief Explicitly instantiate a template class with one template parameter
+ *        and register the resulting instance with the TypeId system.
+ *
+ * This version of the macro allows the user to specify a namespace
+ * for the template class and a different namespace for the template parameter.
+ *
+ * The `nst` parameter is the namespace of the templated class, which must be
+ * in the `ns3` namespace and can be in a nested namespace, e.g., `ns3::aodv`.
+ * Adding the leading `ns3` namespace is optional for nested namespace, while for
+ * classes in the `ns3` namespace is mandatory.
+ *
+ * The `nsp` parameter is the namespace of the template parameter, and can be
+ * any namespace, including `std`, `ns3`, or a nested namespace like `ns3::aodv`.
+ * Also in this case, adding the leading `ns3` namespace is optional for nested
+ * namespace, while for objects in the `ns3` namespace is mandatory.
+ * The parameter can also be in the `std` namespace, e.g., `std::uint16_t` will have
+ * `nsp` set to `std` and `param` to `uint16_t`.
+ *
+ * The result of the function ``GetTemplateClassName`` depends on these values, and
+ * typically will be something like `ns3::nst::type<nsp::param>`.
+ *
+ * @sa NS_OBJECT_TEMPLATE_CLASS_DEFINE
+ *
+ * @note This macro must be used in the `ns3` namespace.
+ *
+ * @param nst the namespace of the template class
+ * @param type the template class
+ * @param nsp the namespace of the parameter (typically `ns3`)
+ * @param param the first template parameter
+ */
+#define NS_OBJECT_TEMPLATE_CLASS_WITH_NS_DEFINE(nst, type, nsp, param)                             \
+    template class nst::type<nsp::param>;                                                          \
+    template <>                                                                                    \
+    std::string DoGetTemplateClassName<nst::type<nsp::param>>()                                    \
+    {                                                                                              \
+        constexpr std::string_view prefix = "ns3::";                                               \
+        std::string cName = std::string(#nst) + "::" + #type;                                      \
+        if (cName.starts_with(prefix))                                                             \
+            cName.erase(0, prefix.size());                                                         \
+        std::string pName = std::string(#nsp) + "::" + #param;                                     \
+        if (pName.starts_with(prefix))                                                             \
+            pName.erase(0, prefix.size());                                                         \
+        return std::string("ns3::") + cName + std::string("<") + pName + std::string(">");         \
+    }                                                                                              \
+    namespace nst                                                                                  \
+    {                                                                                              \
+    static struct Object##type##nsp##param##RegistrationClass                                      \
+    {                                                                                              \
+        Object##type##nsp##param##RegistrationClass()                                              \
+        {                                                                                          \
+            ns3::TypeId tid = type<nsp::param>::GetTypeId();                                       \
+            tid.SetSize(sizeof(type<nsp::param>));                                                 \
+            tid.GetParent();                                                                       \
+        }                                                                                          \
+    } Object##type##nsp##param##RegistrationVariable;                                              \
+    }
+
+/**
+ * @ingroup object
  * @brief Explicitly instantiate a template class with two template parameters
  *        and register the resulting instance with the TypeId system.
  *

@@ -12,6 +12,7 @@ set(base_examples
     sample-show-progress
     sample-simulator
     system-path-examples
+    templated-classes
     test-string-value-formatting
 )
 

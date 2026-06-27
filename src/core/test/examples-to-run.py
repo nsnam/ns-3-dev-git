@@ -14,6 +14,7 @@ cpp_examples = [
     ("main-random-variable", "True", "False"),
     ("sample-random-variable", "True", "True"),
     ("system-path-examples", "True", "True"),
+    ("templated-classes", "True", "True"),
     ("test-string-value-formatting", "True", "True"),
 ]
 
