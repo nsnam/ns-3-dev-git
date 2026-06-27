@@ -438,7 +438,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -894,7 +894,7 @@ ThreeGppChannelConsistencyTest::DoRun()
         rxMobCopies[i] = rxMobCopy;
     }
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -1084,7 +1084,7 @@ ThreeGppAntennaSetupChangedTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -1394,7 +1394,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -1583,7 +1583,7 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna1 = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(8),
@@ -1627,7 +1627,7 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixA =
         threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna1, rxAntenna1);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna2 = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(8),
@@ -1658,7 +1658,7 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixB =
         threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna2, rxAntenna2);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna3 = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(4),
@@ -1849,7 +1849,7 @@ ThreeGppMimoPolarizationTest::CreateAndConfigureAntenna(const MimoPolarizationAn
     {
         antenna = CreateObject<ThreeGppAntennaModel>();
     }
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     return CreateObjectWithAttributes<UniformPlanarArray>("NumColumns",
                                                           UintegerValue(params.m_cols),
                                                           "NumRows",
@@ -1897,7 +1897,7 @@ ThreeGppMimoPolarizationTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateAndConfigureAntenna(m_txParams);
     Ptr<PhasedArrayModel> rxAntenna = CreateAndConfigureAntenna(m_rxParams);
 

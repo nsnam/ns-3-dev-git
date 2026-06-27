@@ -312,7 +312,7 @@ struct WifiUlMuMultiStaBa : public WifiAcknowledgment
                            WifiMacHeader::QosAckPolicy ackPolicy) const override;
     void Print(std::ostream& os) const override;
 
-    /// Map (originator, tid) pairs to the their index in baType
+    /// Map (originator, tid) pairs to their index in baType
     std::map<std::pair<Mac48Address, uint8_t>, std::size_t> stationsReceivingMultiStaBa;
     BlockAckType baType;             //!< BlockAck type
     WifiTxVector tbPpduTxVector;     //!< TXVECTOR for a TB PPDU
