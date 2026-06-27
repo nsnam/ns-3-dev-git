@@ -3338,14 +3338,14 @@ class TestUlOfdmaPhyTransmission : public TestCase
                          WifiPhyState expectedState);
 
     /**
-     * Check the the number of RX start notifications at the AP as well as the last time a RX start
+     * Check the number of RX start notifications at the AP as well as the last time a RX start
      * has been notified
      * @param expectedNotifications the expected number of RX start notifications at the AP
      * @param expectedLastNotification the expected time of the last RX start notification at the AP
      */
     void CheckApRxStart(uint32_t expectedNotifications, Time expectedLastNotification);
     /**
-     * Check the the number of RX end notifications at the AP as well as the last time a RX end has
+     * Check the number of RX end notifications at the AP as well as the last time a RX end has
      * been notified
      * @param expectedNotifications the expected number of RX end notifications at the AP
      * @param expectedLastNotification the expected time of the last RX end notification at the AP

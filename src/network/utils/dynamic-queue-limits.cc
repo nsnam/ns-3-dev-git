@@ -142,7 +142,7 @@ DynamicQueueLimits::Completed(uint32_t count)
          * the whole interval (the check above).
          *
          * If there is slack, the amount of execess data queued above
-         * the the amount needed to prevent starvation, the queue limit
+         * the amount needed to prevent starvation, the queue limit
          * can be decreased.  To avoid hysteresis we consider the
          * minimum amount of slack found over several iterations of the
          * completion routine.

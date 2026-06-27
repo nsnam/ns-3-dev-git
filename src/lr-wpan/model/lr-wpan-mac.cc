@@ -2445,7 +2445,7 @@ LrWpanMac::PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int
         }
     }
 
-    // After the the FCS check, we can now
+    // After the FCS check, we can now
     // extract the MAC Header from the packet
     LrWpanMacHeader receivedMacHdr;
     p->RemoveHeader(receivedMacHdr);
@@ -3351,7 +3351,7 @@ LrWpanMac::PdDataConfirm(PhyEnumeration status)
                 }
                 else if (receivedMacPayload.GetCommandFrameType() == CommandPayloadHeader::DATA_REQ)
                 {
-                    // We enqueue the the Assoc Response command frame in the Tx queue
+                    // We enqueue the Assoc Response command frame in the Tx queue
                     // and the packet is transmitted as soon as the PHY is free and the IFS have
                     // taken place.
                     SendAssocResponseCommand(m_rxPkt->Copy());

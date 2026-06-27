@@ -52,7 +52,7 @@ class DhcpClient : public Application
     DhcpClient(Ptr<NetDevice> netDevice);
 
     /**
-     * @brief Get the the NetDevice DHCP should work on
+     * @brief Get the NetDevice DHCP should work on
      * @return the NetDevice DHCP should work on
      */
     Ptr<NetDevice> GetDhcpClientNetDevice();

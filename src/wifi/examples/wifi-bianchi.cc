@@ -2937,7 +2937,7 @@ main(int argc, char* argv[])
                  "Set the constant channel width in MHz (only for 11n/ac/ax)",
                  channelWidth);
     cmd.AddValue("guardIntervalNs",
-                 "Set the the guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or "
+                 "Set the guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or "
                  "3200 for 11 ax)",
                  guardIntervalNs);
     cmd.AddValue("maxMpdus",

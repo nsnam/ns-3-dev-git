@@ -171,13 +171,13 @@ class TopologyReader : public Object
     std::string GetFileName() const;
 
     /**
-     * @brief Returns an iterator to the the first link in this block.
+     * @brief Returns an iterator to the first link in this block.
      * @return A const iterator to the first link in this block.
      */
     ConstLinksIterator LinksBegin() const;
 
     /**
-     * @brief Returns an iterator to the the last link in this block.
+     * @brief Returns an iterator to the last link in this block.
      * @return A const iterator to the last link in this block.
      */
     ConstLinksIterator LinksEnd() const;

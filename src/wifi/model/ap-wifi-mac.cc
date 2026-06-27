@@ -2668,7 +2668,7 @@ ApWifiMac::ReceiveAssocRequest(const AssocReqRefVariant& assoc,
     auto recvAssocRequest = [&](auto&& frameRefWrapper) -> bool {
         const auto& frame = frameRefWrapper.get();
 
-        // first, verify that the the station's supported
+        // first, verify that the station's supported
         // rate set is compatible with our Basic Rate set
         const CapabilityInformation& capabilities = frame.m_capability;
         remoteStationManager->AddSupportedPhyPreamble(from, capabilities.IsShortPreamble());

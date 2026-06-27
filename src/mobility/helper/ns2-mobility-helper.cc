@@ -262,7 +262,7 @@ Ns2MobilityHelper::ConfigNodesMovements(const ObjectStore& store) const
     // Parse the file the first time to get the initial node positions.
     //*****************************************************************
 
-    // Look through the whole the file for the the initial node
+    // Look through the whole the file for the initial node
     // positions to make this helper robust to handle trace files with
     // the initial node positions at the end.
     std::ifstream file(m_filename, std::ios::in);

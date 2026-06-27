@@ -235,7 +235,7 @@ main(int argc, char* argv[])
     Ptr<LrWpanNetDevice> dev4 = lrwpanDevices.Get(4)->GetObject<LrWpanNetDevice>();
 
     // Device must ALWAYS have IEEE Address (Extended address) assigned.
-    // Network address (short address) are assigned by the the JOIN mechanism
+    // Network address (short address) are assigned by the JOIN mechanism
     dev0->GetMac()->SetExtendedAddress("00:00:00:00:00:00:CA:FE");
     dev1->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:01");
     dev2->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:02");

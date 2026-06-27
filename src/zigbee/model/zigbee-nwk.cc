@@ -1282,7 +1282,7 @@ ZigbeeNwk::McpsDataConfirm(McpsDataConfirmParams params)
             if (!m_nldeDataConfirmCallback.IsNull())
             {
                 // Zigbee Specification r22.1.0, End of Section 3.2.1.1.3
-                // Report the the results of a request to a transmission of a packet
+                // Report the results of a request to a transmission of a packet
                 NldeDataConfirmParams nldeDataConfirmParams;
                 // nldeDataConfirmParams.m_status =
                 // static_cast<ZigbeeNwkStatus>(params.m_status);

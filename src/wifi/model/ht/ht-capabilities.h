@@ -71,7 +71,7 @@ class HtCapabilities : public WifiInformationElement
      */
     void SetTxBfCapabilities(uint32_t ctrl);
     /**
-     * Set the the Antenna Selection (ASEL) Capabilities field in the HT Capabilities information
+     * Set the Antenna Selection (ASEL) Capabilities field in the HT Capabilities information
      * element.
      *
      * @param ctrl the Antenna Selection (ASEL) Capabilities field in the HT Capabilities

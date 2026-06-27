@@ -167,7 +167,7 @@ class ThreeGppV2vHighwayChannelConditionModel : public ThreeGppChannelConditionM
      *
      * @param a tx mobility model
      * @param b rx mobility model
-     * @return the the condition of the channel between \p a and \p b
+     * @return the condition of the channel between \p a and \p b
      */
     Ptr<ChannelCondition> GetChCondAndFixCallback(Ptr<const MobilityModel> a,
                                                   Ptr<const MobilityModel> b);

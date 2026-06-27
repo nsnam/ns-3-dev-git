@@ -306,7 +306,7 @@ run the following command:
 
 Due to the integration of clang-tidy with CMake, clang-tidy can be run while building
 |ns3|. In this way, clang-tidy errors will be shown alongside build errors on the terminal.
-To build |ns3| and run clang-tidy, run the the following command:
+To build |ns3| and run clang-tidy, run the following command:
 
 .. sourcecode:: console
 

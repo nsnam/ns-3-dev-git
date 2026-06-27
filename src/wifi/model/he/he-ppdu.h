@@ -301,7 +301,7 @@ class HePpdu : public OfdmPpdu
      * Convert guard interval and NLTF to its encoding in HE-SIG-A.
      *
      * @param guardInterval the guard interval
-     * @param nltf the the number of long training symbols
+     * @param nltf the number of long training symbols
      * @return the value used to encode the NSTS field in HE-SIG-A
      */
     static uint8_t GetGuardIntervalAndNltfEncoding(Time guardInterval, uint8_t nltf);

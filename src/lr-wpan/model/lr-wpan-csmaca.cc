@@ -192,7 +192,7 @@ LrWpanCsmaCa::GetTimeToNextSlot() const
         elapsedSuperframe = currentTime - m_mac->m_macBeaconTxTime;
     }
 
-    // get a close value to the the boundary in symbols
+    // get a close value to the boundary in symbols
     elapsedSuperframeSymbols = elapsedSuperframe.GetSeconds() * symbolRate;
     symbolsToBoundary = lrwpan::aUnitBackoffPeriod -
                         std::fmod((double)elapsedSuperframeSymbols, lrwpan::aUnitBackoffPeriod);

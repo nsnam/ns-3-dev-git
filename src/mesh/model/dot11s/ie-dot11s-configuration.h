@@ -148,7 +148,7 @@ class IeConfiguration : public WifiInformationElement
     void SetNeighborCount(uint8_t neighbors);
     /**
      * Get neighbor count
-     * @returns the the neighbor count
+     * @returns the neighbor count
      */
     uint8_t GetNeighborCount() const;
     /**

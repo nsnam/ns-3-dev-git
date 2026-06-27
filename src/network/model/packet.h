@@ -291,7 +291,7 @@ class Packet : public SimpleRefCount<Packet>
      */
     Ptr<Packet> CreateFragment(uint32_t start, uint32_t length) const;
     /**
-     * @brief Returns the the size in bytes of the packet (including the zero-filled
+     * @brief Returns the size in bytes of the packet (including the zero-filled
      * initial payload).
      *
      * @returns the size in bytes of the packet

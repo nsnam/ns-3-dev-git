@@ -1417,7 +1417,7 @@ AP MLD starts a transition delay timer, during which it does not attempt to star
 with the EMLSR client on any EMLSR link.
 
 When channel access is obtained on a link on which an aux PHY is operating, the behavior depends on
-whether the aux PHY is TX capable or not, as controlled via the the ``AuxPhyTxCapable`` attribute
+whether the aux PHY is TX capable or not, as controlled via the ``AuxPhyTxCapable`` attribute
 of the EMLSR Manager base class.
 
 Let us consider first the case in which the aux PHY is capable of
@@ -1515,7 +1515,7 @@ If the main PHY switches to the auxiliary link, it cannot transmit as soon as it
 channel switch, but it has to verify that the medium has been virtually and physically idle
 during a PIFS period by means of a NAV and CCA check. If the ``UseAuxPhyCca`` attribute of the
 Advanced EMLSR Manager is set to true or the maximum channel width supported by the aux PHY is at
-least equal to the the maximum channel width supported by the main PHY, then the NAV and CCA check
+least equal to the maximum channel width supported by the main PHY, then the NAV and CCA check
 is performed by the aux PHY in the PIFS period preceding the main PHY channel switch end. Otherwise,
 the NAV and CCA check is performed by the main PHY in the PIFS period following the main PHY channel
 switch end.

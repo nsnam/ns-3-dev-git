@@ -102,7 +102,7 @@ class SuperframeField
      */
     uint8_t GetFrameOrder() const;
     /**
-     * Get the the Final CAP Slot.
+     * Get the Final CAP Slot.
      * @returns The Final CAP Slot
      */
     uint8_t GetFinalCapSlot() const;

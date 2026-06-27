@@ -1013,8 +1013,8 @@ DsrRouting::CheckSendBuffer()
                                               /*ackId=*/0,
                                               /*segsLeft=*/nodeList.size() - 2,
                                               /*expire=*/m_maxMaintainTime);
-                bool result = m_maintainBuffer.Enqueue(
-                    newEntry); // Enqueue the packet the the maintenance buffer
+                bool result =
+                    m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the maintenance buffer
                 if (result)
                 {
                     NetworkKey networkKey;
@@ -1282,7 +1282,7 @@ DsrRouting::PacketNewRoute(Ptr<Packet> packet,
                                       /*segsLeft=*/nodeList.size() - 2,
                                       /*expire=*/m_maxMaintainTime);
         bool result =
-            m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the the maintenance buffer
+            m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the maintenance buffer
 
         if (result)
         {
@@ -1611,7 +1611,7 @@ DsrRouting::Send(Ptr<Packet> packet,
                                           /*segsLeft=*/nodeList.size() - 2,
                                           /*expire=*/m_maxMaintainTime);
             bool result =
-                m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the the maintenance buffer
+                m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the maintenance buffer
             if (result)
             {
                 NetworkKey networkKey;
@@ -1923,7 +1923,7 @@ DsrRouting::SendPacketFromBuffer(const DsrOptionSRHeader& sourceRoute,
                                           /*segsLeft=*/nodeList.size() - 2,
                                           /*expire=*/m_maxMaintainTime);
             bool result =
-                m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the the maintenance buffer
+                m_maintainBuffer.Enqueue(newEntry); // Enqueue the packet the maintenance buffer
 
             if (result)
             {

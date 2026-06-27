@@ -177,7 +177,7 @@ class MobilityHelper
      * @param n node container
      *
      * Enable ascii output to record course changes from the mobility models
-     * associated to the the nodes in the input container and dump that to the
+     * associated to the nodes in the input container and dump that to the
      * specified output stream.  Nodes that do not have a MobilityModel
      * aggregated will not result in any output.
      */

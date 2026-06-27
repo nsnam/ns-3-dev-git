@@ -166,7 +166,7 @@ Sanitizers were used to find issues in multiple occasions:
     the stack-trace of where the bug happened (``LteAmc::GetDlTbSizeFromMcs``),
     affected variables (``McsToItbsUl`` and ``TransportBlockSizeTable``),
     and a shadow bytes map, showing the wrong access between square brackets.
-  * The the global redzone (f9) shadow bytes are empty memory allocated between global variables (00s and 04s),
+  * The global redzone (f9) shadow bytes are empty memory allocated between global variables (00s and 04s),
     which are left there to be corrupted by the bugged program.
     Any eventual corruption is then traced back to the source, without affecting the program execution.
   * The adopted solution in merge request `MR703`_ was to fix one of the schedulers that could produce the index value of -1,

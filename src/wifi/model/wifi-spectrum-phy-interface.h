@@ -82,10 +82,10 @@ class WifiSpectrumPhyInterface : public SpectrumPhy
     const FrequencyRange& GetFrequencyRange() const;
 
     /**
-     * Get the center frequency for each segment of the the spectrum channel this interface is
+     * Get the center frequency for each segment of the spectrum channel this interface is
      * attached to
      *
-     * @return the center frequency for each segment of the the spectrum channel this interface is
+     * @return the center frequency for each segment of the spectrum channel this interface is
      * attached to to
      */
     const std::vector<MHz_u>& GetCenterFrequencies() const;

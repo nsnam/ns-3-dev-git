@@ -503,7 +503,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     uint64_t GetExtPanId() const;
 
     /**
-     * Get the logical channel used by the the neighbor in this entry.
+     * Get the logical channel used by the neighbor in this entry.
      *
      * @return The channel number used by this neighbor.
      */
@@ -525,7 +525,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     uint8_t GetBeaconOrder() const;
 
     /**
-     * Get the the value of the potential parent field.
+     * Get the value of the potential parent field.
      *
      * @return A confirmation of whether of not the device has been discarded a potential parent.
      */
@@ -656,7 +656,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     void SetExtPanId(uint64_t extPanId);
 
     /**
-     * Set the logical channel used by the the neighbor in this entry.
+     * Set the logical channel used by the neighbor in this entry.
      *
      * @param channel The channel number used by this neighbor.
      */
@@ -678,7 +678,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     void SetBeaconOrder(uint8_t bo);
 
     /**
-     * Set the the value of the potential parent field.
+     * Set the value of the potential parent field.
      *
      * @param confirm A confirm of whether or not the device has been discarded a potential parent.
      */

@@ -717,7 +717,7 @@ Calculate the MD5 hash of your BOX_FILE.box and fill the field then click to pro
 
 Upload the box.
 
-Now you should be able to download your box from the Vagrant servers via the the following command.
+Now you should be able to download your box from the Vagrant servers via the following command.
 
 .. sourcecode:: console
 

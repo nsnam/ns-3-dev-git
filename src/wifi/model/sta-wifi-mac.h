@@ -459,7 +459,7 @@ class StaWifiMac : public WifiMac
      *
      * @param frame the given Beacon or Probe Response frame
      * @param linkId ID of the link the mgt frame was received over
-     * @return whether the the supported rates indicated in the given management
+     * @return whether the supported rates indicated in the given management
      *         frame fit with the configured membership selector
      */
     bool CheckSupportedRates(std::variant<MgtBeaconHeader, MgtProbeResponseHeader> frame,

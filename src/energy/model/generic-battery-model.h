@@ -42,7 +42,7 @@ enum GenericBatteryType
 /**
  * @ingroup energy
  *
- *  Battery models that described the parameters of the the battery presets.
+ *  Battery models that described the parameters of the battery presets.
  */
 enum BatteryModel
 {
@@ -56,7 +56,7 @@ enum BatteryModel
 /**
  * @ingroup energy
  *
- *  The structure containing the the parameter values that describe a
+ *  The structure containing the parameter values that describe a
  *  battery preset.
  */
 struct BatteryPresets
