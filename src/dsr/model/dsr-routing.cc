@@ -33,6 +33,7 @@
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/enum.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-address.h"
@@ -1027,7 +1028,7 @@ DsrRouting::PromiscReceive(Ptr<NetDevice> device,
                            const Address& to,
                            NetDevice::PacketType packetType)
 {
-    if (protocol != Ipv4L3Protocol::PROT_NUMBER)
+    if (protocol != iana::Ieee802Numbers::IPV4)
     {
         return false;
     }

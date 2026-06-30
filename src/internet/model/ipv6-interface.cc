@@ -15,6 +15,7 @@
 #include "loopback-net-device.h"
 #include "ndisc-cache.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 #include "ns3/mac16-address.h"
 #include "ns3/mac64-address.h"
@@ -430,7 +431,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
          * goes to loopback)?
          */
         p->AddHeader(hdr);
-        m_device->Send(p, m_device->GetBroadcast(), Ipv6L3Protocol::PROT_NUMBER);
+        m_device->Send(p, m_device->GetBroadcast(), iana::Ieee802Numbers::IPV6);
         return;
     }
 
@@ -446,7 +447,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
                                    m_tc,
                                    m_device,
                                    p,
-                                   Ipv6L3Protocol::PROT_NUMBER,
+                                   iana::Ieee802Numbers::IPV6,
                                    m_device->GetBroadcast(),
                                    m_device->GetBroadcast(),
                                    NetDevice::PACKET_HOST);
@@ -488,11 +489,9 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
         if (found)
         {
             NS_LOG_LOGIC("Address Resolved.  Send.");
-            m_tc->Send(m_device,
-                       Create<Ipv6QueueDiscItem>(p,
-                                                 hardwareDestination,
-                                                 Ipv6L3Protocol::PROT_NUMBER,
-                                                 hdr));
+            m_tc->Send(
+                m_device,
+                Create<Ipv6QueueDiscItem>(p, hardwareDestination, iana::Ieee802Numbers::IPV6, hdr));
         }
     }
     else
@@ -501,7 +500,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
         m_tc->Send(m_device,
                    Create<Ipv6QueueDiscItem>(p,
                                              m_device->GetBroadcast(),
-                                             Ipv6L3Protocol::PROT_NUMBER,
+                                             iana::Ieee802Numbers::IPV6,
                                              hdr));
     }
 }

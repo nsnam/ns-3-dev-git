@@ -9,6 +9,7 @@
  */
 
 #include "ns3/epc-tft-classifier.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-header.h"
@@ -189,7 +190,7 @@ EpcTftClassifierTestCase::DoRun()
     uint32_t obtainedTftId =
         m_c->Classify(udpPacket,
                       m_d,
-                      m_useIpv6 ? Ipv6L3Protocol::PROT_NUMBER : Ipv4L3Protocol::PROT_NUMBER);
+                      m_useIpv6 ? iana::Ieee802Numbers::IPV6 : iana::Ieee802Numbers::IPV4);
     NS_TEST_ASSERT_MSG_EQ(obtainedTftId, (uint16_t)m_tftId, "bad classification of UDP packet");
 }
 

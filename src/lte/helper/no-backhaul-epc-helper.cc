@@ -16,6 +16,7 @@
 #include "ns3/epc-sgw-application.h"
 #include "ns3/epc-ue-nas.h"
 #include "ns3/epc-x2.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv6-static-routing-helper.h"
@@ -328,13 +329,13 @@ NoBackhaulEpcHelper::AddEnb(Ptr<Node> enb,
         Socket::CreateSocket(enb, TypeId::LookupByName("ns3::PacketSocketFactory"));
     PacketSocketAddress enbLteSocketBindAddress;
     enbLteSocketBindAddress.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketBindAddress.SetProtocol(Ipv4L3Protocol::PROT_NUMBER);
+    enbLteSocketBindAddress.SetProtocol(iana::Ieee802Numbers::IPV4);
     retval = enbLteSocket->Bind(enbLteSocketBindAddress);
     NS_ASSERT(retval == 0);
     PacketSocketAddress enbLteSocketConnectAddress;
     enbLteSocketConnectAddress.SetPhysicalAddress(Mac48Address::GetBroadcast());
     enbLteSocketConnectAddress.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketConnectAddress.SetProtocol(Ipv4L3Protocol::PROT_NUMBER);
+    enbLteSocketConnectAddress.SetProtocol(iana::Ieee802Numbers::IPV4);
     retval = enbLteSocket->Connect(enbLteSocketConnectAddress);
     NS_ASSERT(retval == 0);
 
@@ -343,13 +344,13 @@ NoBackhaulEpcHelper::AddEnb(Ptr<Node> enb,
         Socket::CreateSocket(enb, TypeId::LookupByName("ns3::PacketSocketFactory"));
     PacketSocketAddress enbLteSocketBindAddress6;
     enbLteSocketBindAddress6.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketBindAddress6.SetProtocol(Ipv6L3Protocol::PROT_NUMBER);
+    enbLteSocketBindAddress6.SetProtocol(iana::Ieee802Numbers::IPV6);
     retval = enbLteSocket6->Bind(enbLteSocketBindAddress6);
     NS_ASSERT(retval == 0);
     PacketSocketAddress enbLteSocketConnectAddress6;
     enbLteSocketConnectAddress6.SetPhysicalAddress(Mac48Address::GetBroadcast());
     enbLteSocketConnectAddress6.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketConnectAddress6.SetProtocol(Ipv6L3Protocol::PROT_NUMBER);
+    enbLteSocketConnectAddress6.SetProtocol(iana::Ieee802Numbers::IPV6);
     retval = enbLteSocket6->Connect(enbLteSocketConnectAddress6);
     NS_ASSERT(retval == 0);
 

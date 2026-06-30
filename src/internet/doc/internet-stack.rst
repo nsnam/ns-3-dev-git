@@ -130,7 +130,7 @@ The actual registration is done
 with a statement such as follows::
 
      RegisterProtocolHandler( MakeCallback(&Ipv4Protocol::Receive, ipv4),
-                              Ipv4L3Protocol::PROT_NUMBER, 0);
+                              iana::Ieee802Numbers::IPV4, 0);
 
 The Ipv4L3Protocol object is aggregated to the Node; there is only one such
 Ipv4L3Protocol object. Higher-layer protocols that have a packet to send down to

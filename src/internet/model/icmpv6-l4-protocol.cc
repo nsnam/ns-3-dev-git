@@ -20,6 +20,7 @@
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/integer.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
@@ -763,7 +764,7 @@ Icmpv6L4Protocol::HandleNS(Ptr<Packet> packet,
     // change it beyond what we did already).
     Ptr<Packet> pkt = p.first;
     pkt->AddHeader(p.second);
-    interface->GetDevice()->Send(pkt, replyMacAddress, Ipv6L3Protocol::PROT_NUMBER);
+    interface->GetDevice()->Send(pkt, replyMacAddress, iana::Ieee802Numbers::IPV6);
 }
 
 NdiscCache::Ipv6PayloadHeaderPair

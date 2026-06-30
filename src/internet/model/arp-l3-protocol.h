@@ -11,6 +11,7 @@
 #include "ipv4-header.h"
 
 #include "ns3/address.h"
+#include "ns3/deprecated.h"
 #include "ns3/iana-ieee802-numbers.h"
 #include "ns3/internet-export.h"
 #include "ns3/net-device.h"
@@ -51,6 +52,8 @@ class INTERNET_EXPORT ArpL3Protocol : public Object
      * @return the object TypeId
      */
     static TypeId GetTypeId();
+
+    NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
     static constexpr uint16_t PROT_NUMBER = iana::Ieee802Numbers::ARP; //!< ARP protocol number
 
     ArpL3Protocol();

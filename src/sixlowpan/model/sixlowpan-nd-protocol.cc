@@ -21,6 +21,7 @@
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/integer.h"
 #include "ns3/ipv6-interface.h"
 #include "ns3/ipv6-l3-protocol.h"
@@ -221,7 +222,7 @@ SixLowPanNdProtocol::SendSixLowPanNsWithEaro(Ipv6Address addrToRegister,
     Ptr<Packet> pkt = p->Copy();
     pkt->AddHeader(hdr);
 
-    sixLowPanNetDevice->Send(pkt, dstMac, Ipv6L3Protocol::PROT_NUMBER);
+    sixLowPanNetDevice->Send(pkt, dstMac, iana::Ieee802Numbers::IPV6);
 }
 
 void

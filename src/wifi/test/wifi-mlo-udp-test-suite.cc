@@ -12,6 +12,7 @@
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/config.h"
 #include "ns3/frame-exchange-manager.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/icmpv6-header.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
@@ -427,7 +428,7 @@ WifiMloUdpTest::Transmit(Ptr<WifiMac> mac,
             auto packet = pkt->Copy();
             packet->RemoveHeader(llc);
 
-            if (llc.GetType() == ArpL3Protocol::PROT_NUMBER)
+            if (llc.GetType() == iana::Ieee802Numbers::ARP)
             {
                 ArpHeader arp;
                 packet->RemoveHeader(arp);
@@ -443,7 +444,7 @@ WifiMloUdpTest::Transmit(Ptr<WifiMac> mac,
                 continue;
             }
 
-            if (llc.GetType() != Ipv6L3Protocol::PROT_NUMBER)
+            if (llc.GetType() != iana::Ieee802Numbers::IPV6)
             {
                 continue;
             }

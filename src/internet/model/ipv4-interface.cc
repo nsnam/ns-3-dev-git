@@ -14,6 +14,7 @@
 #include "ipv4-queue-disc-item.h"
 #include "loopback-net-device.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
@@ -228,7 +229,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         /// @todo additional checks needed here (such as whether multicast
         /// goes to loopback)?
         p->AddHeader(hdr);
-        m_device->Send(p, m_device->GetBroadcast(), Ipv4L3Protocol::PROT_NUMBER);
+        m_device->Send(p, m_device->GetBroadcast(), iana::Ieee802Numbers::IPV4);
         return;
     }
 
@@ -244,7 +245,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
                                    m_tc,
                                    m_device,
                                    p,
-                                   Ipv4L3Protocol::PROT_NUMBER,
+                                   iana::Ieee802Numbers::IPV4,
                                    m_device->GetBroadcast(),
                                    m_device->GetBroadcast(),
                                    NetDevice::PACKET_HOST);
@@ -295,11 +296,9 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         if (found)
         {
             NS_LOG_LOGIC("Address Resolved.  Send.");
-            m_tc->Send(m_device,
-                       Create<Ipv4QueueDiscItem>(p,
-                                                 hardwareDestination,
-                                                 Ipv4L3Protocol::PROT_NUMBER,
-                                                 hdr));
+            m_tc->Send(
+                m_device,
+                Create<Ipv4QueueDiscItem>(p, hardwareDestination, iana::Ieee802Numbers::IPV4, hdr));
         }
     }
     else
@@ -308,7 +307,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         m_tc->Send(m_device,
                    Create<Ipv4QueueDiscItem>(p,
                                              m_device->GetBroadcast(),
-                                             Ipv4L3Protocol::PROT_NUMBER,
+                                             iana::Ieee802Numbers::IPV4,
                                              hdr));
     }
 }

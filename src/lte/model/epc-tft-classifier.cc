@@ -15,6 +15,7 @@
 
 #include "epc-tft.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/ipv4-header.h"
@@ -74,7 +75,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
     uint16_t localPort = 0;
     uint16_t remotePort = 0;
 
-    if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
+    if (protocolNumber == iana::Ieee802Numbers::IPV4)
     {
         Ipv4Header ipv4Header;
         pCopy->RemoveHeader(ipv4Header);
@@ -190,7 +191,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
             }
         }
     }
-    else if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
     {
         Ipv6Header ipv6Header;
         pCopy->RemoveHeader(ipv6Header);
@@ -249,7 +250,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
         NS_ABORT_MSG("EpcTftClassifier::Classify - Unknown IP type...");
     }
 
-    if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
+    if (protocolNumber == iana::Ieee802Numbers::IPV4)
     {
         NS_LOG_INFO("Classifying packet: localAddr="
                     << localAddressIpv4 << " remoteAddr=" << remoteAddressIpv4 << " localPort="
@@ -279,7 +280,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
             }
         }
     }
-    else if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
     {
         NS_LOG_INFO("Classifying packet: localAddr="
                     << localAddressIpv6 << " remoteAddr=" << remoteAddressIpv6 << " localPort="

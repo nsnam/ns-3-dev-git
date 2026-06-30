@@ -58,18 +58,18 @@ class NetDeviceQueueInterface;
    NS_ASSERT(tc != nullptr);
 
    m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                   Ipv4L3Protocol::PROT_NUMBER,
+                                   iana::Ieee802Numbers::IPV4,
                                    device);
    m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                   ArpL3Protocol::PROT_NUMBER,
+                                   iana::Ieee802Numbers::ARP,
                                    device);
 
    tc->RegisterProtocolHandler(MakeCallback(&Ipv4L3Protocol::Receive, this),
-                               Ipv4L3Protocol::PROT_NUMBER,
+                               iana::Ieee802Numbers::IPV4,
                                device);
    tc->RegisterProtocolHandler(
        MakeCallback(&ArpL3Protocol::Receive, PeekPointer(GetObject<ArpL3Protocol>())),
-       ArpL3Protocol::PROT_NUMBER,
+       iana::Ieee802Numbers::ARP,
        device);
    \endcode
  * On the node, for IPv4 and ARP packet, is registered the

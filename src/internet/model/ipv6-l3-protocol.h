@@ -14,6 +14,7 @@
 #include "ipv6-routing-protocol.h"
 #include "ipv6.h"
 
+#include "ns3/deprecated.h"
 #include "ns3/iana-ieee802-numbers.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/net-device.h"
@@ -62,6 +63,7 @@ class Ipv6L3Protocol : public Ipv6
     /**
      * @brief The protocol number for IPv6
      */
+    NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
     static constexpr uint16_t PROT_NUMBER = iana::Ieee802Numbers::IPV6;
 
     /**

@@ -15,6 +15,7 @@
 #include "ns3/boolean.h"
 #include "ns3/channel.h"
 #include "ns3/enum.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/ipv6-extension-header.h"
 #include "ns3/ipv6-l3-protocol.h"
 #include "ns3/log.h"
@@ -393,14 +394,14 @@ SixLowPanNetDevice::ReceiveFromDevice(Ptr<NetDevice> incomingPort,
     {
         m_promiscRxCallback(this,
                             copyPkt,
-                            Ipv6L3Protocol::PROT_NUMBER,
+                            iana::Ieee802Numbers::IPV6,
                             realSrc,
                             realDst,
                             packetType);
     }
 
     m_rxPostTrace(copyPkt, this, GetIfIndex());
-    m_rxCallback(this, copyPkt, Ipv6L3Protocol::PROT_NUMBER, realSrc);
+    m_rxCallback(this, copyPkt, iana::Ieee802Numbers::IPV6, realSrc);
 }
 
 void

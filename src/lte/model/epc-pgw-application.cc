@@ -165,7 +165,7 @@ EpcPgwApplication::RecvFromTunDevice(Ptr<Packet> packet,
     m_rxTunPktTrace(packet->Copy());
 
     // get IP address of UE
-    if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
+    if (protocolNumber == iana::Ieee802Numbers::IPV4)
     {
         Ipv4Header ipv4Header;
         packet->PeekHeader(ipv4Header);
@@ -192,7 +192,7 @@ EpcPgwApplication::RecvFromTunDevice(Ptr<Packet> packet,
             }
         }
     }
-    else if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
+    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
     {
         Ipv6Header ipv6Header;
         packet->PeekHeader(ipv6Header);

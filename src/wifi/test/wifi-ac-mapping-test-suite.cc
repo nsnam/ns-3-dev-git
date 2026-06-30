@@ -6,6 +6,7 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/llc-snap-header.h"
@@ -111,7 +112,7 @@ WifiAcMappingTest::PacketEnqueuedInWifiMacQueue(uint8_t tos,
     Ptr<Packet> packet = item->GetPacket()->Copy();
     packet->RemoveHeader(llc);
 
-    if (llc.GetType() == Ipv4L3Protocol::PROT_NUMBER)
+    if (llc.GetType() == iana::Ieee802Numbers::IPV4)
     {
         Ipv4Header iph;
         packet->PeekHeader(iph);

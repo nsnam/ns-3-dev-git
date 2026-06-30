@@ -12,6 +12,7 @@
 #include "ipv6-interface.h"
 #include "ipv6-l3-protocol.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 #include "ns3/names.h"
 #include "ns3/node.h"
@@ -385,7 +386,7 @@ NdiscCache::Entry::FunctionDelayTimeout()
                                                            m_ipv6Address,
                                                            m_ndCache->GetDevice()->GetAddress());
     p.first->AddHeader(p.second);
-    m_ndCache->GetDevice()->Send(p.first, this->GetMacAddress(), Ipv6L3Protocol::PROT_NUMBER);
+    m_ndCache->GetDevice()->Send(p.first, this->GetMacAddress(), iana::Ieee802Numbers::IPV6);
 
     m_nsRetransmit = 1;
     StartProbeTimer();
@@ -432,7 +433,7 @@ NdiscCache::Entry::FunctionProbeTimeout()
                                          m_ipv6Address,
                                          m_ndCache->GetDevice()->GetAddress());
         p.first->AddHeader(p.second);
-        m_ndCache->GetDevice()->Send(p.first, this->GetMacAddress(), Ipv6L3Protocol::PROT_NUMBER);
+        m_ndCache->GetDevice()->Send(p.first, this->GetMacAddress(), iana::Ieee802Numbers::IPV6);
 
         /* arm the timer again */
         StartProbeTimer();

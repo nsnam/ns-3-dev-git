@@ -13,6 +13,7 @@
 #include "ipv4-interface.h"
 #include "ipv4-l3-protocol.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
@@ -401,7 +402,9 @@ ArpL3Protocol::SendArpRequest(Ptr<const ArpCache> cache, Ipv4Address to)
                  << " || dst: " << device->GetBroadcast() << " / " << to);
     arp.SetRequest(device->GetAddress(), source, device->GetBroadcast(), to);
     NS_ASSERT(m_tc);
-    m_tc->Send(device, Create<ArpQueueDiscItem>(packet, device->GetBroadcast(), PROT_NUMBER, arp));
+    m_tc->Send(
+        device,
+        Create<ArpQueueDiscItem>(packet, device->GetBroadcast(), iana::Ieee802Numbers::ARP, arp));
 }
 
 void
@@ -418,7 +421,8 @@ ArpL3Protocol::SendArpReply(Ptr<const ArpCache> cache,
     arp.SetReply(myMac, myIp, toMac, toIp);
     auto packet = Create<Packet>();
     NS_ASSERT(m_tc);
-    m_tc->Send(cache->GetDevice(), Create<ArpQueueDiscItem>(packet, toMac, PROT_NUMBER, arp));
+    m_tc->Send(cache->GetDevice(),
+               Create<ArpQueueDiscItem>(packet, toMac, iana::Ieee802Numbers::ARP, arp));
 }
 
 } // namespace ns3
