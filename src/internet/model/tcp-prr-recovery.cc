@@ -61,7 +61,16 @@ TcpPrrRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
 
     m_prrOut = 0;
     m_prrDelivered = 0;
-    m_recoveryFlightSize = tcb->m_bytesInFlight; // RFC 6675 pipe before recovery
+    // RFC 9937 Section 6.1 (and RFC 6937 line 296): RecoverFS is the FlightSize
+    // (SND.NXT - SND.UNA) at the start of recovery, NOT the RFC 6675 pipe
+    // (FlightSize - sacked - lost).  unAckDataCount carries SND.NXT - SND.UNA.
+    // Using the smaller pipe here inflates the proportional send count and makes
+    // PRR overshoot ssThresh at recovery exit.  RFC 9937 additionally refines
+    // this base with SACK scoreboard terms (- sacked + newlySacked
+    // + newlyCumAcked); that second-order correction is not applied here because
+    // the recovery-ops interface does not expose the scoreboard.  Omitting it is
+    // safe: it can only make RecoverFS larger (more conservative), never smaller.
+    m_recoveryFlightSize = unAckDataCount;
 
     NS_LOG_INFO("Enter recovery: cWnd " << tcb->m_cWnd << " ssThresh " << tcb->m_ssThresh
                                         << " recoveryFlightSize " << m_recoveryFlightSize
