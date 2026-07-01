@@ -86,7 +86,8 @@ void
 TcpClassicRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
                                   uint32_t dupAckCount,
                                   uint32_t unAckDataCount [[maybe_unused]],
-                                  uint32_t deliveredBytes [[maybe_unused]])
+                                  uint32_t deliveredBytes [[maybe_unused]],
+                                  uint32_t bytesSacked [[maybe_unused]])
 {
     NS_LOG_FUNCTION(this << tcb << dupAckCount << unAckDataCount);
     tcb->m_cWnd = tcb->m_ssThresh;

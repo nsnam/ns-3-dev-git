@@ -55,7 +55,8 @@ class TcpPrrRecovery : public TcpClassicRecovery
     void EnterRecovery(Ptr<TcpSocketState> tcb,
                        uint32_t dupAckCount,
                        uint32_t unAckDataCount,
-                       uint32_t deliveredBytes) override;
+                       uint32_t deliveredBytes,
+                       uint32_t bytesSacked) override;
 
     void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, bool isDupAck) override;
 

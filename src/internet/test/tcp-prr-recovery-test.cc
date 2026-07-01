@@ -97,7 +97,7 @@ PrrRecoveryTest::DoRun()
 
     Ptr<TcpPrrRecovery> recovery = CreateObject<TcpPrrRecovery>();
 
-    recovery->EnterRecovery(m_state, 3, m_unAckDataCount, 0);
+    recovery->EnterRecovery(m_state, 3, m_unAckDataCount, 0, 0);
 
     NS_TEST_ASSERT_MSG_GT_OR_EQ(m_state->m_cWnd.Get(),
                                 m_cWnd + m_segmentSize,
@@ -208,7 +208,7 @@ PrrRecoveryArithmeticTest::DoRun()
     Ptr<TcpPrrRecovery> recovery = CreateObject<TcpPrrRecovery>();
 
     // EnterRecovery sets RecoverFS = bytesInFlight and performs the first DoRecovery.
-    recovery->EnterRecovery(state, 3, m_bytesInFlight, 0);
+    recovery->EnterRecovery(state, 3, m_bytesInFlight, 0, 0);
 
     // Report data sent during recovery, advancing m_prrOut one segment at a time.
     for (uint32_t sent = 0; sent < m_bytesSentInRecovery; sent += m_segmentSize)

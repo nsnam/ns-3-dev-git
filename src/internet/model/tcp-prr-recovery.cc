@@ -55,26 +55,47 @@ void
 TcpPrrRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
                               uint32_t dupAckCount [[maybe_unused]],
                               uint32_t unAckDataCount,
-                              uint32_t deliveredBytes)
+                              uint32_t deliveredBytes,
+                              uint32_t bytesSacked)
 {
-    NS_LOG_FUNCTION(this << tcb << dupAckCount << unAckDataCount);
+    NS_LOG_FUNCTION(this << tcb << dupAckCount << unAckDataCount << deliveredBytes << bytesSacked);
 
     m_prrOut = 0;
     m_prrDelivered = 0;
-    // RFC 9937 Section 6.1 (and RFC 6937 line 296): RecoverFS is the FlightSize
-    // (SND.NXT - SND.UNA) at the start of recovery, NOT the RFC 6675 pipe
-    // (FlightSize - sacked - lost).  unAckDataCount carries SND.NXT - SND.UNA.
+    // RFC 9937 Section 6.1 (and RFC 6937 line 296): RecoverFS is based on the
+    // FlightSize (SND.NXT - SND.UNA) at the start of recovery, NOT the RFC 6675
+    // pipe (FlightSize - sacked - lost).  unAckDataCount carries SND.NXT - SND.UNA.
     // Using the smaller pipe here inflates the proportional send count and makes
-    // PRR overshoot ssThresh at recovery exit.  RFC 9937 additionally refines
-    // this base with SACK scoreboard terms (- sacked + newlySacked
-    // + newlyCumAcked); that second-order correction is not applied here because
-    // the recovery-ops interface does not expose the scoreboard.  Omitting it is
-    // safe: it can only make RecoverFS larger (more conservative), never smaller.
+    // PRR overshoot ssThresh at recovery exit.
     m_recoveryFlightSize = unAckDataCount;
+
+    // RFC 9937 Section 6.1 SACK refinement.  Bytes SACKed before entering
+    // recovery are already delivered and must not be counted as flight to be
+    // recovered, so they are subtracted; bytes newly SACKed and newly
+    // cumulatively acknowledged by the triggering ACK are added back:
+    //   RecoverFS = SND.NXT - SND.UNA - (bytes SACKed in scoreboard)
+    //               + (bytes newly SACKed) + (bytes newly cumulatively acked)
+    // deliveredBytes already carries (newly SACKed + newly cumulatively acked)
+    // (it is the caller's SACK-derived DeliveredData), and bytesSacked is the
+    // post-ACK scoreboard SACKed total, so subtracting bytesSacked and adding
+    // deliveredBytes nets out to removing only the pre-existing SACKed bytes.
+    // Applied only with SACK: without SACK there is no real scoreboard (the
+    // reno-sack estimate is handled per-ACK in DoRecovery), so RecoverFS stays
+    // at the plain FlightSize.  Signed math guards a transient underflow, and
+    // the result is clamped to at least 1 SMSS to keep it a valid divisor.
+    if (tcb->m_sackEnabled)
+    {
+        int64_t recoverFs = static_cast<int64_t>(unAckDataCount) -
+                            static_cast<int64_t>(bytesSacked) +
+                            static_cast<int64_t>(deliveredBytes);
+        m_recoveryFlightSize =
+            static_cast<uint32_t>(std::max<int64_t>(recoverFs, tcb->m_segmentSize));
+    }
 
     NS_LOG_INFO("Enter recovery: cWnd " << tcb->m_cWnd << " ssThresh " << tcb->m_ssThresh
                                         << " recoveryFlightSize " << m_recoveryFlightSize
-                                        << " unAckDataCount " << unAckDataCount);
+                                        << " unAckDataCount " << unAckDataCount << " bytesSacked "
+                                        << bytesSacked << " deliveredBytes " << deliveredBytes);
 
     DoRecovery(tcb, deliveredBytes, true);
 }
@@ -89,6 +110,11 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
     // With SACK (the ns-3 default), the caller already supplies the SACK-derived
     // DeliveredData (change in SND.UNA plus newly SACKed bytes), so adding a
     // segment here would double-count and inflate prr_delivered.
+    // The m_prrDelivered < m_recoveryFlightSize guard is the RFC's Savage99
+    // anti-inflation mitigation (RFC 9937 Section 6.2): without SACK, PRR
+    // disallows incrementing DeliveredData once the total delivered in the
+    // episode would exceed RecoverFS.  This bound is spec-mandated, not
+    // incidental; do not drop it.
     if (isDupAck && !tcb->m_sackEnabled && m_prrDelivered < m_recoveryFlightSize)
     {
         deliveredBytes += tcb->m_segmentSize;

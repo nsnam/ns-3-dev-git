@@ -1732,7 +1732,11 @@ TcpSocketBase::EnterCwr(uint32_t currentDelivered)
     if (!m_congestionControl->HasCongControl())
     {
         // If there is a recovery algorithm, invoke it.
-        m_recoveryOps->EnterRecovery(m_tcb, m_dupAckCount, UnAckDataCount(), currentDelivered);
+        m_recoveryOps->EnterRecovery(m_tcb,
+                                     m_dupAckCount,
+                                     UnAckDataCount(),
+                                     currentDelivered,
+                                     m_txBuffer->GetSacked());
         NS_LOG_INFO("Enter CWR recovery mode; set cwnd to " << m_tcb->m_cWnd << ", ssthresh to "
                                                             << m_tcb->m_ssThresh << ", recover to "
                                                             << m_recover);
@@ -1787,7 +1791,11 @@ TcpSocketBase::EnterRecovery(uint32_t currentDelivered)
 
     if (!m_congestionControl->HasCongControl())
     {
-        m_recoveryOps->EnterRecovery(m_tcb, m_dupAckCount, UnAckDataCount(), currentDelivered);
+        m_recoveryOps->EnterRecovery(m_tcb,
+                                     m_dupAckCount,
+                                     UnAckDataCount(),
+                                     currentDelivered,
+                                     m_txBuffer->GetSacked());
         NS_LOG_INFO(m_dupAckCount << " dupack. Enter fast recovery mode."
                                   << "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to "
                                   << m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover
