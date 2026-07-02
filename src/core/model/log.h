@@ -14,8 +14,12 @@
 #include "node-printer.h"
 #include "time-printer.h"
 
+#include <cstddef>
 #include <iostream>
+#include <list>
+#include <map>
 #include <optional>
+#include <set>
 #include <stdint.h>
 #include <string>
 #include <type_traits>
@@ -498,6 +502,18 @@ class ParameterLogger
     ParameterLogger(std::ostream& os);
 
     /**
+     * Set the maximum number of elements to print for a container.
+     *
+     * @param max the maximum number of elements to print for a container
+     */
+    void SetMaxLoggedContainerElements(std::size_t max);
+
+    /**
+     * @return the maximum number of elements to print for a container
+     */
+    std::size_t GetMaxLoggedContainerElements() const;
+
+    /**
      * Write a function parameter on the output stream,
      * separating parameters after the first by `,` strings.
      *
@@ -508,13 +524,50 @@ class ParameterLogger
     ParameterLogger& operator<<(const T& param);
 
     /**
-     * Overload for vectors, to print each element.
+     * Overload for vectors, to print up to @ref m_maxLoggedContainerElements elements in the
+     * format:
+     *
+     *     vector:[a, b, c]
      *
      * @param [in] vector The vector of parameters
      * @return This ParameterLogger, so it's chainable.
      */
     template <typename T>
     ParameterLogger& operator<<(const std::vector<T>& vector);
+
+    /**
+     * Overload for lists, to print up to @ref m_maxLoggedContainerElements elements in the format:
+     *
+     *     list:[a, b, c]
+     *
+     * @param [in] list The list of parameters
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename T>
+    ParameterLogger& operator<<(const std::list<T>& list);
+
+    /**
+     * Overload for sets, to print up to @ref m_maxLoggedContainerElements elements in the format:
+     *
+     *     set:[a, b, c]
+     *
+     * @param [in] set The set of parameters
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename T>
+    ParameterLogger& operator<<(const std::set<T>& set);
+
+    /**
+     * Overload for maps, to print up to @ref m_maxLoggedContainerElements (key, value) pairs in the
+     * format:
+     *
+     *     map:[k1: v1, k2: v2, k3: v3]
+     *
+     * @param [in] map The map parameter
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename K, typename T>
+    ParameterLogger& operator<<(const std::map<K, T>& map);
 
     /**
      * Overload for optional values, to print the stored value (if any).
@@ -529,8 +582,20 @@ class ParameterLogger
     /** Add `, ` before every parameter after the first. */
     void CommaRest();
 
+    /**
+     * Write the elements of a container, up to @ref m_maxLoggedContainerElements.
+     *
+     * @tparam C The container type
+     * @param [in] container The container to write
+     */
+    template <typename C>
+    void ContainerLogger(const C& container);
+
     bool m_first{true}; //!< First argument flag, doesn't get `, `.
     std::ostream& m_os; //!< Underlying output stream.
+
+    /// Maximum number of elements to print for a container.
+    static std::size_t m_maxLoggedContainerElements;
 
     // end of class ParameterLogger
 };
@@ -566,14 +631,87 @@ ParameterLogger::operator<<(const T& param)
     return *this;
 }
 
+template <typename C>
+void
+ParameterLogger::ContainerLogger(const C& container)
+{
+    m_os << ":[";
+    m_first = true; // suppress ", " before first element
+    std::size_t count = 0;
+    for (const auto& element : container)
+    {
+        if (count >= m_maxLoggedContainerElements)
+        {
+            break;
+        }
+        if constexpr (requires { typename C::mapped_type; })
+        {
+            const auto& [key, value] = element;
+            *this << key;
+            m_os << ": ";
+            m_first = true; // suppress ", " before value
+            *this << value;
+        }
+        else
+        {
+            *this << element;
+        }
+        ++count;
+    }
+    if (container.size() > m_maxLoggedContainerElements)
+    {
+        CommaRest();
+        m_os << "...";
+    }
+    m_os << "]";
+    m_first = false;
+}
+
 template <typename T>
 ParameterLogger&
 ParameterLogger::operator<<(const std::vector<T>& vector)
 {
-    for (const auto& i : vector)
-    {
-        *this << i;
-    }
+    CommaRest();
+
+    m_os << "vector";
+    ContainerLogger(vector);
+
+    return *this;
+}
+
+template <typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::list<T>& list)
+{
+    CommaRest();
+
+    m_os << "list";
+    ContainerLogger(list);
+
+    return *this;
+}
+
+template <typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::set<T>& set)
+{
+    CommaRest();
+
+    m_os << "set";
+    ContainerLogger(set);
+
+    return *this;
+}
+
+template <typename K, typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::map<K, T>& map)
+{
+    CommaRest();
+
+    m_os << "map";
+    ContainerLogger(map);
+
     return *this;
 }
 

@@ -714,6 +714,20 @@ ParameterLogger::ParameterLogger(std::ostream& os)
 {
 }
 
+std::size_t ParameterLogger::m_maxLoggedContainerElements = 10;
+
+void
+ParameterLogger::SetMaxLoggedContainerElements(std::size_t max)
+{
+    m_maxLoggedContainerElements = max;
+}
+
+std::size_t
+ParameterLogger::GetMaxLoggedContainerElements() const
+{
+    return m_maxLoggedContainerElements;
+}
+
 void
 ParameterLogger::CommaRest()
 {
