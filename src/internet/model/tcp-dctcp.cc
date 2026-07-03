@@ -116,11 +116,23 @@ TcpDctcp::Init(Ptr<TcpSocketState> tcb)
 
 // Step 9, Section 3.3 of RFC 8257.  GetSsThresh() is called upon
 // entering the CWR state, and then later, when CWR is exited,
-// cwnd is set to ssthresh (this value).  bytesInFlight is ignored.
+// cwnd is set to ssthresh (this value).
+//
+// @RFC{8257} Section 3.5 ("Handling of Packet Loss"): a DCTCP sender MUST react
+// to a loss episode (a loss inferred implicitly, not signalled by ECN) in the same
+// way as a conventional TCP, i.e. reduce ssthresh as @RFC{5681} does. With non-ECN
+// routers, m_alpha decays toward zero, so the DCTCP reduction below would leave
+// ssthresh at ~cwnd on a packet loss (no back-off). Distinguish the congestion
+// event type: on inferred loss (CA_LOSS) apply the @RFC{5681} reduction; otherwise
+// apply the ECN-driven DCTCP reduction (in which case bytesInFlight is ignored).
 uint32_t
 TcpDctcp::GetSsThresh(Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 {
     NS_LOG_FUNCTION(this << tcb << bytesInFlight);
+    if (tcb->m_congState == TcpSocketState::CA_LOSS)
+    {
+        return std::max(bytesInFlight / 2, 2 * tcb->m_segmentSize);
+    }
     return static_cast<uint32_t>((1 - m_alpha / 2.0) * tcb->m_cWnd);
 }
 

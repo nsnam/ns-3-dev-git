@@ -301,6 +301,7 @@ set(test_sources
     test/tcp-close-test.cc
     test/tcp-cong-avoid-test.cc
     test/tcp-datasentcb-test.cc
+    test/tcp-dctcp-loss-test-suite.cc
     test/tcp-dctcp-test.cc
     test/tcp-ecn-test.cc
     test/tcp-endpoint-bug2211.cc
