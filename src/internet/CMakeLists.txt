@@ -336,6 +336,7 @@ set(test_sources
     test/tcp-tx-buffer-test.cc
     test/tcp-vegas-test.cc
     test/tcp-veno-test.cc
+    test/tcp-window-update-test-suite.cc
     test/tcp-wscaling-test.cc
     test/tcp-yeah-test.cc
     test/tcp-zero-window-test.cc

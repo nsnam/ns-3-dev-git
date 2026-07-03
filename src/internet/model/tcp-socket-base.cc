@@ -976,7 +976,32 @@ TcpSocketBase::Recv(uint32_t maxSize, uint32_t flags)
     {
         return Create<Packet>(); // Send EOF on connection close
     }
+    uint32_t oldWin = AdvertisedWindowSize();
     Ptr<Packet> outPacket = m_tcb->m_rxBuffer->Extract(maxSize);
+    uint32_t newWin = AdvertisedWindowSize();
+
+    // If the receive window had (nearly) closed, the application read just
+    // reopened it. Proactively advertise the larger window with an ACK instead
+    // of waiting for the sender's persist (zero-window) timer to probe. This
+    // mirrors SetRcvBufSize() and follows the receiver SWS-avoidance rule of
+    // @RFC{1122} sec 4.2.3.3: only advertise once the window grows by at least one
+    // full-sized segment (or half the buffer), and only from a (near) closed
+    // state, to avoid sending a redundant ACK on every read (see @issueid{125}).
+    if (m_connected && (m_state == ESTABLISHED || m_state == FIN_WAIT_1 || m_state == FIN_WAIT_2) &&
+        oldWin < m_tcb->m_segmentSize && newWin > oldWin &&
+        newWin >= std::min(m_tcb->m_segmentSize, GetRcvBufSize() / 2))
+    {
+        if (m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD ||
+            m_tcb->m_ecnState == TcpSocketState::ECN_SENDING_ECE)
+        {
+            SendEmptyPacket(TcpHeader::ACK | TcpHeader::ECE);
+            m_tcb->m_ecnState = TcpSocketState::ECN_SENDING_ECE;
+        }
+        else
+        {
+            SendEmptyPacket(TcpHeader::ACK);
+        }
+    }
     return outPacket;
 }
 
