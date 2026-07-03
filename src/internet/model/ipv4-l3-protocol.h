@@ -366,6 +366,16 @@ class Ipv4L3Protocol : public Ipv4
                          Socket::SocketErrno sockErrno);
 
     /**
+     * @brief Return an ICMP Destination Unreachable (net unreachable) to the
+     * source of a datagram that this router could not forward for lack of a
+     * route. No message is generated unless this node is a forwarder, and never
+     * for a multicast or broadcast destination (see @issueid{825}).
+     * @param ipHeader IPv4 header of the undeliverable datagram
+     * @param packet the undeliverable datagram payload
+     */
+    void SendIcmpNoRoute(const Ipv4Header& ipHeader, Ptr<const Packet> packet);
+
+    /**
      * @brief Add an IPv4 interface to the stack.
      * @param interface interface to add
      * @return index of newly added interface

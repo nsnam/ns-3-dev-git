@@ -112,6 +112,16 @@ class Icmpv4L4Protocol : public IpL4Protocol
      */
     void SendDestUnreachPort(Ipv4Header header, Ptr<const Packet> orgData);
 
+    /**
+     * @brief Send a Destination Unreachable (network unreachable) ICMP error.
+     *
+     * Used when a router has no route to forward a datagram (see @issueid{825}).
+     *
+     * @param header the original IP header
+     * @param orgData the original packet
+     */
+    void SendDestUnreachNetwork(Ipv4Header header, Ptr<const Packet> orgData);
+
     // From IpL4Protocol
     void SetDownTarget(IpL4Protocol::DownTargetCallback cb) override;
     void SetDownTarget6(IpL4Protocol::DownTargetCallback6 cb) override;

@@ -644,6 +644,28 @@ Ipv4L3Protocol::Receive(Ptr<NetDevice> device,
     {
         NS_LOG_WARN("No route found for forwarding packet.  Drop.");
         m_dropTrace(ipHeader, packet, DROP_NO_ROUTE, this, interface);
+        SendIcmpNoRoute(ipHeader, packet);
+    }
+}
+
+void
+Ipv4L3Protocol::SendIcmpNoRoute(const Ipv4Header& ipHeader, Ptr<const Packet> packet)
+{
+    NS_LOG_FUNCTION(this << ipHeader << packet);
+    // @RFC{1812} sec 4.3.2.7 / 5.2.7.1: a router that cannot forward a datagram
+    // because it has no route to the destination network must return an ICMP
+    // Destination Unreachable (net unreachable) message to the source (see @issueid{825}).
+    // Only a node configured as a forwarder (router) generates this message, and
+    // never in response to a datagram with a multicast or broadcast destination.
+    if (!m_ipForward || ipHeader.GetDestination().IsMulticast() ||
+        ipHeader.GetDestination() == Ipv4Address::GetBroadcast())
+    {
+        return;
+    }
+    Ptr<Icmpv4L4Protocol> icmp = GetIcmp();
+    if (icmp)
+    {
+        icmp->SendDestUnreachNetwork(ipHeader, packet);
     }
 }
 
@@ -1409,7 +1431,8 @@ Ipv4L3Protocol::RouteInputError(Ptr<const Packet> p,
                                                              << sockErrno);
     m_dropTrace(ipHeader, p, DROP_ROUTE_ERROR, this, 0);
 
-    // \todo Send an ICMP no route.
+    // Return an ICMP net-unreachable to the source on a routing failure (see @issueid{825}).
+    SendIcmpNoRoute(ipHeader, p);
 }
 
 void

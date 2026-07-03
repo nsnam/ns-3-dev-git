@@ -272,6 +272,7 @@ set(test_sources
     test/ipv4-fragmentation-test.cc
     test/global-routing-test-suite.cc
     test/ipv4-header-test.cc
+    test/ipv4-icmp-no-route-test-suite.cc
     test/ipv4-list-routing-test-suite.cc
     test/ipv4-packet-info-tag-test-suite.cc
     test/ipv4-raw-test.cc

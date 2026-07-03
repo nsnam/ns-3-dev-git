@@ -165,6 +165,13 @@ Icmpv4L4Protocol::SendDestUnreachPort(Ipv4Header header, Ptr<const Packet> orgDa
 }
 
 void
+Icmpv4L4Protocol::SendDestUnreachNetwork(Ipv4Header header, Ptr<const Packet> orgData)
+{
+    NS_LOG_FUNCTION(this << header << *orgData);
+    SendDestUnreach(header, orgData, Icmpv4DestinationUnreachable::ICMPV4_NET_UNREACHABLE, 0);
+}
+
+void
 Icmpv4L4Protocol::SendDestUnreach(Ipv4Header header,
                                   Ptr<const Packet> orgData,
                                   uint8_t code,
