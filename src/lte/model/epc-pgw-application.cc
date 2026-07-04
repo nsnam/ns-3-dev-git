@@ -14,10 +14,8 @@
 #include "ns3/abort.h"
 #include "ns3/iana-ieee802-numbers.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6-header.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/ipv6.h"
 #include "ns3/log.h"
 #include "ns3/mac48-address.h"
@@ -165,7 +163,7 @@ EpcPgwApplication::RecvFromTunDevice(Ptr<Packet> packet,
     m_rxTunPktTrace(packet->Copy());
 
     // get IP address of UE
-    if (protocolNumber == iana::Ieee802Numbers::IPV4)
+    if (protocolNumber == iana::ieee802numbers::IPV4)
     {
         Ipv4Header ipv4Header;
         packet->PeekHeader(ipv4Header);
@@ -192,7 +190,7 @@ EpcPgwApplication::RecvFromTunDevice(Ptr<Packet> packet,
             }
         }
     }
-    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
+    else if (protocolNumber == iana::ieee802numbers::IPV6)
     {
         Ipv6Header ipv6Header;
         packet->PeekHeader(ipv6Header);
@@ -439,11 +437,11 @@ EpcPgwApplication::SendToTunDevice(Ptr<Packet> packet, uint32_t teid)
     uint16_t protocol = 0;
     if (ipType == 0x04)
     {
-        protocol = iana::Ieee802Numbers::IPV4;
+        protocol = iana::ieee802numbers::IPV4;
     }
     else if (ipType == 0x06)
     {
-        protocol = iana::Ieee802Numbers::IPV6;
+        protocol = iana::ieee802numbers::IPV6;
     }
     else
     {

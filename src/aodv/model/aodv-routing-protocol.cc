@@ -18,6 +18,7 @@
 
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/boolean.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
@@ -25,7 +26,6 @@
 #include "ns3/string.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-header.h"
-#include "ns3/udp-l4-protocol.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/wifi-mpdu.h"
 #include "ns3/wifi-net-device.h"
@@ -560,7 +560,7 @@ RoutingProtocol::RouteInput(Ptr<const Packet> p,
                 {
                     return true;
                 }
-                if (header.GetProtocol() == UdpL4Protocol::PROT_NUMBER)
+                if (header.GetProtocol() == iana::internetprotocolnumbers::UDP)
                 {
                     UdpHeader udpHeader;
                     p->PeekHeader(udpHeader);

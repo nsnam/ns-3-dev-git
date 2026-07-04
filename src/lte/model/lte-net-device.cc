@@ -14,9 +14,7 @@
 #include "ns3/enum.h"
 #include "ns3/iana-ieee802-numbers.h"
 #include "ns3/ipv4-header.h"
-#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-header.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
@@ -263,12 +261,12 @@ LteNetDevice::Receive(Ptr<Packet> p)
     if (p->PeekHeader(ipv4Header) != 0)
     {
         NS_LOG_LOGIC("IPv4 stack...");
-        m_rxCallback(this, p, iana::Ieee802Numbers::IPV4, Address());
+        m_rxCallback(this, p, iana::ieee802numbers::IPV4, Address());
     }
     else if (p->PeekHeader(ipv6Header) != 0)
     {
         NS_LOG_LOGIC("IPv6 stack...");
-        m_rxCallback(this, p, iana::Ieee802Numbers::IPV6, Address());
+        m_rxCallback(this, p, iana::ieee802numbers::IPV6, Address());
     }
     else
     {

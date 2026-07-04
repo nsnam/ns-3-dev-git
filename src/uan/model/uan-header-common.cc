@@ -77,19 +77,19 @@ UanHeaderCommon::SetProtocolNumber(uint16_t protocolNumber)
     {
         m_uanProtocolBits.m_protocolNumber = 0;
     }
-    else if (protocolNumber == iana::Ieee802Numbers::IPV4)
+    else if (protocolNumber == iana::ieee802numbers::IPV4)
     {
         m_uanProtocolBits.m_protocolNumber = 1;
     }
-    else if (protocolNumber == iana::Ieee802Numbers::ARP)
+    else if (protocolNumber == iana::ieee802numbers::ARP)
     {
         m_uanProtocolBits.m_protocolNumber = 2;
     }
-    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
+    else if (protocolNumber == iana::ieee802numbers::IPV6)
     {
         m_uanProtocolBits.m_protocolNumber = 3;
     }
-    else if (protocolNumber == iana::Ieee802Numbers::LoWPAN)
+    else if (protocolNumber == iana::ieee802numbers::LoWPAN)
     {
         m_uanProtocolBits.m_protocolNumber = 4;
     }
@@ -122,19 +122,19 @@ UanHeaderCommon::GetProtocolNumber() const
 {
     if (m_uanProtocolBits.m_protocolNumber == 1)
     {
-        return iana::Ieee802Numbers::IPV4;
+        return iana::ieee802numbers::IPV4;
     }
     if (m_uanProtocolBits.m_protocolNumber == 2)
     {
-        return iana::Ieee802Numbers::ARP;
+        return iana::ieee802numbers::ARP;
     }
     if (m_uanProtocolBits.m_protocolNumber == 3)
     {
-        return iana::Ieee802Numbers::IPV6;
+        return iana::ieee802numbers::IPV6;
     }
     if (m_uanProtocolBits.m_protocolNumber == 4)
     {
-        return iana::Ieee802Numbers::LoWPAN;
+        return iana::ieee802numbers::LoWPAN;
     }
     return 0;
 }

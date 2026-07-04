@@ -215,14 +215,14 @@ SixLowPanNdProtocol::SendSixLowPanNsWithEaro(Ipv6Address addrToRegister,
     Ipv6Header hdr;
     hdr.SetSource(src);
     hdr.SetDestination(dst);
-    hdr.SetNextHeader(Icmpv6L4Protocol::PROT_NUMBER);
+    hdr.SetNextHeader(iana::internetprotocolnumbers::ICMPV6);
     hdr.SetPayloadLength(p->GetSize());
     hdr.SetHopLimit(255);
 
     Ptr<Packet> pkt = p->Copy();
     pkt->AddHeader(hdr);
 
-    sixLowPanNetDevice->Send(pkt, dstMac, iana::Ieee802Numbers::IPV6);
+    sixLowPanNetDevice->Send(pkt, dstMac, iana::ieee802numbers::IPV6);
 }
 
 void
@@ -280,7 +280,7 @@ SixLowPanNdProtocol::SendSixLowPanMulticastRS(Ipv6Address src, Address hardwareA
     rs.CalculatePseudoHeaderChecksum(src,
                                      Ipv6Address::GetAllRoutersMulticast(),
                                      p->GetSize() + rs.GetSerializedSize(),
-                                     PROT_NUMBER);
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(rs);
 
     m_rsRetransmissionCount++;
@@ -348,7 +348,7 @@ SixLowPanNdProtocol::SendSixLowPanRA(Ipv6Address src, Ipv6Address dst, Ptr<Ipv6I
         Ipv6Header ipHeader;
         ipHeader.SetSource(src);
         ipHeader.SetDestination(dst);
-        ipHeader.SetNextHeader(PROT_NUMBER);
+        ipHeader.SetNextHeader(iana::internetprotocolnumbers::ICMPV6);
         ipHeader.SetPayloadLength(p->GetSize());
         ipHeader.SetHopLimit(255);
 
@@ -1469,7 +1469,7 @@ SixLowPanNdProtocol::MakeNsEaroPacket(Ipv6Address src,
     nsHdr.CalculatePseudoHeaderChecksum(src,
                                         dst,
                                         p->GetSize() + nsHdr.GetSerializedSize(),
-                                        PROT_NUMBER);
+                                        iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(nsHdr);
 
     return p;
@@ -1487,7 +1487,7 @@ SixLowPanNdProtocol::MakeNaEaroPacket(Ipv6Address src,
     naHdr.CalculatePseudoHeaderChecksum(src,
                                         dst,
                                         p->GetSize() + naHdr.GetSerializedSize(),
-                                        PROT_NUMBER);
+                                        iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(naHdr);
 
     return p;
@@ -1543,7 +1543,10 @@ SixLowPanNdProtocol::MakeRaPacket(Ipv6Address src,
     }
 
     // Compute checksum after everything is added
-    ra.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + ra.GetSerializedSize(), PROT_NUMBER);
+    ra.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + ra.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(ra);
 
     return p;

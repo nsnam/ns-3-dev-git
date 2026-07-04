@@ -88,7 +88,7 @@ PointToPointHelper::EnablePcapInternal(std::string prefix,
         filename = pcapHelper.GetFilenameFromDevice(prefix, device);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::PPP);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::PPP);
     pcapHelper.HookDefaultSink<PointToPointNetDevice>(device, "PromiscSniffer", file);
 }
 

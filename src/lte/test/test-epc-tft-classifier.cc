@@ -10,17 +10,15 @@
 
 #include "ns3/epc-tft-classifier.h"
 #include "ns3/iana-ieee802-numbers.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/ipv4-header.h"
-#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-header.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/tcp-header.h"
 #include "ns3/tcp-l4-protocol.h"
 #include "ns3/test.h"
 #include "ns3/udp-header.h"
-#include "ns3/udp-l4-protocol.h"
 
 #include <iomanip>
 
@@ -125,7 +123,7 @@ EpcTftClassifierTestCase::EpcTftClassifierTestCase(Ptr<EpcTftClassifier> c,
         m_ipv6Header.SetDestination(Ipv6Address::MakeIpv4MappedAddress(Ipv4Address(da.c_str())));
         m_ipv6Header.SetTrafficClass(tos);
         m_ipv6Header.SetPayloadLength(8); // Full UDP header
-        m_ipv6Header.SetNextHeader(UdpL4Protocol::PROT_NUMBER);
+        m_ipv6Header.SetNextHeader(iana::internetprotocolnumbers::UDP);
     }
     else
     {
@@ -133,7 +131,7 @@ EpcTftClassifierTestCase::EpcTftClassifierTestCase(Ptr<EpcTftClassifier> c,
         m_ipHeader.SetDestination(Ipv4Address(da.c_str()));
         m_ipHeader.SetTos(tos);
         m_ipHeader.SetPayloadSize(8); // Full UDP header
-        m_ipHeader.SetProtocol(UdpL4Protocol::PROT_NUMBER);
+        m_ipHeader.SetProtocol(iana::internetprotocolnumbers::UDP);
     }
 
     m_udpHeader.SetSourcePort(sp);
@@ -190,7 +188,7 @@ EpcTftClassifierTestCase::DoRun()
     uint32_t obtainedTftId =
         m_c->Classify(udpPacket,
                       m_d,
-                      m_useIpv6 ? iana::Ieee802Numbers::IPV6 : iana::Ieee802Numbers::IPV4);
+                      m_useIpv6 ? iana::ieee802numbers::IPV6 : iana::ieee802numbers::IPV4);
     NS_TEST_ASSERT_MSG_EQ(obtainedTftId, (uint16_t)m_tftId, "bad classification of UDP packet");
 }
 

@@ -7,6 +7,13 @@
  *          Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
  */
 
+/*
+ *
+ * Centralized definitions for PPP protocol numbers.
+ * This enumeration contains the PPP protocol numbers as defined by IANA.
+ * - Reference: https://www.iana.org/assignments/ppp-numbers/ppp-numbers.xhtml
+ */
+
 #ifndef IANA_PPP_NUMBERS_H
 #define IANA_PPP_NUMBERS_H
 
@@ -16,17 +23,11 @@ namespace ns3
 {
 namespace iana
 {
-/**
- *
- * Centralized definitions for PPP protocol numbers.
- * This enumeration contains the PPP protocol numbers as defined by IANA.
- * - Reference: https://www.iana.org/assignments/ppp-numbers/ppp-numbers.xhtml
- */
-enum PppDllNumbers : uint16_t
+namespace pppdllnumbers
 {
-    IPV4_DLL = 0x0021, //!< IPv4 PPP protocol number
-    IPV6_DLL = 0x0057, //!< IPv6 PPP protocol number
-};
+constexpr uint16_t IPV4_DLL = 0x0021; //!< IPv4 PPP protocol number
+constexpr uint16_t IPV6_DLL = 0x0057; //!< IPv6 PPP protocol number
+} // namespace pppdllnumbers
 } // namespace iana
 } // namespace ns3
 

@@ -645,10 +645,10 @@ PointToPointNetDevice::PppToEther(uint16_t proto)
     NS_LOG_FUNCTION_NOARGS();
     switch (proto)
     {
-    case iana::PppDllNumbers::IPV4_DLL:
-        return iana::Ieee802Numbers::IPV4;
-    case iana::PppDllNumbers::IPV6_DLL:
-        return iana::Ieee802Numbers::IPV6;
+    case iana::pppdllnumbers::IPV4_DLL:
+        return iana::ieee802numbers::IPV4;
+    case iana::pppdllnumbers::IPV6_DLL:
+        return iana::ieee802numbers::IPV6;
     default:
         NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
     }
@@ -661,10 +661,10 @@ PointToPointNetDevice::EtherToPpp(uint16_t proto)
     NS_LOG_FUNCTION_NOARGS();
     switch (proto)
     {
-    case iana::Ieee802Numbers::IPV4:
-        return iana::PppDllNumbers::IPV4_DLL;
-    case iana::Ieee802Numbers::IPV6:
-        return iana::PppDllNumbers::IPV6_DLL;
+    case iana::ieee802numbers::IPV4:
+        return iana::pppdllnumbers::IPV4_DLL;
+    case iana::ieee802numbers::IPV6:
+        return iana::pppdllnumbers::IPV6_DLL;
     default:
         NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
     }

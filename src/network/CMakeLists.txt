@@ -118,6 +118,7 @@ set(header_files
     utils/iana-link-type-numbers.h
     utils/iana-ieee802-numbers.h
     utils/iana-ppp-numbers.h
+    utils/iana-internet-protocol-numbers.h
     utils/inet-socket-address.h
     utils/inet6-socket-address.h
     utils/ipv4-address.h

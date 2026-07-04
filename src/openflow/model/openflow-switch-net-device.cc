@@ -7,8 +7,7 @@
 #include "openflow-switch-net-device.h"
 
 #include "ns3/iana-ieee802-numbers.h"
-#include "ns3/tcp-l4-protocol.h"
-#include "ns3/udp-l4-protocol.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 
 namespace ns3
 {
@@ -551,7 +550,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
     if (protocol == iana::Ieee802Numbers::IPV4)
     {
         ip_header* ip_h = (ip_header*)buffer->l3;
-        if (ip_h->ip_proto == TcpL4Protocol::PROT_NUMBER)
+        if (ip_h->ip_proto == iana::InternetProtocolNumbers::TCP)
         {
             TcpHeader tcp_hd;
             if (packet->PeekHeader(tcp_hd))
@@ -572,7 +571,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
                 l4_length = TCP_HEADER_LEN;
             }
         }
-        else if (ip_h->ip_proto == UdpL4Protocol::PROT_NUMBER)
+        else if (ip_h->ip_proto == iana::InternetProtocolNumbers::UDP)
         {
             UdpHeader udp_hd;
             if (packet->PeekHeader(udp_hd))

@@ -64,7 +64,7 @@ class Ipv6L3Protocol : public Ipv6
      * @brief The protocol number for IPv6
      */
     NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
-    static constexpr uint16_t PROT_NUMBER = iana::Ieee802Numbers::IPV6;
+    static constexpr uint16_t PROT_NUMBER = iana::ieee802numbers::IPV6;
 
     /**
      * @enum DropReason

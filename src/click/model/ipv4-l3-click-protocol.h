@@ -63,7 +63,7 @@ class Ipv4L3ClickProtocol : public Ipv4
      * Protocol number for Ipv4 L3
      */
     NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
-    static constexpr uint16_t PROT_NUMBER = iana::ieee802::IPV4;
+    static constexpr uint16_t PROT_NUMBER = iana::Ieee802Numbers::IPV4;
 
     Ipv4L3ClickProtocol();
     ~Ipv4L3ClickProtocol() override;

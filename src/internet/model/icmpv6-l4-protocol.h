@@ -15,6 +15,7 @@
 #include "ip-l4-protocol.h"
 #include "ndisc-cache.h"
 
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/traced-callback.h"
@@ -51,6 +52,7 @@ class Icmpv6L4Protocol : public IpL4Protocol
     /**
      * @brief ICMPv6 protocol number (58).
      */
+    NS_DEPRECATED_3_49("Use the numbers in iana-internet-protocol-numbers.h instead")
     static constexpr uint8_t PROT_NUMBER{58};
 
     /**

@@ -370,11 +370,11 @@ LrWpanHelper::EnablePcapInternal(std::string prefix,
     Ptr<PcapFileWrapper> file;
     if (checksumEnabled.Get())
     {
-        file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::IEEE802_15_4_WITHFCS);
+        file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::IEEE802_15_4_WITHFCS);
     }
     else
     {
-        file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::IEEE802_15_4_NOFCS);
+        file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::IEEE802_15_4_NOFCS);
     }
 
     if (promiscuous)

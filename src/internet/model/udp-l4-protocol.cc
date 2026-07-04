@@ -22,6 +22,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/object-map.h"
@@ -117,7 +118,7 @@ UdpL4Protocol::NotifyNewAggregate()
 int
 UdpL4Protocol::GetProtocolNumber() const
 {
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::UDP;
 }
 
 void
@@ -327,7 +328,9 @@ UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv4Header& header, Ptr<Ipv4Int
         udpHeader.EnableChecksums();
     }
 
-    udpHeader.InitializeChecksum(header.GetSource(), header.GetDestination(), PROT_NUMBER);
+    udpHeader.InitializeChecksum(header.GetSource(),
+                                 header.GetDestination(),
+                                 iana::internetprotocolnumbers::UDP);
 
     // We only peek at the header for now (instead of removing it) so that it will be intact
     // if we have to pass it to a IPv6 endpoint via:
@@ -385,7 +388,9 @@ UdpL4Protocol::Receive(Ptr<Packet> packet, const Ipv6Header& header, Ptr<Ipv6Int
         udpHeader.EnableChecksums();
     }
 
-    udpHeader.InitializeChecksum(header.GetSource(), header.GetDestination(), PROT_NUMBER);
+    udpHeader.InitializeChecksum(header.GetSource(),
+                                 header.GetDestination(),
+                                 iana::internetprotocolnumbers::UDP);
 
     packet->RemoveHeader(udpHeader);
 
@@ -427,14 +432,14 @@ UdpL4Protocol::Send(Ptr<Packet> packet,
     if (Node::ChecksumEnabled())
     {
         udpHeader.EnableChecksums();
-        udpHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+        udpHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::UDP);
     }
     udpHeader.SetDestinationPort(dport);
     udpHeader.SetSourcePort(sport);
 
     packet->AddHeader(udpHeader);
 
-    m_downTarget(packet, saddr, daddr, PROT_NUMBER, nullptr);
+    m_downTarget(packet, saddr, daddr, iana::internetprotocolnumbers::UDP, nullptr);
 }
 
 void
@@ -451,14 +456,14 @@ UdpL4Protocol::Send(Ptr<Packet> packet,
     if (Node::ChecksumEnabled())
     {
         udpHeader.EnableChecksums();
-        udpHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+        udpHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::UDP);
     }
     udpHeader.SetDestinationPort(dport);
     udpHeader.SetSourcePort(sport);
 
     packet->AddHeader(udpHeader);
 
-    m_downTarget(packet, saddr, daddr, PROT_NUMBER, route);
+    m_downTarget(packet, saddr, daddr, iana::internetprotocolnumbers::UDP, route);
 }
 
 void
@@ -474,14 +479,14 @@ UdpL4Protocol::Send(Ptr<Packet> packet,
     if (Node::ChecksumEnabled())
     {
         udpHeader.EnableChecksums();
-        udpHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+        udpHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::UDP);
     }
     udpHeader.SetDestinationPort(dport);
     udpHeader.SetSourcePort(sport);
 
     packet->AddHeader(udpHeader);
 
-    m_downTarget6(packet, saddr, daddr, PROT_NUMBER, nullptr);
+    m_downTarget6(packet, saddr, daddr, iana::internetprotocolnumbers::UDP, nullptr);
 }
 
 void
@@ -498,14 +503,14 @@ UdpL4Protocol::Send(Ptr<Packet> packet,
     if (Node::ChecksumEnabled())
     {
         udpHeader.EnableChecksums();
-        udpHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+        udpHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::UDP);
     }
     udpHeader.SetDestinationPort(dport);
     udpHeader.SetSourcePort(sport);
 
     packet->AddHeader(udpHeader);
 
-    m_downTarget6(packet, saddr, daddr, PROT_NUMBER, route);
+    m_downTarget6(packet, saddr, daddr, iana::internetprotocolnumbers::UDP, route);
 }
 
 void

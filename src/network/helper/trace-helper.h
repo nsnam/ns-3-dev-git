@@ -104,7 +104,7 @@ class PcapHelper
      */
     Ptr<PcapFileWrapper> CreateFile(std::string filename,
                                     std::ios::openmode filemode,
-                                    iana::LinkType dataLinkType,
+                                    uint16_t dataLinkType,
                                     uint32_t snapLen = std::numeric_limits<uint32_t>::max(),
                                     int32_t tzCorrection = 0);
     /**

@@ -16,18 +16,16 @@
 #include "epc-tft.h"
 
 #include "ns3/iana-ieee802-numbers.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/ipv4-header.h"
-#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-header.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/tcp-header.h"
 #include "ns3/tcp-l4-protocol.h"
 #include "ns3/udp-header.h"
-#include "ns3/udp-l4-protocol.h"
 
 namespace ns3
 {
@@ -75,7 +73,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
     uint16_t localPort = 0;
     uint16_t remotePort = 0;
 
-    if (protocolNumber == iana::Ieee802Numbers::IPV4)
+    if (protocolNumber == iana::ieee802numbers::IPV4)
     {
         Ipv4Header ipv4Header;
         pCopy->RemoveHeader(ipv4Header);
@@ -111,7 +109,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
         // i.e. it is the first one but it is not the last one
         if (fragmentOffset == 0)
         {
-            if (protocol == UdpL4Protocol::PROT_NUMBER && payloadSize >= 8)
+            if (protocol == iana::internetprotocolnumbers::UDP && payloadSize >= 8)
             {
                 UdpHeader udpHeader;
                 pCopy->RemoveHeader(udpHeader);
@@ -136,7 +134,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
                     m_classifiedIpv4Fragments[fragmentKey] = std::make_pair(localPort, remotePort);
                 }
             }
-            else if (protocol == TcpL4Protocol::PROT_NUMBER && payloadSize >= 20)
+            else if (protocol == iana::internetprotocolnumbers::TCP && payloadSize >= 20)
             {
                 TcpHeader tcpHeader;
                 pCopy->RemoveHeader(tcpHeader);
@@ -191,7 +189,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
             }
         }
     }
-    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
+    else if (protocolNumber == iana::ieee802numbers::IPV6)
     {
         Ipv6Header ipv6Header;
         pCopy->RemoveHeader(ipv6Header);
@@ -213,7 +211,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
         protocol = ipv6Header.GetNextHeader();
         tos = ipv6Header.GetTrafficClass();
 
-        if (protocol == UdpL4Protocol::PROT_NUMBER)
+        if (protocol == iana::internetprotocolnumbers::UDP)
         {
             UdpHeader udpHeader;
             pCopy->RemoveHeader(udpHeader);
@@ -229,7 +227,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
                 localPort = udpHeader.GetDestinationPort();
             }
         }
-        else if (protocol == TcpL4Protocol::PROT_NUMBER)
+        else if (protocol == iana::internetprotocolnumbers::TCP)
         {
             TcpHeader tcpHeader;
             pCopy->RemoveHeader(tcpHeader);
@@ -250,7 +248,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
         NS_ABORT_MSG("EpcTftClassifier::Classify - Unknown IP type...");
     }
 
-    if (protocolNumber == iana::Ieee802Numbers::IPV4)
+    if (protocolNumber == iana::ieee802numbers::IPV4)
     {
         NS_LOG_INFO("Classifying packet: localAddr="
                     << localAddressIpv4 << " remoteAddr=" << remoteAddressIpv4 << " localPort="
@@ -280,7 +278,7 @@ EpcTftClassifier::Classify(Ptr<Packet> p, EpcTft::Direction direction, uint16_t 
             }
         }
     }
-    else if (protocolNumber == iana::Ieee802Numbers::IPV6)
+    else if (protocolNumber == iana::ieee802numbers::IPV6)
     {
         NS_LOG_INFO("Classifying packet: localAddr="
                     << localAddressIpv6 << " remoteAddr=" << remoteAddressIpv6 << " localPort="

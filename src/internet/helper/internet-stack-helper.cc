@@ -463,7 +463,7 @@ InternetStackHelper::EnablePcapIpv4Internal(std::string prefix,
         filename = pcapHelper.GetFilenameFromInterfacePair(prefix, ipv4, interface);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::RAW);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::RAW);
 
     //
     // However, we only hook the trace source once to avoid multiple trace sink
@@ -569,7 +569,7 @@ InternetStackHelper::EnablePcapIpv6Internal(std::string prefix,
         filename = pcapHelper.GetFilenameFromInterfacePair(prefix, ipv6, interface);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::RAW);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::RAW);
 
     //
     // However, we only hook the trace source once to avoid multiple trace sink

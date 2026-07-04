@@ -329,13 +329,13 @@ NoBackhaulEpcHelper::AddEnb(Ptr<Node> enb,
         Socket::CreateSocket(enb, TypeId::LookupByName("ns3::PacketSocketFactory"));
     PacketSocketAddress enbLteSocketBindAddress;
     enbLteSocketBindAddress.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketBindAddress.SetProtocol(iana::Ieee802Numbers::IPV4);
+    enbLteSocketBindAddress.SetProtocol(iana::ieee802numbers::IPV4);
     retval = enbLteSocket->Bind(enbLteSocketBindAddress);
     NS_ASSERT(retval == 0);
     PacketSocketAddress enbLteSocketConnectAddress;
     enbLteSocketConnectAddress.SetPhysicalAddress(Mac48Address::GetBroadcast());
     enbLteSocketConnectAddress.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketConnectAddress.SetProtocol(iana::Ieee802Numbers::IPV4);
+    enbLteSocketConnectAddress.SetProtocol(iana::ieee802numbers::IPV4);
     retval = enbLteSocket->Connect(enbLteSocketConnectAddress);
     NS_ASSERT(retval == 0);
 
@@ -344,13 +344,13 @@ NoBackhaulEpcHelper::AddEnb(Ptr<Node> enb,
         Socket::CreateSocket(enb, TypeId::LookupByName("ns3::PacketSocketFactory"));
     PacketSocketAddress enbLteSocketBindAddress6;
     enbLteSocketBindAddress6.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketBindAddress6.SetProtocol(iana::Ieee802Numbers::IPV6);
+    enbLteSocketBindAddress6.SetProtocol(iana::ieee802numbers::IPV6);
     retval = enbLteSocket6->Bind(enbLteSocketBindAddress6);
     NS_ASSERT(retval == 0);
     PacketSocketAddress enbLteSocketConnectAddress6;
     enbLteSocketConnectAddress6.SetPhysicalAddress(Mac48Address::GetBroadcast());
     enbLteSocketConnectAddress6.SetSingleDevice(lteEnbNetDevice->GetIfIndex());
-    enbLteSocketConnectAddress6.SetProtocol(iana::Ieee802Numbers::IPV6);
+    enbLteSocketConnectAddress6.SetProtocol(iana::ieee802numbers::IPV6);
     retval = enbLteSocket6->Connect(enbLteSocketConnectAddress6);
     NS_ASSERT(retval == 0);
 

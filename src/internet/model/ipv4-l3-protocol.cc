@@ -363,7 +363,7 @@ Ipv4L3Protocol::SetupLoopback()
     uint32_t index = AddIpv4Interface(interface);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3Protocol::Receive, this),
-                                  iana::Ieee802Numbers::IPV4,
+                                  iana::ieee802numbers::IPV4,
                                   device);
     interface->SetUp();
     if (m_routingProtocol)
@@ -390,18 +390,18 @@ Ipv4L3Protocol::AddInterface(Ptr<NetDevice> device)
     NS_ASSERT(tc);
 
     m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                    iana::Ieee802Numbers::IPV4,
+                                    iana::ieee802numbers::IPV4,
                                     device);
     m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                    iana::Ieee802Numbers::ARP,
+                                    iana::ieee802numbers::ARP,
                                     device);
 
     tc->RegisterProtocolHandler(MakeCallback(&Ipv4L3Protocol::Receive, this),
-                                iana::Ieee802Numbers::IPV4,
+                                iana::ieee802numbers::IPV4,
                                 device);
     tc->RegisterProtocolHandler(
         MakeCallback(&ArpL3Protocol::Receive, PeekPointer(GetObject<ArpL3Protocol>())),
-        iana::Ieee802Numbers::ARP,
+        iana::ieee802numbers::ARP,
         device);
 
     Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface>();

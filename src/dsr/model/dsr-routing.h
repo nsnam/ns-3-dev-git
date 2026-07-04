@@ -105,10 +105,12 @@ class DsrRouting : public IpL4Protocol
     /**
      * @brief Define the dsr protocol number.
      */
+    NS_DEPRECATED_3_49("Use the numbers in iana-intenernet-protocols-numbers.h instead")
     static constexpr uint8_t PROT_NUMBER = 48;
     /**
      * @brief Define the NO_NEXT_HEADER to set in control packets.
      */
+    NS_DEPRECATED_3_49("Use the numbers in iana-intenernet-protocols-numbers.h instead")
     static constexpr uint8_t NO_NEXT_HEADER = 59;
     /**
      * @brief Constructor.

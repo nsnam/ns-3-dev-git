@@ -181,7 +181,7 @@ ArpHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteHtonU16(static_cast<uint16_t>(m_hardwareType));
     /* ipv4 */
-    i.WriteHtonU16(iana::Ieee802Numbers::IPV4);
+    i.WriteHtonU16(iana::ieee802numbers::IPV4);
     i.WriteU8(m_macSource.GetLength());
     i.WriteU8(4);
     i.WriteHtonU16(m_type);

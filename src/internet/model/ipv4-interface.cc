@@ -229,7 +229,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         /// @todo additional checks needed here (such as whether multicast
         /// goes to loopback)?
         p->AddHeader(hdr);
-        m_device->Send(p, m_device->GetBroadcast(), iana::Ieee802Numbers::IPV4);
+        m_device->Send(p, m_device->GetBroadcast(), iana::ieee802numbers::IPV4);
         return;
     }
 
@@ -245,7 +245,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
                                    m_tc,
                                    m_device,
                                    p,
-                                   iana::Ieee802Numbers::IPV4,
+                                   iana::ieee802numbers::IPV4,
                                    m_device->GetBroadcast(),
                                    m_device->GetBroadcast(),
                                    NetDevice::PACKET_HOST);
@@ -298,7 +298,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
             NS_LOG_LOGIC("Address Resolved.  Send.");
             m_tc->Send(
                 m_device,
-                Create<Ipv4QueueDiscItem>(p, hardwareDestination, iana::Ieee802Numbers::IPV4, hdr));
+                Create<Ipv4QueueDiscItem>(p, hardwareDestination, iana::ieee802numbers::IPV4, hdr));
         }
     }
     else
@@ -307,7 +307,7 @@ Ipv4Interface::Send(Ptr<Packet> p, const Ipv4Header& hdr, Ipv4Address dest)
         m_tc->Send(m_device,
                    Create<Ipv4QueueDiscItem>(p,
                                              m_device->GetBroadcast(),
-                                             iana::Ieee802Numbers::IPV4,
+                                             iana::ieee802numbers::IPV4,
                                              hdr));
     }
 }

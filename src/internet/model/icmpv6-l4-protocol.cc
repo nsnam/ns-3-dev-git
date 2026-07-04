@@ -221,14 +221,14 @@ uint16_t
 Icmpv6L4Protocol::GetStaticProtocolNumber()
 {
     NS_LOG_FUNCTION_NOARGS();
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::ICMPV6;
 }
 
 int
 Icmpv6L4Protocol::GetProtocolNumber() const
 {
     NS_LOG_FUNCTION(this);
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::ICMPV6;
 }
 
 int
@@ -363,7 +363,7 @@ Icmpv6L4Protocol::Forward(Ipv6Address source,
 
     uint8_t nextHeader = ipHeader.GetNextHeader();
 
-    if (nextHeader != Icmpv6L4Protocol::PROT_NUMBER)
+    if (nextHeader != iana::internetprotocolnumbers::ICMPV6)
     {
         Ptr<IpL4Protocol> l4 = ipv6->GetProtocol(nextHeader);
         if (l4)
@@ -764,7 +764,7 @@ Icmpv6L4Protocol::HandleNS(Ptr<Packet> packet,
     // change it beyond what we did already).
     Ptr<Packet> pkt = p.first;
     pkt->AddHeader(p.second);
-    interface->GetDevice()->Send(pkt, replyMacAddress, iana::Ieee802Numbers::IPV6);
+    interface->GetDevice()->Send(pkt, replyMacAddress, iana::ieee802numbers::IPV6);
 }
 
 NdiscCache::Ipv6PayloadHeaderPair
@@ -787,12 +787,15 @@ Icmpv6L4Protocol::ForgeRS(Ipv6Address src, Ipv6Address dst, Address hardwareAddr
         p->AddHeader(llOption);
     }
 
-    rs.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + rs.GetSerializedSize(), PROT_NUMBER);
+    rs.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + rs.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(rs);
 
     ipHeader.SetSource(src);
     ipHeader.SetDestination(dst);
-    ipHeader.SetNextHeader(PROT_NUMBER);
+    ipHeader.SetNextHeader(iana::internetprotocolnumbers::ICMPV6);
     ipHeader.SetPayloadLength(p->GetSize());
     ipHeader.SetHopLimit(255);
 
@@ -817,12 +820,12 @@ Icmpv6L4Protocol::ForgeEchoRequest(Ipv6Address src,
     req.CalculatePseudoHeaderChecksum(src,
                                       dst,
                                       p->GetSize() + req.GetSerializedSize(),
-                                      PROT_NUMBER);
+                                      iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(req);
 
     ipHeader.SetSource(src);
     ipHeader.SetDestination(dst);
-    ipHeader.SetNextHeader(PROT_NUMBER);
+    ipHeader.SetNextHeader(iana::internetprotocolnumbers::ICMPV6);
     ipHeader.SetPayloadLength(p->GetSize());
     ipHeader.SetHopLimit(255);
 
@@ -1189,7 +1192,7 @@ Icmpv6L4Protocol::SendMessage(Ptr<Packet> packet, Ipv6Address src, Ipv6Address d
 
     tag.SetHopLimit(ttl);
     packet->AddPacketTag(tag);
-    m_downTarget(packet, src, dst, PROT_NUMBER, nullptr);
+    m_downTarget(packet, src, dst, iana::internetprotocolnumbers::ICMPV6, nullptr);
 }
 
 void
@@ -1230,9 +1233,9 @@ Icmpv6L4Protocol::SendMessage(Ptr<Packet> packet,
         icmpv6Hdr.CalculatePseudoHeaderChecksum(src,
                                                 dst,
                                                 packet->GetSize() + icmpv6Hdr.GetSerializedSize(),
-                                                PROT_NUMBER);
+                                                iana::internetprotocolnumbers::ICMPV6);
         packet->AddHeader(icmpv6Hdr);
-        m_downTarget(packet, src, dst, PROT_NUMBER, route);
+        m_downTarget(packet, src, dst, iana::internetprotocolnumbers::ICMPV6, route);
     }
     else
     {
@@ -1265,7 +1268,10 @@ Icmpv6L4Protocol::SendNA(Ipv6Address src, Ipv6Address dst, Address* hardwareAddr
     }
 
     p->AddHeader(llOption);
-    na.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + na.GetSerializedSize(), PROT_NUMBER);
+    na.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + na.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(na);
 
     SendMessage(p, src, dst, 255);
@@ -1288,7 +1294,7 @@ Icmpv6L4Protocol::SendEchoReply(Ipv6Address src,
     reply.CalculatePseudoHeaderChecksum(src,
                                         dst,
                                         p->GetSize() + reply.GetSerializedSize(),
-                                        PROT_NUMBER);
+                                        iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(reply);
     SendMessage(p, src, dst, 64);
 }
@@ -1316,7 +1322,10 @@ Icmpv6L4Protocol::SendNS(Ipv6Address src,
     NS_LOG_LOGIC("Send NS ( from " << src << " to " << dst << " target " << target << ")");
 
     p->AddHeader(llOption);
-    ns.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + ns.GetSerializedSize(), PROT_NUMBER);
+    ns.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + ns.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(ns);
     if (!dst.IsMulticast())
     {
@@ -1364,7 +1373,10 @@ Icmpv6L4Protocol::SendRS(Ipv6Address src, Ipv6Address dst, Address hardwareAddre
 
     NS_LOG_LOGIC("Send RS (from " << src << " to " << dst << ")");
 
-    rs.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + rs.GetSerializedSize(), PROT_NUMBER);
+    rs.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + rs.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(rs);
     if (!dst.IsMulticast())
     {
@@ -1594,7 +1606,7 @@ Icmpv6L4Protocol::SendRedirection(Ptr<Packet> redirectedPacket,
                                                     dst,
                                                     p->GetSize() +
                                                         redirectionHeader.GetSerializedSize(),
-                                                    PROT_NUMBER);
+                                                    iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(redirectionHeader);
 
     SendMessage(p, src, dst, 64);
@@ -1632,12 +1644,15 @@ Icmpv6L4Protocol::ForgeNA(Ipv6Address src, Ipv6Address dst, Address* hardwareAdd
         na.SetFlagR(true);
     }
 
-    na.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + na.GetSerializedSize(), PROT_NUMBER);
+    na.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + na.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(na);
 
     ipHeader.SetSource(src);
     ipHeader.SetDestination(dst);
-    ipHeader.SetNextHeader(PROT_NUMBER);
+    ipHeader.SetNextHeader(iana::internetprotocolnumbers::ICMPV6);
     ipHeader.SetPayloadLength(p->GetSize());
     ipHeader.SetHopLimit(255);
 
@@ -1661,12 +1676,15 @@ Icmpv6L4Protocol::ForgeNS(Ipv6Address src,
     NS_LOG_LOGIC("Send NS ( from " << src << " to " << dst << " target " << target << ")");
 
     p->AddHeader(llOption);
-    ns.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + ns.GetSerializedSize(), PROT_NUMBER);
+    ns.CalculatePseudoHeaderChecksum(src,
+                                     dst,
+                                     p->GetSize() + ns.GetSerializedSize(),
+                                     iana::internetprotocolnumbers::ICMPV6);
     p->AddHeader(ns);
 
     ipHeader.SetSource(src);
     ipHeader.SetDestination(dst);
-    ipHeader.SetNextHeader(PROT_NUMBER);
+    ipHeader.SetNextHeader(iana::internetprotocolnumbers::ICMPV6);
     ipHeader.SetPayloadLength(p->GetSize());
     ipHeader.SetHopLimit(255);
 

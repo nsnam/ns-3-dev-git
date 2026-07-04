@@ -404,7 +404,7 @@ ArpL3Protocol::SendArpRequest(Ptr<const ArpCache> cache, Ipv4Address to)
     NS_ASSERT(m_tc);
     m_tc->Send(
         device,
-        Create<ArpQueueDiscItem>(packet, device->GetBroadcast(), iana::Ieee802Numbers::ARP, arp));
+        Create<ArpQueueDiscItem>(packet, device->GetBroadcast(), iana::ieee802numbers::ARP, arp));
 }
 
 void
@@ -422,7 +422,7 @@ ArpL3Protocol::SendArpReply(Ptr<const ArpCache> cache,
     auto packet = Create<Packet>();
     NS_ASSERT(m_tc);
     m_tc->Send(cache->GetDevice(),
-               Create<ArpQueueDiscItem>(packet, toMac, iana::Ieee802Numbers::ARP, arp));
+               Create<ArpQueueDiscItem>(packet, toMac, iana::ieee802numbers::ARP, arp));
 }
 
 } // namespace ns3

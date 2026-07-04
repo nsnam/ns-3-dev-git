@@ -11,6 +11,7 @@
 #include "ns3/abort.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-raw-socket-factory.h"
@@ -24,7 +25,6 @@
 #include "ns3/socket-factory.h"
 #include "ns3/string.h"
 #include "ns3/udp-header.h"
-#include "ns3/udp-l4-protocol.h"
 #include "ns3/uinteger.h"
 
 namespace ns3
@@ -97,17 +97,17 @@ TcRegressionTest::CreateNodes()
     // Create the sockets
     Ptr<SocketFactory> rxSocketFactoryA = c.Get(0)->GetObject<Ipv4RawSocketFactory>();
     m_rxSocketA = DynamicCast<Ipv4RawSocketImpl>(rxSocketFactoryA->CreateSocket());
-    m_rxSocketA->SetProtocol(UdpL4Protocol::PROT_NUMBER);
+    m_rxSocketA->SetProtocol(iana::internetprotocolnumbers::UDP);
     m_rxSocketA->SetRecvCallback(MakeCallback(&TcRegressionTest::ReceivePktProbeA, this));
 
     Ptr<SocketFactory> rxSocketFactoryB = c.Get(1)->GetObject<Ipv4RawSocketFactory>();
     m_rxSocketB = DynamicCast<Ipv4RawSocketImpl>(rxSocketFactoryB->CreateSocket());
-    m_rxSocketB->SetProtocol(UdpL4Protocol::PROT_NUMBER);
+    m_rxSocketB->SetProtocol(iana::internetprotocolnumbers::UDP);
     m_rxSocketB->SetRecvCallback(MakeCallback(&TcRegressionTest::ReceivePktProbeB, this));
 
     Ptr<SocketFactory> rxSocketFactoryC = c.Get(2)->GetObject<Ipv4RawSocketFactory>();
     m_rxSocketC = DynamicCast<Ipv4RawSocketImpl>(rxSocketFactoryC->CreateSocket());
-    m_rxSocketC->SetProtocol(UdpL4Protocol::PROT_NUMBER);
+    m_rxSocketC->SetProtocol(iana::internetprotocolnumbers::UDP);
     m_rxSocketC->SetRecvCallback(MakeCallback(&TcRegressionTest::ReceivePktProbeC, this));
 }
 

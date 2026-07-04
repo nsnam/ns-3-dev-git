@@ -28,6 +28,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
@@ -148,7 +149,7 @@ TcpL4Protocol::NotifyNewAggregate()
 int
 TcpL4Protocol::GetProtocolNumber() const
 {
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::TCP;
 }
 
 void
@@ -381,7 +382,9 @@ TcpL4Protocol::PacketReceived(Ptr<Packet> packet,
     if (Node::ChecksumEnabled())
     {
         incomingTcpHeader.EnableChecksums();
-        incomingTcpHeader.InitializeChecksum(source, destination, PROT_NUMBER);
+        incomingTcpHeader.InitializeChecksum(source,
+                                             destination,
+                                             iana::internetprotocolnumbers::TCP);
     }
 
     packet->PeekHeader(incomingTcpHeader);
@@ -590,7 +593,7 @@ TcpL4Protocol::SendPacketV4(Ptr<Packet> packet,
     {
         outgoingHeader.EnableChecksums();
     }
-    outgoingHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+    outgoingHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::TCP);
 
     packet->AddHeader(outgoingHeader);
 
@@ -600,7 +603,7 @@ TcpL4Protocol::SendPacketV4(Ptr<Packet> packet,
         Ipv4Header header;
         header.SetSource(saddr);
         header.SetDestination(daddr);
-        header.SetProtocol(PROT_NUMBER);
+        header.SetProtocol(iana::internetprotocolnumbers::TCP);
         Socket::SocketErrno errno_;
         Ptr<Ipv4Route> route;
         if (ipv4->GetRoutingProtocol())
@@ -612,7 +615,7 @@ TcpL4Protocol::SendPacketV4(Ptr<Packet> packet,
             NS_LOG_ERROR("No IPV4 Routing Protocol");
             route = nullptr;
         }
-        m_downTarget(packet, saddr, daddr, PROT_NUMBER, route);
+        m_downTarget(packet, saddr, daddr, iana::internetprotocolnumbers::TCP, route);
     }
     else
     {
@@ -649,7 +652,7 @@ TcpL4Protocol::SendPacketV6(Ptr<Packet> packet,
     {
         outgoingHeader.EnableChecksums();
     }
-    outgoingHeader.InitializeChecksum(saddr, daddr, PROT_NUMBER);
+    outgoingHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::TCP);
 
     packet->AddHeader(outgoingHeader);
 
@@ -659,7 +662,7 @@ TcpL4Protocol::SendPacketV6(Ptr<Packet> packet,
         Ipv6Header header;
         header.SetSource(saddr);
         header.SetDestination(daddr);
-        header.SetNextHeader(PROT_NUMBER);
+        header.SetNextHeader(iana::internetprotocolnumbers::TCP);
         Socket::SocketErrno errno_;
         Ptr<Ipv6Route> route;
         if (ipv6->GetRoutingProtocol())
@@ -671,7 +674,7 @@ TcpL4Protocol::SendPacketV6(Ptr<Packet> packet,
             NS_LOG_ERROR("No IPV6 Routing Protocol");
             route = nullptr;
         }
-        m_downTarget6(packet, saddr, daddr, PROT_NUMBER, route);
+        m_downTarget6(packet, saddr, daddr, iana::internetprotocolnumbers::TCP, route);
     }
     else
     {

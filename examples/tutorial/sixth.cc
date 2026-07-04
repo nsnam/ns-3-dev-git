@@ -134,7 +134,7 @@ main(int argc, char* argv[])
 
     PcapHelper pcapHelper;
     Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile("sixth.pcap", std::ios::out, iana::LinkType::PPP);
+        pcapHelper.CreateFile("sixth.pcap", std::ios::out, iana::linktype::PPP);
     devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
     Simulator::Stop(Seconds(20));

@@ -34,11 +34,11 @@
 #include "ns3/double.h"
 #include "ns3/enum.h"
 #include "ns3/iana-ieee802-numbers.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-header.h"
-#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv6-interface.h"
 #include "ns3/llc-snap-header.h"
@@ -784,7 +784,7 @@ int
 DsrRouting::GetProtocolNumber() const
 {
     // / This is the protocol number for DSR which is 48
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::DSR;
 }
 
 uint32_t
@@ -895,7 +895,7 @@ DsrRouting::CheckSendBuffer()
                     dsrRoutingHeader.AddDsrOption(newUnreach);
                     dsrRoutingHeader.AddDsrOption(sourceRoute);
 
-                    dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+                    dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
 
                     Ptr<Packet> newPacket = Create<Packet>();
                     newPacket->AddHeader(dsrRoutingHeader); // Add the routing header with rerr and
@@ -952,8 +952,9 @@ DsrRouting::CheckSendBuffer()
                 }
                 dsrRoutingHeader.AddDsrOption(sourceRoute);
 
-                cleanP->GetSize() == 0 ? dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER)
-                                       : dsrRoutingHeader.SetNextHeader(protocol);
+                cleanP->GetSize() == 0
+                    ? dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER)
+                    : dsrRoutingHeader.SetNextHeader(protocol);
 
                 cleanP->AddHeader(dsrRoutingHeader);
                 Ptr<const Packet> mtP = cleanP->Copy();
@@ -1028,7 +1029,7 @@ DsrRouting::PromiscReceive(Ptr<NetDevice> device,
                            const Address& to,
                            NetDevice::PacketType packetType)
 {
-    if (protocol != iana::Ieee802Numbers::IPV4)
+    if (protocol != iana::ieee802numbers::IPV4)
     {
         return false;
     }
@@ -1037,7 +1038,7 @@ DsrRouting::PromiscReceive(Ptr<NetDevice> device,
     Ipv4Header ipv4Header;
     pktMinusIpHdr->RemoveHeader(ipv4Header);
 
-    if (ipv4Header.GetProtocol() != DsrRouting::PROT_NUMBER)
+    if (ipv4Header.GetProtocol() != iana::internetprotocolnumbers::DSR)
     {
         return false;
     }
@@ -1054,7 +1055,8 @@ DsrRouting::PromiscReceive(Ptr<NetDevice> device,
      */
     Ipv4Address ourAddress = m_ipv4->GetAddress(1, 0).GetLocal();
     // check if this is a data packet by inspecting options and if the ipv4 address matches
-    if (dsrRouting.GetNextHeader() != NO_NEXT_HEADER && ourAddress == m_mainAddress)
+    if (dsrRouting.GetNextHeader() != iana::internetprotocolnumbers::NO_NEXT_HEADER &&
+        ourAddress == m_mainAddress)
     {
         NS_LOG_DEBUG("data packet receives " << packet->GetUid());
         Ipv4Address sourceIp = ipv4Header.GetSource();
@@ -1307,7 +1309,7 @@ DsrRouting::SendUnreachError(Ipv4Address unreachNode,
 
             dsrRoutingHeader.AddDsrOption(rerrUnreachHeader);
 
-            dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+            dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
             newPacket->AddHeader(dsrRoutingHeader);
             Ptr<Packet> p = newPacket->Copy();
             // Save the error packet in the error buffer
@@ -1316,7 +1318,7 @@ DsrRouting::SendUnreachError(Ipv4Address unreachNode,
                                        m_mainAddress,
                                        unreachNode,
                                        m_sendBufferTimeout,
-                                       NO_NEXT_HEADER);
+                                       iana::internetprotocolnumbers::NO_NEXT_HEADER);
             bool result = m_errorBuffer.Enqueue(newEntry); // Enqueue the packet in send buffer
             if (result)
             {
@@ -1359,7 +1361,7 @@ DsrRouting::SendUnreachError(Ipv4Address unreachNode,
         dsrRoutingHeader.AddDsrOption(rerrUnreachHeader);
         dsrRoutingHeader.AddDsrOption(sourceRoute);
 
-        dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
         newPacket->AddHeader(dsrRoutingHeader);
 
         SetRoute(nextHop, m_mainAddress);
@@ -1407,7 +1409,7 @@ DsrRouting::ForwardErrPacket(DsrOptionRerrUnreachHeader& rerr,
     dsrRoutingHeader.AddDsrOption(rerr);
     dsrRoutingHeader.AddDsrOption(sourceRoute);
 
-    dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+    dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(dsrRoutingHeader);
     Ptr<NetDevice> dev = m_ip->GetNetDevice(m_ip->GetInterfaceForAddress(m_mainAddress));
@@ -1763,7 +1765,8 @@ DsrRouting::SendRealDown(DsrNetworkQueueEntry& newEntry)
         DsrRoutingHeader dsrHdr;
         Ptr<Packet> copy = packet->Copy();
         copy->RemoveHeader(dsrHdr);
-        if (dsrHdr.GetNextHeader() != NO_NEXT_HEADER && copy->GetSize() == 0)
+        if (dsrHdr.GetNextHeader() != iana::internetprotocolnumbers::NO_NEXT_HEADER &&
+            copy->GetSize() == 0)
         {
             NS_LOG_UNCOND("Warning: found a packet with a valid protocol but no content");
         }
@@ -1933,7 +1936,7 @@ DsrRouting::SendPacketFromBuffer(const DsrOptionSRHeader& sourceRoute,
                     DsrRoutingHeader newRoutingHeader;
                     newRoutingHeader.AddDsrOption(newUnreach);
                     newRoutingHeader.AddDsrOption(sourceRoute);
-                    newRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+                    newRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
                     // When found a route and use it, UseExtends to the link cache
                     if (m_routeCache->IsLinkCache())
                     {
@@ -2740,7 +2743,7 @@ DsrRouting::SendInitialRequest(Ipv4Address source, Ipv4Address destination)
 
     dsrRoutingHeader.AddDsrOption(rreqHeader); // Add the rreqHeader to the dsr extension header
 
-    dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+    dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
     packet->AddHeader(dsrRoutingHeader);
 
     // Schedule the route requests retry with non-propagation set true
@@ -2759,7 +2762,11 @@ DsrRouting::SendInitialRequest(Ipv4Address source, Ipv4Address destination)
     m_rreqTable->FindAndUpdate(destination);
     SendRequest(nonPropPacket, source);
     // Schedule the next route request
-    ScheduleRreqRetry(packet, address, nonProp, m_requestId, NO_NEXT_HEADER);
+    ScheduleRreqRetry(packet,
+                      address,
+                      nonProp,
+                      m_requestId,
+                      iana::internetprotocolnumbers::NO_NEXT_HEADER);
 }
 
 void
@@ -2795,7 +2802,10 @@ DsrRouting::SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol)
         {
             NS_LOG_DEBUG("Error next hop address");
             Ptr<Packet> packet = Create<Packet>();
-            PacketNewRoute(packet, m_mainAddress, dst, NO_NEXT_HEADER);
+            PacketNewRoute(packet,
+                           m_mainAddress,
+                           dst,
+                           iana::internetprotocolnumbers::NO_NEXT_HEADER);
             return;
         }
         SetRoute(nextHop, m_mainAddress);
@@ -2829,7 +2839,7 @@ DsrRouting::SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol)
         dsrRoutingHeader.AddDsrOption(rreqHeader); // Add the rreqHeader to the dsr extension header
         dsrRoutingHeader.AddDsrOption(rerr);
 
-        dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
         dstP->AddHeader(dsrRoutingHeader);
         // Schedule the route requests retry, propagate the route request message as it contains
         // error
@@ -2851,7 +2861,11 @@ DsrRouting::SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol)
             NS_LOG_INFO("Only when there is no existing route request time when the initial route "
                         "request is scheduled");
             SendRequest(propPacket, m_mainAddress);
-            ScheduleRreqRetry(dstP, address, nonProp, m_requestId, NO_NEXT_HEADER);
+            ScheduleRreqRetry(dstP,
+                              address,
+                              nonProp,
+                              m_requestId,
+                              iana::internetprotocolnumbers::NO_NEXT_HEADER);
         }
         else
         {
@@ -2862,7 +2876,11 @@ DsrRouting::SendErrorRequest(DsrOptionRerrUnreachHeader& rerr, uint8_t protocol)
              * is false
              */
             CancelRreqTimer(originalDst, false);
-            ScheduleRreqRetry(dstP, address, nonProp, m_requestId, NO_NEXT_HEADER);
+            ScheduleRreqRetry(dstP,
+                              address,
+                              nonProp,
+                              m_requestId,
+                              iana::internetprotocolnumbers::NO_NEXT_HEADER);
         }
     }
 }
@@ -3157,7 +3175,7 @@ DsrRouting::SendGratuitousReply(Ipv4Address source,
 
         dsrRoutingHeader.AddDsrOption(rrep);
 
-        dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
         Ptr<Packet> newPacket = Create<Packet>();
         newPacket->AddHeader(dsrRoutingHeader);
         /*
@@ -3253,7 +3271,7 @@ DsrRouting::SendAck(uint16_t ackId,
 
     dsrRoutingHeader.AddDsrOption(ack);
 
-    dsrRoutingHeader.SetNextHeader(NO_NEXT_HEADER);
+    dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
 
     Ptr<Packet> packet = Create<Packet>();
     packet->AddHeader(dsrRoutingHeader);
@@ -3411,7 +3429,7 @@ DsrRouting::Receive(Ptr<Packet> p, const Ipv4Header& ip, Ptr<Ipv4Interface> inco
                 // / Get the next header
                 uint8_t nextHeader = dsrRoutingHeader.GetNextHeader();
                 // If NextHeader indicates NO_NEXT_HEADER, do not attempt L4 lookup
-                if (nextHeader == NO_NEXT_HEADER)
+                if (nextHeader == iana::internetprotocolnumbers::NO_NEXT_HEADER)
                 {
                     NS_LOG_INFO("NextHeader is NO_NEXT_HEADER; not delivering to L4");
                     return IpL4Protocol::RX_OK;

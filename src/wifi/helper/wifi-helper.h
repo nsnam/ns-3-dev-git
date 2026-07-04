@@ -164,11 +164,11 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     enum SupportedPcapDataLinkTypes
     {
         DLT_IEEE802_11 =
-            iana::LinkType::IEEE802_11, /**< IEEE 802.11 Wireless LAN headers on packets */
+            iana::linktype::IEEE802_11, /**< IEEE 802.11 Wireless LAN headers on packets */
         DLT_PRISM_HEADER =
-            iana::LinkType::IEEE802_11_PRISM, /**< Include Prism monitor mode information */
+            iana::linktype::IEEE802_11_PRISM, /**< Include Prism monitor mode information */
         DLT_IEEE802_11_RADIO =
-            iana::LinkType::IEEE802_11_RADIOTAP /**< Include Radiotap link layer information */
+            iana::linktype::IEEE802_11_RADIOTAP /**< Include Radiotap link layer information */
     };
 
     /**
@@ -196,7 +196,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
          * @param dev the WifiNetDevice for which the PCAP files are generated
          */
         PcapFilesInfo(const std::string& filename,
-                      iana::LinkType dlt,
+                      uint16_t dlt,
                       WifiPhyHelper::PcapCaptureType type,
                       Ptr<WifiNetDevice> dev)
             : commonFilename{filename},
@@ -208,7 +208,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
         }
 
         std::string commonFilename;              ///< common file name of the PCAP files
-        iana::LinkType pcapDlt;                  ///< the selected data link type of the pcap file
+        uint16_t pcapDlt;                        ///< the selected data link type of the pcap file
         WifiPhyHelper::PcapCaptureType pcapType; ///< the selected PCAP capture type
         Ptr<WifiNetDevice> device; ///< the WifiNetDevice for which the PCAP files are generated
         std::map<uint8_t, Ptr<PcapFileWrapper>> files; ///< PCAP files indexed by PHY ID
@@ -232,7 +232,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
      *
      * @returns The data link type of the pcap file (and packets) to be used
      */
-    iana::LinkType GetPcapDataLinkType() const;
+    uint16_t GetPcapDataLinkType() const;
 
     /**
      * Set the PCAP capture type to be used. This function has to be called before EnablePcap().
@@ -364,7 +364,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
                              Ptr<NetDevice> nd,
                              bool explicitFilename) override;
 
-    iana::LinkType m_pcapDlt;   ///< PCAP data link type
+    uint16_t m_pcapDlt;         ///< PCAP data link type
     PcapCaptureType m_pcapType; ///< PCAP capture type
 };
 

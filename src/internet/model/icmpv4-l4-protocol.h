@@ -41,6 +41,7 @@ class Icmpv4L4Protocol : public IpL4Protocol
      */
     static TypeId GetTypeId();
 
+    NS_DEPRECATED_3_49("Use the numbers in iana-intenernet-protocols-numbers.h instead")
     static constexpr uint8_t PROT_NUMBER = 1; //!< ICMP protocol number (see \RFC{792})
 
     Icmpv4L4Protocol();

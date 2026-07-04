@@ -27,6 +27,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-address.h"
@@ -639,7 +640,7 @@ DsrOptionRreq::Process(Ptr<Packet> packet,
          * This part add dsr header to the packet and send route reply packet
          */
         DsrRoutingHeader dsrRoutingHeader;
-        dsrRoutingHeader.SetNextHeader(DsrRouting::NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
         //  Set the route for route reply
         SetRoute(nextHop, ipv4Address);
 
@@ -826,7 +827,7 @@ DsrOptionRreq::Process(Ptr<Packet> packet,
          * This part add dsr header to the packet and send route reply packet
          */
         DsrRoutingHeader dsrRoutingHeader;
-        dsrRoutingHeader.SetNextHeader(DsrRouting::NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
 
         dsrRoutingHeader.AddDsrOption(rrep);
 
@@ -887,7 +888,7 @@ DsrOptionRreq::Process(Ptr<Packet> packet,
     {
         NS_LOG_DEBUG("The RREQ header length " << rreq.GetLength());
 
-        dsrRoutingHeader.SetNextHeader(DsrRouting::NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
         dsrRoutingHeader.AddDsrOption(rreq);
     }
     // Get the TTL value
@@ -1108,7 +1109,7 @@ DsrOptionRrep::Process(Ptr<Packet> packet,
          * This part add dsr routing header to the packet and send reply
          */
         DsrRoutingHeader dsrRoutingHeader;
-        dsrRoutingHeader.SetNextHeader(DsrRouting::NO_NEXT_HEADER);
+        dsrRoutingHeader.SetNextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER);
 
         NS_LOG_DEBUG("The reply header length " << (uint32_t)rrep.GetLength());
         dsrRoutingHeader.AddDsrOption(rrep);

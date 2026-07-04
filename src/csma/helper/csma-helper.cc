@@ -86,7 +86,7 @@ CsmaHelper::EnablePcapInternal(std::string prefix,
     }
 
     Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile(filename, std::ios::out, iana::LinkType::ETHERNET);
+        pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::ETHERNET);
     if (promiscuous)
     {
         pcapHelper.HookDefaultSink<CsmaNetDevice>(device, "PromiscSniffer", file);

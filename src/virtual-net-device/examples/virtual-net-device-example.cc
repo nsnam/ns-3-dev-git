@@ -136,7 +136,7 @@ class Tunnel
         Ptr<Packet> packet = socket->Recv(65535, 0);
         NS_LOG_DEBUG("N3SocketRecv: " << *packet);
         m_n3Tap->Receive(packet,
-                         iana::Ieee802Numbers::IPV4,
+                         iana::ieee802numbers::IPV4,
                          m_n3Tap->GetAddress(),
                          m_n3Tap->GetAddress(),
                          NetDevice::PACKET_HOST);
@@ -151,7 +151,7 @@ class Tunnel
         Ptr<Packet> packet = socket->Recv(65535, 0);
         NS_LOG_DEBUG("N0SocketRecv: " << *packet);
         m_n0Tap->Receive(packet,
-                         iana::Ieee802Numbers::IPV4,
+                         iana::ieee802numbers::IPV4,
                          m_n0Tap->GetAddress(),
                          m_n0Tap->GetAddress(),
                          NetDevice::PACKET_HOST);
@@ -166,7 +166,7 @@ class Tunnel
         Ptr<Packet> packet = socket->Recv(65535, 0);
         NS_LOG_DEBUG("N1SocketRecv: " << *packet);
         m_n1Tap->Receive(packet,
-                         iana::Ieee802Numbers::IPV4,
+                         iana::ieee802numbers::IPV4,
                          m_n1Tap->GetAddress(),
                          m_n1Tap->GetAddress(),
                          NetDevice::PACKET_HOST);

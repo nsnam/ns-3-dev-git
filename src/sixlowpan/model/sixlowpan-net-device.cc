@@ -16,8 +16,8 @@
 #include "ns3/channel.h"
 #include "ns3/enum.h"
 #include "ns3/iana-ieee802-numbers.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/ipv6-extension-header.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/log.h"
 #include "ns3/mac16-address.h"
 #include "ns3/mac48-address.h"
@@ -151,7 +151,7 @@ SixLowPanNetDevice::SetNetDevice(Ptr<NetDevice> device)
 
     NS_LOG_DEBUG("RegisterProtocolHandler for " << device->GetInstanceTypeId().GetName());
 
-    uint16_t protocolType = PROT_NUMBER;
+    uint16_t protocolType = iana::ieee802numbers::LoWPAN;
     if (device->GetInstanceTypeId().GetName().find("LrWpanNetDevice") != std::string::npos)
     {
         // LrWpanNetDevice does not have a protocol number in the frame.
@@ -394,14 +394,14 @@ SixLowPanNetDevice::ReceiveFromDevice(Ptr<NetDevice> incomingPort,
     {
         m_promiscRxCallback(this,
                             copyPkt,
-                            iana::Ieee802Numbers::IPV6,
+                            iana::ieee802numbers::IPV6,
                             realSrc,
                             realDst,
                             packetType);
     }
 
     m_rxPostTrace(copyPkt, this, GetIfIndex());
-    m_rxCallback(this, copyPkt, iana::Ieee802Numbers::IPV6, realSrc);
+    m_rxCallback(this, copyPkt, iana::ieee802numbers::IPV6, realSrc);
 }
 
 void
@@ -595,7 +595,7 @@ SixLowPanNetDevice::DoSend(Ptr<Packet> packet,
 
     bool useMesh = m_meshUnder;
 
-    protocolNumber = PROT_NUMBER;
+    protocolNumber = iana::ieee802numbers::LoWPAN;
 
     if (m_compressionType == IPHC)
     {
@@ -2302,7 +2302,7 @@ SixLowPanNetDevice::DecompressLowPanUdpNhc(Ptr<Packet> packet, Ipv6Address saddr
         {
             NS_LOG_LOGIC("Recalculating UDP Checksum");
             udpHeader.EnableChecksums();
-            udpHeader.InitializeChecksum(saddr, daddr, UdpL4Protocol::PROT_NUMBER);
+            udpHeader.InitializeChecksum(saddr, daddr, iana::internetprotocolnumbers::UDP);
             packet->AddHeader(udpHeader);
         }
         else

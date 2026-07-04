@@ -15,7 +15,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
-#include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/icmpv4.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-address.h"
@@ -134,7 +134,7 @@ V4TraceRoute::StartApplication()
     }
 
     m_socket = Socket::CreateSocket(GetNode(), TypeId::LookupByName("ns3::Ipv4RawSocketFactory"));
-    m_socket->SetAttribute("Protocol", UintegerValue(Icmpv4L4Protocol::PROT_NUMBER));
+    m_socket->SetAttribute("Protocol", UintegerValue(iana::internetprotocolnumbers::ICMP));
     m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
 
     NS_ASSERT(m_socket);
@@ -229,7 +229,7 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
         NS_ASSERT(realFrom.GetPort() == 1);
         Ipv4Header ipv4;
         p->RemoveHeader(ipv4);
-        NS_ASSERT(ipv4.GetProtocol() == Icmpv4L4Protocol::PROT_NUMBER);
+        NS_ASSERT(ipv4.GetProtocol() == iana::internetprotocolnumbers::ICMP);
         Icmpv4Header icmp;
         p->RemoveHeader(icmp);
 

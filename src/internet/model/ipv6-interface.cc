@@ -431,7 +431,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
          * goes to loopback)?
          */
         p->AddHeader(hdr);
-        m_device->Send(p, m_device->GetBroadcast(), iana::Ieee802Numbers::IPV6);
+        m_device->Send(p, m_device->GetBroadcast(), iana::ieee802numbers::IPV6);
         return;
     }
 
@@ -447,7 +447,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
                                    m_tc,
                                    m_device,
                                    p,
-                                   iana::Ieee802Numbers::IPV6,
+                                   iana::ieee802numbers::IPV6,
                                    m_device->GetBroadcast(),
                                    m_device->GetBroadcast(),
                                    NetDevice::PACKET_HOST);
@@ -491,7 +491,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
             NS_LOG_LOGIC("Address Resolved.  Send.");
             m_tc->Send(
                 m_device,
-                Create<Ipv6QueueDiscItem>(p, hardwareDestination, iana::Ieee802Numbers::IPV6, hdr));
+                Create<Ipv6QueueDiscItem>(p, hardwareDestination, iana::ieee802numbers::IPV6, hdr));
         }
     }
     else
@@ -500,7 +500,7 @@ Ipv6Interface::Send(Ptr<Packet> p, const Ipv6Header& hdr, Ipv6Address dest)
         m_tc->Send(m_device,
                    Create<Ipv6QueueDiscItem>(p,
                                              m_device->GetBroadcast(),
-                                             iana::Ieee802Numbers::IPV6,
+                                             iana::ieee802numbers::IPV6,
                                              hdr));
     }
 }

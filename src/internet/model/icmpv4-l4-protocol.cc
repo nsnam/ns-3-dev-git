@@ -17,6 +17,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
@@ -89,14 +90,14 @@ uint16_t
 Icmpv4L4Protocol::GetStaticProtocolNumber()
 {
     NS_LOG_FUNCTION_NOARGS();
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::ICMP;
 }
 
 int
 Icmpv4L4Protocol::GetProtocolNumber() const
 {
     NS_LOG_FUNCTION(this);
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::ICMP;
 }
 
 void
@@ -108,7 +109,7 @@ Icmpv4L4Protocol::SendMessage(Ptr<Packet> packet, Ipv4Address dest, uint8_t type
     NS_ASSERT(ipv4 && ipv4->GetRoutingProtocol());
     Ipv4Header header;
     header.SetDestination(dest);
-    header.SetProtocol(PROT_NUMBER);
+    header.SetProtocol(iana::internetprotocolnumbers::ICMP);
     Socket::SocketErrno errno_;
     Ptr<Ipv4Route> route;
     Ptr<NetDevice> oif(nullptr); // specify non-zero if bound to a source address
@@ -144,7 +145,7 @@ Icmpv4L4Protocol::SendMessage(Ptr<Packet> packet,
     }
     packet->AddHeader(icmp);
 
-    m_downTarget(packet, source, dest, PROT_NUMBER, route);
+    m_downTarget(packet, source, dest, iana::internetprotocolnumbers::ICMP, route);
 }
 
 void

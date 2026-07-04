@@ -326,7 +326,7 @@ Ipv4L3ClickProtocol::SetupLoopback()
     uint32_t index = AddIpv4Interface(interface);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3ClickProtocol::Receive, this),
-                                  iana::ieee802::IPV4,
+                                  iana::Ieee802Numbers::IPV4,
                                   device);
     interface->SetUp();
     if (m_routingProtocol)
@@ -620,7 +620,7 @@ Ipv4L3ClickProtocol::AddInterface(Ptr<NetDevice> device)
     NS_LOG_FUNCTION(this << &device);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3ClickProtocol::Receive, this),
-                                  iana::ieee802::IPV4,
+                                  iana::Ieee802Numbers::IPV4,
                                   device);
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3ClickProtocol::Receive, this),
                                   iana::Ieee802Numbers::ARP,
@@ -770,7 +770,7 @@ Ipv4L3ClickProtocol::Receive(Ptr<NetDevice> device,
     NS_LOG_LOGIC("Packet from " << from << " received on node " << m_node->GetId());
 
     // Forward packet to raw sockets, if any
-    if (protocol == iana::ieee802::IPV4 && !m_sockets.empty())
+    if (protocol == iana::Ieee802Numbers::IPV4 && !m_sockets.empty())
     {
         Ptr<Packet> packetForRawSocket = p->Copy();
         int32_t interface = GetInterfaceForDevice(device);

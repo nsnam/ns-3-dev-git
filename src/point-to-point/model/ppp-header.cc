@@ -52,10 +52,10 @@ PppHeader::Print(std::ostream& os) const
 
     switch (m_protocol)
     {
-    case iana::PppDllNumbers::IPV4_DLL:
+    case iana::pppdllnumbers::IPV4_DLL:
         proto = "IP (0x0021)";
         break;
-    case iana::PppDllNumbers::IPV6_DLL:
+    case iana::pppdllnumbers::IPV6_DLL:
         proto = "IPv6 (0x0057)";
         break;
     default:

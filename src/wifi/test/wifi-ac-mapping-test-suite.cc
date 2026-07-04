@@ -112,7 +112,7 @@ WifiAcMappingTest::PacketEnqueuedInWifiMacQueue(uint8_t tos,
     Ptr<Packet> packet = item->GetPacket()->Copy();
     packet->RemoveHeader(llc);
 
-    if (llc.GetType() == iana::Ieee802Numbers::IPV4)
+    if (llc.GetType() == iana::ieee802numbers::IPV4)
     {
         Ipv4Header iph;
         packet->PeekHeader(iph);

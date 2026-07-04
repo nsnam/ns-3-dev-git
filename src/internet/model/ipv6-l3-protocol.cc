@@ -193,11 +193,11 @@ Ipv6L3Protocol::AddInterface(Ptr<NetDevice> device)
     NS_ASSERT(tc);
 
     m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                    iana::Ieee802Numbers::IPV6,
+                                    iana::ieee802numbers::IPV6,
                                     device);
 
     tc->RegisterProtocolHandler(MakeCallback(&Ipv6L3Protocol::Receive, this),
-                                iana::Ieee802Numbers::IPV6,
+                                iana::ieee802numbers::IPV6,
                                 device);
 
     interface->SetNode(m_node);
@@ -605,7 +605,7 @@ Ipv6L3Protocol::SetupLoopback()
     uint32_t index = AddIpv6Interface(interface);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv6L3Protocol::Receive, this),
-                                  iana::Ieee802Numbers::IPV6,
+                                  iana::ieee802numbers::IPV6,
                                   device);
     interface->SetUp();
 

@@ -80,7 +80,7 @@ class Ipv4L3Protocol : public Ipv4
     static TypeId GetTypeId();
 
     NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
-    static constexpr uint16_t PROT_NUMBER = iana::Ieee802Numbers::IPV4; //!< Protocol number
+    static constexpr uint16_t PROT_NUMBER = iana::ieee802numbers::IPV4; //!< Protocol number
 
     Ipv4L3Protocol();
     ~Ipv4L3Protocol() override;

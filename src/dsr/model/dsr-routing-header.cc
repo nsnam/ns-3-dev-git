@@ -26,6 +26,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/header.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/log.h"
 
 #include <vector>
@@ -58,7 +59,7 @@ DsrRoutingHeader::GetInstanceTypeId() const
 
 DsrRoutingHeader::DsrRoutingHeader()
     : m_optionData(0),
-      m_nextHeader(DsrRouting::NO_NEXT_HEADER)
+      m_nextHeader(iana::internetprotocolnumbers::NO_NEXT_HEADER)
 {
 }
 
