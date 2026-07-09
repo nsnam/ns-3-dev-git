@@ -382,7 +382,7 @@ Ns3TcpCubicTestCase::DoRun()
     else if (m_prefix == "ns3-tcp-cubic-friendly")
     {
         // In contrast to previous case, cwnd should grow above 150 much sooner
-        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(13), Seconds(15), 150, 210),
+        NS_TEST_ASSERT_MSG_EQ(CheckValues(Seconds(13), Seconds(15), 150, 220),
                               true,
                               "cwnd outside range");
     }

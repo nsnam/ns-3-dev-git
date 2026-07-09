@@ -71,7 +71,12 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
 {
     NS_LOG_FUNCTION(this << tcb << deliveredBytes);
 
-    if (isDupAck && m_prrDelivered < m_recoveryFlightSize)
+    // RFC 9937 Section 6.2 (and RFC 6937): the "+1 SMSS per duplicate ACK"
+    // estimate of DeliveredData applies only to connections *without* SACK.
+    // With SACK (the ns-3 default), the caller already supplies the SACK-derived
+    // DeliveredData (change in SND.UNA plus newly SACKed bytes), so adding a
+    // segment here would double-count and inflate prr_delivered.
+    if (isDupAck && !tcb->m_sackEnabled && m_prrDelivered < m_recoveryFlightSize)
     {
         deliveredBytes += tcb->m_segmentSize;
     }

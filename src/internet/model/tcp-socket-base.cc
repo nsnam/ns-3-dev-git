@@ -1458,6 +1458,10 @@ TcpSocketBase::DoForwardUp(Ptr<Packet> packet, const Address& fromAddress, const
             m_sackEnabled = false;
             m_txBuffer->SetSackEnabled(false);
         }
+        // Mirror the negotiated SACK state into the shared TcpSocketState so that
+        // recovery algorithms (e.g. PRR) can distinguish SACK from non-SACK
+        // DeliveredData accounting.
+        m_tcb->m_sackEnabled = m_sackEnabled;
 
         // When receiving a <SYN> or <SYN-ACK> we should adapt TS to the other end
         if (tcpHeader.HasOption(TcpOption::TS) && m_timestampEnabled)

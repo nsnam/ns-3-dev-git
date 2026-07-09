@@ -90,6 +90,10 @@ PrrRecoveryTest::DoRun()
     m_state->m_segmentSize = m_segmentSize;
     m_state->m_ssThresh = m_ssThresh;
     m_state->m_bytesInFlight = m_bytesInFlight;
+    // This test drives DoRecovery with deliveredBytes = 0 and relies on PRR's
+    // "+1 SMSS per duplicate ACK" DeliveredData estimate, which (per RFC 9937
+    // Section 6.2) applies only to connections without SACK.
+    m_state->m_sackEnabled = false;
 
     Ptr<TcpPrrRecovery> recovery = CreateObject<TcpPrrRecovery>();
 
@@ -196,6 +200,10 @@ PrrRecoveryArithmeticTest::DoRun()
     state->m_segmentSize = m_segmentSize;
     state->m_ssThresh = m_ssThresh;
     state->m_bytesInFlight = m_bytesInFlight;
+    // These regression scenarios rely on the "+1 SMSS per duplicate ACK"
+    // DeliveredData estimate (the "dupack bump"), which PRR applies only to
+    // connections without SACK (RFC 9937 Section 6.2).
+    state->m_sackEnabled = false;
 
     Ptr<TcpPrrRecovery> recovery = CreateObject<TcpPrrRecovery>();
 

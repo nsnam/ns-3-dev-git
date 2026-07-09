@@ -103,6 +103,7 @@ TcpSocketState::TcpSocketState(const TcpSocketState& other)
       m_initialSsThresh(other.m_initialSsThresh),
       m_segmentSize(other.m_segmentSize),
       m_lastAckedSeq(other.m_lastAckedSeq),
+      m_sackEnabled(other.m_sackEnabled),
       m_congState(other.m_congState),
       m_ecnState(other.m_ecnState),
       m_highTxMark(other.m_highTxMark),

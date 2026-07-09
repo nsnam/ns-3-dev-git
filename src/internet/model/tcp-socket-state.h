@@ -174,6 +174,8 @@ class TcpSocketState : public Object
     uint32_t m_segmentSize{0};          //!< Segment size
     SequenceNumber32 m_lastAckedSeq{0}; //!< Last sequence ACKed
 
+    bool m_sackEnabled{true}; //!< Whether SACK is enabled on the connection
+
     TracedValue<TcpCongState_t> m_congState{CA_OPEN}; //!< State in the Congestion state machine
 
     TracedValue<EcnState_t> m_ecnState{
