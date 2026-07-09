@@ -774,6 +774,7 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
     NS_LOG_INFO("Updating scoreboard, got " << list.size() << " blocks to analyze");
 
     uint32_t bytesSacked = 0;
+    Time newestSackedSentTime = Time::Min();
 
     for (auto option_it = list.begin(); option_it != list.end(); ++option_it)
     {
@@ -827,6 +828,7 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
                     (*item_it)->m_sacked = true;
                     m_sackedOut += (*item_it)->m_packet->GetSize();
                     bytesSacked += (*item_it)->m_packet->GetSize();
+                    newestSackedSentTime = std::max(newestSackedSentTime, (*item_it)->m_lastSent);
 
                     if (m_highestSack.first == m_sentList.end() ||
                         m_highestSack.second <= beginOfCurrentPacket + pktSize)
@@ -862,6 +864,7 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
     if (bytesSacked > 0)
     {
         NS_ASSERT_MSG(m_highestSack.first != m_sentList.end(), "Buffer status: " << *this);
+        MarkRetransmittedSegmentsLost(newestSackedSentTime);
         UpdateLostCount();
     }
 
@@ -919,6 +922,35 @@ TcpTxBuffer::UpdateLostCount()
         }
     }
     NS_LOG_INFO("Status after the update: " << *this);
+    ConsistencyCheck();
+}
+
+void
+TcpTxBuffer::MarkRetransmittedSegmentsLost(const Time& sackedSentTime)
+{
+    NS_LOG_FUNCTION(this << sackedSentTime);
+
+    SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
+    for (auto it = m_sentList.begin(); it != m_sentList.end(); ++it)
+    {
+        TcpTxItem* item = *it;
+        if (beginOfCurrentPacket >= m_highestSack.second)
+        {
+            break;
+        }
+        if (item->m_retrans && !item->m_sacked && item->m_lastSent < sackedSentTime)
+        {
+            item->m_retrans = false;
+            m_retrans -= item->m_packet->GetSize();
+            if (!item->m_lost)
+            {
+                item->m_lost = true;
+                m_lostOut += item->m_packet->GetSize();
+            }
+            NS_LOG_INFO("Retransmission of segment " << *item << " deemed lost");
+        }
+        beginOfCurrentPacket += item->m_packet->GetSize();
+    }
     ConsistencyCheck();
 }
 

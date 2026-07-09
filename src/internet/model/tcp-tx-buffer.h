@@ -425,6 +425,27 @@ class TcpTxBuffer : public Object
     void UpdateLostCount();
 
     /**
+     * @brief Mark as lost the retransmitted segments that were sent before
+     *        a newly SACKed segment
+     *
+     * A SACK for a segment that was transmitted after a retransmission
+     * implies that the retransmission itself was dropped by the network:
+     * had it been delivered, the receiver would have acknowledged it before
+     * generating the SACK for the later segment. This is the time-based
+     * loss detection of RFC 8985 (RACK) applied to retransmissions, with a
+     * zero reordering window; Linux implemented the equivalent
+     * sequence-based heuristic as tcp_mark_lost_retrans() before adopting
+     * RACK. Clearing the retransmitted flag makes the segment eligible
+     * again for retransmission via NextSeg(); without this detection, a
+     * lost retransmission stalls the connection until the retransmission
+     * timeout fires.
+     *
+     * @param sackedSentTime Latest transmission time among the newly SACKed
+     *        segments
+     */
+    void MarkRetransmittedSegmentsLost(const Time& sackedSentTime);
+
+    /**
      * @brief Remove the size specified from the lostOut, retrans, sacked count
      *
      * Used only in DiscardUpTo
