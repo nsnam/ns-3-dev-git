@@ -63,6 +63,10 @@ TcpPrrRecovery::EnterRecovery(Ptr<TcpSocketState> tcb,
     m_prrDelivered = 0;
     m_recoveryFlightSize = tcb->m_bytesInFlight; // RFC 6675 pipe before recovery
 
+    NS_LOG_INFO("Enter recovery: cWnd " << tcb->m_cWnd << " ssThresh " << tcb->m_ssThresh
+                                        << " recoveryFlightSize " << m_recoveryFlightSize
+                                        << " unAckDataCount " << unAckDataCount);
+
     DoRecovery(tcb, deliveredBytes, true);
 }
 
@@ -98,6 +102,11 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
         uint64_t quotient = dividend / static_cast<uint64_t>(m_recoveryFlightSize) +
                             (dividend % static_cast<uint64_t>(m_recoveryFlightSize) != 0);
         sendCount = static_cast<int64_t>(quotient) - static_cast<int64_t>(m_prrOut);
+
+        NS_LOG_DEBUG("PRR: prrDelivered " << m_prrDelivered << " ssThresh " << tcb->m_ssThresh
+                                          << " recoveryFlightSize " << m_recoveryFlightSize
+                                          << " dividend " << dividend << " quotient " << quotient
+                                          << " prrOut " << m_prrOut << " sendCount " << sendCount);
     }
     else
     {
@@ -121,6 +130,12 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
         sendCount = std::min<int64_t>(limit,
                                       static_cast<int64_t>(tcb->m_ssThresh) -
                                           static_cast<int64_t>(tcb->m_bytesInFlight));
+
+        NS_LOG_DEBUG("PRR CRB/SSRB: prrDelivered "
+                     << m_prrDelivered << " prrOut " << m_prrOut << " deliveredBytes "
+                     << deliveredBytes << " safeACK " << safeACK << " limit " << limit
+                     << " ssThresh " << tcb->m_ssThresh << " bytesInFlight " << tcb->m_bytesInFlight
+                     << " sendCount " << sendCount);
     }
 
     /* Force a fast retransmit upon entering fast recovery */
@@ -128,12 +143,25 @@ TcpPrrRecovery::DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, boo
         std::max<int64_t>(sendCount, static_cast<int64_t>(m_prrOut > 0 ? 0 : tcb->m_segmentSize));
     tcb->m_cWnd = tcb->m_bytesInFlight + static_cast<uint32_t>(sendCount);
     tcb->m_cWndInfl = tcb->m_cWnd;
+
+    NS_LOG_DEBUG("Recovery progress ["
+                 << (tcb->m_bytesInFlight > tcb->m_ssThresh ? "PRR" : "CRB/SSRB")
+                 << "]: deliveredBytes " << deliveredBytes << " isDupAck " << isDupAck
+                 << " prrDelivered " << m_prrDelivered << " prrOut " << m_prrOut
+                 << " recoveryFlightSize " << m_recoveryFlightSize << " sendCount " << sendCount
+                 << " bytesInFlight " << tcb->m_bytesInFlight << " ssThresh " << tcb->m_ssThresh
+                 << " -> cWnd " << tcb->m_cWnd);
 }
 
 void
 TcpPrrRecovery::ExitRecovery(Ptr<TcpSocketState> tcb)
 {
     NS_LOG_FUNCTION(this << tcb);
+
+    NS_LOG_INFO("Exit recovery: cWnd " << tcb->m_cWnd << " ssThresh " << tcb->m_ssThresh
+                                       << " prrDelivered " << m_prrDelivered << " prrOut "
+                                       << m_prrOut);
+
     tcb->m_cWndInfl = tcb->m_cWnd;
 }
 

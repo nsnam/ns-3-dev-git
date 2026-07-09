@@ -1747,6 +1747,11 @@ TcpSocketBase::EnterRecovery(uint32_t currentDelivered)
 
     NS_LOG_DEBUG(TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_RECOVERY");
 
+    NS_LOG_INFO("Enter CA_RECOVERY from "
+                << TcpSocketState::TcpCongStateName[m_tcb->m_congState] << ": recovering highRxAck "
+                << m_highRxAckMark << "; prior recover " << m_recover << " (active "
+                << m_recoverActive << "), new recover " << m_tcb->m_highTxMark);
+
     if (!m_sackEnabled)
     {
         // One segment has left the network, PLUS the head is lost
@@ -2338,6 +2343,10 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
                 NewAck(ackNumber, true);
                 m_tcb->m_cWnd = m_tcb->m_ssThresh.Get();
                 m_recoveryOps->ExitRecovery(m_tcb);
+                NS_LOG_INFO("Exit CA_RECOVERY -> CA_OPEN: ack "
+                            << ackNumber << " reached recover " << m_recover << "; cWnd "
+                            << m_tcb->m_cWnd << " ssThresh " << m_tcb->m_ssThresh
+                            << " bytesInFlight " << BytesInFlight());
                 NS_LOG_DEBUG("Leaving Fast Recovery; BytesInFlight() = "
                              << BytesInFlight() << "; cWnd = " << m_tcb->m_cWnd);
             }
