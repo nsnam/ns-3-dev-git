@@ -446,6 +446,19 @@ GcrTestBase::Transmit(std::string context,
                 NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().GetAddr1(),
                                       m_apWifiMac->GetAddress(),
                                       "Incorrect Address1 set for CTS-to-self frame");
+                // the CTS-to-self must cover the bandwidth of the protected groupcast frame,
+                // since no PPDU in the TXOP may be wider than the CTS-to-self frame
+                // (Sec. 10.23.2.8 of 802.11-2024)
+                const auto expectedCtsWidth =
+                    std::min_element(m_params.stas.cbegin(),
+                                     m_params.stas.cend(),
+                                     [](const auto& sta1, const auto& sta2) {
+                                         return sta1.maxChannelWidth < sta2.maxChannelWidth;
+                                     })
+                        ->maxChannelWidth;
+                NS_TEST_EXPECT_MSG_EQ(txVector.GetChannelWidth(),
+                                      expectedCtsWidth,
+                                      "Incorrect channel width for CTS-to-self frame");
                 m_nTxApCts++;
             }
             else

@@ -949,10 +949,13 @@ class WifiRemoteStationManager : public Object
      * Since CTS-to-self parameters are not dependent on the station,
      * it is implemented in wifi remote station manager
      *
+     * @param allowedWidth the width of the data frame being protected, which the
+     *        CTS-to-self must cover (using the non-HT duplicate format if wider
+     *        than 20 MHz)
      * @return the transmission mode to use to send the CTS-to-self prior to the
      *         transmission of the data packet itself.
      */
-    WifiTxVector GetCtsToSelfTxVector();
+    WifiTxVector GetCtsToSelfTxVector(MHz_u allowedWidth);
     /**
      * Adjust the TXVECTOR for a control response frame to ensure that, if appropriate, the non-HT
      * duplicate format is used and the TX width matches that of the data frame transmitted (in case

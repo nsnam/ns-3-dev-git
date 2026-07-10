@@ -222,7 +222,8 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
     if (GetWifiRemoteStationManager()->NeedCtsToSelf(txParams.m_txVector, hdr))
     {
         auto protection = std::make_unique<WifiCtsToSelfProtection>();
-        protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector();
+        protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector(
+            txParams.m_txVector.GetChannelWidth());
         return protection;
     }
 

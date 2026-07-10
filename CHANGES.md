@@ -25,6 +25,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * Pcap helpers now use ``LinkType`` enum contained in the ``iana`` namespace (``iana-link-type-numbers.h``).
 * (network) After the introduction of the `iana::` enumerations for L2 protocol numbers, the old ones (e.g., `Ipv4L3Protocol::PROT_NUMBER`) have been deprecated.
 * Centralized IANA numbers list in ``network/utils`` is now used instead of the constexpr ``PROT_NUMBER`` found in the definition of multiple protocols.
+* (wifi) `WifiRemoteStationManager::GetCtsToSelfTxVector()` now takes the channel width of the data frame being protected, so that the returned TXVECTOR covers that bandwidth (using the non-HT duplicate format if wider than 20 MHz).
 
 ### Changes to build system
 

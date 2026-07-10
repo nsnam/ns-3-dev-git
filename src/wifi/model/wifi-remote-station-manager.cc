@@ -669,7 +669,7 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, MHz_u all
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetCtsToSelfTxVector()
+WifiRemoteStationManager::GetCtsToSelfTxVector(MHz_u allowedWidth)
 {
     WifiMode defaultMode = GetDefaultMode();
     WifiPreamble defaultPreamble;
@@ -694,15 +694,23 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
         defaultPreamble = WIFI_PREAMBLE_LONG;
     }
 
-    return WifiTxVector(defaultMode,
-                        GetDefaultTxPowerLevel(),
-                        defaultPreamble,
-                        GetGuardIntervalForMode(defaultMode, m_wifiPhy->GetDevice()),
-                        GetNumberOfAntennas(),
-                        1,
-                        0,
-                        m_wifiPhy->GetTxBandwidth(defaultMode),
-                        false);
+    WifiTxVector v(defaultMode,
+                   GetDefaultTxPowerLevel(),
+                   defaultPreamble,
+                   GetGuardIntervalForMode(defaultMode, m_wifiPhy->GetDevice()),
+                   GetNumberOfAntennas(),
+                   1,
+                   0,
+                   m_wifiPhy->GetTxBandwidth(defaultMode),
+                   false);
+
+    // The CTS-to-self must cover the bandwidth of the data transmission it protects,
+    // because the TXOP holder shall not transmit any PPDU in the TXOP with a bandwidth
+    // exceeding that of the CTS-to-self frame (Sec. 10.23.2.8 of 802.11-2024); use the
+    // non-HT duplicate format for bandwidths wider than 20 MHz
+    AdjustTxVectorForCtlResponse(v, allowedWidth);
+
+    return v;
 }
 
 void
