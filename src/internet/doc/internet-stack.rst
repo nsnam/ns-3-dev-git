@@ -130,7 +130,7 @@ The actual registration is done
 with a statement such as follows::
 
      RegisterProtocolHandler( MakeCallback(&Ipv4Protocol::Receive, ipv4),
-                              iana::Ieee802Numbers::IPV4, 0);
+                              iana::ieee802numbers::IPV4, 0);
 
 The Ipv4L3Protocol object is aggregated to the Node; there is only one such
 Ipv4L3Protocol object. Higher-layer protocols that have a packet to send down to
@@ -140,7 +140,7 @@ pointer, as follows::
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol>();
   if (ipv4 != 0)
     {
-      ipv4->Send(packet, saddr, daddr, iana::Ieee802Numbers::IPV4);
+      ipv4->Send(packet, saddr, daddr, iana::ieee802numbers::IPV4);
     }
 
 This class nicely demonstrates two techniques we exploit in |ns3| to bind
