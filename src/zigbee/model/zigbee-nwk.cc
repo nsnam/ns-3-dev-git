@@ -2360,6 +2360,15 @@ ZigbeeNwk::NldeDataRequest(NldeDataRequestParams params, Ptr<Packet> packet)
         if (IsBroadcastAddress(params.m_dstAddr))
         {
             // The destination is BROADCAST (See 3.6.5)
+            // Record the originated broadcast in the Broadcast Transaction Table (BTT)
+            // so that copies rebroadcast back by neighbors are suppressed and not
+            // delivered again to the next higher layer.
+            Ptr<BroadcastTransactionRecord> btr = Create<BroadcastTransactionRecord>(
+                nwkHeader.GetSrcAddr(),
+                nwkHeader.GetSeqNum(),
+                Simulator::Now() + m_nwkNetworkBroadcastDeliveryTime);
+            m_btt.AddEntry(btr);
+
             SendDataBcst(packet, params.m_nsduHandle);
         }
         else
