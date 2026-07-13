@@ -22,6 +22,7 @@
 #include "ns3/core-module.h"
 
 #include <chrono>
+#include <optional>
 #include <string>
 #include <thread>
 
@@ -103,18 +104,21 @@ main(int argc, char** argv)
     Time interval = Seconds(10);
     Time wait = MilliSeconds(10);
     bool verbose = false;
+    bool showProgress = true;
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("stop", "Simulation duration in virtual time.", stop);
     cmd.AddValue("interval", "Approximate reporting interval, in wall clock time.", interval);
     cmd.AddValue("wait", "Wallclock time to burn on each event.", wait);
     cmd.AddValue("verbose", "Turn on verbose progress message.", verbose);
+    cmd.AddValue("showProgress", "Show progress reporting.", showProgress);
     cmd.Parse(argc, argv);
 
     std::cout << "\n"
               << cmd.GetName() << ":\n"
               << "\n"
               << "verbose progress message:  " << (verbose ? "on\n" : "off\n")
+              << "progress reporting:        " << (showProgress ? "on\n" : "off\n")
               << "target reporting interval: " << interval.As(Time::S) << "\n"
               << "average event sleep time:  " << wait.As(Time::MS) << "\n"
               << "total simulation run time: " << stop.As(Time::S) << std::endl;
@@ -123,8 +127,27 @@ main(int argc, char** argv)
     h->Event();
 
     Simulator::Stop(stop);
-    ShowProgress spinner(interval);
-    spinner.SetVerbose(verbose);
+
+    // ShowProgress begins reporting when constructed; use std::optional
+    // to construct it conditionally while keeping it alive through
+    // Simulator::Run().  Here, the "showProgress" command-line argument
+    // controls whether ShowProgress runs or not, and the "verbose"
+    // command-line argument controls the verbosity of ShowProgress's output.
+    std::optional<ShowProgress> spinner;
+    if (showProgress)
+    {
+        spinner.emplace(interval);
+        // Note that in the above statement, by default, ShowProgress
+        // writes to std::cout.  You can redirect its output to std::cerr
+        // by passing "std::cerr" as a second argument in the above.
+        spinner->SetVerbose(verbose);
+    }
+
+    // Note that if you simply want to enable ShowProgress unconditionally
+    // in your program, you can simply write, without the std::optional:
+    //
+    // ShowProgress spinner(interval);
+    // spinner.SetVerbose(verbose);
 
     Simulator::Run();
     Simulator::Destroy();

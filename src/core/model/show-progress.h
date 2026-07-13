@@ -47,13 +47,13 @@ namespace ns3
  * Example usage:
  *
  * @code
- *     int main (int arg, char ** argv)
+ *     int main(int arg, char** argv)
  *     {
- *       // Create your model
+ *         // Create your model
  *
- *       ShowProgress progress (Seconds (10), std::cerr);
- *       Simulator::Run ();
- *       Simulator::Destroy ();
+ *         ShowProgress progress(Seconds(10), std::cerr);
+ *         Simulator::Run();
+ *         Simulator::Destroy();
  *     }
  * @endcode
  *
@@ -70,6 +70,26 @@ namespace ns3
  *     +194.339562435s (  12.776x real time) 30957 events processed
  *     End wall clock:  Tue May 19 10:24:23 2020
  *     Elapsed wall clock: 16s
+ * @endcode
+ *
+ * ShowProgress begins reporting when constructed and must remain in
+ * scope through Simulator::Run().  In particular, an instance declared
+ * inside a conditional block would be destroyed at the closing brace,
+ * before the simulation runs, and would produce no output.  To create
+ * the reporter conditionally, use std::optional:
+ *
+ * @code
+ *     bool showProgress;
+ *     CommandLine cmd(__FILE__);
+ *     cmd.AddValue("showProgress", "Show progress reporting.", showProgress);
+ *     ...
+ *     std::optional<ShowProgress> progress;
+ *     if (showProgress)
+ *     {
+ *         progress.emplace(Seconds(10), std::cerr);
+ *     }
+ *     Simulator::Run();
+ *     Simulator::Destroy();
  * @endcode
  *
  * A more extensive example of use is provided in sample-show-progress.cc.
