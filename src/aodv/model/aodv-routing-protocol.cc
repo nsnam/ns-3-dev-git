@@ -37,7 +37,7 @@
 #define NS_LOG_APPEND_CONTEXT                                                                      \
     if (m_ipv4)                                                                                    \
     {                                                                                              \
-        std::clog << "[node " << m_ipv4->GetObject<Node>()->GetId() << "] ";                       \
+        ns3LogStream << "[node " << m_ipv4->GetObject<Node>()->GetId() << "] ";                    \
     }
 
 namespace ns3

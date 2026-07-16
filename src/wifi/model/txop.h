@@ -23,7 +23,7 @@
 #define WIFI_TXOP_NS_LOG_APPEND_CONTEXT                                                            \
     if (m_mac)                                                                                     \
     {                                                                                              \
-        std::clog << "[mac=" << m_mac->GetAddress() << "] ";                                       \
+        ns3LogStream << "[mac=" << m_mac->GetAddress() << "] ";                                    \
     }
 
 class EmlsrUlTxopTest;

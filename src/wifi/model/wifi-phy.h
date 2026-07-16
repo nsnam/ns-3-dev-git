@@ -33,11 +33,11 @@
     {                                                                                              \
         if (DynamicCast<const WifiPhy>(phy))                                                       \
         {                                                                                          \
-            std::clog << "[index=" << +phy->GetPhyId() << "][channel="                             \
-                      << (phy->GetOperatingChannel().IsSet()                                       \
-                              ? std::to_string(+phy->GetOperatingChannel().GetNumber())            \
-                              : "UNKNOWN")                                                         \
-                      << "][band=" << phy->GetPhyBand() << "] ";                                   \
+            ns3LogStream << "[index=" << +phy->GetPhyId() << "][channel="                          \
+                         << (phy->GetOperatingChannel().IsSet()                                    \
+                                 ? std::to_string(+phy->GetOperatingChannel().GetNumber())         \
+                                 : "UNKNOWN")                                                      \
+                         << "][band=" << phy->GetPhyBand() << "] ";                                \
         }                                                                                          \
     }
 

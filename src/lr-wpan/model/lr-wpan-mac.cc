@@ -28,7 +28,7 @@
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
-    std::clog << "[" << m_shortAddress << " | " << m_macExtendedAddress << "] ";
+    ns3LogStream << "[" << m_shortAddress << " | " << m_macExtendedAddress << "] ";
 
 namespace ns3
 {

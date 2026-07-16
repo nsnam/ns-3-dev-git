@@ -30,7 +30,7 @@
 #include <optional>
 
 #define WIFI_FEM_NS_LOG_APPEND_CONTEXT                                                             \
-    std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
+    ns3LogStream << "[link=" << +m_linkId << "][mac=" << m_self << "] "
 
 namespace ns3
 {

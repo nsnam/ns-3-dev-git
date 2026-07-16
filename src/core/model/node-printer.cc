@@ -11,6 +11,9 @@
 #include "log.h"
 #include "simulator.h" // GetContext()
 
+#include <charconv>
+#include <iterator>
+
 /**
  * @file
  * @ingroup simulator
@@ -25,13 +28,17 @@ NS_LOG_COMPONENT_DEFINE("NodePrinter");
 void
 DefaultNodePrinter(std::ostream& os)
 {
-    if (Simulator::GetContext() == Simulator::NO_CONTEXT)
+    auto context = Simulator::GetContext();
+    if (context == Simulator::NO_CONTEXT)
     {
         os << "-1";
     }
     else
     {
-        os << Simulator::GetContext();
+        // std::to_chars is faster than the ostream integer inserter.
+        char buf[16];
+        auto [end, ec] = std::to_chars(std::begin(buf), std::end(buf), context);
+        os.write(buf, end - buf);
     }
 }
 

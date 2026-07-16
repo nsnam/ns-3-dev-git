@@ -1,0 +1,5 @@
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(1, 3, PARAM-BEGINPARAM-END PARAM-TAIL)
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(): [INFO ] line 1: logged before the interruption
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(): [INFO ] line 2: outer line with PARAM-BEGIN+9000000000000000000.00000s 7 [lbl] LogLineTestExample:operator<<(): [INFO ] nested line logged from operator<<
+PARAM-END PARAM-TAIL, end of outer line
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(): [INFO ] line 3: logged after the interruption

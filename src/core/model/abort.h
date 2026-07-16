@@ -38,6 +38,7 @@
 #define NS_ABORT_MSG(msg)                                                                          \
     do                                                                                             \
     {                                                                                              \
+        ::ns3::LogLineFlushPartial();                                                              \
         std::cerr << "aborted. ";                                                                  \
         NS_FATAL_ERROR(msg);                                                                       \
     } while (false)
@@ -67,6 +68,7 @@
     {                                                                                              \
         if (cond)                                                                                  \
         {                                                                                          \
+            ::ns3::LogLineFlushPartial();                                                          \
             std::cerr << "aborted. cond=\"" << #cond << ", ";                                      \
             NS_FATAL_ERROR_NO_MSG();                                                               \
         }                                                                                          \
@@ -99,6 +101,7 @@
     {                                                                                              \
         if (cond)                                                                                  \
         {                                                                                          \
+            ::ns3::LogLineFlushPartial();                                                          \
             std::cerr << "aborted. cond=\"" << #cond << "\", ";                                    \
             NS_FATAL_ERROR(msg);                                                                   \
         }                                                                                          \

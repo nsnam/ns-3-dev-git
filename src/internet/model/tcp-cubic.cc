@@ -7,7 +7,7 @@
 
 #define NS_LOG_APPEND_CONTEXT                                                                      \
     {                                                                                              \
-        std::clog << Simulator::Now().GetSeconds() << " ";                                         \
+        ns3LogStream << Simulator::Now().GetSeconds() << " ";                                      \
     }
 
 #include "tcp-cubic.h"

@@ -4,6 +4,7 @@ set(base_examples
     fatal-example
     hash-example
     length-example
+    log-line-test-example
     main-callback
     main-ptr
     sample-log-time-format

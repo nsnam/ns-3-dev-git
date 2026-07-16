@@ -12,6 +12,7 @@
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <list>
 
@@ -182,11 +183,94 @@ sigHandler(int sig)
     FlushStreams();
     std::abort();
 }
+
+/**
+ * @ingroup fatalimpl
+ * @brief The terminate handler in effect before ns-3 installed its own.
+ */
+std::terminate_handler g_previousTerminateHandler = nullptr;
+
+/**
+ * @ingroup fatalimpl
+ * @brief Flush the registered streams before terminating, then chain to the
+ * handler which was in effect before ns-3 installed this one.
+ *
+ * This covers the paths reaching \c std::terminate() without going through
+ * the NS_FATAL_ERROR macros, notably an uncaught exception thrown while a
+ * log line is being assembled.
+ */
+void
+TerminateHandler()
+{
+    FlushStreams();
+    if (g_previousTerminateHandler != nullptr)
+    {
+        g_previousTerminateHandler();
+    }
+    std::abort();
+}
+
+/**
+ * @ingroup fatalimpl
+ * @brief The signals whose default action terminates the program abnormally.
+ */
+constexpr int CRASH_SIGNALS[] = {
+    SIGSEGV,
+    SIGABRT,
+    SIGILL,
+    SIGFPE,
+#ifdef SIGBUS
+    SIGBUS,
+#endif
+};
+
+/**
+ * @ingroup fatalimpl
+ * @brief Emit the log line in progress, then let the signal take its
+ * default course.
+ *
+ * Only the log line is recovered here: the registered streams are flushed
+ * through the C++ streams, which are not async-signal-safe and so must not
+ * be touched from a signal handler.  Restoring the default action and
+ * re-raising keeps the usual termination status and core dump.
+ *
+ * @param [in] sig The signal condition.
+ */
+void
+CrashSignalHandler(int sig)
+{
+    LogLineFlushPartialFromSignal();
+    std::signal(sig, SIG_DFL);
+    std::raise(sig);
+}
+
+/**
+ * @ingroup fatalimpl
+ * @brief Install TerminateHandler() and CrashSignalHandler() during static
+ * initialization.
+ */
+const bool g_handlersInstalled = []() {
+    g_previousTerminateHandler = std::set_terminate(&TerminateHandler);
+    for (auto sig : CRASH_SIGNALS)
+    {
+        // Leave alone any signal the program is already ignoring or handling.
+        auto previous = std::signal(sig, &CrashSignalHandler);
+        if (previous != SIG_DFL && previous != SIG_ERR)
+        {
+            std::signal(sig, previous);
+        }
+    }
+    return true;
+}();
+
 } // unnamed namespace
 
 void
 FlushStreams()
 {
+    /* Emit the log line in progress, if any, before logging anything else. */
+    LogLineFlushPartial();
+
     NS_LOG_FUNCTION_NOARGS();
     std::list<std::ostream*>** pl = PeekStreamList();
     if (*pl == nullptr)
@@ -212,8 +296,8 @@ FlushStreams()
         s->flush();
     }
 
-    /* Restore default SIGSEGV handler (Not that it matters anyway) */
-    hdl.sa_handler = SIG_DFL;
+    /* Restore the handler which recovers the log line in progress */
+    hdl.sa_handler = &CrashSignalHandler;
     sigaction(SIGSEGV, &hdl, nullptr);
 
     /* Flush all opened FILE* */

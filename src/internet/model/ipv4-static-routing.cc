@@ -9,8 +9,8 @@
 #define NS_LOG_APPEND_CONTEXT                                                                      \
     if (m_ipv4 && m_ipv4->GetObject<Node>())                                                       \
     {                                                                                              \
-        std::clog << Simulator::Now().GetSeconds() << " [node "                                    \
-                  << m_ipv4->GetObject<Node>()->GetId() << "] ";                                   \
+        ns3LogStream << Simulator::Now().GetSeconds() << " [node "                                 \
+                     << m_ipv4->GetObject<Node>()->GetId() << "] ";                                \
     }
 
 #include "ipv4-static-routing.h"

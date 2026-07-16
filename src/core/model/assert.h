@@ -57,6 +57,7 @@
     {                                                                                              \
         if (!(condition))                                                                          \
         {                                                                                          \
+            ::ns3::LogLineFlushPartial();                                                          \
             std::cerr << "NS_ASSERT failed, cond=\"" << #condition << "\", ";                      \
             NS_FATAL_ERROR_NO_MSG();                                                               \
         }                                                                                          \
@@ -77,6 +78,7 @@
     {                                                                                              \
         if (!(condition))                                                                          \
         {                                                                                          \
+            ::ns3::LogLineFlushPartial();                                                          \
             std::cerr << "NS_ASSERT failed, cond=\"" << #condition << "\", ";                      \
             NS_FATAL_ERROR(message);                                                               \
         }                                                                                          \

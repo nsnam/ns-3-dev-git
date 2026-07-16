@@ -21,7 +21,7 @@
 #include <sstream>
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT std::clog << "[link=" << +m_linkId << "] "
+#define NS_LOG_APPEND_CONTEXT ns3LogStream << "[link=" << +m_linkId << "] "
 
 namespace ns3
 {

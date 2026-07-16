@@ -312,6 +312,7 @@ set(test_sources
     test/hash-test-suite.cc
     test/int64x64-test-suite.cc
     test/length-test-suite.cc
+    test/log-test-suite.cc
     test/many-uniform-random-variables-one-get-value-call-test-suite.cc
     test/names-test-suite.cc
     test/nlohmann-json-test-suite.cc
