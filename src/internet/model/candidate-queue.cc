@@ -206,4 +206,11 @@ CandidateQueue<T>::CompareSPFVertex(const SPFVertex<T>* v1, const SPFVertex<T>* 
 template class CandidateQueue<Ipv4Manager>;
 template class CandidateQueue<Ipv6Manager>;
 
+// Explicit class instantiation does not also instantiate the free operator<<
+// template, so instantiate it explicitly for the exported managers.
+/// @cond EXPLICIT_INSTANTIATION
+template std::ostream& operator<<(std::ostream& os, const CandidateQueue<Ipv4Manager>& q);
+template std::ostream& operator<<(std::ostream& os, const CandidateQueue<Ipv6Manager>& q);
+/// @endcond
+
 } // namespace ns3
