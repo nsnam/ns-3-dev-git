@@ -124,7 +124,7 @@ class NixVector : public SimpleRefCount<NixVector>
      *
      * @param buffer points to buffer for deserialization
      * @param size number of bytes to deserialize
-     * @return number of deerialized bytes on success, 0 on failure
+     * @return number of deserialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint32_t* buffer, uint32_t size);
 

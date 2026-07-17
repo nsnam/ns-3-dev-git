@@ -235,9 +235,17 @@ NixVector::Deserialize(const uint32_t* buffer, uint32_t size)
     NS_LOG_FUNCTION(this << buffer << size);
     const uint32_t* p = buffer;
 
-    NS_ASSERT_MSG(size >= sizeof(m_totalBitSize),
-                  "NixVector minimum serialized length is " << sizeof(m_totalBitSize) << " bytes");
-    if (size < sizeof(m_totalBitSize))
+    // Widths of the serialized fields: total number of bits in the nix-vector
+    // (always present), number of used bits, epoch, and each 32-bit word of
+    // neighbor indices (only present when the nix-vector is not empty)
+    constexpr uint32_t totalBitSizeFieldBytes = sizeof(m_totalBitSize);
+    constexpr uint32_t usedFieldBytes = sizeof(m_used);
+    constexpr uint32_t epochFieldBytes = sizeof(m_epoch);
+    constexpr uint32_t nixWordBytes = sizeof(uint32_t);
+
+    NS_ASSERT_MSG(size >= totalBitSizeFieldBytes,
+                  "NixVector minimum serialized length is " << totalBitSizeFieldBytes << " bytes");
+    if (size < totalBitSizeFieldBytes)
     {
         // return zero if an entire nix-vector was
         // not deserialized
@@ -248,21 +256,23 @@ NixVector::Deserialize(const uint32_t* buffer, uint32_t size)
 
     if (m_totalBitSize)
     {
-        m_used = *p++;
-
         // NixVector is packed in 32-bit unsigned ints.
         uint32_t nixVectorLength = m_totalBitSize / 32;
         nixVectorLength += (m_totalBitSize % 32) ? 1 : 0;
 
-        NS_ASSERT_MSG(size >= 16 + nixVectorLength,
-                      "NixVector serialized length should have been " << 16 + nixVectorLength
+        const uint32_t expectedSize = totalBitSizeFieldBytes + usedFieldBytes + epochFieldBytes +
+                                      nixVectorLength * nixWordBytes;
+        NS_ASSERT_MSG(size >= expectedSize,
+                      "NixVector serialized length should have been " << expectedSize
                                                                       << " but buffer is shorter");
-        if (size < 16 + nixVectorLength * 4)
+        if (size < expectedSize)
         {
             // return zero if an entire nix-vector was
             // not deserialized
             return 0;
         }
+
+        m_used = *p++;
 
         // make sure the nix-vector
         // is empty

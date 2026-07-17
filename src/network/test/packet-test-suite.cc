@@ -15,6 +15,7 @@
 #include <iostream>
 #include <limits> // std:numeric_limits
 #include <string>
+#include <vector>
 
 using namespace ns3;
 
@@ -817,6 +818,29 @@ PacketTest::DoRun()
         NS_TEST_EXPECT_MSG_EQ(b2.GetData(), 66, "trivial");
         NS_TEST_EXPECT_MSG_EQ(p2->PeekPacketTag(c2), true, "trivial");
         NS_TEST_EXPECT_MSG_EQ(c2.GetData(), 67, "trivial");
+    }
+
+    /* Test Serialization and Deserialization of Packet with NixVector */
+    {
+        Ptr<Packet> p1 = Create<Packet>(1000);
+        Ptr<NixVector> nix1 = Create<NixVector>();
+        nix1->AddNeighborIndex(3, 2);
+        nix1->AddNeighborIndex(5, 3);
+        p1->SetNixVector(nix1);
+
+        uint32_t serializedSize = p1->GetSerializedSize();
+        std::vector<uint8_t> buffer(serializedSize);
+        NS_TEST_EXPECT_MSG_EQ(p1->Serialize(buffer.data(), serializedSize),
+                              serializedSize,
+                              "serialized size mismatch");
+
+        Ptr<Packet> p2 = Create<Packet>(buffer.data(), serializedSize, true);
+
+        Ptr<NixVector> nix2 = p2->GetNixVector();
+        NS_TEST_ASSERT_MSG_NE(nix2, nullptr, "nix-vector not deserialized");
+        NS_TEST_EXPECT_MSG_EQ(nix2->GetRemainingBits(), 5, "trivial");
+        NS_TEST_EXPECT_MSG_EQ(nix2->ExtractNeighborIndex(3), 5, "trivial");
+        NS_TEST_EXPECT_MSG_EQ(nix2->ExtractNeighborIndex(2), 3, "trivial");
     }
 
     /* Test Serialization and Deserialization of Packet with ByteTag data */
