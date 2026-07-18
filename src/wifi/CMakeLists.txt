@@ -429,6 +429,7 @@ build_lib(
     test/wifi-phy-thresholds-test.cc
     test/wifi-primary-channels-test.cc
     test/wifi-probe-exchange-test.cc
+    test/wifi-protection-test.cc
     test/wifi-queue-scheduler-test.cc
     test/wifi-retransmit-test.cc
     test/wifi-ru-allocation-test.cc
