@@ -83,6 +83,7 @@ Python 3.10 to 3.14.
 - (wifi) TXOP limit can also be exceeded when sending a BlockAckReq
 - (wifi) A BlockAckReq shall not be transmitted on a link if its TID is not mapped to the link
 - (wifi) When a link is disabled as per the negotiated TID-to-Link Mapping, no frame shall be sent on it
+- (wifi) !2944 An EMLSR client starting an UL TXOP while the AP was still tracking the end of a previous TXOP is now recognized as the new TXOP holder; previously the frame was treated as a continuation of the old TXOP and the blocking of the client's other links was skipped (debug builds failed an assert).
 
 ## Release 3.48
 

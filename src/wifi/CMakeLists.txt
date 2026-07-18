@@ -416,6 +416,7 @@ build_lib(
     test/wifi-emlsr-enabling-test.cc
     test/wifi-emlsr-link-switch-test.cc
     test/wifi-emlsr-test-base.cc
+    test/wifi-emlsr-txop-end-tracking-test.cc
     test/wifi-error-rate-models-test.cc
     test/wifi-fils-frame-test.cc
     test/wifi-gcr-test.cc
