@@ -282,7 +282,7 @@ FlushStreams()
      * streams even if one of the stream pointers is bad.
      * The SIGSEGV override should only be active for the
      * duration of this function. */
-    struct sigaction hdl;
+    struct sigaction hdl{};
     hdl.sa_handler = sigHandler;
     sigaction(SIGSEGV, &hdl, nullptr);
 
