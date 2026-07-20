@@ -739,13 +739,18 @@ TcpTxBuffer::DiscardUpTo(const SequenceNumber32& seq, const Callback<void, TcpTx
         {
             NS_ASSERT(!head->m_lost);
             // It is not possible to have the UNA sacked; otherwise, it would
-            // have been ACKed. This is, most likely, our wrong guessing
+            // have been ACKed. This is, most likely, incorrect guessing
             // when adding Reno dupacks in the count.
             head->m_sacked = false;
             m_sackedOut -= head->m_packet->GetSize();
             NS_LOG_INFO("Moving the SACK flag from the HEAD to another segment");
             AddRenoSack();
-            MarkHeadAsLost();
+            // Without SACK, the socket decides whether the head is lost,
+            // because that depends on the congestion state
+            if (m_sackEnabled)
+            {
+                MarkHeadAsLost();
+            }
         }
 
         NS_ASSERT_MSG(head->m_startSeq == seq,

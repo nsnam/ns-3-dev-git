@@ -363,6 +363,7 @@ set(test_sources
     test/tcp-linux-reno-test.cc
     test/tcp-loss-test.cc
     test/tcp-lp-test.cc
+    test/tcp-no-sack-dupack-test.cc
     test/tcp-option-test.cc
     test/tcp-pacing-test.cc
     test/tcp-pkts-acked-test.cc

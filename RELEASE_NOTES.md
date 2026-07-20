@@ -79,6 +79,7 @@ but other contemporaneous versions may also work.
 - (dsr) !2762 Fixes header format to comply with RFC4728. Also other minor bug fixes and modernization.
 - (zigbee) In the NWK, broadcast initiator devices are now registered in the BTT to avoid receiving retransmissions.
 - (tcp) #1326 Fixes a crash in the persist timer when the receiver's window is zero and the sender has no unsent data.
+- (tcp) #1107 With SACK disabled, a cumulative ACK no longer turns a guess made from duplicate ACK counting into an inferred loss, which caused repeated spurious fast retransmits and kept the congestion window near its minimum.
 - (wifi) !2945 CTS-to-self frames are now transmitted over the bandwidth of the frame they protect, so that transmissions in the rest of the TXOP are no longer limited to 20 MHz.
 - (wifi) !2938 A DL MU PPDU transmitted in a non-initial frame exchange of a TXOP is now protected by an MU-RTS if any of its receivers is unprotected; previously the decision was made per MPDU and such a PPDU could be sent without the configured protection (debug builds failed an assert).
 - (wifi) Fix Duration/ID for group addressed frames sent under multiple protection setting

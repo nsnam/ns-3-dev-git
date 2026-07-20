@@ -1980,6 +1980,24 @@ TcpSocketBase::ReceivedAck(Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
     m_txBuffer->DiscardUpTo(ackNumber, MakeCallback(&TcpRateOps::SkbDelivered, m_rateOps));
 
+    // Without SACK, the guessed SACKs only have meaning during fast recovery
+    if (!m_sackEnabled && ackNumber > oldHeadSequence)
+    {
+        if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY && ackNumber < m_recover)
+        {
+            // Partial ACK: the next segment is presumed lost (RFC 6582)
+            // and will be retransmitted
+            NS_LOG_INFO("Partial ACK. Manually setting head as lost");
+            m_txBuffer->MarkHeadAsLost();
+        }
+        else
+        {
+            // A cumulative ACK that advances outside of fast recovery,
+            // or that ends it, clears the guesses
+            m_txBuffer->ResetRenoSack();
+        }
+    }
+
     auto currentDelivered =
         static_cast<uint32_t>(m_rateOps->GetConnectionRate().m_delivered - previousDelivered);
     m_tcb->m_lastAckedSackedBytes = currentDelivered;
@@ -2186,13 +2204,6 @@ TcpSocketBase::ProcessAck(const SequenceNumber32& ackNumber,
         // the CA_RECOVERY phase. Just process this partial ack (RFC 5681)
         if (ackNumber < m_recover && m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
         {
-            if (!m_sackEnabled)
-            {
-                // Manually set the head as lost, it will be retransmitted.
-                NS_LOG_INFO("Partial ACK. Manually setting head as lost");
-                m_txBuffer->MarkHeadAsLost();
-            }
-
             // Before retransmitting the packet perform DoRecovery and check if
             // there is available window
             if (!m_congestionControl->HasCongControl() && segsAcked >= 1)
