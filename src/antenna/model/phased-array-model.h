@@ -15,6 +15,7 @@
 #include "ns3/symmetric-adjacency-matrix.h"
 
 #include <complex>
+#include <utility>
 
 namespace ns3
 {
@@ -75,6 +76,16 @@ class PhasedArrayModel : public Object
      * @return the number of antenna elements
      */
     virtual size_t GetNumElems() const = 0;
+
+    /**
+     * @brief Returns the horizontal and vertical apertures of the array, i.e.,
+     * the extents of the element locations along the horizontal and vertical
+     * axes of the array, normalized with respect to the wavelength (see, e.g.,
+     * 3GPP TR 38.901 Sec. 7.6.2). The default implementation takes the extents
+     * in the global frame, the horizontal one in the x-y plane.
+     * @return the horizontal and vertical apertures, in wavelengths
+     */
+    virtual std::pair<double, double> GetApertures() const;
 
     /**
      * @brief Returns the horizontal and vertical components of the antenna element field

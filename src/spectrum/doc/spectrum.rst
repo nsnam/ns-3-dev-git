@@ -1187,9 +1187,9 @@ is enabled through the ``LargeBandwidthArrayModeling`` attribute of
 specification: per-ray offset angles drawn as unif(-2, 2) (Equation 7.6-5)
 instead of the fixed offsets of Table 7.5-3, per-ray relative delays drawn as
 unif(0, 2 cDS) with unequal ray powers (Equation 7.6-6), and a number of rays
-per cluster derived from the ``ChannelBandwidth`` attribute and the departure
-array aperture (Equation 7.6-8, sparseness parameter 0.5), bounded by the
-``MaxRaysPerCluster`` attribute (Mmax). Each ray becomes
+per cluster derived from the ``ChannelBandwidth`` attribute and the maximum
+antenna aperture over the two link ends (Equation 7.6-8, sparseness parameter
+0.5), bounded by the ``MaxRaysPerCluster`` attribute (Mmax). Each ray becomes
 an individually delayed tap (Equation 7.6-3); the sub-cluster mapping of Table
 7.5-5 and the random coupling of rays are not applied, the latter because it
 would break the association between a ray's angles and its power. With

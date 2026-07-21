@@ -354,9 +354,9 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
      * @param table3gpp the 3gpp parameters from the table
      * @param aMob the a node mobility model
      * @param bMob the b node mobility model
-     * @param txAntenna the antenna array of the departure (a-ordered) node, used only by the
-     * large bandwidth modeling of TR 38.901 Sec. 7.6.2.2 to derive the array aperture in
-     * Equation (7.6-8); may be nullptr, in which case the angular ray-count factors are 1
+     * @param antennaA the antenna array of one link end (may be nullptr), used only by the
+     * large bandwidth modeling to derive the aperture of Equation (7.6-8)
+     * @param antennaB the antenna array of the other link end, see antennaA
      * @return ThreeGppChannelParams structure with all the channel parameters generated
      * according 38.901 steps from 4 to 10.
      */
@@ -365,31 +365,26 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
         Ptr<const ParamsTable> table3gpp,
         Ptr<const MobilityModel> aMob,
         Ptr<const MobilityModel> bMob,
-        Ptr<const PhasedArrayModel> txAntenna = nullptr) const;
+        Ptr<const PhasedArrayModel> antennaA = nullptr,
+        Ptr<const PhasedArrayModel> antennaB = nullptr) const;
 
     /**
      * @brief Apply the intra-cluster angular and delay spread modeling of TR 38.901
-     *        Sec. 7.6.2.2 (large bandwidth and large antenna arrays).
+     *        Sec. 7.6.2.2: per-ray offset angles (7.6-5), relative delays, unequal
+     *        powers (7.6-6) and a bandwidth/aperture-dependent ray count (7.6-8), expanding
+     *        the cluster-level structures of channelParams into one single-ray tap per
+     *        (cluster, ray) pair without the sub-cluster mapping of Table 7.5-5.
      *
-     * Re-draws the per-ray offset angles as unif(-2, 2) per cluster and ray (7.6-5), draws
-     * ray-relative delays as unif(0, 2 cDS), derives unequal ray powers (7.6-6) and computes
-     * the number of rays per cluster from the bandwidth and array aperture (7.6-8). Each ray
-     * then becomes its own single-ray tap: the per-cluster structures of channelParams
-     * (delays, powers, angles, XPRs, phases, Doppler terms) are expanded to one entry per
-     * (cluster, ray) pair, the sub-cluster mapping of Table 7.5-5 is not applied, and
-     * m_numRaysPerCluster is set to 1. When the spatial-consistency draw context is active,
-     * the offset angles and relative delays are drawn from the spatially-correlated fields
-     * (TR 38.901 Sec. 7.6.3.1, optional large bandwidth extension).
-     *
-     * @param channelParams Channel parameters holding the cluster-level structures of steps
-     *        5-7; expanded in place to per-ray taps.
-     * @param table3gpp 3GPP parameters table (cDS, cASA, cASD, cZSA, uLgZSD, XPR statistics).
-     * @param txAntenna Departure-side antenna array used for the aperture terms of (7.6-8);
-     *        may be nullptr.
+     * @param channelParams Channel parameters of steps 5-7, expanded in place.
+     * @param table3gpp 3GPP parameters table.
+     * @param antennaA Antenna array of one link end (may be nullptr); with antennaB it
+     *        provides the maximum aperture of (7.6-8).
+     * @param antennaB Antenna array of the other link end, see antennaA.
      */
     void ApplyLargeBandwidthRayModeling(Ptr<ThreeGppChannelParams> channelParams,
                                         Ptr<const ParamsTable> table3gpp,
-                                        Ptr<const PhasedArrayModel> txAntenna) const;
+                                        Ptr<const PhasedArrayModel> antennaA,
+                                        Ptr<const PhasedArrayModel> antennaB) const;
 
     /**
      * @brief Large-scale channel parameters (3GPP TR 38.901).

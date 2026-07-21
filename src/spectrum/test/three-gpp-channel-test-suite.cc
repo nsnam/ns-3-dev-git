@@ -1263,6 +1263,12 @@ class ThreeGppLargeBandwidthModelingTest : public TestCase
         double downtiltDeg{0.0};        //!< downtilt of the multi-element array in degrees
         uint32_t expectedRaysBw{20};    //!< ray count of the bandwidth term of (7.6-8) to yield
         uint8_t maxRaysPerCluster{255}; //!< the MaxRaysPerCluster attribute
+        /**
+         * Place the multi-element array at the rx end (the higher node id) instead
+         * of the tx end; the ray count must not change, since (7.6-8) uses the
+         * maximum aperture over both ends.
+         */
+        bool largeArrayAtRx{false};
     };
 
     /**
@@ -1290,7 +1296,8 @@ ThreeGppLargeBandwidthModelingTest::ThreeGppLargeBandwidthModelingTest(const Con
                ", array " + std::to_string(config.columns) + "x" + std::to_string(config.rows) +
                ", downtilt " + std::to_string(static_cast<int>(config.downtiltDeg)) +
                " deg, expectedRaysBw=" + std::to_string(config.expectedRaysBw) +
-               ", maxRaysPerCluster=" + std::to_string(config.maxRaysPerCluster)),
+               ", maxRaysPerCluster=" + std::to_string(config.maxRaysPerCluster) +
+               (config.largeArrayAtRx ? ", array at rx" : "")),
       m_config(config)
 {
 }
@@ -1330,10 +1337,10 @@ ThreeGppLargeBandwidthModelingTest::DoRun()
     };
     // PhasedArrayModel tracks per-pair channel state, so each channel model
     // gets its own antenna pair of the same geometry.
-    Ptr<PhasedArrayModel> aAntennaPlain = makeAntenna(true);
-    Ptr<PhasedArrayModel> bAntennaPlain = makeAntenna(false);
-    Ptr<PhasedArrayModel> aAntenna = makeAntenna(true);
-    Ptr<PhasedArrayModel> bAntenna = makeAntenna(false);
+    Ptr<PhasedArrayModel> aAntennaPlain = makeAntenna(!m_config.largeArrayAtRx);
+    Ptr<PhasedArrayModel> bAntennaPlain = makeAntenna(m_config.largeArrayAtRx);
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna(!m_config.largeArrayAtRx);
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna(m_config.largeArrayAtRx);
 
     Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
     auto makeModel = [&](bool largeBandwidth, double bandwidth) {
@@ -2642,6 +2649,11 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(
         new ThreeGppLargeBandwidthModelingTest(LbConfig{.scenario = "UMa", .expectedRaysBw = 8}),
         TestCase::Duration::QUICK);
+    // The aperture term uses the maximum over both ends, so the same array at the
+    // rx end gives the same count.
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(
+                    LbConfig{.columns = 64, .expectedRaysBw = 8, .largeArrayAtRx = true}),
+                TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);

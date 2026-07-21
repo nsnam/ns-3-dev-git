@@ -61,6 +61,7 @@ Python 3.10 to 3.14.
 ### Bugs fixed
 
 - (spectrum) #1369 The phased-array beamforming gain of a signal is now computed with the transmitter's beamforming vector at transmission time rather than at arrival time, which differed whenever the array was re-steered while the signal was propagating.
+- (spectrum) The number of rays per cluster of the large bandwidth modeling of the 3GPP TR 38.901 fast-fading model (Equation 7.6-8) now uses the maximum antenna aperture over the two link ends, as Sec. 7.6.2.1 prescribes, instead of the aperture of the lowest node id end.
 - (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
 - (mesh) #1341 Fixed dot11s regression that ignored the link rate, degrading the HWMP routing metric to hop count.
 - (core) !3006 DesMetrics now writes the command line arguments into the JSON trace header when available, instead of the empty-arguments placeholder.
