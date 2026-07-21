@@ -2570,6 +2570,200 @@ ThreeGppReversedDirectionFieldPatternTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case for the channel reciprocity of the ThreeGppChannelModel class, as assumed for
+ * instance by TDD systems. Checks that:
+ * 1) querying the channel in the reverse direction reuses the same stored realization
+ *    (transposed by the consumers through ChannelMatrix::IsReverse) instead of generating a
+ *    direction-dependent one, and that IsReverse reports the direction correctly;
+ * 2) an identically seeded model instance queried only in the reverse direction generates the
+ *    transposed channel matrix, with the same number of taps. With the large bandwidth
+ *    modeling of TR 38.901 Sec. 7.6.2.2 and antenna arrays of different apertures at the two
+ *    ends, this verifies in particular that the number of rays per cluster of Equation
+ *    (7.6-8) derives from the maximum aperture over the two arrays and not from the query
+ *    direction, which would otherwise break reciprocity.
+ *
+ * With single-polarized arrays the reverse matrix is checked element by element against the
+ * transpose of the forward one. With dual-polarized arrays the coefficients are not element
+ * wise reciprocal, since TR 38.901 draws the two cross-polar initial phases of Step 10
+ * independently; the realization is still shared between the directions, and the test checks
+ * that the total transferred power (the Frobenius norm of the matrix) of the reverse
+ * generation matches the forward one exactly, per realization.
+ */
+class ThreeGppChannelReciprocityTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     * @param largeBandwidth enable the large bandwidth modeling of TR 38.901 Sec. 7.6.2.2
+     * @param dualPolarized use dual-polarized arrays at both ends
+     */
+    ThreeGppChannelReciprocityTest(bool largeBandwidth, bool dualPolarized = false);
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Create a ThreeGppChannelModel with the test configuration.
+     * @param channelConditionModel the channel condition model
+     * @return the channel model
+     */
+    Ptr<ThreeGppChannelModel> CreateChannelModel(
+        Ptr<ChannelConditionModel> channelConditionModel) const;
+
+    bool m_largeBandwidth; //!< enable the TR 38.901 Sec. 7.6.2.2 modeling
+    bool m_dualPolarized;  //!< use dual-polarized arrays
+};
+
+ThreeGppChannelReciprocityTest::ThreeGppChannelReciprocityTest(bool largeBandwidth,
+                                                               bool dualPolarized)
+    : TestCase("Check the channel matrix reciprocity between the two link directions"),
+      m_largeBandwidth(largeBandwidth),
+      m_dualPolarized(dualPolarized)
+{
+}
+
+Ptr<ThreeGppChannelModel>
+ThreeGppChannelReciprocityTest::CreateChannelModel(
+    Ptr<ChannelConditionModel> channelConditionModel) const
+{
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(30.0e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    if (m_largeBandwidth)
+    {
+        channelModel->SetAttribute("LargeBandwidthArrayModeling", BooleanValue(true));
+        channelModel->SetAttribute("ChannelBandwidth", DoubleValue(400e6));
+    }
+    channelModel->AssignStreams(1);
+    return channelModel;
+}
+
+void
+ThreeGppChannelReciprocityTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(50.0, 0.0, 1.5));
+    nodes.Get(0)->AggregateObject(aMob);
+    nodes.Get(1)->AggregateObject(bMob);
+
+    // Arrays with different apertures at the two ends, so a direction-dependent
+    // aperture term in Equation (7.6-8) would yield different tap counts. Each
+    // channel model gets its own pair, since a PhasedArrayModel pair tracks
+    // whether its channel matrix is up to date and a channel model expects a
+    // not-yet-generated pair on the first query.
+    auto createAntennas = [this]() {
+        Ptr<PhasedArrayModel> aAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(4),
+            "NumRows",
+            UintegerValue(4),
+            "IsDualPolarized",
+            BooleanValue(m_dualPolarized),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+        Ptr<PhasedArrayModel> bAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(2),
+            "NumRows",
+            UintegerValue(2),
+            "IsDualPolarized",
+            BooleanValue(m_dualPolarized),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+        return std::make_pair(aAntenna, bAntenna);
+    };
+    auto [aAntenna, bAntenna] = createAntennas();
+
+    Ptr<ChannelConditionModel> conditionModel = CreateObject<AlwaysLosChannelConditionModel>();
+
+    // 1) One model queried in both directions: the reverse query must reuse the same
+    // stored realization, flagged as reversed.
+    Ptr<ThreeGppChannelModel> channelModel = CreateChannelModel(conditionModel);
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> hAb =
+        channelModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> hBa =
+        channelModel->GetChannel(bMob, aMob, bAntenna, aAntenna);
+    NS_TEST_ASSERT_MSG_EQ(hAb,
+                          hBa,
+                          "The reverse-direction query should reuse the same channel realization");
+    NS_TEST_ASSERT_MSG_EQ(hAb->IsReverse(aAntenna->GetId(), bAntenna->GetId()),
+                          false,
+                          "The realization was generated in the a-to-b direction");
+    NS_TEST_ASSERT_MSG_EQ(hAb->IsReverse(bAntenna->GetId(), aAntenna->GetId()),
+                          true,
+                          "The b-to-a query must be flagged as reversed");
+
+    // 2) An identically seeded model queried only in the reverse direction must generate
+    // the transposed matrix with the same tap structure.
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    Ptr<ChannelConditionModel> conditionModelRev = CreateObject<AlwaysLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModelRev = CreateChannelModel(conditionModelRev);
+    auto [aAntennaRev, bAntennaRev] = createAntennas();
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> hRev =
+        channelModelRev->GetChannel(bMob, aMob, bAntennaRev, aAntennaRev);
+
+    NS_TEST_ASSERT_MSG_EQ(hRev->m_channel.GetNumPages(),
+                          hAb->m_channel.GetNumPages(),
+                          "The number of taps should not depend on the link direction");
+    NS_TEST_ASSERT_MSG_EQ(hRev->m_channel.GetNumRows(),
+                          hAb->m_channel.GetNumCols(),
+                          "The reverse matrix rows should equal the forward matrix columns");
+    NS_TEST_ASSERT_MSG_EQ(hRev->m_channel.GetNumCols(),
+                          hAb->m_channel.GetNumRows(),
+                          "The reverse matrix columns should equal the forward matrix rows");
+
+    double forwardNorm = 0;
+    double reverseNorm = 0;
+    double maxElementDiff = 0;
+    for (size_t page = 0; page < hAb->m_channel.GetNumPages(); page++)
+    {
+        for (size_t row = 0; row < hAb->m_channel.GetNumRows(); row++)
+        {
+            for (size_t col = 0; col < hAb->m_channel.GetNumCols(); col++)
+            {
+                const std::complex<double> fwd = hAb->m_channel(row, col, page);
+                const std::complex<double> rev = hRev->m_channel(col, row, page);
+                forwardNorm += std::norm(fwd);
+                reverseNorm += std::norm(rev);
+                maxElementDiff = std::max(maxElementDiff, std::abs(fwd - rev));
+            }
+        }
+    }
+
+    if (!m_dualPolarized)
+    {
+        NS_TEST_ASSERT_MSG_LT(maxElementDiff,
+                              1e-6,
+                              "The reverse-direction channel matrix should be the transpose of "
+                              "the forward one");
+    }
+    else
+    {
+        // The coefficients are not element-wise reciprocal (independent cross-polar initial
+        // phases), but the total transferred power of the shared realization is.
+        NS_TEST_ASSERT_MSG_EQ_TOL(reverseNorm / forwardNorm,
+                                  1.0,
+                                  1e-9,
+                                  "The total power of the reverse-direction channel matrix "
+                                  "should match the forward one");
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -2614,6 +2808,10 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                 TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 2, 2, true),
                 TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(true), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(false, true), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(true, true), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 4, 2, 2), TestCase::Duration::QUICK);
