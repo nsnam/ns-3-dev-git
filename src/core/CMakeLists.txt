@@ -268,6 +268,7 @@ set(header_files
     model/simulator.h
     model/singleton.h
     model/string.h
+    model/struct.h
     model/synchronizer.h
     model/system-path.h
     model/system-wall-clock-ms.h
@@ -324,6 +325,7 @@ set(test_sources
     test/sample-test-suite.cc
     test/simulator-test-suite.cc
     test/splitstring-test-suite.cc
+    test/struct-value-test-suite.cc
     test/system-path-test-suite.cc
     test/threaded-test-suite.cc
     test/time-test-suite.cc

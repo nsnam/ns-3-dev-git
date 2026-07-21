@@ -313,6 +313,8 @@ Available AttributeValue Types
 
 * SsidValue
 
+* StructValue<Args...>
+
 * TimeValue
 
 * TupleValue<Args...>
