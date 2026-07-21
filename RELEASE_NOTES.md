@@ -46,6 +46,7 @@ Python 3.10 to 3.14.
 
 ### New user-visible features
 
+- (spectrum) New `LargeBandwidthArrayModeling`, `ChannelBandwidth` and `MaxRaysPerCluster` attributes of `ThreeGppChannelModel` implement the large bandwidth and large antenna array modeling of 3GPP TR 38.901 Sec. 7.6.2.2.
 - (network) IANA protocol and link types are now centralized in network module headers.
 
 - Added support for `nlohmann/json`, a header-only C++ third-party library for JSON parsing and serialization.

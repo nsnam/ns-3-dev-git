@@ -659,6 +659,33 @@ randomly generated COFDM TV transmitters (modeling the DVB-T standard)
 located around the Paris, France area with channel frequencies and bandwidths
 corresponding to the European television channel allocations.
 
+Large bandwidth and large antenna array modeling
+################################################
+
+When the simulated bandwidth or the antenna aperture exceeds what the fast
+fading model of TR 38.901 Sec. 7.5 is designed to support, the intra-cluster
+angular and delay spread modeling of Sec. 7.6.2.2 can be enabled through the
+``LargeBandwidthArrayModeling`` attribute of ``ThreeGppChannelModel`` (disabled
+by default). The modifications to Step 7 follow the specification: the per-ray
+offset angles are drawn as unif(-2, 2) per cluster and ray (Equation 7.6-5)
+instead of the fixed offsets of Table 7.5-3, each ray receives a relative delay
+drawn as unif(0, 2 cDS) and an unequal power (Equation 7.6-6), and the number
+of rays per cluster is derived from the bandwidth and the departure array
+aperture (Equation 7.6-8, sparseness parameter 0.5), bounded by the
+``MaxRaysPerCluster`` attribute (Mmax in the specification, a user-selected
+complexity/accuracy trade-off). The simulation bandwidth B of Equation (7.6-8)
+is provided through the ``ChannelBandwidth`` attribute.
+
+Each ray then becomes an individually delayed tap of the channel matrix, as in
+Equation (7.6-3), and the fixed sub-cluster mapping of Table 7.5-5 is not
+applied, per Sec. 7.6.2.2. The random coupling of rays is not applied either,
+since with per-ray offset angles it would break the association between each
+ray's angles and its power in Equation (7.6-6). Since the per-ray structure is
+fixed per drop, channel updates fall back to a full regeneration instead of
+the Procedure A update equations. The propagation delay modeling of
+Sec. 7.6.2.1 (per-antenna-element ray delays and frequency-dependent array
+responses) is not implemented.
+
 Testing
 #######
 
@@ -736,6 +763,10 @@ please have a look at the documentation of the classes
     the 1 m step-size constraint, the model falls back to re-generating channel
     parameters and thus the channel matrix). Drop-based spatial consistency across
     multiple initial locations (Sec. 7.6.3.1) and Procedure B are not implemented.
+
+  * The large bandwidth and large antenna array modeling of Sec. 7.6.2.2 is
+    available through the ``LargeBandwidthArrayModeling`` attribute (disabled
+    by default); see below.
 
   * Issue regarding the blockage model: according to 3GPP TR 38.901 v15.0.0
     (2018-06) section 7.6.4.1, the blocking region for self-blocking is provided

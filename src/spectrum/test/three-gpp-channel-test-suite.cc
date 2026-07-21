@@ -30,6 +30,8 @@
 
 #include <cmath>
 #include <complex>
+#include <limits>
+#include <string>
 #include <valarray>
 
 using namespace ns3;
@@ -55,11 +57,15 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
      * of the transmitter
      * @param rxPorts the number of vertical and horizontal ports of the antenna
      * array of the receiver
+     * @param largeBandwidth enable the large bandwidth modeling of TR 38.901 Sec. 7.6.2.2,
+     * checking that each ray becomes an individually delayed tap and that the channel
+     * normalization is preserved
      */
     ThreeGppChannelMatrixComputationTest(uint32_t txAntennaElements = 2,
                                          uint32_t rxAntennaElements = 2,
                                          uint32_t txPorts = 1,
-                                         uint32_t rxPorts = 1);
+                                         uint32_t rxPorts = 1,
+                                         bool largeBandwidth = false);
 
     /**
      * Destructor
@@ -89,21 +95,24 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
     std::vector<double> m_normVector; //!< each element is the norm of a channel realization
     uint32_t m_txAntennaElements{4};  //!< number of rows and columns of tx antenna array
     uint32_t m_rxAntennaElements{4};  //!< number of rows and columns of rx antenna array
-    uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
-    uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
+    uint32_t m_txPorts{1};        //!< number of horizontal and vertical ports of tx antenna array
+    uint32_t m_rxPorts{1};        //!< number of horizontal and vertical ports of rx antenna array
+    bool m_largeBandwidth{false}; //!< enable the TR 38.901 Sec. 7.6.2.2 modeling
 };
 
 ThreeGppChannelMatrixComputationTest::ThreeGppChannelMatrixComputationTest(
     uint32_t txAntennaElements,
     uint32_t rxAntennaElements,
     uint32_t txPorts,
-    uint32_t rxPorts)
+    uint32_t rxPorts,
+    bool largeBandwidth)
     : TestCase("Check the dimensions and the norm of the channel matrix")
 {
     m_txAntennaElements = txAntennaElements;
     m_rxAntennaElements = rxAntennaElements;
     m_txPorts = txPorts;
     m_rxPorts = rxPorts;
+    m_largeBandwidth = largeBandwidth;
 }
 
 ThreeGppChannelMatrixComputationTest::~ThreeGppChannelMatrixComputationTest()
@@ -159,6 +168,11 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     channelModel->SetAttribute("Scenario", StringValue("RMa"));
     channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
     channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs)));
+    if (m_largeBandwidth)
+    {
+        channelModel->SetAttribute("LargeBandwidthArrayModeling", BooleanValue(true));
+        channelModel->SetAttribute("ChannelBandwidth", DoubleValue(400e6));
+    }
     channelModel->AssignStreams(1);
 
     // create the tx and rx nodes
@@ -213,6 +227,17 @@ ThreeGppChannelMatrixComputationTest::DoRun()
         channelMatrix->m_channel.GetNumRows(),
         m_rxAntennaElements * m_rxAntennaElements,
         "The second dimension of H should be equal to the number of rx antenna elements");
+
+    if (m_largeBandwidth)
+    {
+        // Under TR 38.901 Sec. 7.6.2.2 each of the at-least-20 rays of every cluster is
+        // expanded into its own individually delayed tap, so the number of taps is far
+        // larger than the standard per-cluster (plus sub-cluster) count.
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(channelMatrix->m_channel.GetNumPages(),
+                                    40,
+                                    "With the large bandwidth modeling every cluster should be "
+                                    "expanded into at least 20 single-ray taps");
+    }
 
     // test if the channel matrix is correctly generated
     uint16_t numIt = 2000;
@@ -1210,6 +1235,257 @@ struct CheckLongTermUpdateParams
 /**
  * @ingroup spectrum-tests
  *
+ * Test case for the large bandwidth and large antenna array modeling of
+ * TR 38.901 Sec. 7.6.2.2. The same link is generated with and without the
+ * modeling from identical RNG streams, so the cluster-level steps (delays,
+ * powers, mean angles) coincide, and the expanded per-ray taps are checked
+ * against them:
+ * 1) the number of rays per cluster follows Equation (7.6-8), including the
+ *    lower bound of 20 and the MaxRaysPerCluster cap;
+ * 2) every cluster is expanded into one single-ray tap per ray, with no
+ *    sub-cluster mapping;
+ * 3) the ray delays are within [0, 2 cDS] of the cluster delay and the
+ *    earliest ray sits at the cluster delay;
+ * 4) the ray angle offsets are within +-2 intra-cluster spreads of the
+ *    cluster mean angles, Equation (7.6-5);
+ * 5) the ray powers follow Equation (7.6-6) and sum to the cluster power.
+ */
+class ThreeGppLargeBandwidthModelingTest : public TestCase
+{
+  public:
+    /// Configuration of one test case.
+    struct Config
+    {
+        std::string scenario{"RMa"};    //!< 3GPP scenario
+        uint32_t columns{1};            //!< columns of the multi-element array
+        uint32_t rows{1};               //!< rows of the multi-element array
+        double downtiltDeg{0.0};        //!< downtilt of the multi-element array in degrees
+        uint32_t expectedRaysBw{20};    //!< ray count of the bandwidth term of (7.6-8) to yield
+        uint8_t maxRaysPerCluster{255}; //!< the MaxRaysPerCluster attribute
+    };
+
+    /**
+     * Constructor
+     * @param config the test case configuration
+     */
+    ThreeGppLargeBandwidthModelingTest(const Config& config);
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Difference between two angles in degrees, wrapped to [-180, 180).
+     * @param a the first angle
+     * @param b the second angle
+     * @return a - b wrapped
+     */
+    static double AngleDiff(double a, double b);
+
+    Config m_config; //!< test case configuration
+};
+
+ThreeGppLargeBandwidthModelingTest::ThreeGppLargeBandwidthModelingTest(const Config& config)
+    : TestCase("Check the large bandwidth modeling of TR 38.901 Sec. 7.6.2.2, " + config.scenario +
+               ", array " + std::to_string(config.columns) + "x" + std::to_string(config.rows) +
+               ", downtilt " + std::to_string(static_cast<int>(config.downtiltDeg)) +
+               " deg, expectedRaysBw=" + std::to_string(config.expectedRaysBw) +
+               ", maxRaysPerCluster=" + std::to_string(config.maxRaysPerCluster)),
+      m_config(config)
+{
+}
+
+double
+ThreeGppLargeBandwidthModelingTest::AngleDiff(double a, double b)
+{
+    return std::fmod(a - b + 540.0, 360.0) - 180.0;
+}
+
+void
+ThreeGppLargeBandwidthModelingTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // NLOS keeps the cluster delays unscaled and the LOS ray out of the first tap.
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, m_config.scenario == "RMa" ? 35.0 : 25.0));
+    nodes.Get(0)->AggregateObject(aMob);
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(80.0, 30.0, 1.5));
+    nodes.Get(1)->AggregateObject(bMob);
+
+    auto makeAntenna = [this](bool multiElement) {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(multiElement ? m_config.columns : 1),
+            "NumRows",
+            UintegerValue(multiElement ? m_config.rows : 1),
+            "DowntiltAngle",
+            DoubleValue(multiElement ? DegreesToRadians(m_config.downtiltDeg) : 0.0),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+    // PhasedArrayModel tracks per-pair channel state, so each channel model
+    // gets its own antenna pair of the same geometry.
+    Ptr<PhasedArrayModel> aAntennaPlain = makeAntenna(true);
+    Ptr<PhasedArrayModel> bAntennaPlain = makeAntenna(false);
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna(true);
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna(false);
+
+    Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
+    auto makeModel = [&](bool largeBandwidth, double bandwidth) {
+        Ptr<ThreeGppChannelModel> model = CreateObject<ThreeGppChannelModel>();
+        model->SetAttribute("Frequency", DoubleValue(3.5e9));
+        model->SetAttribute("Scenario", StringValue(m_config.scenario));
+        model->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+        model->SetAttribute("LargeBandwidthArrayModeling", BooleanValue(largeBandwidth));
+        model->SetAttribute("ChannelBandwidth", DoubleValue(bandwidth));
+        model->SetAttribute("MaxRaysPerCluster", UintegerValue(m_config.maxRaysPerCluster));
+        model->AssignStreams(100);
+        return model;
+    };
+
+    // The cluster-level steps 5-7 draw from the same streams before the two
+    // models diverge, so the plain model provides the cluster delays, powers
+    // and mean angles the expanded taps must be checked against.
+    Ptr<ThreeGppChannelModel> plainModel = makeModel(false, 0.0);
+    plainModel->GetChannel(aMob, bMob, aAntennaPlain, bAntennaPlain);
+    const auto plain = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        plainModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(plain, nullptr, "Channel params not found for the plain link");
+    const auto table =
+        plainModel->GetThreeGppTable(aMob, bMob, condModel->GetChannelCondition(aMob, bMob));
+    const double cDS = table->m_cDS;
+    const double cASA = table->m_cASA;
+    const double cASD = table->m_cASD;
+    const double cZSA = table->m_cZSA;
+    const double cZSD = 0.375 * std::pow(10.0, table->m_uLgZSD); // (7.6-7)
+    const uint16_t nClusters = plain->m_reducedClusterNumber;
+
+    // Bandwidth chosen so the delay-resolution term of (7.6-8), ceil(2 cDS B),
+    // equals expectedRaysBw (2 cDS B is set just below the integer to avoid
+    // rounding to the next one).
+    const double bandwidth = (m_config.expectedRaysBw - 0.2) / (2.0 * cDS);
+    const double mT = std::ceil(2.0 * cDS * bandwidth);
+    NS_TEST_ASSERT_MSG_EQ(mT, m_config.expectedRaysBw, "Bandwidth term of (7.6-8)");
+    // Angle-resolution terms of (7.6-8) for half-wavelength spaced elements: the
+    // apertures are the panel extents, (columns - 1) / 2 and (rows - 1) / 2
+    // wavelengths, whatever the downtilt of the panel.
+    const double dHOverLambda = 0.5 * (m_config.columns - 1);
+    const double dVOverLambda = 0.5 * (m_config.rows - 1);
+    const double mAod = std::max(std::ceil(2.0 * cASD * M_PI * dHOverLambda / 180.0), 1.0);
+    const double mZod = std::max(std::ceil(2.0 * cZSD * M_PI * dVOverLambda / 180.0), 1.0);
+    const uint32_t expectedRays =
+        std::min<uint32_t>(std::max<uint32_t>(mT * mAod * mZod, 20), m_config.maxRaysPerCluster);
+
+    Ptr<ThreeGppChannelModel> lbModel = makeModel(true, bandwidth);
+    const auto channelMatrix = lbModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    const auto lb = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        lbModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(lb, nullptr, "Channel params not found for the large bandwidth link");
+
+    // 1) and 2): one single-ray tap per (cluster, ray), no sub-clusters.
+    const uint32_t numTaps = expectedRays * nClusters;
+    NS_TEST_ASSERT_MSG_EQ(+lb->m_numRaysPerCluster, 1, "Each tap should hold a single ray");
+    NS_TEST_ASSERT_MSG_EQ(+lb->m_reducedClusterNumber, numTaps, "Number of taps, (7.6-8)");
+    NS_TEST_ASSERT_MSG_EQ(lb->m_delay.size(), numTaps, "Number of tap delays");
+    NS_TEST_ASSERT_MSG_EQ(lb->m_clusterPower.size(), numTaps, "Number of tap powers");
+    NS_TEST_ASSERT_MSG_EQ(lb->m_rayAoaRadian.size(), numTaps, "Number of tap ray angles");
+    NS_TEST_ASSERT_MSG_EQ(channelMatrix->m_channel.GetNumPages(),
+                          numTaps,
+                          "The channel matrix should have one page per tap, no sub-clusters");
+    if (lb->m_delay.size() != numTaps || lb->m_clusterPower.size() != numTaps ||
+        lb->m_rayAoaRadian.size() != numTaps || lb->m_angle[0].size() != numTaps)
+    {
+        // The per-tap checks below index the taps by the expected count.
+        return;
+    }
+
+    for (uint16_t n = 0; n < nClusters; n++)
+    {
+        const double clusterDelay = plain->m_delay[n];
+        const double clusterPower = plain->m_clusterPower[n];
+        double minRayDelay = std::numeric_limits<double>::max();
+        double maxRayDelay = 0.0;
+        double powerSum = 0.0;
+        // Ray powers of (7.6-6) relative to the first ray of the cluster.
+        double refPower = 0.0;
+        double refLaw = 0.0;
+        for (uint32_t m = 0; m < expectedRays; m++)
+        {
+            const uint32_t tap = n * expectedRays + m;
+            const double rayDelay = lb->m_delay[tap] - clusterDelay;
+            minRayDelay = std::min(minRayDelay, rayDelay);
+            maxRayDelay = std::max(maxRayDelay, rayDelay);
+            powerSum += lb->m_clusterPower[tap];
+
+            // 4): offsets of (7.6-5) recovered from the tap angles, in units of
+            // the intra-cluster spreads, must lie in [-2, 2].
+            const double alphaAoa = AngleDiff(lb->m_angle[ThreeGppChannelModel::AOA_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::AOA_INDEX][n]) /
+                                    cASA;
+            const double alphaAod = AngleDiff(lb->m_angle[ThreeGppChannelModel::AOD_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::AOD_INDEX][n]) /
+                                    cASD;
+            const double alphaZoa = AngleDiff(lb->m_angle[ThreeGppChannelModel::ZOA_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::ZOA_INDEX][n]) /
+                                    cZSA;
+            const double alphaZod = AngleDiff(lb->m_angle[ThreeGppChannelModel::ZOD_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::ZOD_INDEX][n]) /
+                                    cZSD;
+            for (double alpha : {alphaAoa, alphaAod, alphaZoa, alphaZod})
+            {
+                NS_TEST_ASSERT_MSG_LT_OR_EQ(std::abs(alpha),
+                                            2.0 + 1e-9,
+                                            "Ray angle offset of (7.6-5) out of range, cluster "
+                                                << +n << " ray " << m);
+            }
+            NS_TEST_ASSERT_MSG_EQ_TOL(
+                lb->m_rayAoaRadian[tap][0],
+                DegreesToRadians(lb->m_angle[ThreeGppChannelModel::AOA_INDEX][tap]),
+                1e-9,
+                "Tap ray AOA should match the tap angle");
+
+            // 5): Equation (7.6-6).
+            const double law = std::exp(-rayDelay / cDS) *
+                               std::exp(-M_SQRT2 * std::abs(alphaAoa) / cASA) *
+                               std::exp(-M_SQRT2 * std::abs(alphaAod) / cASD) *
+                               std::exp(-M_SQRT2 * std::abs(alphaZoa) / cZSA) *
+                               std::exp(-M_SQRT2 * std::abs(alphaZod) / cZSD);
+            if (m == 0)
+            {
+                refPower = lb->m_clusterPower[tap];
+                refLaw = law;
+                continue;
+            }
+            NS_TEST_ASSERT_MSG_EQ_TOL(lb->m_clusterPower[tap] / refPower,
+                                      law / refLaw,
+                                      1e-6 * law / refLaw,
+                                      "Ray power ratio of (7.6-6), cluster " << +n << " ray " << m);
+        }
+        // 3): ray delays relative to the cluster delay.
+        NS_TEST_ASSERT_MSG_EQ_TOL(minRayDelay,
+                                  0.0,
+                                  1e-15,
+                                  "The earliest ray of cluster "
+                                      << +n << " should sit at the cluster delay");
+        NS_TEST_ASSERT_MSG_LT_OR_EQ(maxRayDelay,
+                                    2.0 * cDS,
+                                    "Ray delays of cluster " << +n << " exceed 2 cDS");
+        NS_TEST_ASSERT_MSG_GT(maxRayDelay, 0.0, "Rays of cluster " << +n << " are not spread");
+        // 5): the ray powers sum to the cluster power.
+        NS_TEST_ASSERT_MSG_EQ_TOL(powerSum,
+                                  clusterPower,
+                                  1e-9 * clusterPower,
+                                  "Ray powers of cluster " << +n << " should sum to its power");
+    }
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test case for the ThreeGppSpectrumPropagationLossModelTest class.
  * 1) checks if the long term components for the direct and the reverse link
  *    are the same
@@ -2174,6 +2450,10 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
         TestCase::Duration::QUICK);
 
     AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1, true),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 2, 2, true),
+                TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 4, 2, 2), TestCase::Duration::QUICK);
@@ -2183,6 +2463,32 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppAntennaSetupChangedTest(), TestCase::Duration::QUICK);
+    using LbConfig = ThreeGppLargeBandwidthModelingTest::Config;
+    // Single-element arrays: the bandwidth term alone sets the ray count.
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(LbConfig{.expectedRaysBw = 24}),
+                TestCase::Duration::QUICK);
+    // Below the lower bound of 20 rays of (7.6-8).
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(LbConfig{.expectedRaysBw = 8}),
+                TestCase::Duration::QUICK);
+    // MaxRaysPerCluster caps the count below the lower bound.
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(
+                    LbConfig{.expectedRaysBw = 24, .maxRaysPerCluster = 10}),
+                TestCase::Duration::QUICK);
+    // A 64-element row triples the count through the horizontal aperture term.
+    AddTestCase(
+        new ThreeGppLargeBandwidthModelingTest(LbConfig{.columns = 64, .expectedRaysBw = 8}),
+        TestCase::Duration::QUICK);
+    // A 64-element column tilted by 60 degrees keeps a zero horizontal aperture in
+    // the panel frame, so the count stays at the lower bound (a global-frame
+    // horizontal extent would triple the bandwidth term instead).
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(
+                    LbConfig{.rows = 64, .downtiltDeg = 60.0, .expectedRaysBw = 12}),
+                TestCase::Duration::QUICK);
+    // UMa NLOS has 20 clusters: the 400 taps of the lower bound exceed 8-bit
+    // cluster indexing.
+    AddTestCase(
+        new ThreeGppLargeBandwidthModelingTest(LbConfig{.scenario = "UMa", .expectedRaysBw = 8}),
+        TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);
 
