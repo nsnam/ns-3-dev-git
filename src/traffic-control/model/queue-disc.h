@@ -53,7 +53,7 @@ class QueueDiscClass : public Object
      * @brief Get the queue disc attached to this class
      * @return the queue disc attached to this class.
      */
-    Ptr<QueueDisc> GetQueueDisc() const;
+    const Ptr<QueueDisc>& GetQueueDisc() const;
 
     /**
      * @brief Set the queue disc attached to this class

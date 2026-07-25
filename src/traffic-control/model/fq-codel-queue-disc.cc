@@ -256,7 +256,8 @@ FqCoDelQueueDisc::DoEnqueue(Ptr<QueueDiscItem> item)
     }
 
     Ptr<FqCoDelFlow> flow;
-    if (m_flowsIndices.find(h) == m_flowsIndices.end())
+    auto flowIndex = m_flowsIndices.find(h);
+    if (flowIndex == m_flowsIndices.end())
     {
         NS_LOG_DEBUG("Creating a new flow queue with index " << h);
         flow = m_flowFactory.Create<FqCoDelFlow>();
@@ -278,7 +279,7 @@ FqCoDelQueueDisc::DoEnqueue(Ptr<QueueDiscItem> item)
     }
     else
     {
-        flow = StaticCast<FqCoDelFlow>(GetQueueDiscClass(m_flowsIndices[h]));
+        flow = StaticCast<FqCoDelFlow>(GetQueueDiscClass(flowIndex->second));
     }
 
     if (flow->GetStatus() == FqCoDelFlow::INACTIVE)
@@ -290,7 +291,7 @@ FqCoDelQueueDisc::DoEnqueue(Ptr<QueueDiscItem> item)
 
     flow->GetQueueDisc()->Enqueue(item);
 
-    NS_LOG_DEBUG("Packet enqueued into flow " << h << "; flow index " << m_flowsIndices[h]);
+    NS_LOG_DEBUG("Packet enqueued into flow " << h);
 
     if (GetCurrentSize() > GetMaxSize())
     {

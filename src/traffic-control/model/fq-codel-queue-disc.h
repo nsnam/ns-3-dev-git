@@ -15,7 +15,7 @@
 #include "ns3/object-factory.h"
 
 #include <list>
-#include <map>
+#include <unordered_map>
 
 namespace ns3
 {
@@ -172,8 +172,9 @@ class FqCoDelQueueDisc : public QueueDisc
     std::list<Ptr<FqCoDelFlow>> m_newFlows; //!< The list of new flows
     std::list<Ptr<FqCoDelFlow>> m_oldFlows; //!< The list of old flows
 
-    std::map<uint32_t, uint32_t> m_flowsIndices; //!< Map with the index of class for each flow
-    std::map<uint32_t, uint32_t> m_tags;         //!< Tags used by set associative hash
+    std::unordered_map<uint32_t, uint32_t>
+        m_flowsIndices;                            //!< Map with the index of class for each flow
+    std::unordered_map<uint32_t, uint32_t> m_tags; //!< Tags used by set associative hash
 
     ObjectFactory m_flowFactory;      //!< Factory to create a new flow
     ObjectFactory m_queueDiscFactory; //!< Factory to create a new queue

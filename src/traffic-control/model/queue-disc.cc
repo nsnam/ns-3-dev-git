@@ -58,7 +58,7 @@ QueueDiscClass::DoDispose()
     Object::DoDispose();
 }
 
-Ptr<QueueDisc>
+const Ptr<QueueDisc>&
 QueueDiscClass::GetQueueDisc() const
 {
     NS_LOG_FUNCTION(this);
@@ -505,11 +505,12 @@ QueueDisc::GetCurrentSize() const
 {
     NS_LOG_FUNCTION(this);
 
-    if (GetMaxSize().GetUnit() == QueueSizeUnit::PACKETS)
+    const QueueSizeUnit unit = GetMaxSize().GetUnit();
+    if (unit == QueueSizeUnit::PACKETS)
     {
         return QueueSize(QueueSizeUnit::PACKETS, m_nPackets);
     }
-    if (GetMaxSize().GetUnit() == QueueSizeUnit::BYTES)
+    if (unit == QueueSizeUnit::BYTES)
     {
         return QueueSize(QueueSizeUnit::BYTES, m_nBytes);
     }
