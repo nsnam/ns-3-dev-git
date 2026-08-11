@@ -27,6 +27,13 @@ if(${ENABLE_TESTS})
       )
     endif()
   endif()
+  # Inject the CRT debug-report hook when requested (debug MSVC builds only)
+  if(${NS3_CLANGCL_STLCHECKS} AND ${MSVC})
+    target_sources(
+      test-runner
+      PRIVATE ${PROJECT_SOURCE_DIR}/build-support/windows-crt-report-hook.cc
+    )
+  endif()
   set_runtime_outputdirectory(
     test-runner ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/utils/ ""
   )

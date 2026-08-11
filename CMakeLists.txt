@@ -36,6 +36,11 @@ option(NS3_CLANG_TIDY_FIX
 option(NS3_CLANG_TIMETRACE
        "Collect compilation statistics to analyze the build process" OFF
 )
+option(
+  NS3_CLANGCL_STLCHECKS
+  "Redirect MSVC CRT debug reports (e.g. checked-iterator assertions) to stderr with a stack trace instead of a message box; only effective in debug builds with MSVC-compatible toolchains (cl, clang-cl)"
+  OFF
+)
 option(NS3_COLORED_OUTPUT "Colorize CMake messages" OFF)
 option(NS3_COVERAGE "Enable code coverage measurements and report generation"
        OFF

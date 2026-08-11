@@ -92,6 +92,14 @@ function(build_exec)
     ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} "${BEXEC_SOURCE_FILES}"
   )
 
+  # Inject the CRT debug-report hook when requested (debug MSVC builds only)
+  if(${NS3_CLANGCL_STLCHECKS} AND ${MSVC})
+    target_sources(
+      ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME}
+      PRIVATE ${PROJECT_SOURCE_DIR}/build-support/windows-crt-report-hook.cc
+    )
+  endif()
+
   target_compile_definitions(
     ${BEXEC_EXECNAME_PREFIX}${BEXEC_EXECNAME} PUBLIC ${BEXEC_DEFINITIONS}
   )
