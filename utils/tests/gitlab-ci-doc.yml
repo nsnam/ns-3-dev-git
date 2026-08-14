@@ -69,9 +69,6 @@ doxygen-1.16:
     when: always
   dependencies:
     - per-commit-gcc-debug
-  except:
-    variables:
-      - $CPPYY == "True"
 
 .sphinx-doc:
   extends: .doc

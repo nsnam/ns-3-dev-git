@@ -110,7 +110,6 @@ list below:
 
 ```shell
 RELEASE, that can take the value "daily" or "weekly" (if you want to perform all the build/test that are done daily or once a week, respectively), or "manual" (to build and test the pip wheels)
-CPPYY, that can be set to "True" to skip the per-commit compile jobs (historically used by a scheduled pipeline dedicated to Python bindings maintenance)
 ```
 
 ... and then click Save, and run it manually from the "Schedules" page.

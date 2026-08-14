@@ -5,7 +5,6 @@
   extends: .base-build
   except:
     variables:
-      - $CPPYY == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
   image: archlinux
@@ -36,9 +35,7 @@ per-commit-gcc-debug:
     COMPILER: g++
   # override the exceptions, so run the job also on weekly and daily pipelines.
   # this is necessary for the doxygen job, which is using this job's artifacts.
-  except:
-    variables:
-      - $CPPYY == "True"
+  except: null
 
 per-commit-gcc-default:
   extends: .base-per-commit-compile
