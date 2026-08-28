@@ -114,8 +114,11 @@ FILE_EXTENSIONS_TO_CHECK["formatting"] = [
 
 FILE_EXTENSIONS_TO_CHECK["include_prefixes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["include_quotes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
-FILE_EXTENSIONS_TO_CHECK["doxygen_tags"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["encoding"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
+
+FILE_EXTENSIONS_TO_CHECK["doxygen_tags"] = FILE_EXTENSIONS_TO_CHECK["formatting"] + [
+    ".rst",
+]
 
 FILE_EXTENSIONS_TO_CHECK["license"] = [
     ".c",
