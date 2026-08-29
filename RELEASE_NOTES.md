@@ -46,6 +46,7 @@ Python 3.10 to 3.14.
 - (zigbee) !2964 Added basic support for Zigbee Device Object (ZDO)
 
 - (sixlowpan) !2873 The mesh-under forwarding decision is now delegated to a pluggable policy (`SixLowPanMeshUnderRouting`); the default `SixLowPanSimpleFlooding` preserves the historical flooding behavior. The `MeshUnderJitter` and `MeshCacheLength` attributes moved from `SixLowPanNetDevice` to the policy. Mesh-under membership and relaying are now controlled separately by the `UseMeshUnder` and `ForwardMesh` attributes.
+- (wifi) Added support for Beacon generation in an IBSS
 
 ### Bugs fixed
 

@@ -27,6 +27,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (sixlowpan) Added `SixLowPanMeshUnderRouting`, an abstract base class for pluggable mesh-under forwarding policies, and `SixLowPanSimpleFlooding`, the default policy preserving the historical flooding behavior. A policy can be selected per device through the new `SixLowPanNetDevice` attribute `MeshUnderRouting` or with `SixLowPanHelper::SetMeshUnderRouting()`.
 * (sixlowpan) Added the `SixLowPanNetDevice` attribute `ForwardMesh` (default true), controlling whether a node relays received mesh-under packets, and the drop reason `DROP_MESH_NOT_ENABLED`.
+* (wifi) Added new attributes to `AdhocWifiMac` to control beacon transmissions: **BeaconGeneration** and **BeaconInterval** with the same meaning as for `ApWifiMac`. **BeaconJitter** and **EnableBeaconJitter** randomize the time of the first TBTT. When beacon generation is enabled, `AdhocWifiMac` implements IEEE 802.11 distributed IBSS beaconing. It is also possible to control the access category to use for beacons via the **BeaconAc** attribute.
 
 ### Changes to existing API
 
