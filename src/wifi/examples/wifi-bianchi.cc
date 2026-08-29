@@ -32,7 +32,6 @@
 #include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/queue-size.h"
-#include "ns3/rng-seed-manager.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
@@ -2458,9 +2457,6 @@ Experiment::Run(const WifiHelper& helper,
                 dBm_u staTxPower,
                 Time pktInterval)
 {
-    RngSeedManager::SetSeed(10);
-    RngSeedManager::SetRun(10);
-
     NodeContainer wifiNodes;
     if (infra)
     {
