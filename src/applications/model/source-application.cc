@@ -127,8 +127,13 @@ SourceApplication::StartApplication()
                                  MakeCallback(&SourceApplication::ConnectionFailed, this));
 
     int ret{-1};
-    if (InetSocketAddress::IsMatchingType(m_peer) ||
-        (m_allowPacketSocket && PacketSocketAddress::IsMatchingType(m_peer)))
+    if (!m_local.IsInvalid())
+    {
+        NS_LOG_INFO("Binding to locally configured address " << m_local);
+        ret = m_socket->Bind(m_local);
+    }
+    else if (InetSocketAddress::IsMatchingType(m_peer) ||
+             (m_allowPacketSocket && PacketSocketAddress::IsMatchingType(m_peer)))
     {
         ret = m_socket->Bind();
     }
