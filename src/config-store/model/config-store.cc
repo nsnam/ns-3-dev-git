@@ -60,17 +60,7 @@ ConfigStore::GetTypeId()
                 "Type of file format",
                 EnumValue(ConfigStore::RAW_TEXT),
                 MakeEnumAccessor<FileFormat>(&ConfigStore::SetFileFormat),
-                MakeEnumChecker(ConfigStore::RAW_TEXT, "RawText", ConfigStore::XML, "Xml"))
-            // NS_DEPRECATED_3_43
-            .AddAttribute(
-                "SaveDeprecated",
-                "Save DEPRECATED attributes",
-                BooleanValue(true),
-                MakeBooleanAccessor(&ConfigStore::SetSaveDeprecated),
-                MakeBooleanChecker(),
-                TypeId::SupportLevel::OBSOLETE,
-                "OBSOLETE since ns-3.43 as it is no longer needed; deprecated attributes are saved "
-                "only if their value differs from their respective original initial value");
+                MakeEnumChecker(ConfigStore::RAW_TEXT, "RawText", ConfigStore::XML, "Xml"));
     return tid;
 }
 

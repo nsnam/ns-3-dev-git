@@ -283,7 +283,6 @@ set(header_files
     model/tuple.h
     model/type-id.h
     model/type-name.h
-    model/type-traits.h
     model/uinteger.h
     model/uniform-random-bit-generator.h
     model/valgrind.h
@@ -331,7 +330,6 @@ set(test_sources
     test/trickle-timer-test-suite.cc
     test/tuple-value-test-suite.cc
     test/type-id-test-suite.cc
-    test/type-traits-test-suite.cc
     test/watchdog-test-suite.cc
     test/val-array-test-suite.cc
     test/matrix-array-test-suite.cc
