@@ -9,6 +9,7 @@
 #ifndef ATTRIBUTE_CONTAINER_H
 #define ATTRIBUTE_CONTAINER_H
 
+#include "abort.h"
 #include "attribute-helper.h"
 #include "string.h"
 
@@ -467,6 +468,11 @@ template <class A, char Sep, template <class...> class C>
 std::string
 AttributeContainerValue<A, Sep, C>::SerializeToString(Ptr<const AttributeChecker> checker) const
 {
+    auto acchecker = DynamicCast<const AttributeContainerChecker>(checker);
+    NS_ABORT_MSG_UNLESS(acchecker, "The checker is not an AttributeContainerChecker");
+    NS_ABORT_MSG_UNLESS(acchecker->GetItemChecker(),
+                        "The AttributeContainerChecker has no item checker");
+
     std::ostringstream oss;
     bool first = true;
     for (auto attr : *this)
@@ -475,7 +481,7 @@ AttributeContainerValue<A, Sep, C>::SerializeToString(Ptr<const AttributeChecker
         {
             oss << Sep;
         }
-        oss << attr->SerializeToString(checker);
+        oss << attr->SerializeToString(acchecker->GetItemChecker());
         first = false;
     }
     return oss.str();

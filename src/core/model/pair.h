@@ -9,6 +9,7 @@
 #ifndef PAIR_H
 #define PAIR_H
 
+#include "abort.h"
 #include "attribute-helper.h"
 #include "string.h"
 
@@ -367,10 +368,17 @@ template <class A, class B>
 std::string
 PairValue<A, B>::SerializeToString(Ptr<const AttributeChecker> checker) const
 {
+    auto pairChecker = DynamicCast<const PairChecker>(checker);
+    NS_ABORT_MSG_UNLESS(pairChecker, "The checker is not a PairChecker");
+
+    const auto checkers = pairChecker->GetCheckers();
+    NS_ABORT_MSG_UNLESS(checkers.first && checkers.second,
+                        "The PairChecker has an invalid field checker");
+
     std::ostringstream oss;
-    oss << m_value.first->SerializeToString(checker);
+    oss << m_value.first->SerializeToString(checkers.first);
     oss << " ";
-    oss << m_value.second->SerializeToString(checker);
+    oss << m_value.second->SerializeToString(checkers.second);
 
     return oss.str();
 }

@@ -9,6 +9,7 @@
 #ifndef TUPLE_H
 #define TUPLE_H
 
+#include "abort.h"
 #include "attribute-helper.h"
 #include "string.h"
 
@@ -315,8 +316,25 @@ template <class... Args>
 std::string
 TupleValue<Args...>::SerializeToString(Ptr<const AttributeChecker> checker) const
 {
+    auto tupleChecker = DynamicCast<const TupleChecker>(checker);
+    NS_ABORT_MSG_UNLESS(tupleChecker, "The checker is not a TupleChecker");
+
+    const auto& checkers = tupleChecker->GetCheckers();
+    NS_ABORT_MSG_UNLESS(checkers.size() == sizeof...(Args),
+                        "The TupleChecker has an invalid number of field checkers");
+
     std::ostringstream oss;
-    oss << "{" << Get() << "}";
+    oss << "{";
+    std::size_t i{0};
+    auto serialize = [&oss, &checkers, &i](const auto& value) {
+        if (i > 0)
+        {
+            oss << ", ";
+        }
+        oss << value.SerializeToString(checkers.at(i++));
+    };
+    std::apply([&serialize](const auto&... values) { (serialize(values), ...); }, m_value);
+    oss << "}";
     return oss.str();
 }
 
