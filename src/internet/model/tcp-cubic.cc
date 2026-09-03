@@ -5,11 +5,6 @@
  *
  */
 
-#define NS_LOG_APPEND_CONTEXT                                                                      \
-    {                                                                                              \
-        ns3LogStream << Simulator::Now().GetSeconds() << " ";                                      \
-    }
-
 #include "tcp-cubic.h"
 
 #include "ns3/log.h"
