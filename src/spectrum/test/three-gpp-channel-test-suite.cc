@@ -2895,6 +2895,101 @@ ThreeGppSubClusterMappingTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case that the blockage attenuation of the LOS ray scales the amplitude
+ * by 10^(-A/20) for an attenuation of A dB.
+ *
+ * With LosRayOnly enabled and single-element isotropic arrays, the only
+ * channel matrix entry is the LOS ray of (7.5-29), whose magnitude is exactly
+ * the blockage amplitude attenuation: it can be compared against the value
+ * manually computed from the per-cluster attenuation stored in the channel
+ * parameters.
+ */
+class ThreeGppLosBlockageAttenuationTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppLosBlockageAttenuationTest();
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+};
+
+ThreeGppLosBlockageAttenuationTest::ThreeGppLosBlockageAttenuationTest()
+    : TestCase("Check the LOS ray blockage attenuation against manually computed values")
+{
+}
+
+void
+ThreeGppLosBlockageAttenuationTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    Ptr<ChannelConditionModel> condModel = CreateObject<AlwaysLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(30e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+    channelModel->SetAttribute("LosRayOnly", BooleanValue(true));
+    channelModel->SetAttribute("Blockage", BooleanValue(true));
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    constexpr uint32_t numUes = 20;
+    NodeContainer nodes;
+    nodes.Create(1 + numUes);
+    Ptr<MobilityModel> siteMob = CreateObject<ConstantPositionMobilityModel>();
+    siteMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    nodes.Get(0)->AggregateObject(siteMob);
+    Ptr<PhasedArrayModel> siteAntenna = makeAntenna();
+
+    uint32_t numAttenuatedLinks = 0;
+    for (uint32_t u = 0; u < numUes; u++)
+    {
+        Ptr<MobilityModel> ueMob = CreateObject<ConstantPositionMobilityModel>();
+        ueMob->SetPosition(Vector(20.0 + 10.0 * (u % 5), 15.0 + 25.0 * (u / 5), 1.5));
+        nodes.Get(1 + u)->AggregateObject(ueMob);
+
+        auto channelMatrix = channelModel->GetChannel(siteMob, ueMob, siteAntenna, makeAntenna());
+        const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+            channelModel->GetParams(siteMob, ueMob));
+        NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+
+        const double attenuationDb = params->m_attenuation_dB[0];
+        numAttenuatedLinks += attenuationDb > 0.5;
+        const double expected = std::pow(10.0, -attenuationDb / 20.0);
+        NS_TEST_ASSERT_MSG_EQ_TOL(std::abs(channelMatrix->m_channel(0, 0, 0)),
+                                  expected,
+                                  1e-9 + 1e-6 * expected,
+                                  "The LOS ray amplitude should be attenuated by 10^(-A/20) for "
+                                  "a blockage attenuation of A dB");
+    }
+    // The check above is trivially satisfied by unblocked links: require that
+    // the deployment actually produced blocked ones.
+    NS_TEST_ASSERT_MSG_GT(numAttenuatedLinks,
+                          0,
+                          "No link was attenuated by the blockage model; the test needs at least "
+                          "one to exercise the LOS attenuation scaling");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -2985,6 +3080,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                 TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSubClusterMappingTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppLosBlockageAttenuationTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);
 

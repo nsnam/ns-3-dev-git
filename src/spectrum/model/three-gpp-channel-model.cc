@@ -5022,7 +5022,11 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
             nlosScale = std::sqrt(1.0 / (kLinear + 1.0));
             losScale = std::sqrt(kLinear / (1.0 + kLinear));
         }
-        losScale /= std::pow(10.0, channelParams->m_attenuation_dB[0] / 10.0);
+        // losScale is an amplitude (the sqrt(KR/(KR+1)) factor of (7.5-30)):
+        // the blockage attenuation of TR 38.901 Sec. 7.6.4 reduces the ray
+        // power, so it enters the amplitude through a square root, as the
+        // cluster powers do through sqrt(Pn/M) in (7.5-28).
+        losScale /= std::sqrt(std::pow(10.0, channelParams->m_attenuation_dB[0] / 10.0));
 
         // Field patterns depend only on the angle and the panel
         // polarisation, NOT on the element index. Cache one (Phi,
