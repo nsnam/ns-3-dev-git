@@ -4943,25 +4943,28 @@ ThreeGppChannelModel::GetNewChannel(Ptr<const ThreeGppChannelParams> channelPara
                         const double rayIm =
                             preRe[mIndex] * txIm[mIndex] + preIm[mIndex] * txRe[mIndex];
 
+                        // Table 7.5-5 numbers rays 1-20; mIndex is 0-based, so
+                        // sub-cluster 2 holds rays 9-12,17,18 (mIndex 8-11,16,17)
+                        // and sub-cluster 3 rays 13-16 (mIndex 12-15).
                         switch (mIndex)
                         {
+                        case 8:
                         case 9:
                         case 10:
                         case 11:
-                        case 12:
+                        case 16:
                         case 17:
-                        case 18:
                             sub2Re += rayRe;
                             sub2Im += rayIm;
                             break;
+                        case 12:
                         case 13:
                         case 14:
                         case 15:
-                        case 16:
                             sub3Re += rayRe;
                             sub3Im += rayIm;
                             break;
-                        default: // case 1,2,3,4,5,6,7,8,19,20
+                        default: // rays 1-8,19,20 (mIndex 0-7,18,19)
                             sub1Re += rayRe;
                             sub1Im += rayIm;
                             break;

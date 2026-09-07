@@ -2764,6 +2764,137 @@ ThreeGppChannelReciprocityTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case that the fixed ray-to-subcluster mapping of the two strongest
+ * clusters follows Table 7.5-5 of 3GPP TR 38.901: sub-cluster 2 holds rays
+ * 9-12, 17, 18 and sub-cluster 3 rays 13-16 (1-based ray numbers).
+ *
+ * With single-element isotropic arrays at both ends, every per-ray channel
+ * coefficient of (7.5-22) collapses to sqrt(Pn/M) * exp(j Phi_theta_theta),
+ * with the initial phase taken from the channel parameters: each sub-cluster
+ * entry of the channel matrix can be recomputed by hand from the generated
+ * parameters and compared against the matrix produced by the model.
+ */
+class ThreeGppSubClusterMappingTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppSubClusterMappingTest();
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+};
+
+ThreeGppSubClusterMappingTest::ThreeGppSubClusterMappingTest()
+    : TestCase("Check the Table 7.5-5 ray-to-subcluster mapping against manually computed values")
+{
+}
+
+void
+ThreeGppSubClusterMappingTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // NLOS keeps the LOS ray out of the first tap, so every matrix entry is a
+    // pure sum of ray phasors.
+    Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    nodes.Get(0)->AggregateObject(aMob);
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(70.0, 20.0, 1.5));
+    nodes.Get(1)->AggregateObject(bMob);
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna();
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna();
+    // The manual computation below drops the element steering phases, which
+    // requires the single element of both arrays to sit at the origin.
+    NS_TEST_ASSERT_MSG_EQ(aAntenna->GetElementLocation(0).GetLength(),
+                          0.0,
+                          "The single array element is expected at the origin");
+
+    auto channelMatrix = channelModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        channelModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+
+    const uint16_t nClusters = params->m_reducedClusterNumber;
+    const uint8_t nRays = 20; // UMa, Table 7.5-6
+    // 1-based Table 7.5-5 ray numbers of the three sub-clusters, as 0-based
+    // ray indices.
+    const std::vector<std::vector<uint8_t>> subClusterRays = {
+        {0, 1, 2, 3, 4, 5, 6, 7, 18, 19},
+        {8, 9, 10, 11, 16, 17},
+        {12, 13, 14, 15},
+    };
+
+    // The sub-cluster pages are appended in cluster-index order.
+    std::vector<uint16_t> strongestClusters;
+    for (uint16_t n = 0; n < nClusters; n++)
+    {
+        if (n == params->m_cluster1st || n == params->m_cluster2nd)
+        {
+            strongestClusters.push_back(n);
+        }
+    }
+    NS_TEST_ASSERT_MSG_GT(strongestClusters.size(), 0, "No strongest cluster found");
+
+    uint16_t subClusterPage = nClusters;
+    for (const auto n : strongestClusters)
+    {
+        const double scale = std::sqrt(params->m_clusterPower[n] / nRays);
+        for (uint8_t sc = 0; sc < 3; sc++)
+        {
+            std::complex<double> expected(0.0, 0.0);
+            for (const auto m : subClusterRays[sc])
+            {
+                expected += std::polar(1.0, params->m_clusterPhase[n][m][0]);
+            }
+            expected *= scale;
+            // Sub-cluster 1 replaces the cluster page; 2 and 3 are appended.
+            const uint16_t page = (sc == 0) ? n : subClusterPage + sc - 1;
+            const std::complex<double> actual = channelMatrix->m_channel(0, 0, page);
+            NS_TEST_ASSERT_MSG_EQ_TOL(actual.real(),
+                                      expected.real(),
+                                      1e-9 + 1e-6 * std::abs(expected),
+                                      "Sub-cluster " << +sc + 1 << " of cluster " << +n
+                                                     << " does not match the Table 7.5-5 mapping");
+            NS_TEST_ASSERT_MSG_EQ_TOL(actual.imag(),
+                                      expected.imag(),
+                                      1e-9 + 1e-6 * std::abs(expected),
+                                      "Sub-cluster " << +sc + 1 << " of cluster " << +n
+                                                     << " does not match the Table 7.5-5 mapping");
+        }
+        subClusterPage += 2;
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -2853,6 +2984,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                     LbConfig{.columns = 64, .expectedRaysBw = 8, .largeArrayAtRx = true}),
                 TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppSubClusterMappingTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);
 
