@@ -366,11 +366,23 @@ MultiModelSpectrumChannel::StartTx(Ptr<SpectrumSignalParameters> txParams)
                     }
                 }
 
+                // A phased array can be re-steered while the signal propagates, so the
+                // signal carries the beamforming vector it was transmitted with.
+                PhasedArrayModel::ComplexVector txBeamformingVector;
+                if (m_phasedArraySpectrumPropagationLoss)
+                {
+                    if (auto txPhasedArrayModel =
+                            DynamicCast<PhasedArrayModel>(txParams->txPhy->GetAntenna()))
+                    {
+                        txBeamformingVector = txPhasedArrayModel->GetBeamformingVector();
+                    }
+                }
                 RxInfo rxInfo{.txPsd = txParams->psd,
                               .txAntennaGain = txAntennaGain,
                               .params = rxParams,
                               .receiver = *rxPhyIterator,
-                              .availableConvertedPsds = convertedPsds};
+                              .availableConvertedPsds = convertedPsds,
+                              .txBeamformingVector = std::move(txBeamformingVector)};
                 if (rxNetDevice)
                 {
                     // the receiver has a NetDevice, so we expect that it is attached to a Node
@@ -496,12 +508,16 @@ MultiModelSpectrumChannel::StartRx(const RxInfo& rxInfo)
                           "PhasedArrayModel instances should be installed at both TX and RX "
                           "SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
 
+            // The transmitter's vector is the one in use when the transmission started; the
+            // receiver combines the arriving signal with the vector it holds now.
             rxParams = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity(
                 rxParams,
                 txMobility,
                 rxMobility,
                 txPhasedArrayModel,
-                rxPhasedArrayModel);
+                rxPhasedArrayModel,
+                rxInfo.txBeamformingVector,
+                rxPhasedArrayModel->GetBeamformingVector());
         }
     }
 

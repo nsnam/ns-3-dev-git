@@ -167,6 +167,7 @@ build_lib(
   TEST_SOURCES
     test/spectrum-ideal-phy-test.cc
     test/spectrum-interference-test.cc
+    test/spectrum-phased-array-tx-beam-test.cc
     test/spectrum-traced-callback-typedef-test-suite.cc
     test/spectrum-value-test.cc
     test/spectrum-waveform-generator-test.cc

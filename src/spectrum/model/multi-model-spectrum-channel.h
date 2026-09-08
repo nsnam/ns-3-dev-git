@@ -14,6 +14,7 @@
 #include "spectrum-propagation-loss-model.h"
 #include "spectrum-value.h"
 
+#include "ns3/phased-array-model.h"
 #include "ns3/propagation-delay-model.h"
 
 #include <map>
@@ -138,6 +139,9 @@ class MultiModelSpectrumChannel : public SpectrumChannel
         Ptr<SpectrumPhy> receiver;            //!< pointer to the receiver SpectrumPhy
         std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>
             availableConvertedPsds; //!< available converted PSDs from the TX PSD
+        PhasedArrayModel::ComplexVector
+            txBeamformingVector; //!< beamforming vector of the transmitter's phased array when
+                                 //!< the transmission started (empty if it has no phased array)
     };
 
     /**
