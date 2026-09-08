@@ -226,7 +226,7 @@ def find_files_to_check_style(
     """Find all files to be checked in a given list of paths.
 
     Args:
-        paths List of paths to the files to check.
+        paths: List of paths to the files to check.
 
     Returns:
         Dictionary of checks and corresponding list of files to check.
@@ -456,7 +456,7 @@ def check_style_files(
     Args:
         style_check_str: Description of the check to be performed.
         check_style_file_function: Function used to check the file.
-        filename: Name of the file to be checked.
+        filenames: List of names of the files to be checked.
         fix: Whether to fix (True) or just check (False) the file (True).
         verbose: Show the lines that are not compliant with the style.
         n_jobs: Number of parallel jobs.
