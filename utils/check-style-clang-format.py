@@ -48,7 +48,6 @@ FORMAT_GUARD_ON = [
     "# cmake-format: on",
     "# fmt: on",
 ]
-
 FORMAT_GUARD_OFF = [
     "// clang-format off",
     "# cmake-format: off",
@@ -88,7 +87,6 @@ CHECKS = [
 
 # Files to check
 FILES_TO_CHECK: Dict[str, List[str]] = {c: [] for c in CHECKS}
-
 FILES_TO_CHECK["tabs"] = [
     ".clang-format",
     ".clang-tidy",
@@ -98,28 +96,23 @@ FILES_TO_CHECK["tabs"] = [
     "codespell-ignored-words",
     "ns3",
 ]
-
 FILES_TO_CHECK["whitespace"] = FILES_TO_CHECK["tabs"] + [
     "Makefile",
 ]
 
 # File extensions to check
 FILE_EXTENSIONS_TO_CHECK: Dict[str, List[str]] = {c: [] for c in CHECKS}
-
 FILE_EXTENSIONS_TO_CHECK["formatting"] = [
     ".c",
     ".cc",
     ".h",
 ]
-
 FILE_EXTENSIONS_TO_CHECK["include_prefixes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["include_quotes"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
 FILE_EXTENSIONS_TO_CHECK["encoding"] = FILE_EXTENSIONS_TO_CHECK["formatting"]
-
 FILE_EXTENSIONS_TO_CHECK["doxygen_tags"] = FILE_EXTENSIONS_TO_CHECK["formatting"] + [
     ".rst",
 ]
-
 FILE_EXTENSIONS_TO_CHECK["license"] = [
     ".c",
     ".cc",
@@ -127,7 +120,6 @@ FILE_EXTENSIONS_TO_CHECK["license"] = [
     ".h",
     ".py",
 ]
-
 FILE_EXTENSIONS_TO_CHECK["emacs"] = [
     ".c",
     ".cc",
@@ -135,7 +127,6 @@ FILE_EXTENSIONS_TO_CHECK["emacs"] = [
     ".py",
     ".rst",
 ]
-
 FILE_EXTENSIONS_TO_CHECK["tabs"] = [
     ".c",
     ".cc",
@@ -154,7 +145,6 @@ FILE_EXTENSIONS_TO_CHECK["tabs"] = [
     ".toml",
     ".yml",
 ]
-
 FILE_EXTENSIONS_TO_CHECK["whitespace"] = FILE_EXTENSIONS_TO_CHECK["tabs"] + [
     ".click",
     ".cfg",
@@ -190,7 +180,6 @@ def should_analyze_directory(dirpath: str) -> bool:
     """
 
     _, directory = os.path.split(dirpath)
-
     return directory not in DIRECTORIES_TO_SKIP
 
 
@@ -211,11 +200,10 @@ def should_analyze_file(
     """
 
     filename = os.path.split(path)[1]
+    extension = os.path.splitext(filename)[1]
 
     if filename in FILES_TO_SKIP:
         return False
-
-    extension = os.path.splitext(filename)[1]
 
     return filename in files_to_check or extension in file_extensions_to_check
 
@@ -244,7 +232,6 @@ def find_files_to_check_style(
 
         if os.path.isfile(abs_path):
             files_found.append(path)
-
         elif os.path.isdir(abs_path):
             for dirpath, dirnames, filenames in os.walk(path, topdown=True):
                 if not should_analyze_directory(dirpath):
@@ -253,7 +240,6 @@ def find_files_to_check_style(
                     continue
 
                 files_found.extend([os.path.join(dirpath, f) for f in filenames])
-
         else:
             raise ValueError(f"{path} is not a valid file nor a directory")
 
@@ -283,7 +269,6 @@ def find_clang_format_path() -> str:
     # Find exact version, starting from the most recent one
     for version in range(CLANG_FORMAT_MAX_VERSION, CLANG_FORMAT_MIN_VERSION - 1, -1):
         clang_format_path = shutil.which(f"clang-format-{version}")
-
         if clang_format_path:
             return clang_format_path
 
@@ -298,13 +283,10 @@ def find_clang_format_path() -> str:
             text=True,
             check=True,
         )
-
         clang_format_version = process.stdout.strip()
         version_regex = re.findall(r"\b(\d+)(\.\d+){0,2}\b", clang_format_version)
-
         if version_regex:
             major_version = int(version_regex[0][0])
-
             if CLANG_FORMAT_MIN_VERSION <= major_version <= CLANG_FORMAT_MAX_VERSION:
                 return clang_format_path
 
@@ -435,7 +417,6 @@ def check_style_clang_format(
             )
 
             n_check += 1
-
             if n_check < n_checks_enabled:
                 print("")
 
@@ -490,7 +471,6 @@ def check_style_files(
     if not non_compliant_files:
         print(f"- No files detected with {style_check_str}")
         return True
-
     else:
         n_non_compliant_files = len(non_compliant_files)
 
@@ -549,9 +529,7 @@ def check_formatting_file(
         capture_output=True,
         text=True,
     )
-
     is_file_compliant = process.returncode == 0
-
     if verbose:
         verbose_infos = process.stderr.splitlines()
 
@@ -600,7 +578,6 @@ def check_encoding_file(
         # Check if file has correct encoding
         try:
             file_data.decode(FILE_ENCODING)
-
         except UnicodeDecodeError as e:
             is_file_compliant = False
 
@@ -614,7 +591,6 @@ def check_encoding_file(
 
                     if bad_char_start_index < n_chars_file_read + n_chars_line:
                         bad_char_column = bad_char_start_index - n_chars_file_read
-
                         verbose_infos.extend(
                             [
                                 f"{filename}:{line_number + 1}:{bad_char_column + 1}: error: bad {FILE_ENCODING} encoding",
@@ -622,7 +598,6 @@ def check_encoding_file(
                                 f"    {'':>{bad_char_column}}^",
                             ]
                         )
-
                         break
 
                     n_chars_file_read += n_chars_line
@@ -740,9 +715,7 @@ def check_include_prefixes_line(
                 .replace(">", '"')
                 + "\n"
             )
-
             header_index = len('#include "')
-
             verbose_infos.extend(
                 [
                     f'{filename}:{line_number + 1}:{header_index + 1}: error: #include headers from the same module with the "ns3/" prefix detected',
@@ -782,9 +755,7 @@ def check_include_quotes_line(
     if header_file:
         is_line_compliant = False
         line_fixed = line.replace("<", '"').replace(">", '"')
-
         header_index = len("#include ")
-
         verbose_infos = [
             f"{filename}:{line_number + 1}:{header_index + 1}: error: ns-3 #include headers with angle brackets detected",
             f"    {line}",
@@ -831,10 +802,8 @@ def check_doxygen_tags_line(
 
         if doxygen_tag not in IGNORED_WORDS:
             is_line_compliant = False
-
             doxygen_tag_index = line_fixed.find(doxygen_tag)
             line_fixed = line.replace(doxygen_tag, f"@{doxygen_tag[1:]}")
-
             verbose_infos.extend(
                 [
                     f"{filename}:{line_number + 1}:{doxygen_tag_index + 1}: error: detected Doxygen tags using \\ rather than @",
@@ -946,7 +915,6 @@ def check_emacs_line(
         is_line_compliant = False
         line_fixed = ""
         col_index = emacs_line.start()
-
         verbose_infos = [
             f"{filename}:{line_number + 1}:{col_index}: error: emacs file style comment detected",
             f"    {line_stripped}",
@@ -981,7 +949,6 @@ def check_whitespace_line(
     if line_fixed != line:
         is_line_compliant = False
         line_fixed_stripped_expanded = line_fixed.rstrip().expandtabs(TAB_SIZE)
-
         verbose_infos = [
             f"{filename}:{line_number + 1}:{len(line_fixed_stripped_expanded) + 1}: error: Trailing whitespace detected",
             f"    {line_fixed_stripped_expanded}",
@@ -1018,7 +985,6 @@ def check_tabs_line(
     if tab_index != -1:
         is_line_compliant = False
         line_fixed = line.expandtabs(TAB_SIZE)
-
         verbose_infos = [
             f"{filename}:{line_number + 1}:{tab_index + 1}: error: Tab detected",
             f"    {line.rstrip()}",
@@ -1042,7 +1008,6 @@ if __name__ == "__main__":
         "If it detects non-formatted files, they will be printed and this process exits with a non-zero code. "
         'When used in "fix mode", this script automatically fixes the files and exits with 0 code.'
     )
-
     parser.add_argument(
         "paths",
         action="store",
@@ -1050,74 +1015,62 @@ if __name__ == "__main__":
         nargs="+",
         help="List of paths to the files to check",
     )
-
     parser.add_argument(
         "--no-include-prefixes",
         action="store_true",
         help='Do not check / fix #include headers from the same module with the "ns3/" prefix (respects clang-format guards)',
     )
-
     parser.add_argument(
         "--no-include-quotes",
         action="store_true",
         help='Do not check / fix ns-3 #include headers using angle brackets <> rather than quotes "" (respects clang-format guards)',
     )
-
     parser.add_argument(
         "--no-doxygen-tags",
         action="store_true",
         help="Do not check / fix Doxygen tags using @ rather than \\ (respects clang-format guards)",
     )
-
     parser.add_argument(
         "--no-licenses",
         action="store_true",
         help="Do not check / fix SPDX licenses rather than GPL text (respects clang-format guards)",
     )
-
     parser.add_argument(
         "--no-emacs",
         action="store_true",
         help="Do not check / fix emacs file style comments (respects clang-format guards)",
     )
-
     parser.add_argument(
         "--no-whitespace",
         action="store_true",
         help="Do not check / fix trailing whitespace",
     )
-
     parser.add_argument(
         "--no-tabs",
         action="store_true",
         help="Do not check / fix tabs (respects clang-format guards)",
     )
-
     parser.add_argument(
         "--no-formatting",
         action="store_true",
         help="Do not check / fix code formatting (respects clang-format guards)",
     )
-
     parser.add_argument(
         "--no-encoding",
         action="store_true",
         help=f"Do not check / fix file encoding ({FILE_ENCODING})",
     )
-
     parser.add_argument(
         "--fix",
         action="store_true",
         help="Fix coding style issues detected in the files",
     )
-
     parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
         help="Show the lines that are not well-formatted",
     )
-
     parser.add_argument(
         "-j",
         "--jobs",
@@ -1125,7 +1078,6 @@ if __name__ == "__main__":
         default=max(1, os.cpu_count() - 1),
         help="Number of parallel jobs",
     )
-
     args = parser.parse_args()
 
     try:
