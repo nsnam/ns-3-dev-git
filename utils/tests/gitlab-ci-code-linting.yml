@@ -83,13 +83,13 @@ clang-tidy-22-smart-scan:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
-    - when: always
+    - when: on_success
 
 clang-tidy-22-full-scan:
   extends: .clang-tidy-22
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: always
+      when: on_success
     - when: manual
       allow_failure: true
   variables:
