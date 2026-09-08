@@ -111,6 +111,8 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
      * @param b second node mobility model
      * @param aPhasedArrayModel the antenna array of the first node
      * @param bPhasedArrayModel the antenna array of the second node
+     * @param aBeamformingVector the beamforming vector of the first node's array
+     * @param bBeamformingVector the beamforming vector of the second node's array
      * @return the received PSD
      */
     Ptr<SpectrumSignalParameters> DoCalcRxPowerSpectralDensity(
@@ -118,7 +120,9 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
-        Ptr<const PhasedArrayModel> bPhasedArrayModel) const override;
+        Ptr<const PhasedArrayModel> bPhasedArrayModel,
+        const PhasedArrayModel::ComplexVector& aBeamformingVector,
+        const PhasedArrayModel::ComplexVector& bBeamformingVector) const override;
 
   protected:
     /**
@@ -171,23 +175,31 @@ class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagati
      * @param channelMatrix the channel matrix
      * @param aPhasedArrayModel the antenna array of the tx device
      * @param bPhasedArrayModel the antenna array of the rx device
+     * @param aBeamformingVector the beamforming vector of the tx device's array
+     * @param bBeamformingVector the beamforming vector of the rx device's array
      * @return vector containing the long term component for each cluster
      */
     Ptr<const MatrixBasedChannelModel::Complex3DVector> GetLongTerm(
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
-        Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
+        Ptr<const PhasedArrayModel> bPhasedArrayModel,
+        const PhasedArrayModel::ComplexVector& aBeamformingVector,
+        const PhasedArrayModel::ComplexVector& bBeamformingVector) const;
     /**
      * Computes the long term component
      * @param channelMatrix the channel matrix H
      * @param sAnt the pointer to the antenna of the s device
      * @param uAnt the pointer to the antenna of the u device
+     * @param sW the beamforming vector of the s device's antenna
+     * @param uW the beamforming vector of the u device's antenna
      * @return the long term component
      */
     Ptr<const MatrixBasedChannelModel::Complex3DVector> CalcLongTerm(
         Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
         Ptr<const PhasedArrayModel> sAnt,
-        Ptr<const PhasedArrayModel> uAnt) const;
+        Ptr<const PhasedArrayModel> uAnt,
+        const PhasedArrayModel::ComplexVector& sW,
+        const PhasedArrayModel::ComplexVector& uW) const;
 
     /**
      * @brief Computes the beamforming gain and applies it to the TX PSD

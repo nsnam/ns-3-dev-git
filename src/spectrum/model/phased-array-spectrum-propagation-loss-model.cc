@@ -63,16 +63,45 @@ PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
     Ptr<const PhasedArrayModel> bPhasedArrayModel) const
 {
+    return CalcRxPowerSpectralDensity(params,
+                                      a,
+                                      b,
+                                      aPhasedArrayModel,
+                                      bPhasedArrayModel,
+                                      aPhasedArrayModel->GetBeamformingVector(),
+                                      bPhasedArrayModel->GetBeamformingVector());
+}
+
+Ptr<SpectrumSignalParameters>
+PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
+    Ptr<const SpectrumSignalParameters> params,
+    Ptr<const MobilityModel> a,
+    Ptr<const MobilityModel> b,
+    Ptr<const PhasedArrayModel> aPhasedArrayModel,
+    Ptr<const PhasedArrayModel> bPhasedArrayModel,
+    const PhasedArrayModel::ComplexVector& aBeamformingVector,
+    const PhasedArrayModel::ComplexVector& bBeamformingVector) const
+{
     // Here we assume that all the models in the chain of models are of type
     // PhasedArraySpectrumPropagationLossModel that provides the implementation of
     // this function, i.e. has phased array model of TX and RX as parameters
-    auto rxParams =
-        DoCalcRxPowerSpectralDensity(params, a, b, aPhasedArrayModel, bPhasedArrayModel);
+    auto rxParams = DoCalcRxPowerSpectralDensity(params,
+                                                 a,
+                                                 b,
+                                                 aPhasedArrayModel,
+                                                 bPhasedArrayModel,
+                                                 aBeamformingVector,
+                                                 bBeamformingVector);
 
     if (m_next)
     {
-        rxParams =
-            m_next->CalcRxPowerSpectralDensity(params, a, b, aPhasedArrayModel, bPhasedArrayModel);
+        rxParams = m_next->CalcRxPowerSpectralDensity(params,
+                                                      a,
+                                                      b,
+                                                      aPhasedArrayModel,
+                                                      bPhasedArrayModel,
+                                                      aBeamformingVector,
+                                                      bBeamformingVector);
     }
     return rxParams;
 }

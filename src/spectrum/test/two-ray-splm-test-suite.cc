@@ -306,8 +306,10 @@ ArrayResponseTest::DoRun()
     rxArray->SetBeamformingVector(rxBfVec);
 
     // Compute the overall array response
-    double gainTxRx = twoRaySplm->CalcBeamformingGain(txPos, rxPos, txArray, rxArray);
-    double gainRxTx = twoRaySplm->CalcBeamformingGain(rxPos, txPos, rxArray, txArray);
+    double gainTxRx =
+        twoRaySplm->CalcBeamformingGain(txPos, rxPos, txArray, rxArray, txBfVec, rxBfVec);
+    double gainRxTx =
+        twoRaySplm->CalcBeamformingGain(rxPos, txPos, rxArray, txArray, rxBfVec, txBfVec);
 
     NS_TEST_EXPECT_MSG_EQ_TOL(gainTxRx, gainRxTx, gainTxRx * TOLERANCE, "gain should be symmetric");
     NS_TEST_EXPECT_MSG_EQ_TOL(10 * log10(gainTxRx),
@@ -551,13 +553,20 @@ OverallGainAverageTest::DoRun()
         auto rxBfVec = rxArray->GetBeamformingVector(Angles(txPosVec, rxPosVec));
         rxArray->SetBeamformingVector(rxBfVec);
 
-        auto twoRayRxParams =
-            twoRaySplm->DoCalcRxPowerSpectralDensity(signalParams, txMob, rxMob, txArray, rxArray);
+        auto twoRayRxParams = twoRaySplm->DoCalcRxPowerSpectralDensity(signalParams,
+                                                                       txMob,
+                                                                       rxMob,
+                                                                       txArray,
+                                                                       rxArray,
+                                                                       txBfVec,
+                                                                       rxBfVec);
         auto threeGppRayRxParams = threeGppSplm->DoCalcRxPowerSpectralDensity(signalParams,
                                                                               txMob,
                                                                               rxMob,
                                                                               txArray,
-                                                                              rxArray);
+                                                                              rxArray,
+                                                                              txBfVec,
+                                                                              rxBfVec);
         double twoRayRxPower = ComputePowerSpectralDensityOverallPower(twoRayRxParams->psd);
         double threeGppRxPower = ComputePowerSpectralDensityOverallPower(threeGppRayRxParams->psd);
 

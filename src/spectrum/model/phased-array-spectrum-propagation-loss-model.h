@@ -58,7 +58,8 @@ class PhasedArraySpectrumPropagationLossModel : public Object
     Ptr<PhasedArraySpectrumPropagationLossModel> GetNext() const;
 
     /**
-     * This method is to be called to calculate
+     * Calculate the received PSD using the beamforming vectors currently set on the
+     * phased antenna arrays of the sender and of the receiver.
      *
      * @param txPsd the spectrum signal parameters.
      * @param a sender mobility
@@ -77,6 +78,39 @@ class PhasedArraySpectrumPropagationLossModel : public Object
         Ptr<const MobilityModel> b,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
         Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
+
+    /**
+     * Calculate the received PSD using the given beamforming vectors, which need not be
+     * the ones currently set on the phased antenna arrays. The arrays provide the
+     * geometry, the element patterns and the port layout only.
+     *
+     * The sender's vector should be the one in effect when the signal was transmitted and
+     * the receiver's the one in effect when it is received. If the transmission and the
+     * reception are handled in separate events, the caller must capture the sender's
+     * vector at transmission time and pass it here rather than read the array when the
+     * signal arrives, since the array may have been re-steered in between.
+     *
+     * @param txPsd the spectrum signal parameters.
+     * @param a sender mobility
+     * @param b receiver mobility
+     * @param aPhasedArrayModel the instance of the phased antenna array of the sender
+     * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
+     * @param aBeamformingVector the beamforming vector applied to the sender's array
+     * @param bBeamformingVector the beamforming vector applied to the receiver's array
+     *
+     * @return SpectrumSignalParameters in which is updated the PSD to contain
+     * a set of values Vs frequency representing the received
+     * power in the same units used for the txPower parameter,
+     * and additional chanSpectrumMatrix is computed to support MIMO systems.
+     */
+    Ptr<SpectrumSignalParameters> CalcRxPowerSpectralDensity(
+        Ptr<const SpectrumSignalParameters> txPsd,
+        Ptr<const MobilityModel> a,
+        Ptr<const MobilityModel> b,
+        Ptr<const PhasedArrayModel> aPhasedArrayModel,
+        Ptr<const PhasedArrayModel> bPhasedArrayModel,
+        const PhasedArrayModel::ComplexVector& aBeamformingVector,
+        const PhasedArrayModel::ComplexVector& bBeamformingVector) const;
 
     /**
      * If this loss model uses objects of type RandomVariableStream,
@@ -111,6 +145,8 @@ class PhasedArraySpectrumPropagationLossModel : public Object
      * @param b receiver mobility
      * @param aPhasedArrayModel the instance of the phased antenna array of the sender
      * @param bPhasedArrayModel the instance of the phased antenna array of the receiver
+     * @param aBeamformingVector the beamforming vector applied to the sender's array
+     * @param bBeamformingVector the beamforming vector applied to the receiver's array
      *
      * @return SpectrumSignalParameters in which is updated the PSD to contain
      * a set of values Vs frequency representing the received
@@ -122,7 +158,9 @@ class PhasedArraySpectrumPropagationLossModel : public Object
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
-        Ptr<const PhasedArrayModel> bPhasedArrayModel) const = 0;
+        Ptr<const PhasedArrayModel> bPhasedArrayModel,
+        const PhasedArrayModel::ComplexVector& aBeamformingVector,
+        const PhasedArrayModel::ComplexVector& bBeamformingVector) const = 0;
 
     Ptr<PhasedArraySpectrumPropagationLossModel>
         m_next; //!< PhasedArraySpectrumPropagationLossModel chained to this one.

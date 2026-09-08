@@ -1321,11 +1321,14 @@ ThreeGppSpectrumPropagationLossModelTest::CheckUpdateAfterChangingPositionsAndBe
     const CheckLongTermUpdateParams& params)
 {
     // Reciprocity check: evaluate reverse direction after changing positions/beamforming.
-    auto rxPsdNewParams = params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
-                                                                         params.rxMob,
-                                                                         params.txMob,
-                                                                         params.rxAntenna,
-                                                                         params.txAntenna);
+    auto rxPsdNewParams =
+        params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
+                                                       params.rxMob,
+                                                       params.txMob,
+                                                       params.rxAntenna,
+                                                       params.txAntenna,
+                                                       params.rxAntenna->GetBeamformingVector(),
+                                                       params.txAntenna->GetBeamformingVector());
 
     NS_TEST_ASSERT_MSG_EQ((*params.rxPsdOld == *rxPsdNewParams->psd),
                           false,
@@ -1348,11 +1351,14 @@ ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate(CheckLongTermUpdat
                                      params.txMob->GetPosition().y,
                                      params.txMob->GetPosition().z));
 
-    auto rxPsdNewParams = params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
-                                                                         params.txMob,
-                                                                         params.rxMob,
-                                                                         params.txAntenna,
-                                                                         params.rxAntenna);
+    auto rxPsdNewParams =
+        params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
+                                                       params.txMob,
+                                                       params.rxMob,
+                                                       params.txAntenna,
+                                                       params.rxAntenna,
+                                                       params.txAntenna->GetBeamformingVector(),
+                                                       params.rxAntenna->GetBeamformingVector());
     NS_TEST_ASSERT_MSG_EQ((*m_rxParamsOld->psd == *rxPsdNewParams->psd),
                           false,
                           "The long term is not updated when the channel matrix is recomputed");
@@ -1432,12 +1438,22 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     txParams->psd = txPsd->Copy();
 
     // compute the rx psd
-    auto rxParamsOld =
-        lossModel->DoCalcRxPowerSpectralDensity(txParams, txMob, rxMob, txAntenna, rxAntenna);
+    auto rxParamsOld = lossModel->DoCalcRxPowerSpectralDensity(txParams,
+                                                               txMob,
+                                                               rxMob,
+                                                               txAntenna,
+                                                               rxAntenna,
+                                                               txAntenna->GetBeamformingVector(),
+                                                               rxAntenna->GetBeamformingVector());
 
     // 1) check reciprocity: rx PSD is equal for both the direct and the reverse channel
-    auto rxParamsNew =
-        lossModel->DoCalcRxPowerSpectralDensity(txParams, rxMob, txMob, rxAntenna, txAntenna);
+    auto rxParamsNew = lossModel->DoCalcRxPowerSpectralDensity(txParams,
+                                                               rxMob,
+                                                               txMob,
+                                                               rxAntenna,
+                                                               txAntenna,
+                                                               rxAntenna->GetBeamformingVector(),
+                                                               txAntenna->GetBeamformingVector());
     if ((rxParamsOld->spectrumChannelMatrix->GetNumCols() ==
          rxParamsNew->spectrumChannelMatrix->GetNumCols()) &&
         (rxParamsOld->spectrumChannelMatrix->GetNumRows() ==
@@ -1625,7 +1641,11 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
         CreateObject<ThreeGppSpectrumPropagationLossModel>();
 
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixA =
-        threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna1, rxAntenna1);
+        threeGppSplm->CalcLongTerm(channelMatrixM0,
+                                   txAntenna1,
+                                   rxAntenna1,
+                                   txAntenna1->GetBeamformingVector(),
+                                   rxAntenna1->GetBeamformingVector());
 
     // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna2 = CreateObjectWithAttributes<UniformPlanarArray>(
@@ -1656,7 +1676,11 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     rxAntenna2->SetBeamformingVector(rxAntenna2->GetBeamformingVector(completeAngleRxTx));
 
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixB =
-        threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna2, rxAntenna2);
+        threeGppSplm->CalcLongTerm(channelMatrixM0,
+                                   txAntenna2,
+                                   rxAntenna2,
+                                   txAntenna2->GetBeamformingVector(),
+                                   rxAntenna2->GetBeamformingVector());
 
     // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna3 = CreateObjectWithAttributes<UniformPlanarArray>(
@@ -1695,7 +1719,11 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     rxAntenna3->SetBeamformingVector(rxAntenna3->GetBeamformingVector(completeAngleRxTx));
 
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixC =
-        threeGppSplm->CalcLongTerm(channelMatrixMA, txAntenna3, rxAntenna3);
+        threeGppSplm->CalcLongTerm(channelMatrixMA,
+                                   txAntenna3,
+                                   rxAntenna3,
+                                   txAntenna3->GetBeamformingVector(),
+                                   rxAntenna3->GetBeamformingVector());
 
     NS_TEST_ASSERT_MSG_EQ(matrixB->IsAlmostEqual(*matrixC, 1e-6),
                           true,

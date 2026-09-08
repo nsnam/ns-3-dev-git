@@ -103,13 +103,13 @@ Ptr<const MatrixBasedChannelModel::Complex3DVector>
 SionnaRtSpectrumPropagationLossModel::CalcLongTerm(
     Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
     Ptr<const PhasedArrayModel> sAnt,
-    Ptr<const PhasedArrayModel> uAnt) const
+    Ptr<const PhasedArrayModel> uAnt,
+    const PhasedArrayModel::ComplexVector& sW,
+    const PhasedArrayModel::ComplexVector& uW) const
 {
     NS_LOG_FUNCTION(this);
 
     NS_ASSERT_MSG(sAnt != nullptr && uAnt != nullptr, "Improper call to the method");
-    const PhasedArrayModel::ComplexVector& sW = sAnt->GetBeamformingVectorRef();
-    const PhasedArrayModel::ComplexVector& uW = uAnt->GetBeamformingVectorRef();
     const size_t sAntNumElems = sW.GetSize();
     const size_t uAntNumElems = uW.GetSize();
     NS_ASSERT(uAntNumElems == channelMatrix->m_channel.GetNumRows());
@@ -136,6 +136,8 @@ SionnaRtSpectrumPropagationLossModel::CalcLongTerm(
                     CalculateLongTermComponent(channelMatrix,
                                                sAnt,
                                                uAnt,
+                                               sW,
+                                               uW,
                                                sPortIdx,
                                                uPortIdx,
                                                cIndex);
@@ -150,13 +152,13 @@ SionnaRtSpectrumPropagationLossModel::CalculateLongTermComponent(
     Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
     Ptr<const PhasedArrayModel> sAnt,
     Ptr<const PhasedArrayModel> uAnt,
+    const PhasedArrayModel::ComplexVector& sW,
+    const PhasedArrayModel::ComplexVector& uW,
     const uint16_t sPortIdx,
     const uint16_t uPortIdx,
     const uint16_t cIndex) const
 {
     NS_LOG_FUNCTION(this);
-    const PhasedArrayModel::ComplexVector& sW = sAnt->GetBeamformingVectorRef();
-    const PhasedArrayModel::ComplexVector& uW = uAnt->GetBeamformingVectorRef();
     const auto sPortElems = sAnt->GetNumElemsPerPort();
     const auto uPortElems = uAnt->GetNumElemsPerPort();
     const auto startS = sAnt->ArrayIndexFromPortIndex(sPortIdx, 0);
@@ -406,7 +408,9 @@ Ptr<const MatrixBasedChannelModel::Complex3DVector>
 SionnaRtSpectrumPropagationLossModel::GetLongTerm(
     Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
-    Ptr<const PhasedArrayModel> bPhasedArrayModel) const
+    Ptr<const PhasedArrayModel> bPhasedArrayModel,
+    const PhasedArrayModel::ComplexVector& aBeamformingVector,
+    const PhasedArrayModel::ComplexVector& bBeamformingVector) const
 {
     Ptr<const MatrixBasedChannelModel::Complex3DVector>
         longTerm; // vector containing the long term component for each cluster
@@ -418,18 +422,11 @@ SionnaRtSpectrumPropagationLossModel::GetLongTerm(
     const auto sAntenna = isReverse ? bPhasedArrayModel : aPhasedArrayModel;
     const auto uAntenna = isReverse ? aPhasedArrayModel : bPhasedArrayModel;
 
-    PhasedArrayModel::ComplexVector sW;
-    PhasedArrayModel::ComplexVector uW;
-    if (!isReverse)
-    {
-        sW = aPhasedArrayModel->GetBeamformingVector();
-        uW = bPhasedArrayModel->GetBeamformingVector();
-    }
-    else
-    {
-        sW = bPhasedArrayModel->GetBeamformingVector();
-        uW = aPhasedArrayModel->GetBeamformingVector();
-    }
+    const PhasedArrayModel::ComplexVector& sW = isReverse ? bBeamformingVector : aBeamformingVector;
+    const PhasedArrayModel::ComplexVector& uW = isReverse ? aBeamformingVector : bBeamformingVector;
+    NS_ASSERT_MSG(sW.GetSize() == sAntenna->GetNumElems() &&
+                      uW.GetSize() == uAntenna->GetNumElems(),
+                  "Beamforming vectors do not match the antennas they are paired with");
 
     bool update = false;   // indicates whether the long term has to be updated
     bool notFound = false; // indicates if the long term has not been computed yet
@@ -461,12 +458,12 @@ SionnaRtSpectrumPropagationLossModel::GetLongTerm(
     {
         NS_LOG_DEBUG("compute the long term");
         // compute the long term component
-        longTerm = CalcLongTerm(channelMatrix, sAntenna, uAntenna);
+        longTerm = CalcLongTerm(channelMatrix, sAntenna, uAntenna, sW, uW);
         Ptr<LongTerm> longTermItem = Create<LongTerm>();
         longTermItem->m_longTerm = longTerm;
         longTermItem->m_channel = channelMatrix;
-        longTermItem->m_sW = std::move(sW);
-        longTermItem->m_uW = std::move(uW);
+        longTermItem->m_sW = sW;
+        longTermItem->m_uW = uW;
         // store the long term to reduce computation load
         // only the small scale fading needs to be updated if the large scale parameters and antenna
         // weights remain unchanged.
@@ -482,7 +479,9 @@ SionnaRtSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     Ptr<const MobilityModel> a,
     Ptr<const MobilityModel> b,
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
-    Ptr<const PhasedArrayModel> bPhasedArrayModel) const
+    Ptr<const PhasedArrayModel> bPhasedArrayModel,
+    const PhasedArrayModel::ComplexVector& aBeamformingVector,
+    const PhasedArrayModel::ComplexVector& bBeamformingVector) const
 {
     NS_LOG_FUNCTION(this << spectrumSignalParams << a << b << aPhasedArrayModel
                          << bPhasedArrayModel);
@@ -504,7 +503,11 @@ SionnaRtSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
 
     // retrieve the long term component
     const Ptr<const MatrixBasedChannelModel::Complex3DVector> longTerm =
-        GetLongTerm(channelMatrix, aPhasedArrayModel, bPhasedArrayModel);
+        GetLongTerm(channelMatrix,
+                    aPhasedArrayModel,
+                    bPhasedArrayModel,
+                    aBeamformingVector,
+                    bBeamformingVector);
 
     const auto isReverse =
         channelMatrix->IsReverse(aPhasedArrayModel->GetId(), bPhasedArrayModel->GetId());

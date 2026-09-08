@@ -1021,7 +1021,9 @@ TwoRaySpectrumPropagationLossModel::CalcBeamformingGain(
     Ptr<const MobilityModel> a,
     Ptr<const MobilityModel> b,
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
-    Ptr<const PhasedArrayModel> bPhasedArrayModel) const
+    Ptr<const PhasedArrayModel> bPhasedArrayModel,
+    const PhasedArrayModel::ComplexVector& aBeamformingVector,
+    const PhasedArrayModel::ComplexVector& bBeamformingVector) const
 {
     NS_LOG_FUNCTION(this);
 
@@ -1029,13 +1031,11 @@ TwoRaySpectrumPropagationLossModel::CalcBeamformingGain(
     Angles aAngle(b->GetPosition(), a->GetPosition());
     Angles bAngle(a->GetPosition(), b->GetPosition());
 
-    // Compute the beamforming vectors and and array responses
+    // Compute the array responses
     auto aArrayResponse = aPhasedArrayModel->GetSteeringVector(aAngle);
     auto aAntennaFields = aPhasedArrayModel->GetElementFieldPattern(aAngle);
-    auto aBfVector = aPhasedArrayModel->GetBeamformingVector();
     auto bArrayResponse = bPhasedArrayModel->GetSteeringVector(bAngle);
     auto bAntennaFields = bPhasedArrayModel->GetElementFieldPattern(bAngle);
-    auto bBfVector = bPhasedArrayModel->GetBeamformingVector();
 
     std::complex<double> aArrayOverallResponse = 0;
     std::complex<double> bArrayOverallResponse = 0;
@@ -1043,11 +1043,11 @@ TwoRaySpectrumPropagationLossModel::CalcBeamformingGain(
     // Compute the dot products between the array responses and the beamforming vectors
     for (size_t i = 0; i < aPhasedArrayModel->GetNumElems(); i++)
     {
-        aArrayOverallResponse += aArrayResponse[i] * aBfVector[i];
+        aArrayOverallResponse += aArrayResponse[i] * aBeamformingVector[i];
     }
     for (size_t i = 0; i < bPhasedArrayModel->GetNumElems(); i++)
     {
-        bArrayOverallResponse += bArrayResponse[i] * bBfVector[i];
+        bArrayOverallResponse += bArrayResponse[i] * bBeamformingVector[i];
     }
 
     double gain = norm(aArrayOverallResponse) *
@@ -1107,7 +1107,9 @@ TwoRaySpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     Ptr<const MobilityModel> a,
     Ptr<const MobilityModel> b,
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
-    Ptr<const PhasedArrayModel> bPhasedArrayModel) const
+    Ptr<const PhasedArrayModel> bPhasedArrayModel,
+    const PhasedArrayModel::ComplexVector& aBeamformingVector,
+    const PhasedArrayModel::ComplexVector& bBeamformingVector) const
 {
     NS_LOG_FUNCTION(this);
     uint32_t aId = a->GetObject<Node>()->GetId(); // Id of the node a
@@ -1132,7 +1134,12 @@ TwoRaySpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(
     double fading = GetFtrFastFading(ftrParams);
 
     // Compute the beamforming gain
-    double bfGain = CalcBeamformingGain(a, b, aPhasedArrayModel, bPhasedArrayModel);
+    double bfGain = CalcBeamformingGain(a,
+                                        b,
+                                        aPhasedArrayModel,
+                                        bPhasedArrayModel,
+                                        aBeamformingVector,
+                                        bBeamformingVector);
 
     Ptr<SpectrumSignalParameters> rxParams = params->Copy();
     // Apply the above terms to the TX PSD to calculate RX PSD
