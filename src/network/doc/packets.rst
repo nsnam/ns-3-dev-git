@@ -190,7 +190,7 @@ The packet now has a size of N bytes, which can be verified by the GetSize()
 method::
 
   /**
-   * \returns the size in bytes of the packet (including the zero-filled
+   * @returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
    */
   uint32_t GetSize() const;
@@ -242,7 +242,7 @@ Packet API can be used to add or remove such headers.::
    * methods to reserve space in the buffer and request the
    * header to serialize itself in the packet buffer.
    *
-   * \param header a reference to the header to add to this packet.
+   * @param header a reference to the header to add to this packet.
    */
   void AddHeader(const Header & header);
   /**
@@ -251,16 +251,16 @@ Packet API can be used to add or remove such headers.::
    * This method invokes Header::Deserialize(begin) and should be used for
    * fixed-length headers.
    *
-   * \param header a reference to the header to remove from the internal buffer.
-   * \returns the number of bytes removed from the packet.
+   * @param header a reference to the header to remove from the internal buffer.
+   * @returns the number of bytes removed from the packet.
    */
   uint32_t RemoveHeader(Header &header);
   /**
    * Deserialize but does _not_ remove the header from the internal buffer.
    * This method invokes Header::Deserialize.
    *
-   * \param header a reference to the header to read from the internal buffer.
-   * \returns the number of bytes read from the packet.
+   * @param header a reference to the header to read from the internal buffer.
+   * @returns the number of bytes read from the packet.
    */
   uint32_t PeekHeader(Header &header) const;
 
@@ -281,15 +281,15 @@ If the header is variable-length, then another variant of RemoveHeader() is
 needed::
 
   /**
-   * \brief Deserialize and remove the header from the internal buffer.
+   * @brief Deserialize and remove the header from the internal buffer.
    *
    * This method invokes Header::Deserialize(begin, end) and should be
    * used for variable-length headers (where the size is determined somehow
    * by the caller).
    *
-   * \param header a reference to the header to remove from the internal buffer.
-   * \param size number of bytes to deserialize
-   * \returns the number of bytes removed from the packet.
+   * @param header a reference to the header to remove from the internal buffer.
+   * @param size number of bytes to deserialize
+   * @returns the number of bytes removed from the packet.
    */
   uint32_t RemoveHeader(Header &header, uint32_t size);
 
@@ -344,7 +344,7 @@ it around" to send back to the echo client.
 The Packet API for byte tags is given below.::
 
   /**
-   * \param tag the new tag to add to this packet
+   * @param tag the new tag to add to this packet
    *
    * Tag each byte included in this packet with the
    * new tag.
@@ -362,12 +362,12 @@ The Packet API for byte tags is given below.::
    */
   void AddByteTag(const Tag &tag) const;
   /**
-   * \returns an iterator over the set of byte tags included in this packet.
+   * @returns an iterator over the set of byte tags included in this packet.
    */
   ByteTagIterator GetByteTagIterator() const;
   /**
-   * \param tag the tag to search in this packet
-   * \returns true if the requested tag type was found, false otherwise.
+   * @param tag the tag to search in this packet
+   * @returns true if the requested tag type was found, false otherwise.
    *
    * If the requested tag type is found, it is copied in the user's
    * provided tag instance.
@@ -380,7 +380,7 @@ The Packet API for byte tags is given below.::
   void RemoveAllByteTags();
 
   /**
-   * \param os output stream in which the data should be printed.
+   * @param os output stream in which the data should be printed.
    *
    * Iterate over the tags present in this packet, and
    * invoke the Print method of each tag stored in the packet.
@@ -390,7 +390,7 @@ The Packet API for byte tags is given below.::
 The Packet API for packet tags is given below.::
 
   /**
-   * \param tag the tag to store in this packet
+   * @param tag the tag to store in this packet
    *
    * Add a tag to this packet. This method calls the
    * Tag::GetSerializedSize and, then, Tag::Serialize.
@@ -401,8 +401,8 @@ The Packet API for packet tags is given below.::
    */
   void AddPacketTag(const Tag &tag) const;
   /**
-   * \param tag the tag to remove from this packet
-   * \returns true if the requested tag is found, false
+   * @param tag the tag to remove from this packet
+   * @returns true if the requested tag is found, false
    *          otherwise.
    *
    * Remove a tag from this packet. This method calls
@@ -410,8 +410,8 @@ The Packet API for packet tags is given below.::
    */
   bool RemovePacketTag(Tag &tag);
   /**
-   * \param tag the tag to search in this packet
-   * \returns true if the requested tag is found, false
+   * @param tag the tag to search in this packet
+   * @returns true if the requested tag is found, false
    *          otherwise.
    *
    * Search a matching tag and call Tag::Deserialize if it is found.
@@ -423,7 +423,7 @@ The Packet API for packet tags is given below.::
   void RemoveAllPacketTags();
 
   /**
-   * \param os the stream in which we want to print data.
+   * @param os the stream in which we want to print data.
    *
    * Print the list of 'packet' tags.
    *
@@ -433,7 +433,7 @@ The Packet API for packet tags is given below.::
   void PrintPacketTags(std::ostream &os) const;
 
   /**
-   * \returns an object which can be used to iterate over the list of
+   * @returns an object which can be used to iterate over the list of
    *  packet tags.
    */
   PacketTagIterator GetPacketTagIterator() const;

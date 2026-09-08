@@ -224,14 +224,14 @@ that access the next value in the substream.
 ::
 
   /**
-   * \brief Returns a random double from the underlying distribution
-   * \return A floating point random value
+   * @brief Returns a random double from the underlying distribution
+   * @return A floating point random value
    */
   double GetValue() const;
 
   /**
-   * \brief Returns a random integer from the underlying distribution
-   * \return  Integer cast of ::GetValue()
+   * @brief Returns a random integer from the underlying distribution
+   * @return  Integer cast of ::GetValue()
    */
   uint32_t GetInteger() const;
 

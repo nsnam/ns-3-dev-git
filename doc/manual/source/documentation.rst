@@ -590,9 +590,9 @@ usage for |ns3|.
 
     /**
      * A templated function.
-     * \tparam T \explicit The return type.
-     * \tparam U \deduced The argument type.
-     * \param [in] a The argument.
+     * @tparam T \explicit The return type.
+     * @tparam U \deduced The argument type.
+     * @param [in] a The argument.
      */
     template <typename T, typename U> T Function(U a);
 

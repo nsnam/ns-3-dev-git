@@ -297,8 +297,8 @@ Class ``MobilityModel`` and class ``PositionAllocator`` both have public API to 
    * used by this model. Return the number of streams (possibly zero) that
    * have been assigned.
    *
-   * \param stream first stream index to use
-   * \return the number of stream indices assigned by this model
+   * @param stream first stream index to use
+   * @return the number of stream indices assigned by this model
    */
   int64_t AssignStreams(int64_t stream);
 

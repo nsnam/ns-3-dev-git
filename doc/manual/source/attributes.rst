@@ -393,9 +393,9 @@ a full queue will be dropped from the back of the queue ("drop tail").
 ::
 
     /**
-     * \ingroup queue
+     * @ingroup queue
      *
-     * \brief A FIFO packet queue that drops tail-end packets on overflow
+     * @brief A FIFO packet queue that drops tail-end packets on overflow
      */
     template <typename Item>
     class DropTailQueue : public Queue<Item>
@@ -892,7 +892,7 @@ This is a one-line public function declaration::
     public:
       /**
        *  Register this type.
-       *  \return The object TypeId.
+       *  @return The object TypeId.
        */
       static TypeId GetTypeId();
 
@@ -958,7 +958,7 @@ Header File
 ::
 
     /**
-     * \brief a 2d rectangle
+     * @brief a 2d rectangle
      */
     class Rectangle
     {

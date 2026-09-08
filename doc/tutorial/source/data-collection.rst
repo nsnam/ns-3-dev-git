@@ -296,7 +296,7 @@ a declaration of:
 ::
 
   /**
-   * \brief Callback to trace TX (transmission) packets.
+   * @brief Callback to trace TX (transmission) packets.
    */
   TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_txTrace;
 

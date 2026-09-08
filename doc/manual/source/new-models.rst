@@ -59,8 +59,8 @@ So far, in our design, we have::
     {
     public:
      /**
-      * \returns true if the Packet is to be considered as errored/corrupted
-      * \param pkt Packet to apply error model to
+      * @returns true if the Packet is to be considered as errored/corrupted
+      * @param pkt Packet to apply error model to
       */
       bool IsCorrupt(Ptr<Packet> pkt);
     };

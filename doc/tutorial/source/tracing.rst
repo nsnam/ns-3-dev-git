@@ -1460,17 +1460,17 @@ to be created at configuration time.
 
       /**
        * Register this type.
-       * \return The TypeId.
+       * @return The TypeId.
        */
       static TypeId GetTypeId();
 
       /**
        * Setup the socket.
-       * \param socket The socket.
-       * \param address The destination address.
-       * \param packetSize The packet size to transmit.
-       * \param nPackets The number of packets to transmit.
-       * \param dataRate the data rate to use.
+       * @param socket The socket.
+       * @param address The destination address.
+       * @param packetSize The packet size to transmit.
+       * @param nPackets The number of packets to transmit.
+       * @param dataRate the data rate to use.
        */
       void Setup(Ptr<Socket> socket,
                  Address address,
