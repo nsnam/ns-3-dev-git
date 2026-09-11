@@ -84,7 +84,7 @@ FNV1a (64-bit version)              312094       100   3145240     100.779
 Murmur3 (32-bit version)            312094       100   4152139     133.041
 Murmur3 (64-bit version)            312094       100   4191464     134.301
 
-   \endverbatim
+   @endverbatim
  */
 
 namespace ns3

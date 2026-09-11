@@ -125,7 +125,7 @@ class Ipv6RoutingHelper
      * specified time. The output format is similar to:
      * @verbatim
        2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
+       @endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
      */
     static void PrintNeighborCacheAllAt(Time printTime,
@@ -144,7 +144,7 @@ class Ipv6RoutingHelper
      * specified time. The output format is similar to:
      * @verbatim
        2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
+       @endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
      */
     static void PrintNeighborCacheAllEvery(Time printInterval,
@@ -163,7 +163,7 @@ class Ipv6RoutingHelper
      * specified time. The output format is similar to:
      * @verbatim
        2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
+       @endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
      */
     static void PrintNeighborCacheAt(Time printTime,
@@ -184,7 +184,7 @@ class Ipv6RoutingHelper
      * specified time. The output format is similar to:
      * @verbatim
        2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
+       @endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
      */
     static void PrintNeighborCacheEvery(Time printInterval,
@@ -244,7 +244,7 @@ class Ipv6RoutingHelper
      * specified time. The output format is similar to:
      * @verbatim
        2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
+       @endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
      */
     static void PrintNdiscCache(Ptr<Node> node,
@@ -264,7 +264,7 @@ class Ipv6RoutingHelper
      * specified time. The output format is similar to:
      * @verbatim
        2001:db8::f00d:beef:cafe dev 1 lladdr 00-06-00:00:00:00:00:02 REACHABLE
-       \endverbatim
+       @endverbatim
      * Note that the MAC address is printed as "type"-"size"-"actual address"
      */
     static void PrintNdiscCacheEvery(Time printInterval,

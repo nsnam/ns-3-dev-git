@@ -50,7 +50,7 @@ std::string g_Result = "";
  *
  * This generates a sink function for any underlying type.
  *
- * @tparam T \explicit The type of the value being traced.
+ * @tparam T @explicit The type of the value being traced.
  *        Since the point of this template is to create a
  *        sink function, the template type must be given explicitly.
  * @param [in] oldValue The original value
@@ -198,8 +198,8 @@ class TracedValueCallbackTestCase : public TestCase
      * TracedValueCbSink<T>.  If this compiles, we've proved the
      * sink function and the typedef agree.
      *
-     * @tparam T \explicit The base type.
-     * @tparam U \explicit The TracedValueCallback sink typedef type.
+     * @tparam T @explicit The base type.
+     * @tparam U @explicit The TracedValueCallback sink typedef type.
      */
     template <typename T, typename U>
     void CheckType()

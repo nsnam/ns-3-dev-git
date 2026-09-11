@@ -343,7 +343,7 @@ class LteRrcSap
      * RSRQ-based threshold, the actual value is (value - 40) / 2 dB. This is in
      * accordance with section 9.1.4 and 9.1.7 of 3GPP TS 36.133.
      *
-     * \sa ns3::EutranMeasurementMapping
+     * @sa ns3::EutranMeasurementMapping
      */
     struct ThresholdEutra
     {

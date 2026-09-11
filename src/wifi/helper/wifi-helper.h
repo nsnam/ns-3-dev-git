@@ -79,7 +79,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the interference helper.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of interference helper
      * @param args A sequence of name-value pairs of the attributes to set.
      */
@@ -89,7 +89,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the error rate model.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of error rate model
      * @param args A sequence of name-value pairs of the attributes to set.
      */
@@ -97,7 +97,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     void SetErrorRateModel(std::string type, Args&&... args);
 
     /**
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param linkId ID of the link to configure (>0 only for 11be devices)
      * @param type the type of the error rate model to set.
      * @param args A sequence of name-value pairs of the attributes to set.
@@ -110,7 +110,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the frame capture model.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of frame capture model
      * @param args A sequence of name-value pairs of the attributes to set.
      */
@@ -118,7 +118,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     void SetFrameCaptureModel(std::string type, Args&&... args);
 
     /**
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param linkId ID of the link to configure (>0 only for 11be devices)
      * @param type the type of the frame capture model to set.
      * @param args A sequence of name-value pairs of the attributes to set.
@@ -132,7 +132,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     /**
      * Helper function used to set the preamble detection model.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of preamble detection model
      * @param args A sequence of name-value pairs of the attributes to set.
      */
@@ -140,7 +140,7 @@ class WifiPhyHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevi
     void SetPreambleDetectionModel(std::string type, Args&&... args);
 
     /**
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param linkId ID of the link to configure (>0 only for 11be devices)
      * @param type the type of the preamble detection model to set.
      * @param args A sequence of name-value pairs of the attributes to set.
@@ -393,7 +393,7 @@ class WifiHelper
     /**
      * Helper function used to set the station manager
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of station manager
      * @param args A sequence of name-value pairs of the attributes to set.
      */
@@ -401,7 +401,7 @@ class WifiHelper
     void SetRemoteStationManager(std::string type, Args&&... args);
 
     /**
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param linkId ID of the link to configure (>0 only for 11be devices)
      * @param type the type of the preamble detection model to set.
      * @param args A sequence of name-value pairs of the attributes to set.
@@ -418,7 +418,7 @@ class WifiHelper
     /**
      * Helper function used to set the OBSS-PD algorithm
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of OBSS-PD algorithm
      * @param args A sequence of name-value pairs of the attributes to set.
      */
@@ -503,10 +503,11 @@ class WifiHelper
      * Config::Set() on any objects that this helper creates, such as:
      * @code
      * Config::Set ("/NodeList/0/DeviceList/0/$ns3::WifiNetDevice/Mac/Slot", TimeValue (MicroSeconds
-     * (slot))); \endcode
+     * (slot)));
+     * @endcode
      *
-     * \sa WifiMac::ConfigureStandard
-     * \sa Config::Set
+     * @sa WifiMac::ConfigureStandard
+     * @sa Config::Set
      */
     virtual void SetStandard(WifiStandard standard);
 
@@ -517,7 +518,7 @@ class WifiHelper
      * selected string names. For example, the strings "802.11ax", "11ax", and "HE"
      * are equivalent and map to WIFI_STANDARD_80211ax. See the documentation of the specified
      * function to see how it interacts with attribute configuration.
-     * \sa WifiHelper::SetStandard(WifiStandard standard)
+     * @sa WifiHelper::SetStandard(WifiStandard standard)
      */
     void SetStandard(const std::string& standard);
 
@@ -525,7 +526,7 @@ class WifiHelper
      * Helper function used to configure the HT options listed as attributes of
      * the HtConfiguration class.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
@@ -535,7 +536,7 @@ class WifiHelper
      * Helper function used to configure the VHT options listed as attributes of
      * the VhtConfiguration class.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
@@ -545,7 +546,7 @@ class WifiHelper
      * Helper function used to configure the HE options listed as attributes of
      * the HeConfiguration class.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>
@@ -555,7 +556,7 @@ class WifiHelper
      * Helper function used to configure the EHT options listed as attributes of
      * the EhtConfiguration class.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param args A sequence of name-value pairs of the attributes to set.
      */
     template <typename... Args>

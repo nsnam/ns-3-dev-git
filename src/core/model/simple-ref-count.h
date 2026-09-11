@@ -53,15 +53,15 @@ class Empty
  * This template takes 3 arguments but only the first argument is
  * mandatory:
  *
- * @tparam T \explicit The typename of the subclass which derives
+ * @tparam T @explicit The typename of the subclass which derives
  *      from this template class. Yes, this is weird but it's a
  *      common C++ template pattern whose name is CRTP (Curiously
  *      Recursive Template Pattern)
- * @tparam PARENT \explicit The typename of the parent of this template.
+ * @tparam PARENT @explicit The typename of the parent of this template.
  *      By default, this typename is "'ns3::Empty'" which is an empty
  *      class: compilers which implement the EBCO optimization (empty
  *      base class optimization) will make this a no-op
- * @tparam DELETER \explicit The typename of a class which implements
+ * @tparam DELETER @explicit The typename of a class which implements
  *      a public static method named 'Delete'. This method will be called
  *      whenever the SimpleRefCount template detects that no references
  *      to the object it manages exist anymore.

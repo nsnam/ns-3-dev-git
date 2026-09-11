@@ -104,7 +104,7 @@ enum WifiPowerManagementMode : uint8_t
  * The Wifi MAC high model for a non-AP STA in a BSS. The state
  * machine is as follows:
  *
-   \verbatim
+   @verbatim
    ┌───────────┐            ┌────────────────┐                           ┌─────────────┐
    │   Start   │      ┌─────┤   Associated   ◄───────────────────┐    ┌──►   Refused   │
    └─┬─────────┘      │     └────────────────┘                   │    │  └─────────────┘
@@ -117,7 +117,7 @@ enum WifiPowerManagementMode : uint8_t
                                           │  │                            │  │
                                           │  │                            │  │
                                           └──┘                            └──┘
-   \endverbatim
+   @endverbatim
  *
  * Notes:
  * 1. The state 'Start' is not included in #MacState and only used

@@ -337,7 +337,7 @@ class TypeId
     /**
      * Set the parent TypeId.
      *
-     * @tparam T \explicit The parent TypeID type.
+     * @tparam T @explicit The parent TypeID type.
      * @return This TypeId instance.
      *
      * Record in this TypeId which TypeId is the TypeId
@@ -380,7 +380,7 @@ class TypeId
      * Record in this TypeId the fact that the default constructor
      * is accessible.
      *
-     * @tparam T \explicit The class name represented by this TypeId.
+     * @tparam T @explicit The class name represented by this TypeId.
      * @returns This TypeId instance
      */
     template <typename T>

@@ -66,9 +66,9 @@ class WifiTxTimer
      * This method starts a timer of the given duration and schedules a call to
      * the given method in case the timer expires.
      *
-     * @tparam MEM \deduced Class method function signature type
-     * @tparam OBJ \deduced Class type of the object
-     * @tparam Args \deduced Type template parameter pack
+     * @tparam MEM @deduced Class method function signature type
+     * @tparam OBJ @deduced Class type of the object
+     * @tparam Args @deduced Type template parameter pack
      * @param reason the reason why the timer was started
      * @param delay the time to the expiration of the timer
      * @param from the set of stations we expect to receive a response from
@@ -186,9 +186,9 @@ class WifiTxTimer
      * This method is called when the timer expires. It invokes the callbacks
      * and the method set by the user.
      *
-     * @tparam MEM \deduced Class method function signature type
-     * @tparam OBJ \deduced Class type of the object
-     * @tparam Args \deduced Type template parameter pack
+     * @tparam MEM @deduced Class method function signature type
+     * @tparam OBJ @deduced Class type of the object
+     * @tparam Args @deduced Type template parameter pack
      * @param mem_ptr Member method pointer to invoke
      * @param obj The object on which to invoke the member method
      * @param args The arguments to pass to the invoked method

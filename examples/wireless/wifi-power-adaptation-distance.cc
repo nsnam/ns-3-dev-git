@@ -15,12 +15,12 @@
  * (or throughput-aparf.plt, if Aparf is used) and power-parf.plt. If
  * Gnuplot program is available, one can use it to convert the plt file
  * into an eps file, by running:
- * \code{.sh}
+ * @code{.sh}
  *   gnuplot throughput-parf.plt
  * @endcode
  * Also, to enable logging of rate and power changes to the terminal, set this
  * environment variable:
- * \code{.sh}
+ * @code{.sh}
  *   export NS_LOG=PowerAdaptationDistance=level_info
  * @endcode
  *
@@ -53,22 +53,24 @@
  * for computing the average power.
  *
  * To display all the possible arguments and their defaults:
- * \code{.sh}
+ * @code{.sh}
  *   ./ns3 run "wifi-power-adaptation-distance --help"
  * @endcode
  *
  * Example usage (selecting Aparf rather than Parf):
- * \code{.sh}
+ * @code{.sh}
  *   ./ns3 run "wifi-power-adaptation-distance --manager=ns3::AparfWifiManager
- * --outputFileName=aparf" \endcode
+ * --outputFileName=aparf"
+ * @endcode
  *
  * Another example (moving towards the AP):
- * \code{.sh}
+ * @code{.sh}
  *   ./ns3 run "wifi-power-adaptation-distance --manager=ns3::AparfWifiManager
- * --outputFileName=aparf --stepsSize=-1 --STA1_x=200" \endcode
+ * --outputFileName=aparf --stepsSize=-1 --STA1_x=200"
+ * @endcode
  *
  * To enable the log of rate and power changes:
- * \code{.sh}
+ * @code{.sh}
  *   export NS_LOG=PowerAdaptationDistance=level_info
  * @endcode
  */

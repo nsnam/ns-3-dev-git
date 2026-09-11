@@ -18,7 +18,7 @@ namespace ns3
 /**
  * @ingroup packet
  *
- * @brief Bit serializer. See also \sa ns3::BitDeserializer
+ * @brief Bit serializer. See also @sa ns3::BitDeserializer
  *
  * This class helps converting a variable number, variable sized
  * number of bit-boundary fields to its final byte array representation.
@@ -32,7 +32,7 @@ namespace ns3
    000: padding
 
    |aaaa abbb bbcc cdd0|
- \endverbatim
+ @endverbatim
  *
  *
  * Padding can be automatically added at the end or at the start

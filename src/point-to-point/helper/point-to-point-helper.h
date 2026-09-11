@@ -47,7 +47,7 @@ class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperFo
      * This method allows one to set the type of the queue that is automatically
      * created when the device is created and attached to a node.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of queue
      * @param [in] args Name and AttributeValue pairs to set.
      *

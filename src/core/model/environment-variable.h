@@ -163,9 +163,10 @@ class EnvironmentVariable
      * To set a variable to the empty string use `Set(variable, "")`.
      * Note: empty environment variables are not portable (unsupported on Windows).
      *
-     * @param [in] variable The environment variable to set.  Note this may not contain the `=`
-     * character. \param [in] value The value to set.  Note this must not be an empty string on
-     * Windows. \returns \c true if the variable was set successfully
+     * @param [in] variable The environment variable to set. Note this may not contain the `=`
+     * character.
+     * @param [in] value The value to set.  Note this must not be an empty string on Windows.
+     * @returns @c true if the variable was set successfully
      */
     static bool Set(const std::string& variable, const std::string& value);
 
@@ -175,7 +176,8 @@ class EnvironmentVariable
      * To set a variable to the empty string use `Set(variable, "")`.
      *
      * @param [in] variable The environment variable to unset.  Note this may not contain the `=`
-     * character. \returns \c true if the variable was unset successfully.
+     * character.
+     * @returns @c true if the variable was unset successfully.
      */
     static bool Unset(const std::string& variable);
 

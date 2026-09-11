@@ -349,9 +349,9 @@ class SixLowPanNetDevice : public NetDevice
      * @brief Callback to trace TX (transmission) packets.
      *
      * Data passed:
-     * \li Packet received (including 6LoWPAN header)
-     * \li Ptr to SixLowPanNetDevice
-     * \li interface index
+     * @li Packet received (including 6LoWPAN header)
+     * @li Ptr to SixLowPanNetDevice
+     * @li interface index
      * @deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
      * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
      * in a future release.
@@ -376,9 +376,9 @@ class SixLowPanNetDevice : public NetDevice
      * @brief Callback to trace RX (reception) packets.
      *
      * Data passed:
-     * \li Packet received (including 6LoWPAN header)
-     * \li Ptr to SixLowPanNetDevice
-     * \li interface index
+     * @li Packet received (including 6LoWPAN header)
+     * @li Ptr to SixLowPanNetDevice
+     * @li interface index
      * @deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
      * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
      * in a future release.
@@ -403,10 +403,10 @@ class SixLowPanNetDevice : public NetDevice
      * @brief Callback to trace drop packets.
      *
      * Data passed:
-     * \li DropReason
-     * \li Packet dropped (including 6LoWPAN header)
-     * \li Ptr to SixLowPanNetDevice
-     * \li interface index
+     * @li DropReason
+     * @li Packet dropped (including 6LoWPAN header)
+     * @li Ptr to SixLowPanNetDevice
+     * @li interface index
      * @deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
      * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
      * in a future release.
@@ -813,8 +813,8 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * @brief Finds if the given unicast address matches a context for compression
      *
-     * @param[in] address the address to check
-     * @param[out] contextId the context found
+     * @param [in] address the address to check
+     * @param [out] contextId the context found
      * @return true if a valid context has been found
      */
     bool FindUnicastCompressionContext(Ipv6Address address, uint8_t& contextId);
@@ -822,8 +822,8 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * @brief Finds if the given multicast address matches a context for compression
      *
-     * @param[in] address the address to check
-     * @param[out] contextId the context found
+     * @param [in] address the address to check
+     * @param [out] contextId the context found
      * @return true if a valid context has been found
      */
     bool FindMulticastCompressionContext(Ipv6Address address, uint8_t& contextId);

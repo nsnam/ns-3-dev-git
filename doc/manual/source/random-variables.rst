@@ -231,7 +231,7 @@ that access the next value in the substream.
 
   /**
    * @brief Returns a random integer from the underlying distribution
-   * @return  Integer cast of ::GetValue()
+   * @return Integer cast of ::GetValue()
    */
   uint32_t GetInteger() const;
 

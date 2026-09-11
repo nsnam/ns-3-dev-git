@@ -415,7 +415,7 @@ class LteHelper : public Object
      * Users are encouraged to use automatic attachment (Idle mode cell selection)
      * instead of this function.
      *
-     * \sa LteHelper::Attach(NetDeviceContainer ueDevices);
+     * @sa LteHelper::Attach(NetDeviceContainer ueDevices);
      */
     void AttachToClosestEnb(NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
 
@@ -431,7 +431,7 @@ class LteHelper : public Object
      * Users are encouraged to use automatic attachment (Idle mode cell selection)
      * instead of this function.
      *
-     * \sa LteHelper::Attach(Ptr<NetDevice> ueDevice);
+     * @sa LteHelper::Attach(Ptr<NetDevice> ueDevice);
      */
     void AttachToClosestEnb(Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
 

@@ -136,7 +136,7 @@ TcpNewReno::~TcpNewReno()
  *
  * The ns-3 implementation respect the RFC definition. Linux does something
  * different:
- * \code{.cpp}
+ * @code{.cpp}
    u32 tcp_slow_start(struct tcp_sock *tp, u32 acked)
    {
      u32 cwnd = tp->snd_cwnd + acked;
@@ -148,7 +148,7 @@ TcpNewReno::~TcpNewReno()
 
      return acked;
    }
-   \endcode
+   @endcode
  *
  * As stated, we want to avoid the case when a cumulative ACK increases cWnd more
  * than a segment size, but we keep count of how many segments we have ignored,

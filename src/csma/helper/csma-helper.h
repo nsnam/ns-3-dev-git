@@ -46,7 +46,7 @@ class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
     }
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of queue
      * @param [in] args Name and AttributeValue pairs to set.
      *

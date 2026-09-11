@@ -50,7 +50,7 @@ namespace ns3
    tvTransHelper.SetAttribute ("TvType", EnumValue (TvSpectrumTransmitter::TVTYPE_8VSB));
    tvTransHelper.SetAttribute ("Antenna", StringValue ("ns3::IsotropicAntennaModel"));
    tvTransHelper.Install (tvTransmitterNode); // provided that user has a NodeContainer ready.
-   \endcode
+   @endcode
  */
 class TvSpectrumTransmitterHelper
 {

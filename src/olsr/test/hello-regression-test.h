@@ -29,7 +29,7 @@ namespace olsr
  * It is expected that only HELLO messages will be sent.
  *
  * Expected trace (5 seconds):
-   \verbatim
+   @verbatim
     1       2
     |------>|   HELLO (empty) src = 10.1.1.1
     |<------|   HELLO (empty) src = 10.1.1.2
@@ -37,7 +37,7 @@ namespace olsr
     |<------|   HELLO (Link type: Asymmetric link, Neighbor address: 10.1.1.1) src = 10.1.1.2
     |------>|   HELLO (Link type: Symmetric link, Neighbor address: 10.1.1.2) src = 10.1.1.1
     |<------|   HELLO (Link type: Symmetric link, Neighbor address: 10.1.1.1) src = 10.1.1.2
-   \endverbatim
+   @endverbatim
  */
 class HelloRegressionTest : public TestCase
 {

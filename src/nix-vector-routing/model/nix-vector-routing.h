@@ -258,14 +258,14 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
              Ptr<NetDevice> oif) const;
 
     /**
-     * \sa Ipv4RoutingProtocol::DoInitialize
-     * \sa Ipv6RoutingProtocol::DoInitialize
+     * @sa Ipv4RoutingProtocol::DoInitialize
+     * @sa Ipv6RoutingProtocol::DoInitialize
      */
     void DoInitialize();
 
     /**
-     * \sa Ipv4RoutingProtocol::DoDispose
-     * \sa Ipv6RoutingProtocol::DoDispose
+     * @sa Ipv4RoutingProtocol::DoDispose
+     * @sa Ipv6RoutingProtocol::DoDispose
      */
     void DoDispose();
 
@@ -321,8 +321,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      *
      * @returns a code that indicates what happened in the lookup
      *
-     * \sa Ipv4RoutingProtocol::RouteOutput
-     * \sa Ipv6RoutingProtocol::RouteOutput
+     * @sa Ipv4RoutingProtocol::RouteOutput
+     * @sa Ipv6RoutingProtocol::RouteOutput
      */
     virtual Ptr<IpRoute> RouteOutput(Ptr<Packet> p,
                                      const IpHeader& header,
@@ -345,8 +345,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * @returns true if NixVectorRouting class takes responsibility for
      *          forwarding or delivering the packet, false otherwise
      *
-     * \sa Ipv4RoutingProtocol::RouteInput
-     * \sa Ipv6RoutingProtocol::RouteInput
+     * @sa Ipv4RoutingProtocol::RouteInput
+     * @sa Ipv6RoutingProtocol::RouteInput
      */
     virtual bool RouteInput(Ptr<const Packet> p,
                             const IpHeader& header,
@@ -359,16 +359,16 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
     /**
      * @param interface the index of the interface we are being notified about
      *
-     * \sa Ipv4RoutingProtocol::NotifyInterfaceUp
-     * \sa Ipv6RoutingProtocol::NotifyInterfaceUp
+     * @sa Ipv4RoutingProtocol::NotifyInterfaceUp
+     * @sa Ipv6RoutingProtocol::NotifyInterfaceUp
      */
     virtual void NotifyInterfaceUp(uint32_t interface);
 
     /**
      * @param interface the index of the interface we are being notified about
      *
-     * \sa Ipv4RoutingProtocol::NotifyInterfaceDown
-     * \sa Ipv6RoutingProtocol::NotifyInterfaceDown
+     * @sa Ipv4RoutingProtocol::NotifyInterfaceDown
+     * @sa Ipv6RoutingProtocol::NotifyInterfaceDown
      */
     virtual void NotifyInterfaceDown(uint32_t interface);
 
@@ -376,8 +376,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * @param interface the index of the interface we are being notified about
      * @param address a new address being added to an interface
      *
-     * \sa Ipv4RoutingProtocol::NotifyAddAddress
-     * \sa Ipv6RoutingProtocol::NotifyAddAddress
+     * @sa Ipv4RoutingProtocol::NotifyAddAddress
+     * @sa Ipv6RoutingProtocol::NotifyAddAddress
      */
     virtual void NotifyAddAddress(uint32_t interface, IpInterfaceAddress address);
 
@@ -385,8 +385,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * @param interface the index of the interface we are being notified about
      * @param address a new address being added to an interface
      *
-     * \sa Ipv4RoutingProtocol::NotifyRemoveAddress
-     * \sa Ipv6RoutingProtocol::NotifyRemoveAddress
+     * @sa Ipv4RoutingProtocol::NotifyRemoveAddress
+     * @sa Ipv6RoutingProtocol::NotifyRemoveAddress
      */
     virtual void NotifyRemoveAddress(uint32_t interface, IpInterfaceAddress address);
 
@@ -396,8 +396,8 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * @param stream The ostream the Routing table is printed to
      * @param unit The time unit to be used in the report
      *
-     * \sa Ipv4RoutingProtocol::PrintRoutingTable
-     * \sa Ipv6RoutingProtocol::PrintRoutingTable
+     * @sa Ipv4RoutingProtocol::PrintRoutingTable
+     * @sa Ipv6RoutingProtocol::PrintRoutingTable
      */
     virtual void PrintRoutingTable(Ptr<OutputStreamWrapper> stream,
                                    Time::Unit unit = Time::S) const;
@@ -408,7 +408,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      *
      * @param ipv4 the ipv4 object this routing protocol is being associated with
      *
-     * \sa Ipv4RoutingProtocol::SetIpv4
+     * @sa Ipv4RoutingProtocol::SetIpv4
      */
     virtual void SetIpv4(Ptr<Ip> ipv4);
 
@@ -418,7 +418,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      *
      * @param ipv6 the ipv6 object this routing protocol is being associated with
      *
-     * \sa Ipv6RoutingProtocol::SetIpv6
+     * @sa Ipv6RoutingProtocol::SetIpv6
      */
     virtual void SetIpv6(Ptr<Ip> ipv6);
 
@@ -431,7 +431,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * @param interface output interface
      * @param prefixToUse prefix to use as source with this route
      *
-     * \sa Ipv6RoutingProtocol::NotifyAddRoute
+     * @sa Ipv6RoutingProtocol::NotifyAddRoute
      */
     virtual void NotifyAddRoute(IpAddress dst,
                                 Ipv6Prefix mask,
@@ -448,7 +448,7 @@ class NixVectorRouting : public std::enable_if_t<std::is_same_v<Ipv4RoutingProto
      * @param interface output interface
      * @param prefixToUse prefix to use as source with this route
      *
-     * \sa Ipv6RoutingProtocol::NotifyRemoveRoute
+     * @sa Ipv6RoutingProtocol::NotifyRemoveRoute
      */
     virtual void NotifyRemoveRoute(IpAddress dst,
                                    Ipv6Prefix mask,

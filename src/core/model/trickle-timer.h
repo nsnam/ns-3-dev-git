@@ -189,7 +189,7 @@ class TrickleTimer
     /**
      * Set the function to execute when the timer expires.
      *
-     * @tparam FN \deduced The type of the function.
+     * @tparam FN @deduced The type of the function.
      * @param [in] fn The function
      *
      * Store this function in this Timer for later use by Timer::Schedule.
@@ -200,8 +200,8 @@ class TrickleTimer
     /**
      * Set the function to execute when the timer expires.
      *
-     * @tparam MEM_PTR \deduced Class method function type.
-     * @tparam OBJ_PTR \deduced Class type containing the function.
+     * @tparam MEM_PTR @deduced Class method function type.
+     * @tparam OBJ_PTR @deduced Class type containing the function.
      * @param [in] memPtr The member function pointer
      * @param [in] objPtr The pointer to object
      *
@@ -215,7 +215,7 @@ class TrickleTimer
      */
     /**@{*/
     /**
-     * @tparam Ts \deduced Argument types.
+     * @tparam Ts @deduced Argument types.
      * @param [in] args arguments
      */
     template <typename... Ts>

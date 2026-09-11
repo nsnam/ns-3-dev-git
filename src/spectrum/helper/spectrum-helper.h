@@ -44,14 +44,14 @@ class SpectrumChannelHelper
     static SpectrumChannelHelper Default();
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of the SpectrumChannel to use
      * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
     void SetChannel(std::string type, Ts&&... args);
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -68,7 +68,7 @@ class SpectrumChannelHelper
     void AddPropagationLoss(Ptr<PropagationLossModel> m);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -85,7 +85,7 @@ class SpectrumChannelHelper
     void AddSpectrumPropagationLoss(Ptr<SpectrumPropagationLossModel> m);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -118,7 +118,7 @@ class SpectrumPhyHelper
 {
   public:
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the type of SpectrumPhy to use
      * @param [in] args Name and AttributeValue pairs to set.
      */

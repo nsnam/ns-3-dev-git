@@ -521,7 +521,7 @@ class TcpTxBuffer : public Object
                            | |
                            | |
                         seq   seq + numBytes     (2)
-     \endverbatim
+     @endverbatim
      *
      * The case 1 is easy to manage: the requested block is exactly a packet
      * already stored. If one value (seq or seq + numBytes) does not align
@@ -547,7 +547,7 @@ class TcpTxBuffer : public Object
           |  | end
          seq |
              seq + numBytes
-     \endverbatim
+     @endverbatim
      *
      * To reduce to case (1), we need to perform two fragment operations:
      *

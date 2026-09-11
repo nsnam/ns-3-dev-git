@@ -17,7 +17,7 @@ using namespace ns3;
 /**
  * @brief Test suite for
  *
- * \sa ns3::BoxLineIntersectionTestSuite
+ * @sa ns3::BoxLineIntersectionTestSuite
  */
 class BoxLineIntersectionTestSuite : public TestSuite
 {

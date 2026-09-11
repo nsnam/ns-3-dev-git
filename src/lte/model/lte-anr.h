@@ -65,7 +65,7 @@ class LteNeighbourRelation;
  * The current ANR model is inspired from Section 22.3.2a and 22.3.3 of 3GPP
  * TS 36.300.
  *
- * \sa SetLteAnrSapProvider, SetLteAnrSapUser
+ * @sa SetLteAnrSapProvider, SetLteAnrSapUser
  */
 class LteAnr : public Object
 {

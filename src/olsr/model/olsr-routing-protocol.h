@@ -320,10 +320,10 @@ class RoutingProtocol : public Ipv4RoutingProtocol
      * to forward a data packet destined to A. That is, C is a neighbor of this node,
      * but B isn't. This function finds the appropriate neighbor for forwarding a packet.
      *
-     * \param[in] entry The routing table entry which indicates the destination node
+     * @param [in] entry The routing table entry which indicates the destination node
      * we are interested in.
      *
-     * \param[out] outEntry The appropriate routing table entry which indicates the next
+     * @param [out] outEntry The appropriate routing table entry which indicates the next
      * hop which must be used for forwarding a data packet, or NULL if there is no such entry.
      *
      * @return True if an entry was found, false otherwise.

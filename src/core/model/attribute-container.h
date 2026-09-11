@@ -77,7 +77,7 @@ class AttributeContainerValue : public AttributeValue
 
     /**
      * Construct from another container.
-     * @tparam CONTAINER \deduced type of container passed for initialization.
+     * @tparam CONTAINER @deduced type of container passed for initialization.
      * @param c Instance of CONTAINER with which to initialize AttributeContainerValue.
      */
     template <class CONTAINER>
@@ -85,9 +85,9 @@ class AttributeContainerValue : public AttributeValue
 
     /**
      * Construct from iterators.
-     * @tparam ITER \deduced type of iterator.
-     * \param[in] begin Iterator that points to first initialization item.
-     * \param[in] end Iterator that points ones past last initialization item.
+     * @tparam ITER @deduced type of iterator.
+     * @param [in] begin Iterator that points to first initialization item.
+     * @param [in] end Iterator that points ones past last initialization item.
      */
     template <class ITER>
     AttributeContainerValue(const ITER begin, const ITER end);
@@ -119,7 +119,7 @@ class AttributeContainerValue : public AttributeValue
     /**
      * Set the given variable to the values stored by this TupleValue object.
      *
-     * @tparam T \deduced the type of the given variable (normally, the argument type
+     * @tparam T @deduced the type of the given variable (normally, the argument type
      *           of a set method or the type of a data member)
      * @param value the given variable
      * @return true if the given variable was set
@@ -177,9 +177,9 @@ class AttributeContainerValue : public AttributeValue
      *
      * The internal container is cleared before values are copied
      * using the push_back method.
-     * @tparam ITER \deduced iterator type
-     * \param[in] begin Points to first item to copy
-     * \param[in] end Points to one after last item to copy
+     * @tparam ITER @deduced iterator type
+     * @param [in] begin Points to first item to copy
+     * @param [in] end Points to one after last item to copy
      */
     template <class ITER>
     inline void CopyFrom(const ITER begin, const ITER end);
@@ -213,10 +213,10 @@ class AttributeContainerChecker : public AttributeChecker
  * @ingroup attribute_AttributeContainer
  *
  * Make AttributeContainerChecker from AttributeContainerValue.
- * @tparam A \deduced AttributeValue type in container.
- * @tparam Sep \deduced Character separator between elements for parsing.
- * @tparam C \deduced Container type returned by Get.
- * \param[in] value AttributeContainerValue from which to deduce types.
+ * @tparam A @deduced AttributeValue type in container.
+ * @tparam Sep @deduced Character separator between elements for parsing.
+ * @tparam C @deduced Container type returned by Get.
+ * @param [in] value AttributeContainerValue from which to deduce types.
  * @return AttributeContainerChecker for value.
  */
 template <class A, char Sep, template <class...> class C>
@@ -230,7 +230,7 @@ Ptr<AttributeChecker> MakeAttributeContainerChecker(
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
- * \param[in] itemchecker AttributeChecker used for each item in the container.
+ * @param [in] itemchecker AttributeChecker used for each item in the container.
  * @return AttributeContainerChecker.
  */
 template <class A, char Sep = ',', template <class...> class C = std::list>
@@ -255,10 +255,10 @@ Ptr<AttributeChecker> MakeAttributeContainerChecker();
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
- * @tparam T1 \deduced The type of the class data member,
+ * @tparam T1 @deduced The type of the class data member,
  *            or the type of the class get functor or set method.
  * @param [in] a1 The address of the data member,
- *            or the get or set method.
+ *                or the get or set method.
  * @return AttributeContainerAccessor.
  */
 template <typename A, char Sep = ',', template <typename...> class C = std::list, typename T1>
@@ -271,10 +271,10 @@ Ptr<const AttributeAccessor> MakeAttributeContainerAccessor(T1 a1);
  * @tparam A AttributeValue type in container.
  * @tparam Sep Character separator between elements for parsing.
  * @tparam C Container type returned by Get.
- * @tparam T1 \deduced The type of the class data member,
+ * @tparam T1 @deduced The type of the class data member,
  *            or the type of the class get functor or set method.
  *
- * @tparam T2 \deduced The type of the getter class functor method.
+ * @tparam T2 @deduced The type of the getter class functor method.
  * @param [in] a2 The address of the class method to set the attribute.
  * @param [in] a1 The address of the data member,
  *            or the get or set method.

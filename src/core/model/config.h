@@ -265,7 +265,7 @@ class MatchContainer
      * container.  This method will raise a fatal error if no such attribute
      * exists; use SetFailSafe if the absence of the attribute is to be
      * permitted.
-     * \sa ns3::Config::Set
+     * @sa ns3::Config::Set
      */
     void Set(std::string name, const AttributeValue& value);
     /**
@@ -286,7 +286,7 @@ class MatchContainer
      * container.  This method will raise a fatal error if no objects could
      * be connected; use ConnectFailSafe if no connections is a valid possible
      * outcome.
-     * \sa ns3::Config::Connect
+     * @sa ns3::Config::Connect
      */
     void Connect(std::string name, const CallbackBase& cb);
     /**
@@ -307,7 +307,7 @@ class MatchContainer
      * container.  This method will raise a fatal error if no objects could
      * be connected; use ConnectWithoutContextFailSafe if no connections is
      * a valid possible outcome.
-     * \sa ns3::Config::ConnectWithoutContext
+     * @sa ns3::Config::ConnectWithoutContext
      */
     void ConnectWithoutContext(std::string name, const CallbackBase& cb);
     /**
@@ -326,7 +326,7 @@ class MatchContainer
      *
      * Disconnect the specified sink from all the objects stored in this
      * container.
-     * \sa ns3::Config::Disconnect
+     * @sa ns3::Config::Disconnect
      */
     void Disconnect(std::string name, const CallbackBase& cb);
     /**
@@ -335,7 +335,7 @@ class MatchContainer
      *
      * Disconnect the specified sink from all the objects stored in this
      * container.
-     * \sa ns3::Config::DisconnectWithoutContext
+     * @sa ns3::Config::DisconnectWithoutContext
      */
     void DisconnectWithoutContext(std::string name, const CallbackBase& cb);
 

@@ -61,7 +61,7 @@ class PointerValue : public AttributeValue
     /**
      * Construct this PointerValue by referencing an explicit Object.
      *
-     * @tparam T \deduced The type of the object.
+     * @tparam T @deduced The type of the object.
      * @param [in] object The object to begin with.
      */
     template <typename T>
@@ -69,7 +69,7 @@ class PointerValue : public AttributeValue
 
     /**
      * Cast to an Object of type \c T.
-     * @tparam T \explicit The type to cast to.
+     * @tparam T @explicit The type to cast to.
      */
     template <typename T>
     operator Ptr<T>() const;
@@ -83,14 +83,14 @@ class PointerValue : public AttributeValue
 
     /**
      * @returns The Pointer value.
-     * @tparam T \explicit The type to cast to.
+     * @tparam T @explicit The type to cast to.
      */
     template <typename T>
     Ptr<T> Get() const;
 
     /**
      * Access the Pointer value as type \p T.
-     * @tparam T \explicit The type to cast to.
+     * @tparam T @explicit The type to cast to.
      * @param [out] value The Pointer value, as type \p T.
      * @returns true.
      */
@@ -123,7 +123,7 @@ class PointerChecker : public AttributeChecker
 /**
  * @ingroup attribute_Pointer
  * Create a PointerChecker for a type.
- * @tparam T \explicit The underlying type.
+ * @tparam T @explicit The underlying type.
  * @returns The PointerChecker.
  * @hidecaller
  */

@@ -52,7 +52,7 @@ class MobilityHelper
     void SetPositionAllocator(Ptr<PositionAllocator> allocator);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of mobility model to use.
      * @param [in] args Name and AttributeValue pairs to set.
      */
@@ -60,7 +60,7 @@ class MobilityHelper
     void SetPositionAllocator(std::string type, Ts&&... args);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of mobility model to use.
      * @param [in] args Name and AttributeValue pairs to set.
      *

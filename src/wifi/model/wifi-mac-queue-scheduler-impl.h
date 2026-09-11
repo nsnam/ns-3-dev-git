@@ -42,7 +42,7 @@ class WifiMacQueue;
  * of the other types, and to management frames over data frames. In case multiple container queues
  * have precedence over others, the one with the highest priority is served.
  *
- * @tparam Prio \explicit Priority type (must provide the spaceship operator)
+ * @tparam Prio @explicit Priority type (must provide the spaceship operator)
  */
 template <class Prio>
 struct WifiSchedPrecedence

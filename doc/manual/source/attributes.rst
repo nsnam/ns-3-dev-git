@@ -891,8 +891,8 @@ This is a one-line public function declaration::
 
     public:
       /**
-       *  Register this type.
-       *  @return The object TypeId.
+       * Register this type.
+       * @return The object TypeId.
        */
       static TypeId GetTypeId();
 

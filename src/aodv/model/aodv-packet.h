@@ -105,7 +105,7 @@ std::ostream& operator<<(std::ostream& os, const TypeHeader& h);
 /**
 * @ingroup aodv
 * @brief   Route Request (RREQ) Message Format
-  \verbatim
+  @verbatim
   0                   1                   2                   3
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -121,7 +121,7 @@ std::ostream& operator<<(std::ostream& os, const TypeHeader& h);
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |                  Originator Sequence Number                   |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
+  @endverbatim
 */
 class RreqHeader : public Header
 {
@@ -327,7 +327,7 @@ std::ostream& operator<<(std::ostream& os, const RreqHeader&);
 /**
 * @ingroup aodv
 * @brief Route Reply (RREP) Message Format
-  \verbatim
+  @verbatim
   0                   1                   2                   3
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -341,7 +341,7 @@ std::ostream& operator<<(std::ostream& os, const RreqHeader&);
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |                           Lifetime                            |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
+  @endverbatim
 */
 class RrepHeader : public Header
 {
@@ -515,13 +515,13 @@ std::ostream& operator<<(std::ostream& os, const RrepHeader&);
 /**
 * @ingroup aodv
 * @brief Route Reply Acknowledgment (RREP-ACK) Message Format
-  \verbatim
+  @verbatim
   0                   1
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |     Type      |   Reserved    |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
+  @endverbatim
 */
 class RrepAckHeader : public Header
 {
@@ -561,7 +561,7 @@ std::ostream& operator<<(std::ostream& os, const RrepAckHeader&);
 /**
 * @ingroup aodv
 * @brief Route Error (RERR) Message Format
-  \verbatim
+  @verbatim
   0                   1                   2                   3
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -575,7 +575,7 @@ std::ostream& operator<<(std::ostream& os, const RrepAckHeader&);
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |Additional Unreachable Destination Sequence Numbers (if needed)|
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
+  @endverbatim
 */
 class RerrHeader : public Header
 {

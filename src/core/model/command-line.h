@@ -58,7 +58,7 @@ namespace ns3
    --PrintTypeIds:              Print all TypeIds.
    --PrintAttributes=[typeid]:  Print all attributes of typeid.
    --PrintVersion:              Print the ns-3 version.
-   --PrintHelp:                 Print this help message. \endverbatim
+   --PrintHelp:                 Print this help message. @endverbatim
  *
  * The more common \c \--version is a synonym for \c \--PrintVersion.
  *
@@ -77,12 +77,12 @@ namespace ns3
  *
  * In use, arguments are given in the form
  * @verbatim
-   --arg=value --toggle first-non-option\endverbatim
+   --arg=value --toggle first-non-option @endverbatim
  * Most arguments expect a value, as in the first form, \c \--arg=value.
  * Toggles, corresponding to boolean arguments, can be given in any of
  * the forms
  * @verbatim
-   --toggle1 --toggle2=1 --toggle3=t --toggle4=true \endverbatim
+   --toggle1 --toggle2=1 --toggle3=t --toggle4=true @endverbatim
  * The first form changes the state of toggle1 from its default;
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
@@ -93,7 +93,7 @@ namespace ns3
  * Option arguments can be repeated on the command line; the last value given
  * will be the final value used.  For example,
  * @verbatim
-   --arg=one --toggle=f --arg=another --toggle \endverbatim
+   --arg=one --toggle=f --arg=another --toggle @endverbatim
  * The variable set by \c \--arg will end up with the value \c "another";
  * the boolean set by \c \--toggle will end up as \c true.
  *
@@ -106,7 +106,7 @@ namespace ns3
  * CommandLine can set the initial value of every attribute in the system
  * with the \c \--TypeIdName::AttributeName=value syntax, for example
  * @verbatim
-   --Application::StartTime=3s \endverbatim
+   --Application::StartTime=3s @endverbatim
  * In some cases you may want to highlight the use of a particular
  * attribute for a simulation script.  For example, you might want
  * to make it easy to set the \c Application::StartTime using
@@ -118,7 +118,7 @@ namespace ns3
  * CommandLine can also set the value of every GlobalValue
  * in the system with the \c \--GlobalValueName=value syntax, for example
  * @verbatim
-   --SchedulerType=HeapScheduler \endverbatim
+   --SchedulerType=HeapScheduler @endverbatim
  *
  * A simple example of CommandLine is in `src/core/example/command-line-example.cc`
  * See that file for an example of handling non-option arguments.
@@ -181,7 +181,7 @@ namespace ns3
        --PrintTypeIds:              Print all TypeIds.
        --PrintAttributes=[typeid]:  Print all attributes of typeid.
        --PrintVersion:              Print the ns-3 version.
-       --PrintHelp:                 Print this help message. \endverbatim
+       --PrintHelp:                 Print this help message. @endverbatim
  *
  * Having parsed the arguments, some programs will need to perform
  * some additional validation of the received values.  A common issue at this
@@ -714,7 +714,7 @@ namespace CommandLineHelper
  *
  * @param [in] value The argument name
  * @param [out] dest The argument location
- * @tparam T \deduced The type being specialized
+ * @tparam T @deduced The type being specialized
  * @return \c true if parsing was successful
  */
 template <typename T>

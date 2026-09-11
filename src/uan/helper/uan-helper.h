@@ -36,7 +36,7 @@ class UanHelper
     /**
      * Set MAC attributes.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type The type of ns3::UanMac to create.
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -49,7 +49,7 @@ class UanHelper
     /**
      * Set PHY attributes.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param phyType The type of ns3::UanPhy to create.
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -62,7 +62,7 @@ class UanHelper
     /**
      * Set the transducer attributes.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type The type of ns3::Transducer to create.
      * @param [in] args Name and AttributeValue pairs to set.
      *

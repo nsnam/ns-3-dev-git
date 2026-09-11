@@ -56,7 +56,7 @@ namespace dsr
 
 /**
  * The route cache structure
-  \verbatim
+  @verbatim
   +-+-+-+-+-+-+-+-+-+-+-+-         +-+-+-+-+-+-+-+-+-+-+-            +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
   |  Destination Address |---------| Route Cache Entry  | ---------- | IP_VECTOR | dst | exp time |
   +-+-+-+-+-+-+-+-+-+-+-+-   Map   +-+-+-+-+-+-+-+-+-+-+-  Contains  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -71,7 +71,7 @@ namespace dsr
                                    | Route Cache Entry  | ---------- | IP_VECTOR | dst | exp time |
                                    +-+-+-+-+-+-+-+-+-+-+-  Contains  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
-  \endverbatim
+  @endverbatim
  */
 /**
  * @ingroup dsr

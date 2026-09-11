@@ -30,9 +30,9 @@ class EventImpl;
  * Make an EventImpl from class method members which take
  * varying numbers of arguments.
  *
- * @tparam MEM \deduced The class method function signature.
- * @tparam OBJ \deduced The class type holding the method.
- * @tparam Ts \deduced Type template parameter pack.
+ * @tparam MEM @deduced The class method function signature.
+ * @tparam OBJ @deduced The class type holding the method.
+ * @tparam Ts @deduced Type template parameter pack.
  * @param [in] mem_ptr Class method member function pointer
  * @param [in] obj Class instance.
  * @param [in] args Arguments to be bound to the underlying function.
@@ -56,8 +56,8 @@ std::enable_if_t<std::is_member_pointer_v<MEM>, EventImpl*> MakeEvent(MEM mem_pt
  * Make an EventImpl from a function pointer taking varying numbers
  * of arguments.
  *
- * @tparam Us \deduced Formal types of the arguments to the function.
- * @tparam Ts \deduced Actual types of the arguments to the function.
+ * @tparam Us @deduced Formal types of the arguments to the function.
+ * @tparam Ts @deduced Actual types of the arguments to the function.
  * @param [in] f The function pointer.
  * @param [in] args Arguments to be bound to the function.
  * @returns The constructed EventImpl.
@@ -98,7 +98,7 @@ namespace internal
  *
  * This is the generic template declaration (with empty body).
  *
- * @tparam T \explicit The class type.
+ * @tparam T @explicit The class type.
  */
 template <typename T>
 struct EventMemberImplObjTraits;
@@ -111,7 +111,7 @@ struct EventMemberImplObjTraits;
  *
  * This is the specialization for pointer types.
  *
- * @tparam T \explicit The class type.
+ * @tparam T @explicit The class type.
  */
 template <typename T>
 struct EventMemberImplObjTraits<T*>

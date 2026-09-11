@@ -43,7 +43,7 @@ class YansWifiChannelHelper
     static YansWifiChannelHelper Default();
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to add
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -59,7 +59,7 @@ class YansWifiChannelHelper
     template <typename... Ts>
     void AddPropagationLoss(std::string name, Ts&&... args);
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *

@@ -59,7 +59,7 @@ class WIFI_EXPORT WifiRadioEnergyModelHelper : public DeviceEnergyModelHelper
     void SetRechargedCallback(WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback callback);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *

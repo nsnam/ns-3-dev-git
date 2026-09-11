@@ -93,7 +93,7 @@ std::string DhcpChaddrToString(const DhcpChaddr& chaddr);
    |                                                               |
    |                          options (variable)                   |
    +---------------------------------------------------------------+
-   \endverbatim
+   @endverbatim
  */
 class DhcpHeader : public Header
 {

@@ -114,9 +114,9 @@ class ObjectPtrContainerValue : public AttributeValue
  *
  * The two versions of this function differ only in argument order.
  *
- * @tparam T \deduced The container class type.
- * @tparam U \deduced The type of object the get method returns.
- * @tparam INDEX \deduced The type of the index variable.
+ * @tparam T @deduced The container class type.
+ * @tparam U @deduced The type of object the get method returns.
+ * @tparam INDEX @deduced The type of the index variable.
  * @param [in] get The class method to get a specific instance
  *             from the container.
  * @param [in] getN The class method to return the number of objects
@@ -133,9 +133,9 @@ Ptr<const AttributeAccessor> MakeObjectPtrContainerAccessor(Ptr<U> (T::*get)(IND
  *
  * The two versions of this function differ only in argument order.
  *
- * @tparam T \deduced The container class type.
- * @tparam U \deduced The type of object the get method returns.
- * @tparam INDEX \deduced The type of the index variable.
+ * @tparam T @deduced The container class type.
+ * @tparam U @deduced The type of object the get method returns.
+ * @tparam INDEX @deduced The type of the index variable.
  * @param [in] get The class method to get a specific instance
  *             from the container.
  * @param [in] getN The class method to return the number of objects

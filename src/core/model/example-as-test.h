@@ -137,12 +137,13 @@ class ExampleAsTestCase : public TestCase
  * create a test file `mymodule/test/mymodule-examples-test-suite.cc`
  * which looks like this:
  *
- * \code{.cpp}
+ * @code{.cpp}
  *     #include "ns3/example-as-test.h"
  *     static ns3::ExampleAsTestSuite g_modExampleOne("mymodule-example-mod-example-one",
  *         "mod-example", NS_TEST_SOURCEDIR, "--arg-one");
  *     static ns3::ExampleAsTestSuite g_modExampleTwo("mymodule-example-mod-example-two",
- *         "mod-example", NS_TEST_SOURCEDIR, "--arg-two"); \endcode
+ *         "mod-example", NS_TEST_SOURCEDIR, "--arg-two");
+ * @endcode
  *
  * The arguments to the constructor are the name of the test suite, the
  * example to run, the directory that contains the "good" reference file
@@ -154,7 +155,7 @@ class ExampleAsTestCase : public TestCase
  * of test sources in `mymodule/CMakeLists.txt`.   Building of examples
  * is an option so you need to guard the inclusion of the test suite:
  *
- * \code{.py}
+ * @code{.py}
  * if (bld.env['ENABLE_EXAMPLES']):
  *    module.source.append('model/mymodule-examples-test-suite.cc')
  * @endcode

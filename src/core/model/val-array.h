@@ -261,7 +261,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
     /**
      * @brief operator-= definition for ValArray<T>.
      * @param rhs The rhs ValArray to be subtracted from this ValArray.
-     ** \return a reference to this ValArray instance
+     * @return a reference to this ValArray instance
      */
     ValArray<T>& operator-=(const ValArray<T>& rhs);
     /**

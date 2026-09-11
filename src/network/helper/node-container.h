@@ -87,7 +87,7 @@ class NodeContainer
      * Create a node container which is a concatenation of multiple input
      * NodeContainers.
      *
-     * @tparam Ts \deduced Template type parameter pack for the multiple
+     * @tparam Ts @deduced Template type parameter pack for the multiple
      *         NodeContainers
      * @param nc The first NodeContainer
      * @param args The remaining NodeContainers
@@ -229,7 +229,7 @@ class NodeContainer
      * @brief Append the contents of another NodeContainer to the end of
      * this container.
      *
-     * @tparam Ts \deduced Template type parameter pack for the multiple
+     * @tparam Ts @deduced Template type parameter pack for the multiple
      *         NodeContainer
      * @param nc The NodeContainer to append
      * @param args The remaining NodeContainers to append

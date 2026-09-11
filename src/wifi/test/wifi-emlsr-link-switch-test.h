@@ -288,12 +288,12 @@ class SingleLinkEmlsrTest : public EmlsrOperationsTestBase
  * during preamble detection period, before the PHY header end, before the MAC header end, before
  * the padding start and after the padding start.
  *
-   \verbatim
+   @verbatim
    ┌────────┬──────┬──────┬────────────────────┬───────┐
    │PREAMBLE│  PHY │  MAC │    MAC PAYLOAD     │       │
    │ DETECT │HEADER│HEADER│(COMMON & USER INFO)│PADDING│
    └────────┴──────┴──────┴────────────────────┴───────┘
-   \endverbatim
+   @endverbatim
  *
  * All the combinations of the following are tested:
  * - main PHY switches to the same link as ICF or to another link

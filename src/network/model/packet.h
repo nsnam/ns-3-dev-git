@@ -500,7 +500,7 @@ class Packet : public SimpleRefCount<Packet>
      *
      * @returns an iterator
      *
-     * \sa EnablePrinting EnableChecking
+     * @sa EnablePrinting EnableChecking
      */
     PacketMetadata::ItemIterator BeginItem() const;
 
@@ -575,11 +575,11 @@ class Packet : public SimpleRefCount<Packet>
      * As example, if you want to tag the first 10 bytes, you have to call
      * the method in this way:
      *
-     * \code{.cpp}
+     * @code{.cpp}
          Ptr<Packet> p = ... ;
          SomeTag tag;
          p->AddByteTag (tag, 1, 10);
-       \endcode
+       @endcode
      *
      * @param tag the new tag to add to this packet
      * @param start the position of the first byte tagged by this tag
@@ -664,7 +664,7 @@ class Packet : public SimpleRefCount<Packet>
      *
      * @param os the stream on which to print the tags.
      *
-     * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+     * @sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
      *  Packet::RemoveAllPacketTags
      */
     void PrintPacketTags(std::ostream& os) const;

@@ -136,13 +136,13 @@ class Mac16Address
      * consisting of the sixteen octets DST[1] through DST[16], is
      * transmitted to the following 802.15.4 16-bit multicast address:
 
-    \verbatim
+    @verbatim
       0                   1
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |1 0 0|DST[15]* |   DST[16]     |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    \endverbatim
+    @endverbatim
 
      * Here, DST[15]* refers to the last 5 bits in octet DST[15], that is,
      * bits 3-7 within DST[15].  The initial 3-bit pattern of "100" follows

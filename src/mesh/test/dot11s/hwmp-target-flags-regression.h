@@ -25,7 +25,7 @@ using namespace ns3;
  */
 // clang-format off
 /**
- * \verbatim
+ * @verbatim
    <-----------|----------->   Broadcast frame
                |----------->|  Unicast frame
    (Node ID)   0            1            2            3
@@ -58,7 +58,7 @@ using namespace ns3;
                |----------->|            |            |             PREP
                |            |----------->|            |             PREP
                |            |            |----------->|             PREP
-   \endverbatim
+   @endverbatim
  */
 // clang-format on
 

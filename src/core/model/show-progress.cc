@@ -201,7 +201,7 @@ ShowProgress::CheckProgress()
                         |
                         |   *= MAXGAIN
                         |
-       \endverbatim
+       @endverbatim
      *
      * As indicated, when ratio is outside the hysteresis band
      * it amounts to multiplying \c m_vtime by the min/max of the ratio

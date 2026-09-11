@@ -51,7 +51,7 @@ inline std::size_t g_nArgs = 0;
  *
  * Stringify the known TracedCallback type names.
  *
- * @tparam T \explicit The typedef name.
+ * @tparam T @explicit The typedef name.
  * @param [in] N The number of arguments expected.
  * @returns The \c TracedCallback type name.
  */
@@ -140,7 +140,7 @@ class TracedCallbackTypedefTestCase : public TestCase
         /**
          * Invoke a TracedCallback.
          *
-         * @tparam U \explicit The TracedCallback typedef under test.
+         * @tparam U @explicit The TracedCallback typedef under test.
          */
         template <typename U>
         void Invoke()

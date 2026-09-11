@@ -22,8 +22,8 @@ namespace ns3
 
 /**
  * Output streamer for a std::pair.
- * @tparam A \deduced Type of the `pair.first`.
- * @tparam B \deduced Type of the `pair.second`.
+ * @tparam A @deduced Type of the `pair.first`.
+ * @tparam B @deduced Type of the `pair.second`.
  * @param [in,out] os The output stream.
  * @param [in] p The pair.
  * @returns The output stream.
@@ -98,7 +98,7 @@ class PairValue : public AttributeValue
 
     /**
      * Access the Pair value as type \p T.
-     * @tparam T \explicit The type to cast to.
+     * @tparam T @explicit The type to cast to.
      * @param [out] value The Pair value, as type \p T.
      * @returns true.
      */
@@ -123,8 +123,8 @@ class PairChecker : public AttributeChecker
     /**
      * Set the individual AttributeChecker for each pair entry.
      *
-     * \param[in] firstchecker AttributeChecker for abscissa.
-     * \param[in] secondchecker AttributeChecker for ordinate.
+     * @param [in] firstchecker AttributeChecker for abscissa.
+     * @param [in] secondchecker AttributeChecker for ordinate.
      */
     virtual void SetCheckers(Ptr<const AttributeChecker> firstchecker,
                              Ptr<const AttributeChecker> secondchecker) = 0;
@@ -144,7 +144,7 @@ class PairChecker : public AttributeChecker
  *
  * This function returns a Pointer to a non-const instance to
  * allow subsequent setting of the underlying AttributeCheckers.
- * \param[in] value PairValue from which to derive abscissa and ordinate types.
+ * @param [in] value PairValue from which to derive abscissa and ordinate types.
  * @return Pointer to PairChecker instance.
  */
 template <class A, class B>
@@ -158,8 +158,8 @@ Ptr<AttributeChecker> MakePairChecker(const PairValue<A, B>& value);
  * This function returns a Pointer to a const instance since both
  * underlying AttributeCheckers are set.
  *
- * \param[in] firstchecker AttributeChecker for abscissa.
- * \param[in] secondchecker AttributeChecker for ordinate.
+ * @param [in] firstchecker AttributeChecker for abscissa.
+ * @param [in] secondchecker AttributeChecker for ordinate.
  * @return Pointer to PairChecker instance.
  */
 template <class A, class B>
@@ -180,9 +180,9 @@ Ptr<AttributeChecker> MakePairChecker();
  * @ingroup attribute_Pair
  *
  * Create an AttributeAccessor for std::pair<>.
- * @tparam A \explicit The type of pair.first.
- * @tparam B \explicit The type of pair.second.
- * @tparam T1 \deduced The argument pair type.
+ * @tparam A @explicit The type of pair.first.
+ * @tparam B @explicit The type of pair.second.
+ * @tparam T1 @deduced The argument pair type.
  * @param [in] a1 The std::pair to be accessed.
  * @returns The AttributeAccessor.
  */

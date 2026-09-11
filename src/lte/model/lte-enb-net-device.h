@@ -152,7 +152,7 @@ class LteEnbNetDevice : public LteNetDevice
     /**
      * @brief Returns the CSG ID of the eNodeB.
      * @return the Closed Subscriber Group identity
-     * \sa LteEnbNetDevice::SetCsgId
+     * @sa LteEnbNetDevice::SetCsgId
      */
     uint32_t GetCsgId() const;
 
@@ -166,14 +166,14 @@ class LteEnbNetDevice : public LteNetDevice
      * The same CSG identity can also be associated to several UEs, which is
      * equivalent as enlisting these UEs as the members of this particular CSG.
      *
-     * \sa LteEnbNetDevice::SetCsgIndication
+     * @sa LteEnbNetDevice::SetCsgIndication
      */
     void SetCsgId(uint32_t csgId);
 
     /**
      * @brief Returns the CSG indication flag of the eNodeB.
      * @return the CSG indication flag
-     * \sa LteEnbNetDevice::SetCsgIndication
+     * @sa LteEnbNetDevice::SetCsgIndication
      */
     bool GetCsgIndication() const;
 
@@ -190,7 +190,7 @@ class LteEnbNetDevice : public LteNetDevice
      * @note This restriction only applies to initial cell selection and
      *       EPC-enabled simulation.
      *
-     * \sa LteEnbNetDevice::SetCsgIndication
+     * @sa LteEnbNetDevice::SetCsgIndication
      */
     void SetCsgIndication(bool csgIndication);
 

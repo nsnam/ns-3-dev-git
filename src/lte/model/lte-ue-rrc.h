@@ -597,7 +597,7 @@ class LteUeRrc : public Object
      * eNodeB. See the LTE module's User Documentation for more information on
      * configuring this.
      *
-     * \sa LteRrcSap::MeasConfig, LteUeRrc::m_varMeasReportList
+     * @sa LteRrcSap::MeasConfig, LteUeRrc::m_varMeasReportList
      */
     void ApplyMeasConfig(LteRrcSap::MeasConfig mc);
 
@@ -622,7 +622,7 @@ class LteUeRrc : public Object
      * LteUeRrc::ApplyMeasConfig. Details on how the coefficient works and how to
      * modify it can be found in LTE module's Design Documentation.
      *
-     * \sa LteUeRrc::m_storedMeasValues
+     * @sa LteUeRrc::m_storedMeasValues
      */
     void SaveUeMeasurements(uint16_t cellId,
                             double rsrp,
@@ -1126,7 +1126,7 @@ class LteUeRrc : public Object
      * this measurement identity in #m_enteringTriggerQueue have become invalid
      * and must be canceled.
      *
-     * \sa LteUeRrc::m_enteringTriggerQueue
+     * @sa LteUeRrc::m_enteringTriggerQueue
      */
     void CancelEnteringTrigger(uint8_t measId);
 
@@ -1147,7 +1147,7 @@ class LteUeRrc : public Object
      * removed from all the waiting triggers for this measurement identity in
      * #m_enteringTriggerQueue.
      *
-     * \sa LteUeRrc::m_enteringTriggerQueue
+     * @sa LteUeRrc::m_enteringTriggerQueue
      */
     void CancelEnteringTrigger(uint8_t measId, uint16_t cellId);
 
@@ -1166,7 +1166,7 @@ class LteUeRrc : public Object
      * this measurement identity in #m_leavingTriggerQueue have become invalid
      * and must be canceled.
      *
-     * \sa LteUeRrc::m_leavingTriggerQueue
+     * @sa LteUeRrc::m_leavingTriggerQueue
      */
     void CancelLeavingTrigger(uint8_t measId);
 
@@ -1187,7 +1187,7 @@ class LteUeRrc : public Object
      * removed from all the waiting triggers for this measurement identity in
      * #m_leavingTriggerQueue.
      *
-     * \sa LteUeRrc::m_leavingTriggerQueue
+     * @sa LteUeRrc::m_leavingTriggerQueue
      */
     void CancelLeavingTrigger(uint8_t measId, uint16_t cellId);
 

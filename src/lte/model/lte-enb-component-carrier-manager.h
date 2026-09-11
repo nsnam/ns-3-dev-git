@@ -62,7 +62,7 @@ class LteCcmMacSapProvider;
  * However, user rarely needs to use the above code, since it has already been
  * taken care by LteHelper::InstallEnbDevice.
  *
- * \sa LteCcmRrcSapUser, LteCcmRrcSapProvider, LteCcmMacSapUser, LteCcmMacSapProvider
+ * @sa LteCcmRrcSapUser, LteCcmRrcSapProvider, LteCcmMacSapUser, LteCcmMacSapProvider
  */
 
 class LteEnbComponentCarrierManager : public Object

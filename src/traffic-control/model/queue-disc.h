@@ -527,8 +527,8 @@ class QueueDisc : public Object
      * This method is not virtual to prevent subclasses from redefining it.
      * Subclasses must instead provide the implementation of the CheckConfig
      * and InitializeParams methods (which are called by this method).
-     * \sa QueueDisc::InitializeParams
-     * \sa QueueDisc::CheckConfig
+     * @sa QueueDisc::InitializeParams
+     * @sa QueueDisc::CheckConfig
      */
     void DoInitialize() override;
 
@@ -604,7 +604,7 @@ class QueueDisc : public Object
      * the InitializeParams () method.  It is appropriate to promote parameter
      * initialization to this method if it aids in checking for correct
      * configuration.
-     * \sa QueueDisc::InitializeParams
+     * @sa QueueDisc::InitializeParams
      * @return true if the configuration is correct, false otherwise
      */
     virtual bool CheckConfig() = 0;
@@ -613,7 +613,7 @@ class QueueDisc : public Object
      * Initialize parameters (if any) before the first packet is enqueued.
      * This method is automatically called at simulation initialization time,
      * after the CheckConfig() method has been called.
-     * \sa QueueDisc::CheckConfig
+     * @sa QueueDisc::CheckConfig
      */
     virtual void InitializeParams() = 0;
 

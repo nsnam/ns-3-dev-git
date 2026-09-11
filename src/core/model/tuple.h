@@ -28,7 +28,7 @@ namespace ns3
  * Prints tuple values separated by a comma. E.g., if the tuple contains
  * v1, v2 and v3, then "v1, v2, v3" will be added to the stream.
  *
- * @tparam Args \deduced Tuple arguments
+ * @tparam Args @deduced Tuple arguments
  * @param os the output stream
  * @param t the tuple
  * @returns a reference to the stream
@@ -58,7 +58,7 @@ operator<<(std::ostream& os, const std::tuple<Args...>& t)
  * AttributeValue implementation for Tuple.
  *
  * Hold objects of type std::tuple<Args...>.
- * @tparam Args \explicit The list of AttributeValues to be held by this TupleValue
+ * @tparam Args @explicit The list of AttributeValues to be held by this TupleValue
  *
  * @see AttributeValue
  */
@@ -108,7 +108,7 @@ class TupleValue : public AttributeValue
     /**
      * Set the given variable to the values stored by this TupleValue object.
      *
-     * @tparam T \deduced the type of the given variable (normally, the argument type
+     * @tparam T @deduced the type of the given variable (normally, the argument type
      *           of a set method or the type of a data member)
      * @param [out] value The stored value
      * @return true if the given variable was set
@@ -121,7 +121,7 @@ class TupleValue : public AttributeValue
      * Set the attribute values starting from the given values.
      * Used by DeserializeFromString method.
      *
-     * @tparam Is \deduced index sequence
+     * @tparam Is @deduced index sequence
      * @param values the given attribute values
      * @return true if the attribute values of this object were set
      */
@@ -143,8 +143,8 @@ class TupleValue : public AttributeValue
  * TupleValue<UintegerValue, DoubleValue> t = MakeTupleValue<Pack> (Tuple {10, 1.5});
  * @endcode
  *
- * @tparam T1 \explicit A std::tuple of the AttributeValue types included in TupleValue
- * @tparam T2 \deduced A std::tuple of the type of elements stored by TupleValue
+ * @tparam T1 @explicit A std::tuple of the AttributeValue types included in TupleValue
+ * @tparam T2 @deduced A std::tuple of the type of elements stored by TupleValue
  * @param t the tuple of elements stored by TupleValue
  * @return a TupleValue object
  */
@@ -172,8 +172,8 @@ class TupleChecker : public AttributeChecker
  *
  * Create a TupleChecker from AttributeCheckers associated with TupleValue elements.
  *
- * @tparam Args \explicit Attribute value types
- * @tparam Ts \deduced Attribute checker types
+ * @tparam Args @explicit Attribute value types
+ * @tparam Ts @deduced Attribute checker types
  * @param checkers attribute checkers
  * @return Pointer to TupleChecker instance.
  */
@@ -186,8 +186,8 @@ Ptr<const AttributeChecker> MakeTupleChecker(Ts... checkers);
  * Create an AttributeAccessor for a class data member of type tuple,
  * or a lone class get functor or set method.
  *
- * @tparam Args \explicit Attribute value types
- * @tparam T1 \deduced The type of the class data member,
+ * @tparam Args @explicit Attribute value types
+ * @tparam T1 @deduced The type of the class data member,
  *            or the type of the class get functor or set method.
  * @param a1 The address of the data member,
  *           or the get or set method.
@@ -202,10 +202,10 @@ Ptr<const AttributeAccessor> MakeTupleAccessor(T1 a1);
  * Create an AttributeAccessor using a pair of get functor
  * and set methods from a class.
  *
- * @tparam Args \explicit Attribute value types
- * @tparam T1 \deduced The type of the class data member,
+ * @tparam Args @explicit Attribute value types
+ * @tparam T1 @deduced The type of the class data member,
  *            or the type of the class get functor or set method.
- * @tparam T2 \deduced The type of the getter class functor method.
+ * @tparam T2 @deduced The type of the getter class functor method.
  * @param a2 The address of the class method to set the attribute.
  * @param a1 The address of the data member, or the get or set method.
  * @return the AttributeAccessor
@@ -368,7 +368,7 @@ class TupleChecker : public ns3::TupleChecker
   public:
     /**
      * Constructor.
-     * @tparam Ts \deduced the type of the attribute checkers
+     * @tparam Ts @deduced the type of the attribute checkers
      * @param checkers the attribute checkers for individual elements of the tuple
      */
     template <class... Ts>

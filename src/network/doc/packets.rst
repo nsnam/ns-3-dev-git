@@ -427,7 +427,7 @@ The Packet API for packet tags is given below.::
    *
    * Print the list of 'packet' tags.
    *
-   * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+   * @sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
    *  Packet::RemoveAllPacketTags
    */
   void PrintPacketTags(std::ostream &os) const;

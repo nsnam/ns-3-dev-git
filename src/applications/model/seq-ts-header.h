@@ -28,7 +28,7 @@ namespace ns3
  * If you need space for an application data unit size field (e.g. for
  * stream-based protocols like TCP), use ns3::SeqTsSizeHeader.
  *
- * \sa ns3::SeqTsSizeHeader
+ * @sa ns3::SeqTsSizeHeader
  */
 class SeqTsHeader : public Header
 {

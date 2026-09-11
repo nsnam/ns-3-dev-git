@@ -21,7 +21,7 @@ namespace ns3
  * of class \c SeqTsHeader.  The size attribute can be used to track
  * application data units for stream-based sockets such as TCP.
  *
- * \sa ns3::SeqTsHeader
+ * @sa ns3::SeqTsHeader
  */
 class SeqTsSizeHeader : public SeqTsHeader
 {

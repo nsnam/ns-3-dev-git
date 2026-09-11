@@ -118,7 +118,7 @@ class Timer
     ~Timer();
 
     /**
-     * @tparam FN \deduced The type of the function.
+     * @tparam FN @deduced The type of the function.
      * @param [in] fn the function
      *
      * Store this function in this Timer for later use by Timer::Schedule.
@@ -127,8 +127,8 @@ class Timer
     void SetFunction(FN fn);
 
     /**
-     * @tparam MEM_PTR \deduced The type of the class member function.
-     * @tparam OBJ_PTR \deduced The type of the class instance pointer.
+     * @tparam MEM_PTR @deduced The type of the class member function.
+     * @tparam OBJ_PTR @deduced The type of the class instance pointer.
      * @param [in] memPtr the member function pointer
      * @param [in] objPtr the pointer to object
      *
@@ -139,7 +139,7 @@ class Timer
     void SetFunction(MEM_PTR memPtr, OBJ_PTR objPtr);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param [in] args arguments
      *
      * Store these arguments in this Timer for later use by Timer::Schedule.

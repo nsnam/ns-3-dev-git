@@ -315,7 +315,7 @@ class RarLteControlMessage : public LteControlMessage
  * MIB is transmitted by eNodeB RRC and received by UE RRC at every radio frame,
  * i.e., every 10 milliseconds.
  *
- * \sa LteEnbRrc::ConfigureCell, LteEnbPhy::StartFrame,
+ * @sa LteEnbRrc::ConfigureCell, LteEnbPhy::StartFrame,
  *     LteUeRrc::DoRecvMasterInformationBlock
  */
 class MibLteControlMessage : public LteControlMessage
@@ -354,7 +354,7 @@ class MibLteControlMessage : public LteControlMessage
  * SIB1 is transmitted by eNodeB RRC and received by UE RRC at the 6th subframe
  * of every odd-numbered radio frame, i.e., every 20 milliseconds.
  *
- * \sa LteEnbRrc::SetSystemInformationBlockType1, LteEnbPhy::StartSubFrame,
+ * @sa LteEnbRrc::SetSystemInformationBlockType1, LteEnbPhy::StartSubFrame,
  *     LteUeRrc::DoRecvSystemInformationBlockType1
  */
 class Sib1LteControlMessage : public LteControlMessage

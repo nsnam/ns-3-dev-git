@@ -29,7 +29,7 @@ class WifiMpdu;
  */
 // clang-format off
 /**
- * \verbatim
+ * @verbatim
    /------------\ send ADDBARequest ----------------
    |   START    |------------------>|   PENDING    |-------
    \------------/                   ----------------       \
@@ -45,7 +45,7 @@ class WifiMpdu;
          |                         ----------------         /
          |-------------------------|   NO_REPLY   |---------
            Reset after timeout     ----------------
-   \endverbatim
+   @endverbatim
 */
 // clang-format on
 

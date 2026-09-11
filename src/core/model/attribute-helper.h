@@ -78,9 +78,9 @@ namespace ns3
  *
  * A simple string-based attribute checker
  *
- * @tparam T    \explicit The specific AttributeValue type used to represent
+ * @tparam T    @explicit The specific AttributeValue type used to represent
  *              the Attribute.
- * @tparam BASE \explicit The AttributeChecker type corresponding to \pname{T}.
+ * @tparam BASE @explicit The AttributeChecker type corresponding to \pname{T}.
  * @param [in] name  The name of the AttributeValue type, essentially the
  *              string form of \pname{T}.
  * @param [in] underlying Underlying type name.

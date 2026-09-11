@@ -348,8 +348,8 @@ class WIFI_EXPORT WifiPhyStateHelper : public Object
     /**
      * Notify all WifiPhyListener objects of the given PHY event.
      *
-     * @tparam FUNC \deduced Member function type
-     * @tparam Ts \deduced Function argument types
+     * @tparam FUNC @deduced Member function type
+     * @tparam Ts @deduced Function argument types
      * @param f the member function to invoke
      * @param args arguments to pass to the member function
      */

@@ -55,7 +55,7 @@ class MeshHelper
      * All the attributes specified in this method should exist
      * in the requested mac.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param [in] args Name and AttributeValue pairs to set.
      */
     template <typename... Ts>
@@ -66,7 +66,7 @@ class MeshHelper
      * All the attributes specified in this method should exist
      * in the requested station manager.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of remote station manager to use.
      * @param [in] args Name and AttributeValue pairs to set.
      */
@@ -115,7 +115,7 @@ class MeshHelper
     /**
      * @brief Set the MeshStack type to use.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of ns3::MeshStack.
      * @param [in] args Name and AttributeValue pairs to set.
      */

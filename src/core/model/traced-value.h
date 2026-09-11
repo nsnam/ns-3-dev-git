@@ -98,7 +98,7 @@ typedef void (*Void)();
  * and will define Connect/DisconnectWithoutContext methods to work
  * with MakeTraceSourceAccessor.
  *
- * @tparam T \explicit The type of the underlying value being traced.
+ * @tparam T @explicit The type of the underlying value being traced.
  */
 template <typename T>
 class TracedValue
@@ -151,7 +151,7 @@ class TracedValue
 
     /**
      * Copy from a TracedValue of a compatible type.
-     * @tparam U \deduced The underlying type of the other TracedValue.
+     * @tparam U @deduced The underlying type of the other TracedValue.
      * @param [in] other The other TracedValue to copy.
      */
     template <typename U>
@@ -162,7 +162,7 @@ class TracedValue
 
     /**
      * Copy from a variable type compatible with this underlying type.
-     * @tparam U \deduced Type of the other variable.
+     * @tparam U @deduced Type of the other variable.
      * @param [in] other The other variable to copy.
      */
     template <typename U>
@@ -307,7 +307,7 @@ class TracedValue
  *
  * The underlying value will be written to the stream.
  *
- * @tparam T \deduced The underlying type of the TracedValue.
+ * @tparam T @deduced The underlying type of the TracedValue.
  * @param [in,out] os The output stream.
  * @param [in] rhs The TracedValue to stream.
  * @returns The stream.
@@ -321,8 +321,8 @@ operator<<(std::ostream& os, const TracedValue<T>& rhs)
 
 /**
  * Boolean operator for TracedValue.
- * @tparam T \deduced The underlying type held by the left-hand argument.
- * @tparam U \deduced The underlying type held by the right-hand argument.
+ * @tparam T @deduced The underlying type held by the left-hand argument.
+ * @tparam U @deduced The underlying type held by the right-hand argument.
  * @param [in] lhs The left-hand argument.
  * @param [in] rhs The right-hand argument.
  * @returns The Boolean result of comparing the underlying values.
@@ -480,8 +480,8 @@ operator>(const U& lhs, const TracedValue<T>& rhs)
  * This returns the arithmetic result in a new TracedValue,
  * which has no Callback connected.
  *
- * @tparam T \deduced The underlying type held by the left-hand argument.
- * @tparam U \deduced The underlying type held by the right-hand argument.
+ * @tparam T @deduced The underlying type held by the left-hand argument.
+ * @tparam U @deduced The underlying type held by the right-hand argument.
  * @param [in] lhs The left-hand argument.
  * @param [in] rhs The right-hand argument.
  * @returns The result of doing the operator on the underlying values.
@@ -746,8 +746,8 @@ operator>>(const U& lhs, const TracedValue<T>& rhs) -> TracedValue<decltype(lhs 
  * is assigned to the \c lhs TracedValue.  If the new value
  * is different, the Callback will be invoked.
  *
- * @tparam T \deduced The underlying type held by the left-hand argument.
- * @tparam U \deduced The underlying type held by the right-hand argument.
+ * @tparam T @deduced The underlying type held by the left-hand argument.
+ * @tparam U @deduced The underlying type held by the right-hand argument.
  * @param [in] lhs The left-hand argument.
  * @param [in] rhs The right-hand argument.
  * @returns The result of doing the operator on the underlying values.
@@ -868,7 +868,7 @@ operator^=(TracedValue<T>& lhs, const U& rhs)
 /**
  * Unary arithmetic operator for TracedValue.
  *
- * @tparam T \deduced The underlying type held by the TracedValue.
+ * @tparam T @deduced The underlying type held by the TracedValue.
  * @param [in] lhs The TracedValue.
  * @returns The result of doing the operator on the underlying values.
  */

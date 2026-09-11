@@ -255,7 +255,7 @@ class DsrOptionPadnHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            Address[n]                         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRreqHeader : public DsrOptionHeader
 {
@@ -405,7 +405,7 @@ class DsrOptionRreqHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            Address[n]                         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRrepHeader : public DsrOptionHeader
 {
@@ -523,7 +523,7 @@ class DsrOptionRrepHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            Address[n]                         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionSRHeader : public DsrOptionHeader
 {
@@ -687,7 +687,7 @@ enum ErrorType
    .                    Type-Specific Information                  .
    .                                                               .
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  *
  * The type-specific information field varies by type of error,
  * as detailed in the derived classes.
@@ -819,7 +819,7 @@ class DsrOptionRerrHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                    Unreachable Node Address                   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
 {
@@ -960,7 +960,7 @@ class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
    +-+-+-+-+-+-+-+-+
    |Unsupported Opt|
    +-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRerrUnsupportedHeader : public DsrOptionRerrHeader
 {
@@ -1085,7 +1085,7 @@ class DsrOptionRerrUnsupportedHeader : public DsrOptionRerrHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Option Type |  Opt Data Len |         Identification         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionAckReqHeader : public DsrOptionHeader
 {
@@ -1168,7 +1168,7 @@ class DsrOptionAckReqHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                     ACK Destination Address                   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionAckHeader : public DsrOptionHeader
 {

@@ -51,7 +51,7 @@ namespace ns3
  * Computer Networks 7: pp. 395-405, DOI 10.1016/0376-5075(83)90034-X, 1983,
  * <https://web.archive.org/web/20180723135334/http://pbg.cs.illinois.edu/courses/cs598fa09/readings/p83.pdf>.
  *
- * @tparam T \explicit The type being used for the counter.
+ * @tparam T @explicit The type being used for the counter.
  */
 template <class T>
 class LollipopCounter
@@ -80,7 +80,7 @@ class LollipopCounter
      * The Sequence Window is set to the default value.
      *
      * @param val the initial value of the Lollipop Counter
-     * @tparam T \deduced The type being used for the counter.
+     * @tparam T @deduced The type being used for the counter.
      */
     LollipopCounter(T val)
     {

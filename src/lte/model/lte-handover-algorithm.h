@@ -49,7 +49,7 @@ class LteHandoverManagementSapProvider;
  * However, user rarely needs to use the above code, since it has already been
  * taken care by LteHelper::InstallEnbDevice.
  *
- * \sa LteHandoverManagementSapProvider, LteHandoverManagementSapUser
+ * @sa LteHandoverManagementSapProvider, LteHandoverManagementSapUser
  */
 class LteHandoverAlgorithm : public Object
 {

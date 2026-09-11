@@ -79,7 +79,7 @@ std::string Append(std::string left, std::string right);
  * @param [in] path A path
  * @return A list of path elements that can be joined together again with
  *         the Join function.
- * \sa ns3::SystemPath::Join
+ * @sa ns3::SystemPath::Join
  */
 std::list<std::string> Split(std::string path);
 

@@ -42,7 +42,7 @@ class TimerImpl
     /**
      * Set the arguments to be used when invoking the expire function.
      *
-     * @tparam Args \deduced Type template parameter pack
+     * @tparam Args @deduced Type template parameter pack
      * @param [in] args The arguments to pass to the invoked method
      */
     template <typename... Args>
@@ -83,8 +83,8 @@ struct TimerImplX : public TimerImpl
 /**
  * Make a TimerImpl from a function pointer taking varying numbers of arguments.
  *
- * @tparam U \deduced Return type of the callback function.
- * @tparam Ts \deduced Argument types of the callback function.
+ * @tparam U @deduced Return type of the callback function.
+ * @tparam Ts @deduced Argument types of the callback function.
  * @returns The TimerImpl.
  */
 template <typename U, typename... Ts>
@@ -126,10 +126,10 @@ MakeTimerImpl(U(fn)(Ts...))
  * Make a TimerImpl from a class method pointer taking
  * a varying number of arguments.
  *
- * @tparam OBJ_PTR \deduced Class type.
- * @tparam U \deduced Class method function return type.
- * @tparam V \deduced Class method function class type.
- * @tparam Ts \deduced Class method function argument types.
+ * @tparam OBJ_PTR @deduced Class type.
+ * @tparam U @deduced Class method function return type.
+ * @tparam V @deduced Class method function class type.
+ * @tparam Ts @deduced Class method function argument types.
  * @param [in] memPtr Class method to invoke when the timer expires.
  * @param [in] objPtr Object instance pointer.
  * @returns The TimerImpl.

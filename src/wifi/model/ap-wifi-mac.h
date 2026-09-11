@@ -298,7 +298,7 @@ class ApWifiMac : public WifiMac
      * The type of \p map is ApWifiMac::UintAccessParamsMapValue::result_type, which is
      * std::list<std::pair<AcIndex, std::vector<uint64_t>>>.
      *
-     * @tparam T \explicit the type of the unsigned integer access parameter
+     * @tparam T @explicit the type of the unsigned integer access parameter
      * @return a checker for the CwMinsForSta, CwMaxsForSta and AifsnsForSta attributes
      */
     template <class T>

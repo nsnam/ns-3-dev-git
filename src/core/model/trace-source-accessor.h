@@ -132,8 +132,8 @@ namespace ns3
  * @ingroup tracing
  * MakeTraceSourceAccessor() implementation.
  *
- * @tparam T \deduced Class type of the TracedCallback
- * @tparam SOURCE \deduced Type of the underlying value.
+ * @tparam T @deduced Class type of the TracedCallback
+ * @tparam SOURCE @deduced Type of the underlying value.
  * @param [in] a The underlying data value.
  * @returns The TraceSourceAccessor
  */
