@@ -306,6 +306,7 @@ set(test_sources
     test/callback-test-suite.cc
     test/command-line-test-suite.cc
     test/config-test-suite.cc
+    test/des-metrics-test-suite.cc
     test/environment-variable-test-suite.cc
     test/event-garbage-collector-test-suite.cc
     test/global-value-test-suite.cc

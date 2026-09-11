@@ -53,6 +53,7 @@ Python 3.10 to 3.14.
 - (spectrum) #1369 The phased-array beamforming gain of a signal is now computed with the transmitter's beamforming vector at transmission time rather than at arrival time, which differed whenever the array was re-steered while the signal was propagating.
 - (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
 - (mesh) #1341 Fixed dot11s regression that ignored the link rate, degrading the HWMP routing metric to hop count.
+- (core) !3006 DesMetrics now writes the command line arguments into the JSON trace header when available, instead of the empty-arguments placeholder.
 - (sixlowpan) #1342 Fixed a deserialization error in the MESH header.
 - (dsr) !2762 Fixes header format to comply with RFC4728. Also other minor bug fixes and modernization.
 - (zigbee) In the NWK, broadcast initiator devices are now registered in the BTT to avoid receiving retransmissions.

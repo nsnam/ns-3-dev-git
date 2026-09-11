@@ -67,6 +67,10 @@ DesMetrics::Initialize(std::vector<std::string> args, std::string outDir /* = ""
     m_os << " \"command_line_arguments\" : \"";
     if (args.empty())
     {
+        m_os << "[argv empty or not available]";
+    }
+    else
+    {
         for (std::size_t i = 0; i < args.size(); ++i)
         {
             if (i > 0)
@@ -75,10 +79,6 @@ DesMetrics::Initialize(std::vector<std::string> args, std::string outDir /* = ""
             }
             m_os << args[i];
         }
-    }
-    else
-    {
-        m_os << "[argv empty or not available]";
     }
     m_os << "\"," << std::endl;
     m_os << " \"events\" : [" << std::endl;
