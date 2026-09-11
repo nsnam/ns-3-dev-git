@@ -27,14 +27,6 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("TdTbfqFfMacScheduler");
 
-/// TDTBFQ type 0 allocation RBG (see table 7.1.6.1-1 of 36.213)
-static const int TdTbfqType0AllocationRbg[4] = {
-    10,  // RBG size 1
-    26,  // RBG size 2
-    63,  // RBG size 3
-    110, // RBG size 4
-};
-
 NS_OBJECT_ENSURE_REGISTERED(TdTbfqFfMacScheduler);
 
 TdTbfqFfMacScheduler::TdTbfqFfMacScheduler()
@@ -360,20 +352,6 @@ TdTbfqFfMacScheduler::DoSchedDlMacBufferReq(
     NS_FATAL_ERROR("method not implemented");
 }
 
-int
-TdTbfqFfMacScheduler::GetRbgSize(int dlbandwidth)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        if (dlbandwidth < TdTbfqType0AllocationRbg[i])
-        {
-            return i + 1;
-        }
-    }
-
-    return -1;
-}
-
 unsigned int
 TdTbfqFfMacScheduler::LcActivePerFlow(uint16_t rnti)
 {
@@ -503,7 +481,7 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq(
 
     RefreshDlCqiMaps();
 
-    int rbgSize = GetRbgSize(m_cschedCellConfig.m_dlBandwidth);
+    int rbgSize = GetLteRbgSize(m_cschedCellConfig.m_dlBandwidth);
     int rbgNum = m_cschedCellConfig.m_dlBandwidth / rbgSize;
     std::map<uint16_t, std::vector<uint16_t>> allocationMap; // RBs map per RNTI
     std::vector<bool> rbgMap;                                // global RBGs map

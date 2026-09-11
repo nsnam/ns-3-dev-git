@@ -12,6 +12,7 @@
 #include "ns3/uinteger.h"
 
 #include <cmath>
+#include <cstddef>
 
 // see 36.213 section 8
 #define UL_PUSCH_TTIS_DELAY 4
@@ -20,6 +21,15 @@
 
 namespace ns3
 {
+
+/**
+ * Get the Type 0 resource block group (RBG) size for a downlink bandwidth,
+ * according to 3GPP TS 36.213, table 7.1.6.1-1.
+ *
+ * @param dlBandwidth Downlink bandwidth, in number of resource blocks.
+ * @return The RBG size, in number of resource blocks.
+ */
+std::size_t GetLteRbgSize(uint16_t dlBandwidth);
 
 /// Minimum number of carrier components allowed by 3GPP up to R13
 constexpr uint32_t MIN_NO_CC = 1;

@@ -191,13 +191,6 @@ class FdMtFfMacScheduler : public FfMacScheduler
     void DoSchedUlCqiInfoReq(const FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
 
     /**
-     * Get RBG size function
-     * @param dlbandwidth the DL bandwidth
-     * @returns the RBG size
-     */
-    int GetRbgSize(int dlbandwidth);
-
-    /**
      * LC Active per flow function
      * @param rnti the RNTI
      * @returns the LC active per flow

@@ -9,6 +9,8 @@
 
 #include "lte-ffr-algorithm.h"
 
+#include "lte-common.h"
+
 #include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
@@ -17,14 +19,6 @@ namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("LteFfrAlgorithm");
-
-/// Type 0 RBG allocation (see table 7.1.6.1-1 of 3GPP TS 36.213)
-static const int Type0AllocationRbg[4] = {
-    10,  // RBG size 1
-    26,  // RBG size 2
-    63,  // RBG size 3
-    110, // RBG size 4
-};
 
 NS_OBJECT_ENSURE_REGISTERED(LteFfrAlgorithm);
 
@@ -141,15 +135,7 @@ LteFfrAlgorithm::GetFrCellTypeId() const
 int
 LteFfrAlgorithm::GetRbgSize(int dlbandwidth)
 {
-    for (int i = 0; i < 4; i++)
-    {
-        if (dlbandwidth < Type0AllocationRbg[i])
-        {
-            return i + 1;
-        }
-    }
-
-    return -1;
+    return GetLteRbgSize(dlbandwidth);
 }
 
 void
