@@ -139,17 +139,16 @@ class WallClockSynchronizer : public Synchronizer
     uint64_t DriftCorrect(uint64_t nsNow, uint64_t nsDelay);
 
     /**
-     * @brief Get the current absolute real time (in ns since the epoch).
-     *
-     * Note that the epoch might be OS dependent.
+     * @brief Get the current real time, in ns, relative to the
+     * std::chrono::steady_clock epoch.
      *
      * @returns The current real time, in ns.
      */
     uint64_t GetRealtime();
     /**
-     * @brief Get the current normalized real time, in ns.
+     * @brief Get the elapsed real time since the simulation started, in ns.
      *
-     * @returns The current normalized real time, in ns.
+     * @returns The elapsed real time, in ns.
      */
     uint64_t GetNormalizedRealtime();
 
