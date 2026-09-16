@@ -265,11 +265,14 @@ ComputeSnr(const ComputeSnrParams& params)
     sign = +1.0;
     DoBeamforming(params.rxMob, params.rxAntenna, params.txMob, sign);
     // apply the fast fading and the beamforming gain
-    auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
-                                                                    params.txMob,
-                                                                    params.rxMob,
-                                                                    params.txAntenna,
-                                                                    params.rxAntenna);
+    auto rxParams =
+        m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
+                                                        params.txMob,
+                                                        params.rxMob,
+                                                        params.txAntenna,
+                                                        params.rxAntenna,
+                                                        params.txAntenna->GetBeamformingVector(),
+                                                        params.rxAntenna->GetBeamformingVector());
     auto rxPsdSteering = rxParams->psd;
     NS_LOG_DEBUG("Average rx power " << 10 * log10(Sum(*rxPsdSteering) * 180e3) << " dB");
     NS_LOG_DEBUG("Average SNR " << 10 * log10(Sum(*rxPsdSteering) / Sum(*noisePsd)) << " dB");
@@ -289,7 +292,9 @@ ComputeSnr(const ComputeSnrParams& params)
                                                         params.txMob,
                                                         params.rxMob,
                                                         params.txAntenna,
-                                                        params.rxAntenna);
+                                                        params.rxAntenna,
+                                                        params.txAntenna->GetBeamformingVector(),
+                                                        params.rxAntenna->GetBeamformingVector());
 
     auto rxPsdMatchedFilterComb = rxParamsMatchedFilterComb->psd;
     NS_LOG_DEBUG("Average rx power when using matched filter combining "

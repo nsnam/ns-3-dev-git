@@ -166,11 +166,14 @@ ComputeSnr(const ComputeSnrParams& params)
     double propagationGainLinear = std::pow(10.0, (propagationGainDb) / 10.0);
     *(params.txParams->psd) *= propagationGainLinear;
     // apply the fast fading and the beamforming gain
-    auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(params.txParams,
-                                                                    params.txMob,
-                                                                    params.rxMob,
-                                                                    params.txAntenna,
-                                                                    params.rxAntenna);
+    auto rxParams =
+        m_spectrumLossModel->CalcRxPowerSpectralDensity(params.txParams,
+                                                        params.txMob,
+                                                        params.rxMob,
+                                                        params.txAntenna,
+                                                        params.rxAntenna,
+                                                        params.txAntenna->GetBeamformingVector(),
+                                                        params.rxAntenna->GetBeamformingVector());
     Ptr<SpectrumValue> rxPsd = rxParams->psd;
     // create the noise psd
     // taken from lte-spectrum-value-helper

@@ -197,11 +197,14 @@ ComputeSnr(const ComputeSnrParams& params)
     NS_ASSERT_MSG(params.rxAntenna, "params.rxAntenna is nullptr!");
 
     // apply the fast fading and the beamforming gain
-    auto rxParams = m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
-                                                                    params.txMob,
-                                                                    params.rxMob,
-                                                                    params.txAntenna,
-                                                                    params.rxAntenna);
+    auto rxParams =
+        m_spectrumLossModel->CalcRxPowerSpectralDensity(txParams,
+                                                        params.txMob,
+                                                        params.rxMob,
+                                                        params.txAntenna,
+                                                        params.rxAntenna,
+                                                        params.txAntenna->GetBeamformingVector(),
+                                                        params.rxAntenna->GetBeamformingVector());
     auto rxPsd = rxParams->psd;
     double rxPowDb = 10 * log10(Sum(*rxPsd) * 180e3);
     double snrDb = 10 * log10(Sum(*rxPsd) / Sum(*noisePsd));

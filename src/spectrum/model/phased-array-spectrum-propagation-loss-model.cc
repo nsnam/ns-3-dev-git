@@ -61,23 +61,6 @@ PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
     Ptr<const MobilityModel> a,
     Ptr<const MobilityModel> b,
     Ptr<const PhasedArrayModel> aPhasedArrayModel,
-    Ptr<const PhasedArrayModel> bPhasedArrayModel) const
-{
-    return CalcRxPowerSpectralDensity(params,
-                                      a,
-                                      b,
-                                      aPhasedArrayModel,
-                                      bPhasedArrayModel,
-                                      aPhasedArrayModel->GetBeamformingVector(),
-                                      bPhasedArrayModel->GetBeamformingVector());
-}
-
-Ptr<SpectrumSignalParameters>
-PhasedArraySpectrumPropagationLossModel::CalcRxPowerSpectralDensity(
-    Ptr<const SpectrumSignalParameters> params,
-    Ptr<const MobilityModel> a,
-    Ptr<const MobilityModel> b,
-    Ptr<const PhasedArrayModel> aPhasedArrayModel,
     Ptr<const PhasedArrayModel> bPhasedArrayModel,
     const PhasedArrayModel::ComplexVector& aBeamformingVector,
     const PhasedArrayModel::ComplexVector& bBeamformingVector) const

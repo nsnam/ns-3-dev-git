@@ -267,11 +267,14 @@ ComputeSnr(ComputeSnrParams& params)
         ConstCast<AntennaModel, const AntennaModel>(params.txAntenna->GetAntennaElement());
 
     // apply the fast fading and the beamforming gain
-    rxSsp = m_spectrumLossModel->CalcRxPowerSpectralDensity(rxSsp,
-                                                            params.txMob,
-                                                            params.rxMob,
-                                                            params.txAntenna,
-                                                            params.rxAntenna);
+    rxSsp =
+        m_spectrumLossModel->CalcRxPowerSpectralDensity(rxSsp,
+                                                        params.txMob,
+                                                        params.rxMob,
+                                                        params.txAntenna,
+                                                        params.rxAntenna,
+                                                        params.txAntenna->GetBeamformingVector(),
+                                                        params.rxAntenna->GetBeamformingVector());
     NS_LOG_DEBUG("Average rx power " << 10 * log10(Sum(*rxSsp->psd) * params.bandwidth) << " dB");
 
     // compute the SNR

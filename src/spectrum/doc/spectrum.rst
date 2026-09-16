@@ -771,13 +771,14 @@ received PSD and the frequency domain 3D spectrum channel matrix.
 Procedure used to compute the PSD of the received signal and the frequency domain 3D
 spectrum channel matrix:
 
-1. Retrieve the beamforming vectors
-To account for the beamforming, ``ThreeGppSpectrumPropagationLossModel`` has to
-retrieve the beamforming vectors of the transmitting and receiving antennas.
-The method ``DoCalcRxPowerSpectralDensity`` uses the antenna objects
-that are passed as parameters for both the transmitting and receiving devices,
-and calls the method GetBeamformingVector to retrieve the beamforming vectors
-of these antenna objects.
+1. Obtain the beamforming vectors
+To account for the beamforming, ``ThreeGppSpectrumPropagationLossModel`` needs
+the beamforming vectors of the transmitting and receiving antennas.
+The method ``DoCalcRxPowerSpectralDensity`` receives them as parameters,
+together with the antenna objects of both devices; it does not read the
+vectors from the antenna objects itself, so the caller decides which vectors
+apply (``MultiModelSpectrumChannel`` passes the transmitter's vector captured
+when the transmission started).
 
 2. Retrieve the channel matrix and the channel params
 The ``ThreeGppSpectrumPropagationLossModel`` relies on the ``ThreeGppChannelModel`` class
