@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <ctime>
 #include <filesystem>
+#include <iterator>
 #include <regex>
 #include <sstream>
 #include <system_error>
@@ -243,7 +244,7 @@ Split(std::string path)
 std::string
 Join(std::list<std::string>::const_iterator begin, std::list<std::string>::const_iterator end)
 {
-    NS_LOG_FUNCTION(*begin << *end);
+    NS_LOG_FUNCTION(std::distance(begin, end));
     std::string retval = "";
     for (auto i = begin; i != end; i++)
     {
