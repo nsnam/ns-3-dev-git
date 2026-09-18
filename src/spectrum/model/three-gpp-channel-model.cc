@@ -21,14 +21,18 @@
 #include "ns3/pointer.h"
 #include "ns3/shuffle.h"
 #include "ns3/simulator.h"
+#include "ns3/spatial-gaussian-field.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
 #include "ns3/uniform-planar-array.h"
 
 #include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstring>
 #include <map>
 #include <random>
+#include <utility>
 
 namespace ns3
 {
@@ -88,6 +92,14 @@ GetPanelApertures(Ptr<const PhasedArrayModel> antenna)
     }
     return {std::hypot(maxLoc.x - minLoc.x, maxLoc.y - minLoc.y), maxLoc.z - minLoc.z};
 }
+
+/**
+ * LSP, cluster and ray random fields (TR 38.901 Sec. 7.6.3.1), see
+ * SpatialGaussianField. Irwin-Hall cells are used because a channel generation
+ * draws thousands of field samples of hundreds of cells each.
+ */
+const SpatialGaussianField kClusterField{SpatialGaussianField::Salt::CHANNEL_PARAMETERS,
+                                         SpatialGaussianField::CellGenerator::IrwinHall};
 
 /**
  * Maximum 2D displacement (in meters) allowed for a single channel-consistency update step.
@@ -1193,6 +1205,7 @@ ThreeGppChannelModel::DoDispose()
     }
     m_channelMatrixMap.clear();
     m_channelParamsMap.clear();
+    m_fieldWindowCache.clear();
     m_channelConditionModel = nullptr;
 }
 
@@ -1280,7 +1293,8 @@ ThreeGppChannelModel::GetTypeId()
                           "becoming an individually delayed tap without the sub-cluster mapping "
                           "of Table 7.5-5. Set ChannelBandwidth to the simulation bandwidth. "
                           "Procedure A updates are replaced by a full regeneration, temporally "
-                          "consistent only together with InterUeSpatialConsistency.",
+                          "consistent only together with the InterUeSpatialConsistency "
+                          "attribute of the ChannelConditionModel.",
                           BooleanValue(false),
                           MakeBooleanAccessor(&ThreeGppChannelModel::m_largeBandwidthArrayModeling),
                           MakeBooleanChecker())
@@ -2642,7 +2656,8 @@ ThreeGppChannelModel::GetChannel(Ptr<const MobilityModel> aMob,
             {
                 // The Procedure A update paths operate on the cluster-level structures,
                 // which the large bandwidth modeling replaces by per-ray taps: fall back
-                // to a full regeneration.
+                // to a full regeneration. With InterUeSpatialConsistency enabled the
+                // regenerated parameters remain consistent with the previous position.
                 NS_LOG_DEBUG("Regenerate the channel parameters (large bandwidth modeling)");
                 m_channelParamsMap.insert_or_assign(channelParamsKey,
                                                     GenerateChannelParameters(condition,
@@ -2702,19 +2717,192 @@ ThreeGppChannelModel::GetParams(Ptr<const MobilityModel> aMob, Ptr<const Mobilit
     return nullptr;
 }
 
+void
+ThreeGppChannelModel::GetLspCorrelationDistances(std::array<double, 7>& los,
+                                                 std::array<double, 7>& nlos,
+                                                 std::array<double, 7>& o2i) const
+{
+    // TR 38.901 Table 7.5-6 correlation distances in the horizontal plane
+    // (meters), in canonical parameter order [SF,K,DS,ASD,ASA,ZSD,ZSA]. The
+    // K entry of the NLOS/O2I sets is unused (no K column in the table).
+    // Scenarios without a Table 7.5-6 column (V2V, NTN) fall back to the UMa
+    // distances.
+    los = {37, 12, 30, 18, 15, 15, 15};
+    nlos = {50, 0, 40, 50, 50, 50, 50};
+    o2i = {7, 0, 10, 11, 17, 25, 25};
+    if (m_scenario == "UMi-StreetCanyon")
+    {
+        los = {10, 15, 7, 8, 8, 12, 12};
+        nlos = {13, 0, 10, 10, 9, 10, 10};
+        o2i = {7, 0, 10, 11, 17, 25, 25};
+    }
+    else if (m_scenario == "RMa")
+    {
+        los = {37, 40, 50, 25, 35, 15, 15};
+        nlos = {120, 0, 36, 30, 40, 50, 50};
+        o2i = nlos;
+    }
+    else if (m_scenario == "InH-OfficeMixed" || m_scenario == "InH-OfficeOpen")
+    {
+        los = {10, 4, 8, 7, 5, 4, 4};
+        nlos = {6, 0, 5, 3, 3, 4, 4};
+        o2i = nlos;
+    }
+}
+
+double
+ThreeGppChannelModel::SampleSpatiallyCorrelatedNormal(uint32_t siteNodeId,
+                                                      uint8_t condSlot,
+                                                      uint32_t varId,
+                                                      const Vector& position,
+                                                      double corrDist) const
+{
+    // One independent field per (site, condition slot, variate).
+    const uint64_t fieldKey = (static_cast<uint64_t>(siteNodeId) << 32) |
+                              (static_cast<uint64_t>(condSlot) << 29) |
+                              static_cast<uint64_t>(varId);
+
+    if (corrDist <= 0.0)
+    {
+        return kClusterField.Sample(fieldKey, position, corrDist);
+    }
+
+    // The window weights depend only on (position, corrDist), which are shared
+    // by every variate drawn for one link (and, for the cluster/ray variates,
+    // by all of them), so they are cached and reused across the thousands of
+    // field draws of one channel generation.
+    if (m_fieldWindowPos.x != position.x || m_fieldWindowPos.y != position.y)
+    {
+        m_fieldWindowPos = position;
+        m_fieldWindowCache.clear();
+    }
+    auto [wIt, wInserted] = m_fieldWindowCache.try_emplace(corrDist);
+    if (wInserted)
+    {
+        wIt->second = SpatialGaussianField::ComputeWindow(position, corrDist);
+    }
+    return kClusterField.SampleWindow(fieldKey, wIt->second);
+}
+
+double
+ThreeGppChannelModel::GetClusterCorrelationDistance(
+    ChannelCondition::LosConditionValue losCondition,
+    bool isO2i) const
+{
+    // TR 38.901 Table 7.6.3.1-2, correlation distance of the cluster and ray
+    // specific random variables in the horizontal plane (meters). Scenarios
+    // without a column (V2V, NTN) fall back to the UMa distances.
+    double los = 40;
+    double nlos = 50;
+    double o2i = 15;
+    if (m_scenario == "UMi-StreetCanyon")
+    {
+        los = 12;
+        nlos = 15;
+        o2i = 15;
+    }
+    else if (m_scenario == "RMa")
+    {
+        los = 50;
+        nlos = 60;
+        o2i = 15;
+    }
+    else if (m_scenario == "InH-OfficeMixed" || m_scenario == "InH-OfficeOpen")
+    {
+        los = 10;
+        nlos = 10;
+        o2i = 10;
+    }
+    return isO2i ? o2i : (losCondition == ChannelCondition::LOS ? los : nlos);
+}
+
+double
+ThreeGppChannelModel::ScNormal(uint32_t varId) const
+{
+    if (!m_scDrawCtx.active)
+    {
+        return m_normalRv->GetValue();
+    }
+    return SampleSpatiallyCorrelatedNormal(m_scDrawCtx.siteNodeId,
+                                           m_scDrawCtx.condSlot,
+                                           varId,
+                                           m_scDrawCtx.termPos,
+                                           m_scDrawCtx.corrDist);
+}
+
+double
+ThreeGppChannelModel::ScUniform01(uint32_t varId) const
+{
+    if (!m_scDrawCtx.active)
+    {
+        return m_uniformRv->GetValue(0, 1);
+    }
+    // Probability-integral transform preserving the spatial correlation of the
+    // underlying Gaussian field; clamped so log() and tan() consumers remain
+    // finite.
+    const double u = 0.5 * std::erfc(-ScNormal(varId) * M_SQRT1_2);
+    return std::clamp(u, 1e-12, 1.0 - 1e-12);
+}
+
 ThreeGppChannelModel::LargeScaleParameters
-ThreeGppChannelModel::GenerateLSPs(const ChannelCondition::LosConditionValue losCondition,
-                                   Ptr<const ParamsTable> table3gpp) const
+ThreeGppChannelModel::GenerateLSPs(Ptr<const ChannelCondition> channelCondition,
+                                   Ptr<const ParamsTable> table3gpp,
+                                   Ptr<const MobilityModel> siteMob,
+                                   Ptr<const MobilityModel> termMob) const
 {
     NS_LOG_FUNCTION(this);
+    const ChannelCondition::LosConditionValue losCondition = channelCondition->GetLosCondition();
     DoubleVector lspIndepRandomVar;
     DoubleVector lsp;
     const uint8_t paramNum = losCondition == ChannelCondition::LOS ? 7 : 6;
 
     // Generate paramNum independent LSPs.
-    for (uint8_t iter = 0; iter < paramNum; iter++)
+    if (!m_channelConditionModel->IsInterUeSpatialConsistencyEnabled())
     {
-        lspIndepRandomVar.push_back(m_normalRv->GetValue());
+        for (uint8_t iter = 0; iter < paramNum; iter++)
+        {
+            lspIndepRandomVar.push_back(m_normalRv->GetValue());
+        }
+    }
+    else
+    {
+        // Inter-UE spatial consistency (TR 38.901 Sec. 7.6.3.1): replace the
+        // i.i.d. draws with samples of per-site spatially-correlated Gaussian
+        // fields evaluated at the terminal position. The cross-correlation
+        // multiply below is untouched.
+        std::array<double, 7> corrLos;
+        std::array<double, 7> corrNlos;
+        std::array<double, 7> corrO2i;
+        GetLspCorrelationDistances(corrLos, corrNlos, corrO2i);
+
+        // Condition slot selecting the field set: LOS=0, NLOS=1, O2I=2.
+        const bool losOrdering = losCondition == ChannelCondition::LOS;
+        const bool isO2i = channelCondition->GetO2iCondition() == ChannelCondition::O2I;
+        const uint8_t condSlot = isO2i ? 2 : (losOrdering ? 0 : 1);
+        const auto& corrDist = isO2i ? corrO2i : (losOrdering ? corrLos : corrNlos);
+        const uint32_t siteNodeId = siteMob->GetObject<Node>()->GetId();
+        const Vector termPos = termMob->GetPosition();
+        for (uint8_t iter = 0; iter < paramNum; iter++)
+        {
+            // Canonical parameter ids [SF=0,K=1,DS=2,ASD=3,ASA=4,ZSD=5,ZSA=6]
+            // key the fields, so links whose LSP vectors use different
+            // orderings (LOS includes K at index 1, NLOS/O2I do not) still
+            // share the same per-parameter field of their condition slot.
+            const uint8_t paramId = losOrdering ? iter : (iter == 0 ? 0 : iter + 1);
+            uint8_t slot = condSlot;
+            double dist = corrDist[paramId];
+            if (paramId == 1 && isO2i)
+            {
+                // The O2I column of Table 7.5-6 has no K entry; the K-factor
+                // of an indoor LOS link belongs to the outdoor LOS path that
+                // penetrates the building, so its variate comes from the LOS
+                // field.
+                slot = 0;
+                dist = corrLos[1];
+            }
+            lspIndepRandomVar.push_back(
+                SampleSpatiallyCorrelatedNormal(siteNodeId, slot, paramId, termPos, dist));
+        }
     }
     for (uint8_t row = 0; row < paramNum; row++)
     {
@@ -2774,7 +2962,8 @@ ThreeGppChannelModel::GenerateClusterDelays(const double DS,
 
     for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
     {
-        const double tau = -1 * table3gpp->m_rTau * DS * log(m_uniformRv->GetValue(0, 1)); //(7.5-1)
+        const double tau =
+            -1 * table3gpp->m_rTau * DS * log(ScUniform01(ScFieldVarId(0, cIndex, 0))); //(7.5-1)
         if (*minTau > tau)
         {
             *minTau = tau;
@@ -2800,7 +2989,8 @@ ThreeGppChannelModel::GenerateClusterShadowingTerm(Ptr<const ParamsTable> table3
 
     for (uint8_t cIndex = 0; cIndex < table3gpp->m_numOfCluster; cIndex++)
     {
-        (*clusterShadowing)[cIndex] = m_normalRv->GetValue() * table3gpp->m_perClusterShadowingStd;
+        (*clusterShadowing)[cIndex] =
+            ScNormal(ScFieldVarId(1, cIndex, 0)) * table3gpp->m_perClusterShadowingStd;
     }
 }
 
@@ -2992,7 +3182,7 @@ ThreeGppChannelModel::GenerateClusterXnNLos(const uint16_t clusterNumber,
     for (uint16_t cIndex = 0; cIndex < clusterNumber; cIndex++)
     {
         int Xn = 1;
-        if (m_uniformRv->GetValue(0, 1) < 0.5)
+        if (ScUniform01(ScFieldVarId(2, cIndex, 0)) < 0.5)
         {
             Xn = -1;
         }
@@ -3044,29 +3234,32 @@ ThreeGppChannelModel::GenerateClusterAngles(Ptr<const ThreeGppChannelParams> cha
     for (uint16_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
         int Xn = 1;
-        if (m_uniformRv->GetValue(0, 1) < 0.5)
+        if (ScUniform01(ScFieldVarId(3, cIndex, 0)) < 0.5)
         {
             Xn = -1;
         }
 
-        clusterAoa[cIndex] = clusterAoa[cIndex] * Xn + m_normalRv->GetValue() * lsps.ASA / 7.0 +
+        clusterAoa[cIndex] = clusterAoa[cIndex] * Xn +
+                             ScNormal(ScFieldVarId(4, cIndex, 0)) * lsps.ASA / 7.0 +
                              RadiansToDegrees(uAngle.GetAzimuth()); //(7.5-11)
-        clusterAod[cIndex] = clusterAod[cIndex] * Xn + m_normalRv->GetValue() * lsps.ASD / 7.0 +
+        clusterAod[cIndex] = clusterAod[cIndex] * Xn +
+                             ScNormal(ScFieldVarId(4, cIndex, 1)) * lsps.ASD / 7.0 +
                              RadiansToDegrees(sAngle.GetAzimuth());
         if (channelParams->m_o2iCondition == ChannelCondition::O2I)
         {
-            clusterZoa[cIndex] =
-                clusterZoa[cIndex] * Xn + m_normalRv->GetValue() * lsps.ZSA / 7.0 + 90;
+            clusterZoa[cIndex] = clusterZoa[cIndex] * Xn +
+                                 ScNormal(ScFieldVarId(4, cIndex, 2)) * lsps.ZSA / 7.0 + 90;
             //(7.5-16)
         }
         else
         {
-            clusterZoa[cIndex] = clusterZoa[cIndex] * Xn + m_normalRv->GetValue() * lsps.ZSA / 7.0 +
+            clusterZoa[cIndex] = clusterZoa[cIndex] * Xn +
+                                 ScNormal(ScFieldVarId(4, cIndex, 2)) * lsps.ZSA / 7.0 +
                                  RadiansToDegrees(uAngle.GetInclination()); //(7.5-16)
         }
-        clusterZod[cIndex] = clusterZod[cIndex] * Xn + m_normalRv->GetValue() * lsps.ZSD / 7.0 +
-                             RadiansToDegrees(sAngle.GetInclination()) +
-                             table3gpp->m_offsetZOD; //(7.5-19)
+        clusterZod[cIndex] =
+            clusterZod[cIndex] * Xn + ScNormal(ScFieldVarId(4, cIndex, 3)) * lsps.ZSD / 7.0 +
+            RadiansToDegrees(sAngle.GetInclination()) + table3gpp->m_offsetZOD; //(7.5-19)
     }
 
     if (channelParams->m_losCondition == ChannelCondition::LOS)
@@ -3421,12 +3614,48 @@ ThreeGppChannelModel::RandomRaysCoupling(Ptr<const ThreeGppChannelParams> channe
                                          Double2DVector* rayZodRadian) const
 {
     NS_LOG_FUNCTION(this);
+    if (!m_scDrawCtx.active)
+    {
+        for (uint16_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
+        {
+            Shuffle((*rayAodRadian)[cIndex].begin(),
+                    (*rayAodRadian)[cIndex].end(),
+                    m_uniformRvShuffle);
+            Shuffle((*rayAoaRadian)[cIndex].begin(),
+                    (*rayAoaRadian)[cIndex].end(),
+                    m_uniformRvShuffle);
+            Shuffle((*rayZodRadian)[cIndex].begin(),
+                    (*rayZodRadian)[cIndex].end(),
+                    m_uniformRvShuffle);
+            Shuffle((*rayZoaRadian)[cIndex].begin(),
+                    (*rayZoaRadian)[cIndex].end(),
+                    m_uniformRvShuffle);
+        }
+        return;
+    }
+
+    // Spatially-consistent random coupling: permute the rays of each cluster
+    // by sorting per-(cluster, ray) samples of the correlated fields. The
+    // resulting permutation is uniformly distributed at any single position,
+    // and varies slowly and consistently with the terminal position.
+    auto fieldPermute = [this](DoubleVector& rays, uint8_t varClass, uint16_t cIndex) {
+        std::vector<std::pair<double, double>> keyed(rays.size());
+        for (std::size_t m = 0; m < rays.size(); m++)
+        {
+            keyed[m] = {ScNormal(ScFieldVarId(varClass, cIndex, m)), rays[m]};
+        }
+        std::ranges::sort(keyed, {}, &std::pair<double, double>::first);
+        for (std::size_t m = 0; m < rays.size(); m++)
+        {
+            rays[m] = keyed[m].second;
+        }
+    };
     for (uint16_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
     {
-        Shuffle((*rayAodRadian)[cIndex].begin(), (*rayAodRadian)[cIndex].end(), m_uniformRvShuffle);
-        Shuffle((*rayAoaRadian)[cIndex].begin(), (*rayAoaRadian)[cIndex].end(), m_uniformRvShuffle);
-        Shuffle((*rayZodRadian)[cIndex].begin(), (*rayZodRadian)[cIndex].end(), m_uniformRvShuffle);
-        Shuffle((*rayZoaRadian)[cIndex].begin(), (*rayZoaRadian)[cIndex].end(), m_uniformRvShuffle);
+        fieldPermute((*rayAodRadian)[cIndex], 5, cIndex);
+        fieldPermute((*rayAoaRadian)[cIndex], 6, cIndex);
+        fieldPermute((*rayZodRadian)[cIndex], 7, cIndex);
+        fieldPermute((*rayZoaRadian)[cIndex], 8, cIndex);
     }
 }
 
@@ -3456,13 +3685,16 @@ ThreeGppChannelModel::GenerateCrossPolPowerRatiosAndInitialPhases(
         {
             (*clusterPhase)[clusterIndex][rayIndex].resize(4);
             // stores the XPR values
-            (*crossPolarizationPowerRatios)[clusterIndex][rayIndex] =
-                std::pow(10, (m_normalRv->GetValue() * sigXprLinear + uXprLinear) / 10.0);
+            (*crossPolarizationPowerRatios)[clusterIndex][rayIndex] = std::pow(
+                10,
+                (ScNormal(ScFieldVarId(9, clusterIndex, rayIndex)) * sigXprLinear + uXprLinear) /
+                    10.0);
             for (uint8_t polIndex = 0; polIndex < 4; polIndex++)
             {
                 // stores the PHI values
                 (*clusterPhase)[clusterIndex][rayIndex][polIndex] =
-                    m_uniformRv->GetValue(-1 * M_PI, M_PI);
+                    -M_PI +
+                    2 * M_PI * ScUniform01(ScFieldVarId(10 + polIndex, clusterIndex, rayIndex));
             }
         }
     }
@@ -3493,8 +3725,9 @@ ThreeGppChannelModel::ApplyLargeBandwidthRayModeling(Ptr<ThreeGppChannelParams> 
         std::min<double>(std::max(mT * mAod * mZod, 20.0), m_maxRaysPerCluster));
     const size_t numTaps = static_cast<size_t>(nClusters) * numRays;
 
-    // Per-(cluster, ray) offset angles (7.6-5), in degrees, and ray-relative
-    // delays, drawn i.i.d. per link.
+    // Per-(cluster, ray) offset angles (7.6-5), in degrees, and ray-relative delays,
+    // drawn from the spatially-correlated fields when the drop-based spatial
+    // consistency is enabled (TR 38.901 Sec. 7.6.3.1, large bandwidth extension).
     Double2DVector alphaAoa(nClusters, DoubleVector(numRays));
     Double2DVector alphaAod(nClusters, DoubleVector(numRays));
     Double2DVector alphaZoa(nClusters, DoubleVector(numRays));
@@ -3505,11 +3738,11 @@ ThreeGppChannelModel::ApplyLargeBandwidthRayModeling(Ptr<ThreeGppChannelParams> 
         double minDelay = std::numeric_limits<double>::max();
         for (uint8_t m = 0; m < numRays; m++)
         {
-            alphaAoa[n][m] = -2 + 4 * m_uniformRv->GetValue(0, 1);
-            alphaAod[n][m] = -2 + 4 * m_uniformRv->GetValue(0, 1);
-            alphaZoa[n][m] = -2 + 4 * m_uniformRv->GetValue(0, 1);
-            alphaZod[n][m] = -2 + 4 * m_uniformRv->GetValue(0, 1);
-            rayDelay[n][m] = 2 * table3gpp->m_cDS * m_uniformRv->GetValue(0, 1);
+            alphaAoa[n][m] = -2 + 4 * ScUniform01(ScFieldVarId(16, n, m));
+            alphaAod[n][m] = -2 + 4 * ScUniform01(ScFieldVarId(17, n, m));
+            alphaZoa[n][m] = -2 + 4 * ScUniform01(ScFieldVarId(18, n, m));
+            alphaZod[n][m] = -2 + 4 * ScUniform01(ScFieldVarId(19, n, m));
+            rayDelay[n][m] = 2 * table3gpp->m_cDS * ScUniform01(ScFieldVarId(20, n, m));
             minDelay = std::min(minDelay, rayDelay[n][m]);
         }
         for (uint8_t m = 0; m < numRays; m++)
@@ -3881,8 +4114,17 @@ ThreeGppChannelModel::GenerateDopplerTerms(const uint16_t reducedClusterNumber,
 
     for (uint16_t cIndex = 1; cIndex < reducedClusterNumber; ++cIndex)
     {
-        (*dopplerTermAlpha)[cIndex] = m_uniformRvDoppler->GetValue(-1, 1);
-        (*dopplerTermD)[cIndex] = m_uniformRvDoppler->GetValue(-m_vScatt, m_vScatt);
+        if (m_scDrawCtx.active)
+        {
+            (*dopplerTermAlpha)[cIndex] = -1 + 2 * ScUniform01(ScFieldVarId(14, cIndex, 0));
+            (*dopplerTermD)[cIndex] =
+                m_vScatt * (-1 + 2 * ScUniform01(ScFieldVarId(15, cIndex, 0)));
+        }
+        else
+        {
+            (*dopplerTermAlpha)[cIndex] = m_uniformRvDoppler->GetValue(-1, 1);
+            (*dopplerTermD)[cIndex] = m_uniformRvDoppler->GetValue(-m_vScatt, m_vScatt);
+        }
     }
 }
 
@@ -4013,11 +4255,32 @@ ThreeGppChannelModel::GenerateChannelParameters(Ptr<const ChannelCondition> chan
                        &channelParams->m_lastPositionSecond,
                        &channelParams->m_lastRelativePosition2D);
 
-    // Step 4: Generate large-scale parameters. All LSPS are uncorrelated.
-    const LargeScaleParameters lsps = GenerateLSPs(channelParams->m_losCondition, table3gpp);
+    // Step 4: Generate large-scale parameters. LSPs are cross-correlated per the
+    // 3GPP table; when InterUeSpatialConsistency is enabled they are additionally
+    // spatially correlated between links from the same site (TR 38.901 Sec. 7.6.3.1).
+    const auto [siteMob, termMob] =
+        m_channelConditionModel->GetSiteAndTerminal(aMobOrdered, bMobOrdered);
+    const LargeScaleParameters lsps = GenerateLSPs(channelCondition, table3gpp, siteMob, termMob);
 
     channelParams->m_DS = lsps.DS;
     channelParams->m_K_factor = lsps.kFactor;
+
+    if (m_channelConditionModel->IsInterUeSpatialConsistencyEnabled())
+    {
+        // Drop-based spatial consistency (TR 38.901 Sec. 7.6.3.1): route the
+        // cluster and ray specific random draws of steps 5-10 (and of the
+        // Doppler terms) through per-site spatially-correlated fields sampled
+        // at the terminal position, with the correlation distance of Table
+        // 7.6.3.1-2, so links from the same site to nearby terminals obtain
+        // correlated small-scale channel realizations.
+        const bool isO2i = channelCondition->GetO2iCondition() == ChannelCondition::O2I;
+        m_scDrawCtx.active = true;
+        m_scDrawCtx.siteNodeId = siteMob->GetObject<Node>()->GetId();
+        m_scDrawCtx.condSlot =
+            isO2i ? 2 : (channelParams->m_losCondition == ChannelCondition::LOS ? 0 : 1);
+        m_scDrawCtx.termPos = termMob->GetPosition();
+        m_scDrawCtx.corrDist = GetClusterCorrelationDistance(channelParams->m_losCondition, isO2i);
+    }
 
     // Step 5: Generate Delays and normalize them. Save minTau to be used for channel consistency.
     double minTau = 100.0;
@@ -4146,6 +4409,8 @@ ThreeGppChannelModel::GenerateChannelParameters(Ptr<const ChannelCondition> chan
 
     // Precompute angles sincos
     PrecomputeAnglesSinCos(channelParams, &channelParams->m_cachedAngleSincos);
+
+    m_scDrawCtx.active = false;
 
     return channelParams;
 }

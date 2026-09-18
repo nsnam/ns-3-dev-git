@@ -47,6 +47,7 @@ Python 3.10 to 3.14.
 ### New user-visible features
 
 - (propagation) A new `InterUeSpatialConsistency` attribute of `ChannelConditionModel` enables inter-UE (drop-based) spatially consistent LOS/NLOS state, indoor state, building type, shadow fading and O2I penetration loss per 3GPP TR 38.901 Sec. 7.6.3.
+- (spectrum) `ThreeGppChannelModel` extends the drop-based spatial consistency to the large-scale parameters and the cluster and ray specific variables of the fast fading when the `InterUeSpatialConsistency` attribute of its channel condition model is enabled.
 - (propagation) New `SpatialGaussianField` class provides the stateless, position-keyed spatially-correlated Gaussian random field shared by the drop-based spatial consistency of the 3GPP propagation, channel condition and channel models.
 - (spectrum) New `LargeBandwidthArrayModeling`, `ChannelBandwidth` and `MaxRaysPerCluster` attributes of `ThreeGppChannelModel` implement the large bandwidth and large antenna array modeling of 3GPP TR 38.901 Sec. 7.6.2.2.
 - (network) IANA protocol and link types are now centralized in network module headers.

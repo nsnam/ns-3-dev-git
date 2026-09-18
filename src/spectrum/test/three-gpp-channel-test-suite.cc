@@ -18,6 +18,7 @@
 #include "ns3/node-container.h"
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/spectrum-signal-parameters.h"
 #include "ns3/string.h"
@@ -2246,6 +2247,158 @@ ThreeGppMimoPolarizationTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case for the inter-UE (drop-based) spatially consistent LSP generation
+ * of ThreeGppChannelModel (3GPP TR 38.901, Sec. 7.6.3.1), enabled through the
+ * InterUeSpatialConsistency attribute of the channel condition model. The site
+ * is created after the UEs, so it is only identified by its net device type,
+ * see the SiteNetDeviceTypes attribute of ChannelConditionModel.
+ *
+ * One site serves pairs of UEs placed 1 m apart, with different pairs placed
+ * hundreds of meters apart (far beyond the Table 7.5-6 correlation
+ * distances). With the attribute enabled, the two UEs of a pair sample almost
+ * the same point of the spatially-correlated LSP fields and must obtain
+ * nearly identical delay spreads, while distant UEs must keep decorrelated
+ * draws. With the attribute disabled, nearby UEs draw i.i.d. LSPs and their
+ * delay-spread difference is statistically as large as that of distant UEs.
+ */
+class ThreeGppInterUeSpatialConsistencyTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppInterUeSpatialConsistencyTest();
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+
+    /**
+     * Generate the channel from a single site to pairs of closely spaced UEs
+     * scattered over the deployment and measure the delay-spread differences.
+     *
+     * @param interUeSpatialConsistency Value for the InterUeSpatialConsistency attribute.
+     * @param meanNearDelta Output mean |delta log10(DS)| over the 1 m-spaced UE pairs.
+     * @param meanFarDelta Output mean |delta log10(DS)| across distant UEs.
+     */
+    void ComputeLgDsDeltas(bool interUeSpatialConsistency,
+                           double* meanNearDelta,
+                           double* meanFarDelta);
+};
+
+ThreeGppInterUeSpatialConsistencyTest::ThreeGppInterUeSpatialConsistencyTest()
+    : TestCase("Check inter-UE spatially consistent LSP generation")
+{
+}
+
+void
+ThreeGppInterUeSpatialConsistencyTest::ComputeLgDsDeltas(bool interUeSpatialConsistency,
+                                                         double* meanNearDelta,
+                                                         double* meanFarDelta)
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    Ptr<ChannelConditionModel> channelConditionModel =
+        CreateObject<AlwaysLosChannelConditionModel>();
+    channelConditionModel->SetAttribute("InterUeSpatialConsistency",
+                                        BooleanValue(interUeSpatialConsistency));
+    channelConditionModel->SetAttribute("SiteNetDeviceTypes", StringValue("ns3::SimpleNetDevice"));
+
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    channelModel->AssignStreams(1);
+
+    // The UEs take node ids 0 to 2 * nPairs - 1 and the site the last one.
+    constexpr uint32_t nPairs = 16;
+    NodeContainer nodes;
+    nodes.Create(1 + 2 * nPairs);
+    Ptr<Node> siteNode = nodes.Get(2 * nPairs);
+    Ptr<SimpleNetDevice> siteDev = CreateObject<SimpleNetDevice>();
+    siteNode->AddDevice(siteDev);
+    siteDev->SetNode(siteNode);
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    Ptr<MobilityModel> siteMob = CreateObject<ConstantPositionMobilityModel>();
+    siteMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    siteNode->AggregateObject(siteMob);
+    Ptr<PhasedArrayModel> siteAntenna = makeAntenna();
+
+    std::vector<double> lgDsA(nPairs);
+    std::vector<double> lgDsB(nPairs);
+    for (uint32_t p = 0; p < nPairs; p++)
+    {
+        // Pair centers on a 4x4 grid with 500 m spacing; the two UEs of a
+        // pair are 1 m apart along x.
+        const Vector center(200.0 + 500.0 * (p % 4), 200.0 + 500.0 * (p / 4), 1.5);
+        for (uint32_t m = 0; m < 2; m++)
+        {
+            Ptr<MobilityModel> ueMob = CreateObject<ConstantPositionMobilityModel>();
+            ueMob->SetPosition(Vector(center.x + m, center.y, center.z));
+            nodes.Get(2 * p + m)->AggregateObject(ueMob);
+            channelModel->GetChannel(siteMob, ueMob, siteAntenna, makeAntenna());
+            const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+                channelModel->GetParams(siteMob, ueMob));
+            NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+            (m == 0 ? lgDsA : lgDsB)[p] = std::log10(params->m_DS);
+        }
+    }
+
+    *meanNearDelta = 0;
+    *meanFarDelta = 0;
+    for (uint32_t p = 0; p < nPairs; p++)
+    {
+        *meanNearDelta += std::abs(lgDsA[p] - lgDsB[p]);
+        *meanFarDelta += std::abs(lgDsA[p] - lgDsA[(p + 1) % nPairs]);
+    }
+    *meanNearDelta /= nPairs;
+    *meanFarDelta /= nPairs;
+
+    Simulator::Destroy();
+}
+
+void
+ThreeGppInterUeSpatialConsistencyTest::DoRun()
+{
+    double meanNearDeltaOn;
+    double meanFarDeltaOn;
+    ComputeLgDsDeltas(true, &meanNearDeltaOn, &meanFarDeltaOn);
+
+    double meanNearDeltaOff;
+    double meanFarDeltaOff;
+    ComputeLgDsDeltas(false, &meanNearDeltaOff, &meanFarDeltaOff);
+
+    // UMa-LOS DS correlation distance is 30 m: at 1 m spacing the field
+    // correlation is close to 1, at 500 m it is negligible.
+    NS_TEST_ASSERT_MSG_LT(meanNearDeltaOn,
+                          0.2 * meanFarDeltaOn,
+                          "With InterUeSpatialConsistency, nearby UEs should obtain nearly "
+                          "identical delay spreads while distant UEs decorrelate");
+    NS_TEST_ASSERT_MSG_GT(meanFarDeltaOn,
+                          0.0,
+                          "Distant UEs should not obtain identical delay spreads");
+    NS_TEST_ASSERT_MSG_GT(meanNearDeltaOff,
+                          0.3 * meanFarDeltaOff,
+                          "Without InterUeSpatialConsistency, nearby UEs should draw "
+                          "independent delay spreads");
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test case that the total channel power is independent of the order in which
  * the two endpoints are passed to ThreeGppChannelModel::GetChannel, when a
  * DIRECTIONAL antenna element is used (channel reciprocity of the Frobenius
@@ -2489,6 +2642,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(
         new ThreeGppLargeBandwidthModelingTest(LbConfig{.scenario = "UMa", .expectedRaysBw = 8}),
         TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);
 

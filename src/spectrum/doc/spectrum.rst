@@ -659,33 +659,6 @@ randomly generated COFDM TV transmitters (modeling the DVB-T standard)
 located around the Paris, France area with channel frequencies and bandwidths
 corresponding to the European television channel allocations.
 
-Large bandwidth and large antenna array modeling
-################################################
-
-When the simulated bandwidth or the antenna aperture exceeds what the fast
-fading model of TR 38.901 Sec. 7.5 is designed to support, the intra-cluster
-angular and delay spread modeling of Sec. 7.6.2.2 can be enabled through the
-``LargeBandwidthArrayModeling`` attribute of ``ThreeGppChannelModel`` (disabled
-by default). The modifications to Step 7 follow the specification: the per-ray
-offset angles are drawn as unif(-2, 2) per cluster and ray (Equation 7.6-5)
-instead of the fixed offsets of Table 7.5-3, each ray receives a relative delay
-drawn as unif(0, 2 cDS) and an unequal power (Equation 7.6-6), and the number
-of rays per cluster is derived from the bandwidth and the departure array
-aperture (Equation 7.6-8, sparseness parameter 0.5), bounded by the
-``MaxRaysPerCluster`` attribute (Mmax in the specification, a user-selected
-complexity/accuracy trade-off). The simulation bandwidth B of Equation (7.6-8)
-is provided through the ``ChannelBandwidth`` attribute.
-
-Each ray then becomes an individually delayed tap of the channel matrix, as in
-Equation (7.6-3), and the fixed sub-cluster mapping of Table 7.5-5 is not
-applied, per Sec. 7.6.2.2. The random coupling of rays is not applied either,
-since with per-ray offset angles it would break the association between each
-ray's angles and its power in Equation (7.6-6). Since the per-ray structure is
-fixed per drop, channel updates fall back to a full regeneration instead of
-the Procedure A update equations. The propagation delay modeling of
-Sec. 7.6.2.1 (per-antenna-element ray delays and frequency-dependent array
-responses) is not implemented.
-
 Testing
 #######
 
@@ -761,8 +734,12 @@ please have a look at the documentation of the classes
     channel is evaluated and the configured ``UpdatePeriod`` has elapsed; if the
     maximum distance the BS and/or UT traveled between evaluations exceeds
     the 1 m step-size constraint, the model falls back to re-generating channel
-    parameters and thus the channel matrix). Drop-based spatial consistency across
-    multiple initial locations (Sec. 7.6.3.1) and Procedure B are not implemented.
+    parameters and thus the channel matrix). Procedure B is not implemented.
+
+  * Drop-based (inter-UE) spatial consistency across initial locations
+    (Sec. 7.6.3.1) is available for the large-scale parameters and the cluster
+    and ray specific random variables through the ``InterUeSpatialConsistency``
+    attribute of the channel condition model (disabled by default); see below.
 
   * The large bandwidth and large antenna array modeling of Sec. 7.6.2.2 is
     available through the ``LargeBandwidthArrayModeling`` attribute (disabled
@@ -980,8 +957,32 @@ changes driven by the channel-condition model) would have to implement a map/fie
 approach (e.g., spatially correlated LSP maps in WINNER-derived frameworks such as
 QuaDRiGa) [WIN2D112]_ [QUADRIGA]_ or an explicitly position-seeded regeneration policy.
 
-Drop-based spatial consistency across multiple initial locations (TR 38.901 Sec. 7.6.3.1)
-and Procedure B (TR 38.901 Sec. 7.6.3.2) are not implemented in this model.
+**Inter-UE (drop-based) spatial consistency:** When the ``InterUeSpatialConsistency``
+attribute of the ``ChannelConditionModel`` configured in the channel model is
+enabled (see the ``propagation`` module documentation, which also describes how
+the site nodes are designated), the normal variates feeding the LSP
+cross-correlation are samples of ``SpatialGaussianField`` random fields
+evaluated at the terminal position (TR 38.901 Sec. 7.6.3.1), one field per
+site, channel condition (LOS/NLOS/O2I) and LSP, with the correlation
+distances of Table 7.5-6 (V2V and NTN fall back to the UMa distances). The
+fields are pure functions of position, identical across model instances, so
+links from the same site to nearby terminals obtain correlated LSPs, a channel
+re-generated at the same location reproduces them, and the LSPs of a moving UE
+evolve smoothly across re-generations.
+
+The cluster and ray specific random variables of the fast fading (cluster
+delays and shadowing, angle signs and offsets, random coupling of rays,
+cross-polarization power ratios, initial phases and Doppler terms) are drawn
+the same way with the correlation distance of Table 7.6.3.1-2: uniform variates
+through the probability integral transform of the field samples, and the ray
+coupling by sorting per-ray field samples. Together with the
+``ThreeGppPropagationLossModel`` (shadow fading and O2I penetration loss) and
+``ThreeGppChannelConditionModel`` (LOS/NLOS and indoor states), which consult
+the same attribute, this yields fully spatially-consistent SNR maps, see
+``three-gpp-inter-ue-spatial-consistency-example``. The temporal evolution of
+an existing link is still governed by Procedure A through ``UpdatePeriod``.
+
+Procedure B (TR 38.901 Sec. 7.6.3.2) is not implemented in this model.
 
 The initial channel realization for a link is generated using the standard 3GPP
 cluster/ray generation procedure (Fig. 7.5-1). Spatial consistency is then introduced
@@ -1176,6 +1177,30 @@ method ``CalcAttenuationOfBlockage``, which computes the additional attenuation.
 The blockage feature can be disable through the attribute "Blockage". Also, the
 attributes "NumNonselfBlocking", "PortraitMode" and "BlockerSpeed" can be used
 to configure the model.
+
+Large bandwidth and large antenna array modeling
+################################################
+
+The intra-cluster angular and delay spread modeling of TR 38.901 Sec. 7.6.2.2
+is enabled through the ``LargeBandwidthArrayModeling`` attribute of
+``ThreeGppChannelModel`` (disabled by default). Step 7 then follows the
+specification: per-ray offset angles drawn as unif(-2, 2) (Equation 7.6-5)
+instead of the fixed offsets of Table 7.5-3, per-ray relative delays drawn as
+unif(0, 2 cDS) with unequal ray powers (Equation 7.6-6), and a number of rays
+per cluster derived from the ``ChannelBandwidth`` attribute and the departure
+array aperture (Equation 7.6-8, sparseness parameter 0.5), bounded by the
+``MaxRaysPerCluster`` attribute (Mmax). Each ray becomes
+an individually delayed tap (Equation 7.6-3); the sub-cluster mapping of Table
+7.5-5 and the random coupling of rays are not applied, the latter because it
+would break the association between a ray's angles and its power. With
+``InterUeSpatialConsistency`` the per-ray offsets and delays are drawn from the
+spatially-correlated fields; channel updates regenerate the per-ray taps
+instead of applying the Procedure A update equations. The propagation delay
+modeling of Sec. 7.6.2.1 is not implemented.
+
+``three-gpp-inter-ue-spatial-consistency-example`` can compare SNR maps with
+and without the modeling: the wideband SNR statistics coincide, since power is
+only redistributed within clusters, while the fast-fading realizations differ.
 
 Testing
 #######
