@@ -14,7 +14,11 @@
 #include "ns3/double.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/node.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/three-gpp-propagation-loss-model.h"
 #include "ns3/three-gpp-v2v-propagation-loss-model.h"
@@ -1331,6 +1335,213 @@ ThreeGppShadowingTestCase::DoRun()
 /**
  * @ingroup propagation-tests
  *
+ * Test case for the inter-UE (drop-based) spatial consistency of TR 38.901
+ * Sec. 7.6.3. With the InterUeSpatialConsistency attribute of the channel
+ * condition model enabled, two co-located terminals served by the same site
+ * sample the LOS/NLOS-state, indoor-state, building-type, shadow-fading and
+ * O2I penetration random fields at the same position and must therefore
+ * obtain the same channel condition and the same total loss, and a terminal
+ * must obtain the same indoor state towards different sites. Without it, the
+ * per-link draws are independent and co-located terminals obtain different
+ * shadowing realizations. The terminals are created before the sites, so the
+ * site of each link is only identified by its net device type, see the
+ * SiteNetDeviceTypes attribute of ChannelConditionModel.
+ */
+class ThreeGppColocatedSpatialConsistencyTestCase : public TestCase
+{
+  public:
+    ThreeGppColocatedSpatialConsistencyTestCase();
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Create a node with an aggregated constant-position mobility model.
+     *
+     * @param pos The node position.
+     * @param site Whether to install the net device identifying a site.
+     * @return The mobility model of the new node.
+     */
+    Ptr<MobilityModel> CreateNodeAt(const Vector& pos, bool site);
+
+    /// Result of ComputeColocatedLosses()
+    struct ColocatedLosses
+    {
+        double loss1;          ///< loss of the first terminal, in dB
+        double loss2;          ///< loss of the second terminal, in dB
+        bool sameCondition;    ///< whether the two terminals obtain the same channel condition
+        bool sameIndoorStates; ///< whether the first terminal obtains the same indoor state
+                               ///< towards both sites
+    };
+
+    /**
+     * Compute the losses perceived by two co-located terminals.
+     *
+     * @param scenario Key of the scenario to test.
+     * @param interUeSpatialConsistency Value for the InterUeSpatialConsistency attribute.
+     * @param position The common terminal position.
+     * @param frequency The centre frequency in Hz.
+     * @param o2iThreshold Value for the O2iThreshold attribute.
+     * @return The losses and the channel condition comparisons.
+     */
+    ColocatedLosses ComputeColocatedLosses(const std::string& scenario,
+                                           bool interUeSpatialConsistency,
+                                           const Vector& position,
+                                           double frequency,
+                                           double o2iThreshold);
+};
+
+ThreeGppColocatedSpatialConsistencyTestCase::ThreeGppColocatedSpatialConsistencyTestCase()
+    : TestCase("Test that co-located terminals perceive the same loss with "
+               "InterUeSpatialConsistency")
+{
+}
+
+Ptr<MobilityModel>
+ThreeGppColocatedSpatialConsistencyTestCase::CreateNodeAt(const Vector& pos, bool site)
+{
+    Ptr<Node> node = CreateObject<Node>();
+    if (site)
+    {
+        Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice>();
+        node->AddDevice(dev);
+        dev->SetNode(node);
+    }
+    Ptr<ConstantPositionMobilityModel> mob = CreateObject<ConstantPositionMobilityModel>();
+    mob->SetPosition(pos);
+    node->AggregateObject(mob);
+    return mob;
+}
+
+ThreeGppColocatedSpatialConsistencyTestCase::ColocatedLosses
+ThreeGppColocatedSpatialConsistencyTestCase::ComputeColocatedLosses(const std::string& scenario,
+                                                                    bool interUeSpatialConsistency,
+                                                                    const Vector& position,
+                                                                    double frequency,
+                                                                    double o2iThreshold)
+{
+    double hBs;
+    Ptr<ThreeGppPropagationLossModel> lossModel;
+    Ptr<ThreeGppChannelConditionModel> condModel;
+    if (scenario == "RMa")
+    {
+        hBs = 35;
+        lossModel = CreateObject<ThreeGppRmaPropagationLossModel>();
+        condModel = CreateObject<ThreeGppRmaChannelConditionModel>();
+    }
+    else if (scenario == "UMa")
+    {
+        hBs = 25;
+        lossModel = CreateObject<ThreeGppUmaPropagationLossModel>();
+        condModel = CreateObject<ThreeGppUmaChannelConditionModel>();
+    }
+    else if (scenario == "UMi")
+    {
+        hBs = 10;
+        lossModel = CreateObject<ThreeGppUmiStreetCanyonPropagationLossModel>();
+        condModel = CreateObject<ThreeGppUmiStreetCanyonChannelConditionModel>();
+    }
+    else
+    {
+        NS_ABORT_MSG_UNLESS(scenario == "InH", "Unknown scenario " << scenario);
+        hBs = 3;
+        lossModel = CreateObject<ThreeGppIndoorOfficePropagationLossModel>();
+        condModel = CreateObject<ThreeGppIndoorMixedOfficeChannelConditionModel>();
+    }
+
+    lossModel->SetAttribute("Frequency", DoubleValue(frequency));
+    lossModel->SetAttribute("ShadowingEnabled", BooleanValue(true));
+    condModel->SetAttribute("InterUeSpatialConsistency", BooleanValue(interUeSpatialConsistency));
+    condModel->SetAttribute("O2iThreshold", DoubleValue(o2iThreshold));
+    condModel->SetAttribute("O2iLowLossThreshold", DoubleValue(0.5));
+    condModel->SetAttribute("SiteNetDeviceTypes", StringValue("ns3::SimpleNetDevice"));
+    lossModel->SetChannelConditionModel(condModel);
+
+    // The terminals get lower node ids than the sites.
+    Ptr<MobilityModel> rx1 = CreateNodeAt(position, false);
+    Ptr<MobilityModel> rx2 = CreateNodeAt(position, false);
+    Ptr<MobilityModel> tx = CreateNodeAt(Vector(0.0, 0.0, hBs), true);
+    Ptr<MobilityModel> tx2 = CreateNodeAt(Vector(-80.0, 50.0, hBs), true);
+
+    Ptr<ChannelCondition> cond1 = condModel->GetChannelCondition(tx, rx1);
+    Ptr<ChannelCondition> cond2 = condModel->GetChannelCondition(tx, rx2);
+    Ptr<ChannelCondition> cond1Site2 = condModel->GetChannelCondition(rx1, tx2);
+    return {lossModel->CalcRxPower(0.0, tx, rx1),
+            lossModel->CalcRxPower(0.0, rx2, tx),
+            cond1->GetLosCondition() == cond2->GetLosCondition() &&
+                cond1->GetO2iCondition() == cond2->GetO2iCondition() &&
+                cond1->GetO2iLowHighCondition() == cond2->GetO2iLowHighCondition(),
+            cond1->GetO2iCondition() == cond1Site2->GetO2iCondition()};
+}
+
+void
+ThreeGppColocatedSpatialConsistencyTestCase::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    const std::vector<Vector> positions{Vector(60.0, 0.0, 1.5),
+                                        Vector(-35.0, 120.0, 1.5),
+                                        Vector(200.0, -150.0, 1.5),
+                                        Vector(90.0, 90.0, 1.5),
+                                        Vector(-140.0, -30.0, 1.5)};
+    for (const std::string scenario : {"RMa", "UMa", "UMi", "InH"})
+    {
+        // Below 6 GHz the single-frequency O2I model applies, above it the
+        // low/high-loss one with a spatially consistent building type.
+        for (double frequency : {3.5e9, 28e9})
+        {
+            for (double o2iThreshold : {0.0, 0.5, 1.0})
+            {
+                for (const Vector& pos : positions)
+                {
+                    const auto r =
+                        ComputeColocatedLosses(scenario, true, pos, frequency, o2iThreshold);
+                    NS_TEST_ASSERT_MSG_EQ(r.sameCondition,
+                                          true,
+                                          "Co-located terminals must obtain the same channel "
+                                          "condition with InterUeSpatialConsistency ("
+                                              << scenario << ", O2iThreshold " << o2iThreshold
+                                              << ")");
+                    NS_TEST_ASSERT_MSG_EQ(r.sameIndoorStates,
+                                          true,
+                                          "A terminal must obtain the same indoor state towards "
+                                          "every site with InterUeSpatialConsistency ("
+                                              << scenario << ", O2iThreshold " << o2iThreshold
+                                              << ")");
+                    NS_TEST_ASSERT_MSG_EQ_TOL(r.loss1,
+                                              r.loss2,
+                                              1e-9,
+                                              "Co-located terminals must perceive the same loss "
+                                              "with InterUeSpatialConsistency ("
+                                                  << scenario << ", " << frequency / 1e9
+                                                  << " GHz, O2iThreshold " << o2iThreshold << ")");
+                }
+            }
+        }
+
+        // Without spatial consistency the shadowing draws are independent: at
+        // least one co-located pair sharing the channel condition (so that
+        // only the shadowing can differ) must differ.
+        bool anyDifferent = false;
+        for (const Vector& pos : positions)
+        {
+            const auto r = ComputeColocatedLosses(scenario, false, pos, 3.5e9, 0.0);
+            anyDifferent |= r.sameCondition && std::abs(r.loss1 - r.loss2) > 0.1;
+        }
+        NS_TEST_ASSERT_MSG_EQ(anyDifferent,
+                              true,
+                              "Without InterUeSpatialConsistency, co-located terminals should "
+                              "draw independent shadowing realizations ("
+                                  << scenario << ")");
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup propagation-tests
+ *
  * @brief 3GPP Propagation models TestSuite
  *
  * This TestSuite tests the following models:
@@ -1358,6 +1569,7 @@ ThreeGppPropagationLossModelsTestSuite::ThreeGppPropagationLossModelsTestSuite()
     AddTestCase(new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppShadowingTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppColocatedSpatialConsistencyTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

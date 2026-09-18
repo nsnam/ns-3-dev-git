@@ -16,6 +16,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
+* (propagation) `ChannelConditionModel` gained `InterUeSpatialConsistency` and `SiteNetDeviceTypes` attributes enabling inter-UE (drop-based) spatial consistency (3GPP TR 38.901 Sec. 7.6.3): the LOS/NLOS state, indoor state and building type of the 3GPP channel condition models, and the shadow fading and O2I penetration loss of `ThreeGppPropagationLossModel`, become spatially consistent. The attribute is the single switch of the feature, also consulted by `ThreeGppChannelModel`.
+* (propagation) `ThreeGppPropagationLossModel` gained the `GetO2iDistance2dInMax()` and `GetO2iDistance2dInSub6GhzMax()` virtual methods returning the upper bound of the O2I 2D-in distance of each scenario.
 * (propagation) Added `SpatialGaussianField`, a stateless, position-keyed spatially-correlated Gaussian random field used by `ThreeGppPropagationLossModel`, `ThreeGppChannelConditionModel` and `ThreeGppChannelModel` for the inter-UE spatial consistency.
 * (core) The `Time` class now declares an explicit `operator==` on MSVC builds (guarded by `NS_MSVC`), to work around an MSVC 18 (2026) STL issue that otherwise breaks compilation. It is semantically identical to the defaulted comparison and has no behavioral effect on any platform.
 * Centralization of ``PPP`` and ``IEEE802`` numbers. These are now contained in network model in ``iana-ppp-numbers.h`` and ``iana-ieee802-numbers.h`` respectively.
@@ -33,6 +35,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### Changes to existing API
 
 * (lte) The per-scheduler `GetRbgSize()` private helpers and their copies of the Type 0 RBG size table (3GPP TS 36.213, table 7.1.6.1-1) in the FF MAC schedulers, `LteEnbPhy`, `LteUePhy` and `LteFfrAlgorithm` have been replaced by a single free function, `GetLteRbgSize()`, declared in `lte-common.h`. `LteFfrAlgorithm::GetRbgSize()` is kept and delegates to it.
+* (propagation) The TypeId parent of `AlwaysLosChannelConditionModel` and `NeverLosChannelConditionModel` is now `ChannelConditionModel` instead of `Object`, so they expose the attributes of the base class.
 * (core) The deprecated struct TypeTraits and its header type-traits.h have been removed; use the STL header <type_traits> instead.
 * Pcap helpers now use ``LinkType`` enum contained in the ``iana`` namespace (``iana-link-type-numbers.h``).
 * (network) After the introduction of the `iana::` enumerations for L2 protocol numbers, the old ones (e.g., `Ipv4L3Protocol::PROT_NUMBER`) have been deprecated.

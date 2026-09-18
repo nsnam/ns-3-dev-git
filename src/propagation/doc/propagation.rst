@@ -850,7 +850,6 @@ environments, i.e., indoor, outdoor urban and rural, for frequencies between
 *To be implemented:*
 
   * O2I Car penetration losses (3GPP TR 38.901, Sec. 7.4.3.2).
-  * Spatial consistent update of the channel states (3GPP TR 38.901 Sec. 7.6.3.3)
 
 **Configuration**
 
@@ -890,6 +889,23 @@ the method GetShadowing, which generates an additional random loss component
 characterized by Gaussian distribution with zero mean and scenario-specific
 standard deviation. Subsequent shadowing components of each BS-UT link are
 correlated as described in 3GPP TR 38.901, Sec. 7.4.4 [9]_.
+
+When the attribute "InterUeSpatialConsistency" of the channel condition model
+is enabled (see :ref:`sec-inter-ue-spatial-consistency`), the shadow fading is
+instead a sample of a per-site ``SpatialGaussianField`` at the terminal
+position (drop-based spatial consistency of 3GPP TR 38.901, Sec. 7.6.3.1):
+links from the same site to nearby terminals obtain correlated shadowing, and
+the draw is repeatable across model instances. Table 7.5-6 specifies a
+shadow-fading correlation distance for each of the LOS, NLOS and O2I link
+states; each state samples its own, independent field with the corresponding
+distance, so an indoor terminal (O2I) uses the O2I column whatever its LOS/NLOS
+state. The indoor distance and the penetration loss deviation of the O2I
+building penetration loss are likewise spatially consistent (Sec. 7.6.3.3):
+the indoor distance is the minimum of two spatially consistent uniform
+variables with a 25 m correlation distance (a single one below 6 GHz), and the
+deviation is a spatially consistent normal variable with a 10 m correlation
+distance. Being properties of the terminal location, they do not depend on
+the site.
 
 *Note 1*: The TR defines height ranges for UTs and BSs, depending on the chosen
 propagation model (for the exact values, please see below in the specific model
@@ -1223,6 +1239,21 @@ after a given time period which can be configured through the attribute "UpdateP
 If "UpdatePeriod" is set to 0, the channel condition is never updated.
 It has five derived classes implementing the channel condition models described in 3GPP TR 38.901 [9]_ for different propagation scenarios.
 
+When the attribute "InterUeSpatialConsistency" is enabled (see
+:ref:`sec-inter-ue-spatial-consistency`), the uniform variate compared against
+the LOS probability is obtained from a per-site ``SpatialGaussianField``
+sampled at the terminal position (3GPP TR 38.901, Sec. 7.6.3.3, correlation
+distance of Table 7.6.3.1-2): links from the same site to nearby terminals
+obtain a consistent LOS/NLOS state, forming contiguous regions. The indoor
+state (compared against the "O2iThreshold" attribute, with the 50 m
+correlation distance of Table 7.6.3.1-2) and the building type (compared
+against the "O2iLowLossThreshold" attribute, with a 50 m correlation distance)
+are drawn the same way, from fields that do not depend on the site, so a
+terminal obtains the same indoor state and building type towards every site.
+When the O2I condition is derived from the terminal height
+("LinkO2iConditionToAntennaHeight"), it is deterministic and thus already
+spatially consistent.
+
 ThreeGppRmaChannelConditionModel
 ````````````````````````````````
 This class implements the statistical channel condition model described in 3GPP TR 38.901 [9]_, Table 7.4.2-1, for the RMa scenario.
@@ -1272,6 +1303,34 @@ ThreeGppRuralChannelConditionModel
 This class implements the statistical channel condition model described in 3GPP TR 38.811 [12]_,
 Table 6.6.1-1, for the Rural office scenario.
 
+
+.. _sec-inter-ue-spatial-consistency:
+
+Inter-UE spatial consistency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The drop-based (inter-UE) spatial consistency of 3GPP TR 38.901 Sec. 7.6.3 is
+enabled by the "InterUeSpatialConsistency" attribute of the
+:cpp:class:`ChannelConditionModel` base class, which is the single switch of
+the feature: the 3GPP channel condition models, the
+:cpp:class:`ThreeGppPropagationLossModel` and the ``ThreeGppChannelModel`` of the
+``spectrum`` module consult the channel condition model they are configured
+with. Since the switch lives in the base class, the feature can also be used
+with the deterministic channel condition models (e.g.,
+:cpp:class:`AlwaysLosChannelConditionModel` or the
+``BuildingsChannelConditionModel``), whose LOS/NLOS and O2I states are
+consistent by construction.
+
+The spatially consistent random variables are samples of
+``SpatialGaussianField`` random fields owned by the site (base station)
+endpoint of a link and evaluated at the position of the terminal endpoint. A
+site is a node holding a net device of one of the types listed in the
+"SiteNetDeviceTypes" attribute, by default the LTE eNB and NR gNB devices. The
+types are looked up by name, so the ``propagation`` module does not depend on
+the modules defining them, and types whose module is not loaded are ignored.
+Links with both or neither endpoints being sites (e.g., backhaul, sidelink, or
+nodes without such devices) take the endpoint with the lower node id as the
+site. Whether a node is a site is determined the first time it is queried and
+cached, so the devices must be installed before the channel is evaluated.
 
 Testing
 ~~~~~~~

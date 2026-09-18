@@ -7,20 +7,46 @@
 
 #include "channel-condition-model.h"
 
+#include "spatial-gaussian-field.h"
+
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/geocentric-constant-position-mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
+#include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 
 #include <cmath>
+#include <sstream>
+#include <vector>
 
 namespace
 {
+
+/// LOS/NLOS-state random fields, one per site, see SpatialGaussianField.
+const ns3::SpatialGaussianField kLosNlosStateField{ns3::SpatialGaussianField::Salt::LOS_NLOS_STATE};
+
+/**
+ * Indoor-state and building-type random fields, see SpatialGaussianField. Both
+ * are properties of the terminal location rather than of the link, so they are
+ * not keyed on the site: a terminal has the same indoor state and building
+ * type towards every site.
+ */
+const ns3::SpatialGaussianField kO2iStateField{ns3::SpatialGaussianField::Salt::O2I_STATE};
+
+/// Field keys of kO2iStateField.
+enum O2iStateFieldKey : uint64_t
+{
+    INDOOR_STATE = 0,
+    BUILDING_TYPE = 1,
+};
+
+/// Correlation distance of the building type (low/high loss), TR 38.901 Sec. 7.6.3.3.
+constexpr double kBuildingTypeCorrelationDistance = 50.0;
 
 /// NTN Dense Urban LOS probabilities from table 6.6.1-1 of 3GPP 38.811
 const std::map<int, double> DenseUrbanLOSProb{
@@ -203,7 +229,26 @@ TypeId
 ChannelConditionModel::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::ChannelConditionModel").SetParent<Object>().SetGroupName("Propagation");
+        TypeId("ns3::ChannelConditionModel")
+            .SetParent<Object>()
+            .SetGroupName("Propagation")
+            .AddAttribute(
+                "InterUeSpatialConsistency",
+                "Enable inter-UE (drop-based) spatial consistency (3GPP TR 38.901 Sec. 7.6.3): "
+                "the random variables of the LOS/NLOS state, indoor state and building type of "
+                "the 3GPP channel condition models, and those of the propagation loss and "
+                "channel models configured with this channel condition model, are drawn from "
+                "spatially correlated fields sampled at the terminal position.",
+                BooleanValue(false),
+                MakeBooleanAccessor(&ChannelConditionModel::m_interUeSpatialConsistency),
+                MakeBooleanChecker())
+            .AddAttribute("SiteNetDeviceTypes",
+                          "Comma-separated TypeId names of the net devices identifying the site "
+                          "(base station) endpoint of a link for the inter-UE spatial "
+                          "consistency. Types whose module is not loaded are ignored.",
+                          StringValue("ns3::LteEnbNetDevice,ns3::NrGnbNetDevice"),
+                          MakeStringAccessor(&ChannelConditionModel::m_siteNetDeviceTypes),
+                          MakeStringChecker());
     return tid;
 }
 
@@ -215,6 +260,63 @@ ChannelConditionModel::~ChannelConditionModel()
 {
 }
 
+bool
+ChannelConditionModel::IsInterUeSpatialConsistencyEnabled() const
+{
+    return m_interUeSpatialConsistency;
+}
+
+bool
+ChannelConditionModel::IsSiteNode(Ptr<const Node> node) const
+{
+    auto [it, inserted] = m_isSiteNodeCache.try_emplace(node->GetId(), false);
+    if (!inserted)
+    {
+        return it->second;
+    }
+    // Looked up by name, so that the site devices of modules this one does
+    // not depend on (lte, nr) are recognized when their module is loaded.
+    std::vector<TypeId> siteTypes;
+    std::istringstream names(m_siteNetDeviceTypes);
+    std::string name;
+    while (std::getline(names, name, ','))
+    {
+        TypeId tid;
+        if (TypeId::LookupByNameFailSafe(name, &tid))
+        {
+            siteTypes.push_back(tid);
+        }
+    }
+    for (uint32_t i = 0; i < node->GetNDevices() && !it->second; i++)
+    {
+        const TypeId deviceType = node->GetDevice(i)->GetInstanceTypeId();
+        for (const auto& siteType : siteTypes)
+        {
+            if (deviceType == siteType || deviceType.IsChildOf(siteType))
+            {
+                it->second = true;
+                break;
+            }
+        }
+    }
+    return it->second;
+}
+
+std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel>>
+ChannelConditionModel::GetSiteAndTerminal(Ptr<const MobilityModel> a,
+                                          Ptr<const MobilityModel> b) const
+{
+    Ptr<const Node> nodeA = a->GetObject<Node>();
+    Ptr<const Node> nodeB = b->GetObject<Node>();
+    const bool aIsSite = IsSiteNode(nodeA);
+    const bool bIsSite = IsSiteNode(nodeB);
+    if (aIsSite == bIsSite ? nodeA->GetId() <= nodeB->GetId() : aIsSite)
+    {
+        return {a, b};
+    }
+    return {b, a};
+}
+
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED(AlwaysLosChannelConditionModel);
@@ -223,7 +325,7 @@ TypeId
 AlwaysLosChannelConditionModel::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::AlwaysLosChannelConditionModel")
-                            .SetParent<Object>()
+                            .SetParent<ChannelConditionModel>()
                             .SetGroupName("Propagation")
                             .AddConstructor<AlwaysLosChannelConditionModel>();
     return tid;
@@ -260,7 +362,7 @@ TypeId
 NeverLosChannelConditionModel::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::NeverLosChannelConditionModel")
-                            .SetParent<Object>()
+                            .SetParent<ChannelConditionModel>()
                             .SetGroupName("Propagation")
                             .AddConstructor<NeverLosChannelConditionModel>();
     return tid;
@@ -440,11 +542,44 @@ ThreeGppChannelConditionModel::GetChannelCondition(Ptr<const MobilityModel> a,
     return cond;
 }
 
+double
+ThreeGppChannelConditionModel::GetLosNlosStateCorrelationDistance() const
+{
+    // TR 38.901 Table 7.6.3.1-2, LOS/NLOS-state correlation distance of UMa.
+    // Also used as fallback by scenarios without a table entry: the NTN models
+    // (TR 38.811 defers to the TR 38.901 spatial-consistency framework without
+    // its own distances) and the probabilistic V2V models (TR 37.885 Table
+    // 6.2.3-1 defines V2V-specific spatial-consistency distances that a
+    // subclass override could adopt).
+    return 50.0;
+}
+
+double
+ThreeGppChannelConditionModel::GetIndoorStateCorrelationDistance() const
+{
+    // TR 38.901 Table 7.6.3.1-2, indoor/outdoor-state correlation distance of
+    // RMa, UMi and UMa (N/A for InH, where every terminal is indoor).
+    return 50.0;
+}
+
 ChannelCondition::O2iConditionValue
 ThreeGppChannelConditionModel::ComputeO2i(Ptr<const MobilityModel> a,
                                           Ptr<const MobilityModel> b) const
 {
-    double o2iProb = m_uniformVarO2i->GetValue(0, 1);
+    double o2iProb;
+    if (IsInterUeSpatialConsistencyEnabled())
+    {
+        // Spatially consistent indoor state (TR 38.901 Sec. 7.6.3.3), with
+        // the same procedure as the LOS/NLOS state.
+        const Vector termPos = GetSiteAndTerminal(a, b).second->GetPosition();
+        o2iProb = kO2iStateField.SampleUniform(INDOOR_STATE,
+                                               termPos,
+                                               GetIndoorStateCorrelationDistance());
+    }
+    else
+    {
+        o2iProb = m_uniformVarO2i->GetValue(0, 1);
+    }
 
     if (m_linkO2iConditionToAntennaHeight)
     {
@@ -484,7 +619,22 @@ ThreeGppChannelConditionModel::ComputeChannelCondition(Ptr<const MobilityModel> 
     double pNlos = ComputePnlos(a, b);
 
     // draw a random value
-    double pRef = m_uniformVar->GetValue();
+    double pRef;
+    if (IsInterUeSpatialConsistencyEnabled())
+    {
+        // Drop-based spatially consistent LOS/NLOS state (TR 38.901 Sec.
+        // 7.6.3.3): nearby terminals compare a consistent variate, sampled
+        // from the field of the site at the terminal position, against the
+        // LOS probability.
+        const auto [site, terminal] = GetSiteAndTerminal(a, b);
+        pRef = kLosNlosStateField.SampleUniform(site->GetObject<Node>()->GetId(),
+                                                terminal->GetPosition(),
+                                                GetLosNlosStateCorrelationDistance());
+    }
+    else
+    {
+        pRef = m_uniformVar->GetValue();
+    }
 
     NS_LOG_DEBUG("pRef " << pRef << " pLos " << pLos << " pNlos " << pNlos);
 
@@ -512,7 +662,14 @@ ThreeGppChannelConditionModel::ComputeChannelCondition(Ptr<const MobilityModel> 
         // Since we have O2I penetration losses, we should choose based on the
         // threshold if it will be low or high penetration losses
         // (see TR38.901 Table 7.4.3)
-        double o2iLowHighLossProb = m_uniformO2iLowHighLossVar->GetValue(0, 1);
+        // With spatial consistency the building type is drawn from a field
+        // sampled at the terminal position (TR 38.901 Sec. 7.6.3.3).
+        const double o2iLowHighLossProb =
+            IsInterUeSpatialConsistencyEnabled()
+                ? kO2iStateField.SampleUniform(BUILDING_TYPE,
+                                               GetSiteAndTerminal(a, b).second->GetPosition(),
+                                               kBuildingTypeCorrelationDistance)
+                : m_uniformO2iLowHighLossVar->GetValue(0, 1);
         ChannelCondition::O2iLowHighConditionValue lowHighLossCondition;
 
         if (o2iLowHighLossProb < m_o2iLowLossThreshold)
@@ -623,6 +780,12 @@ ThreeGppRmaChannelConditionModel::ThreeGppRmaChannelConditionModel()
 
 ThreeGppRmaChannelConditionModel::~ThreeGppRmaChannelConditionModel()
 {
+}
+
+double
+ThreeGppRmaChannelConditionModel::GetLosNlosStateCorrelationDistance() const
+{
+    return 60.0; // TR 38.901 Table 7.6.3.1-2
 }
 
 double
@@ -800,6 +963,12 @@ ThreeGppIndoorMixedOfficeChannelConditionModel::~ThreeGppIndoorMixedOfficeChanne
 }
 
 double
+ThreeGppIndoorMixedOfficeChannelConditionModel::GetLosNlosStateCorrelationDistance() const
+{
+    return 10.0; // TR 38.901 Table 7.6.3.1-2
+}
+
+double
 ThreeGppIndoorMixedOfficeChannelConditionModel::ComputePlos(Ptr<const MobilityModel> a,
                                                             Ptr<const MobilityModel> b) const
 {
@@ -856,6 +1025,12 @@ ThreeGppIndoorOpenOfficeChannelConditionModel::ThreeGppIndoorOpenOfficeChannelCo
 
 ThreeGppIndoorOpenOfficeChannelConditionModel::~ThreeGppIndoorOpenOfficeChannelConditionModel()
 {
+}
+
+double
+ThreeGppIndoorOpenOfficeChannelConditionModel::GetLosNlosStateCorrelationDistance() const
+{
+    return 10.0; // TR 38.901 Table 7.6.3.1-2
 }
 
 double
