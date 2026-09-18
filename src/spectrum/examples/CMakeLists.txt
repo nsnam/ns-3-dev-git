@@ -105,8 +105,8 @@ build_lib_example(
 )
 
 build_lib_example(
-  NAME three-gpp-channel-consistency-example
-  SOURCE_FILES three-gpp-channel-consistency-example.cc
+  NAME three-gpp-spatiotemporal-channel-consistency-example
+  SOURCE_FILES three-gpp-spatiotemporal-channel-consistency-example.cc
   LIBRARIES_TO_LINK
     ${libantenna}
     ${libbuildings}

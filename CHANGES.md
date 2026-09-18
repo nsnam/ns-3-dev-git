@@ -38,6 +38,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (lte) The per-scheduler `GetRbgSize()` private helpers and their copies of the Type 0 RBG size table (3GPP TS 36.213, table 7.1.6.1-1) in the FF MAC schedulers, `LteEnbPhy`, `LteUePhy` and `LteFfrAlgorithm` have been replaced by a single free function, `GetLteRbgSize()`, declared in `lte-common.h`. `LteFfrAlgorithm::GetRbgSize()` is kept and delegates to it.
 * (propagation) The TypeId parent of `AlwaysLosChannelConditionModel` and `NeverLosChannelConditionModel` is now `ChannelConditionModel` instead of `Object`, so they expose the attributes of the base class.
+* (spectrum) The `three-gpp-channel-consistency-example` example and its plotting script were renamed `three-gpp-spatiotemporal-channel-consistency-example`, to distinguish the temporal (Procedure A) consistency it demonstrates from the inter-UE spatial consistency of the new `three-gpp-inter-ue-spatial-consistency-example`.
 * (core) The deprecated struct TypeTraits and its header type-traits.h have been removed; use the STL header <type_traits> instead.
 * Pcap helpers now use ``LinkType`` enum contained in the ``iana`` namespace (``iana-link-type-numbers.h``).
 * (network) After the introduction of the `iana::` enumerations for L2 protocol numbers, the old ones (e.g., `Ipv4L3Protocol::PROT_NUMBER`) have been deprecated.

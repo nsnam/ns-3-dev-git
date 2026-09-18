@@ -44,8 +44,8 @@
  * to isolate the SNR variation caused by channel evolution from changes due to beamforming updates.
  * The antenna bearing angles are set to 90 degrees at the gNB and -90 degrees at the UE.
  *
- * This example generates the output file '3gpp-channel-consistency-output.txt'. Each row of this
- * output file is organized as follows:
+ * This example generates the output file '3gpp-spatiotemporal-channel-consistency-output.txt'.
+ * Each row of this output file is organized as follows:
  * Time[s] TxPosX[m] TxPosY[m] RxPosX[m] RxPosY[m] ChannelState SNR[dB] Pathloss[dB]
  * 1st_C_Power[dB] 2nd_C_Power[dB] 3rd_C_Power[dB]
  * 1st_C_Delay[s] 1st_C_Aoa[Degree] 1st_C_Zoa[Degree]
@@ -59,11 +59,11 @@
  * the first channel component therefore includes the deterministic LOS contribution coherently
  * combined with the strongest stochastic cluster by the channel model.
  *
- * The additional Python script three-gpp-channel-consistency-example.py reads the output and
- * generates static figures for the scenario, SNR, and channel-component and cluster metrics. The
- * --animations option also generates 3gpp-channel-consistency.gif and
- * channel_consistency_component_powers.gif, which represent the scenario, UE mobility, SNR,
- * and SNR changes, and component power and changes in component powers.
+ * The additional Python script three-gpp-spatiotemporal-channel-consistency-example.py reads the
+ * output and generates static figures for the scenario, SNR, and channel-component and cluster
+ * metrics. The --animations option also generates 3gpp-spatiotemporal-channel-consistency.gif and
+ * spatiotemporal_channel_consistency_component_powers.gif, which represent the scenario, UE
+ * mobility, SNR, and SNR changes, and component power and changes in component powers.
  */
 
 #include "ns3/buildings-module.h"
@@ -84,7 +84,7 @@
 using namespace ns3;
 
 /// the log component
-NS_LOG_COMPONENT_DEFINE("ThreeGppChannelConsistencyExample");
+NS_LOG_COMPONENT_DEFINE("ThreeGppSpatiotemporalChannelConsistencyExample");
 
 /// the PropagationLossModel object
 static Ptr<ThreeGppPropagationLossModel> g_propagationLossModel;
@@ -314,7 +314,7 @@ ComputeSnr(const ComputeSnrParams& params)
     (*noisePsd) = noisePowerSpectralDensity;
     // print the SNR and pathloss values to the output file
     std::ofstream f;
-    f.open("3gpp-channel-consistency-output.txt", std::ios::out | std::ios::app);
+    f.open("3gpp-spatiotemporal-channel-consistency-output.txt", std::ios::out | std::ios::app);
     f << Simulator::Now().GetSeconds() << " " // time [s]
       << params.txMob->GetPosition().x << " " << params.txMob->GetPosition().y << " "
       << params.rxMob->GetPosition().x << " " << params.rxMob->GetPosition().y << " "
@@ -529,7 +529,7 @@ main(int argc, char* argv[])
 
     // initialize the output file
     std::ofstream f;
-    f.open("3gpp-channel-consistency-output.txt", std::ios::out);
+    f.open("3gpp-spatiotemporal-channel-consistency-output.txt", std::ios::out);
     f << "Time[s] TxPosX[m] TxPosY[m] RxPosX[m] RxPosY[m] ChannelState SNR[dB] Pathloss[dB] "
          "1st_C_Power[dB] 2nd_C_Power[dB] 3rd_C_Power[dB] "
          "1st_C_Delay[s] 1st_C_Aoa[Degree] 1st_C_Zoa[Degree] "
@@ -540,7 +540,7 @@ main(int argc, char* argv[])
     f.close();
 
     // print the list of buildings to file
-    PrintGnuplottableBuildingListToFile("3gpp-channel-consistency-buildings.txt");
+    PrintGnuplottableBuildingListToFile("3gpp-spatiotemporal-channel-consistency-buildings.txt");
 
     Simulator::Run();
     Simulator::Destroy();
