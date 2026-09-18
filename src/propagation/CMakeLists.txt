@@ -12,6 +12,7 @@ build_lib(
     model/probabilistic-v2v-channel-condition-model.cc
     model/propagation-delay-model.cc
     model/propagation-loss-model.cc
+    model/spatial-gaussian-field.cc
     model/three-gpp-propagation-loss-model.cc
     model/three-gpp-v2v-propagation-loss-model.cc
   HEADER_FILES
@@ -28,6 +29,7 @@ build_lib(
     model/propagation-delay-model.h
     model/propagation-environment.h
     model/propagation-loss-model.h
+    model/spatial-gaussian-field.h
     model/three-gpp-propagation-loss-model.h
     model/three-gpp-v2v-propagation-loss-model.h
   LIBRARIES_TO_LINK ${libmobility}
@@ -38,6 +40,7 @@ build_lib(
     test/kun-2600-mhz-test-suite.cc
     test/okumura-hata-test-suite.cc
     test/probabilistic-v2v-channel-condition-model-test.cc
+    test/spatial-gaussian-field-test-suite.cc
     test/propagation-loss-model-test-suite.cc
     test/three-gpp-propagation-loss-model-test-suite.cc
     test/three-gpp-ntn-propagation-loss-model-test-suite.cc
