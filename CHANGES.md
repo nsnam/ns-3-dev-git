@@ -63,6 +63,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (spectrum) The number of rays per cluster of the large bandwidth modeling of `ThreeGppChannelModel` (TR 38.901 Equation 7.6-8) is now derived from the maximum antenna aperture over the two link ends instead of the aperture of the lowest node id end, so it no longer depends on the node creation order or the query direction.
 * (spectrum) `ThreeGppChannelModel` now maps the rays of the two strongest clusters to sub-clusters following TR 38.901 Table 7.5-5; the mapping was previously shifted by one ray, so channel realizations change.
 * (spectrum) `ThreeGppChannelModel` now applies a blockage attenuation of A dB to the LOS ray as the amplitude scaling `10^(-A/20)` instead of `10^(-A/10)`, halving the attenuation in dB that was previously applied.
+* (spectrum) `ThreeGppChannelModel` now draws the cross-polarization power ratios in dB from the TR 38.901 Table 7.5-6 parameters; the previous draw was under-dispersed and about 3 dB under-powered, so channel realizations with dual-polarized antennas change.
 
 ## Changes from ns-3.47 to ns-3.48
 

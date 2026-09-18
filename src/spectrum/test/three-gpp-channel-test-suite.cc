@@ -1494,6 +1494,97 @@ ThreeGppLargeBandwidthModelingTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case for the cross-polarization power ratios of TR 38.901 Step 9: the
+ * ratios of the generated rays, in dB, must follow the normal distribution
+ * with the mean and standard deviation of Table 7.5-6, which are given in dB.
+ */
+class ThreeGppXprDistributionTest : public TestCase
+{
+  public:
+    ThreeGppXprDistributionTest();
+
+  private:
+    void DoRun() override;
+};
+
+ThreeGppXprDistributionTest::ThreeGppXprDistributionTest()
+    : TestCase("Check the dB distribution of the 3GPP cross-polarization power ratios")
+{
+}
+
+void
+ThreeGppXprDistributionTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    nodes.Get(0)->AggregateObject(aMob);
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(70.0, 20.0, 1.5));
+    nodes.Get(1)->AggregateObject(bMob);
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna();
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna();
+
+    channelModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        channelModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+    const auto table =
+        channelModel->GetThreeGppTable(aMob, bMob, condModel->GetChannelCondition(aMob, bMob));
+
+    // Sample moments of the ratios in dB over all rays of all clusters.
+    double sum = 0.0;
+    double sum2 = 0.0;
+    uint32_t count = 0;
+    for (const auto& clusterXpr : params->m_crossPolarizationPowerRatios)
+    {
+        for (double xpr : clusterXpr)
+        {
+            const double xprDb = 10.0 * std::log10(xpr);
+            sum += xprDb;
+            sum2 += xprDb * xprDb;
+            count++;
+        }
+    }
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(count, 200, "Too few rays to estimate the XPR distribution");
+    const double mean = sum / count;
+    const double std = std::sqrt(sum2 / count - mean * mean);
+    // The standard errors of the mean and standard deviation estimates are
+    // sigma / sqrt(n) and sigma / sqrt(2 n); the tolerances are about four
+    // standard errors for the smallest Table 7.5-6 sigma.
+    NS_TEST_ASSERT_MSG_EQ_TOL(mean,
+                              table->m_uXpr,
+                              4.0 * table->m_sigXpr / std::sqrt(count),
+                              "XPR mean in dB should match the Table 7.5-6 mean");
+    NS_TEST_ASSERT_MSG_EQ_TOL(std,
+                              table->m_sigXpr,
+                              4.0 * table->m_sigXpr / std::sqrt(2.0 * count),
+                              "XPR standard deviation in dB should match Table 7.5-6");
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test case for the ThreeGppSpectrumPropagationLossModelTest class.
  * 1) checks if the long term components for the direct and the reverse link
  *    are the same
@@ -3081,6 +3172,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSubClusterMappingTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppLosBlockageAttenuationTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppXprDistributionTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);
 

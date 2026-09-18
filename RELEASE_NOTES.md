@@ -63,6 +63,7 @@ Python 3.10 to 3.14.
 - (spectrum) #1369 The phased-array beamforming gain of a signal is now computed with the transmitter's beamforming vector at transmission time rather than at arrival time, which differed whenever the array was re-steered while the signal was propagating.
 - (spectrum) The number of rays per cluster of the large bandwidth modeling of the 3GPP TR 38.901 fast-fading model (Equation 7.6-8) now uses the maximum antenna aperture over the two link ends, as Sec. 7.6.2.1 prescribes, instead of the aperture of the lowest node id end.
 - (spectrum) The fixed ray-to-subcluster mapping of the two strongest clusters of the 3GPP TR 38.901 fast-fading model now follows Table 7.5-5; the previous mapping was shifted by one ray.
+- (spectrum) The cross-polarization power ratios of the 3GPP TR 38.901 fast-fading model are now drawn in dB from the Table 7.5-6 mean and standard deviation; the parameters were previously converted to linear scale before the dB draw, giving under-dispersed and under-powered ratios.
 - (spectrum) A blockage attenuation of A dB now scales the LOS ray amplitude of the 3GPP TR 38.901 fast-fading model by `10^(-A/20)`; it was previously applied as `10^(-A/10)`, doubling the attenuation.
 - (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
 - (mesh) #1341 Fixed dot11s regression that ignored the link rate, degrading the HWMP routing metric to hop count.

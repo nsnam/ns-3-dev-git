@@ -3614,9 +3614,6 @@ ThreeGppChannelModel::GenerateCrossPolPowerRatiosAndInitialPhases(
     crossPolarizationPowerRatios->clear();
     crossPolarizationPowerRatios->resize(reducedClusterNumber);
 
-    const double uXprLinear = pow(10, table3gpp->m_uXpr / 10.0);     // convert to linear
-    const double sigXprLinear = pow(10, table3gpp->m_sigXpr / 10.0); // convert to linear
-
     for (uint16_t clusterIndex = 0; clusterIndex < reducedClusterNumber; clusterIndex++)
     {
         (*clusterPhase)[clusterIndex].resize(raysPerCluster);
@@ -3624,11 +3621,13 @@ ThreeGppChannelModel::GenerateCrossPolPowerRatiosAndInitialPhases(
         for (uint8_t rayIndex = 0; rayIndex < raysPerCluster; rayIndex++)
         {
             (*clusterPhase)[clusterIndex][rayIndex].resize(4);
-            // stores the XPR values
-            (*crossPolarizationPowerRatios)[clusterIndex][rayIndex] = std::pow(
-                10,
-                (ScNormal(ScFieldVarId(9, clusterIndex, rayIndex)) * sigXprLinear + uXprLinear) /
-                    10.0);
+            // Step 9: kappa = 10^(X/10) with X ~ N(mu_XPR, sigma_XPR^2) drawn in dB,
+            // the units of the Table 7.5-6 parameters.
+            (*crossPolarizationPowerRatios)[clusterIndex][rayIndex] =
+                std::pow(10,
+                         (ScNormal(ScFieldVarId(9, clusterIndex, rayIndex)) * table3gpp->m_sigXpr +
+                          table3gpp->m_uXpr) /
+                             10.0);
             for (uint8_t polIndex = 0; polIndex < 4; polIndex++)
             {
                 // stores the PHI values
