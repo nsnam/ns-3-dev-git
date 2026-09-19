@@ -42,6 +42,10 @@ class NdmPathForwarder : public Object
   public:
     static TypeId GetTypeId();
 
+    /// Size of the on-wire path header (transports that decapsulate
+    /// delivered packets need it; PathHdr is private to this module).
+    static constexpr uint32_t kPathHdrSize = 8;
+
     NdmPathForwarder();
     ~NdmPathForwarder() override;
 
@@ -58,6 +62,17 @@ class NdmPathForwarder : public Object
     /// Send a payload of `payloadBytes` along the path (hop 0).
     /// Returns false without sending if the first link is down.
     bool Send(uint32_t pathId, uint32_t payloadBytes);
+
+    /// Send a ready-made packet (e.g. RoCE BTH + payload) along the path
+    /// (hop 0). A PathHdr is prepended to a copy; the caller keeps its
+    /// packet. Returns false without sending if the first link is down.
+    bool SendPacket(uint32_t pathId, Ptr<Packet> p);
+
+    /// Set by a transport (RoCE) to receive the delivered packet bytes at
+    /// the destination node: (pathId, packet with PathHdr at front, time).
+    /// When unset, only the size trace (m_deliveryTraced) fires.
+    void SetDeliveryPacketCallback(Callback<void, uint32_t, Ptr<const Packet>, Time> cb);
+    Callback<void, uint32_t, Ptr<const Packet>, Time> m_deliveryPacket;
 
     // -- gate evidence --------------------------------------------------------
     uint32_t GetSentCount() const;
@@ -96,7 +111,7 @@ class NdmPathForwarder : public Object
         uint32_t m_hop{0};
         uint32_t GetSerializedSize() const override
         {
-            return 8;
+            return kPathHdrSize;
         }
         void Serialize(Buffer::Iterator start) const override
         {

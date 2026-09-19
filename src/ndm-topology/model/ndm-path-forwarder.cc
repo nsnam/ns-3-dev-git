@@ -6,6 +6,8 @@
 
 #include "ns3/ndm-link.h"
 
+#include <algorithm>
+
 #include "ns3/log.h"
 #include "ns3/mac48-address.h"
 #include "ns3/node.h"
@@ -127,6 +129,41 @@ NdmPathForwarder::Send(uint32_t pathId, uint32_t payloadBytes)
     return true;
 }
 
+bool
+NdmPathForwarder::SendPacket(uint32_t pathId, Ptr<Packet> p)
+{
+    NS_ASSERT_MSG(pathId < m_paths.size(), "NdmPathForwarder: unknown path");
+    const NdmTopology::NdmPath& path = m_paths.at(pathId);
+    NS_ASSERT_MSG(path.m_nodes.front() == m_nodeIndex,
+                  "NdmPathForwarder: path does not start at this node");
+    if (path.m_links.empty())
+    {
+        NS_ABORT_MSG("NdmPathForwarder: empty path not supported");
+    }
+    if (m_topo->GetLink(path.m_links.front())->IsDown())
+    {
+        return false;
+    }
+    Ptr<Packet> w = Create<Packet>(0);
+    PathHdr hdr(pathId, 0);
+    w->AddHeader(hdr);
+    w->AddAtEnd(p->Begin());
+    Ptr<NetDevice> dev = m_linkToDev.at(path.m_links.front());
+    const bool ok = dev->Send(w, Mac48Address("00:00:00:00:00:02"), 0x86DD);
+    if (!ok)
+    {
+        return false;
+    }
+    m_sent++;
+    return true;
+}
+
+void
+NdmPathForwarder::SetDeliveryPacketCallback(Callback<void, uint32_t, Ptr<const Packet>, Time> cb)
+{
+    m_deliveryPacket = cb;
+}
+
 uint32_t
 NdmPathForwarder::GetSentCount() const
 {
@@ -202,10 +239,15 @@ NdmPathForwarder::HandleRx(Ptr<NetDevice> dev, Ptr<const Packet> p, uint16_t, co
         const uint32_t hdrSize = PathHdr().GetSerializedSize();
         NS_ASSERT_MSG(p->GetSize() >= hdrSize, "NdmPathForwarder: short delivery packet");
         m_deliveryTraced(hdr.m_pathId, p->GetSize() - hdrSize, Simulator::Now());
+        if (m_deliveryPacket.IsInitialized())
+        {
+            m_deliveryPacket(hdr.m_pathId, p, Simulator::Now());
+        }
         return true;
     }
 
-    // Forward on the next hop.
+    // Forward on the next hop. The payload bytes are copied verbatim (the
+    // hop count is incremented); PathHdr is the only per-hop header.
     const NdmLinkId next = path.m_links.at(hdr.m_hop + 1);
     if (m_topo->GetLink(next)->IsDown())
     {
@@ -213,7 +255,15 @@ NdmPathForwarder::HandleRx(Ptr<NetDevice> dev, Ptr<const Packet> p, uint16_t, co
         m_droppedMidPath++;
         return false;
     }
-    Ptr<Packet> fp = Create<Packet>(p->GetSize() - PathHdr().GetSerializedSize());
+    const uint32_t hdrSize = PathHdr().GetSerializedSize();
+    NS_ASSERT_MSG(p->GetSize() >= hdrSize, "NdmPathForwarder: short forwarding packet");
+    const uint32_t rest = p->GetSize() - hdrSize;
+    Ptr<Packet> fp = Create<Packet>(rest);
+    {
+        const uint8_t* src = p->Head() + hdrSize;
+        uint8_t* dst = fp->Start();
+        std::copy(src, src + rest, dst);
+    }
     PathHdr fhdr(hdr.m_pathId, hdr.m_hop + 1);
     fp->AddHeader(fhdr);
     Ptr<NetDevice> outDev = m_linkToDev.at(next);
