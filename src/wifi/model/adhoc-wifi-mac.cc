@@ -35,6 +35,7 @@
 #include "ns3/pointer.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/string.h"
+#include "ns3/uhr-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 
@@ -262,6 +263,12 @@ AdhocWifiMac::SetAllCapabilities(Mac48Address address)
             address,
             GetEhtCapabilities(SINGLE_LINK_OP_ID));
     }
+    if (GetUhrSupported())
+    {
+        GetWifiRemoteStationManager()->AddStationUhrCapabilities(
+            address,
+            GetUhrCapabilities(SINGLE_LINK_OP_ID));
+    }
     GetWifiRemoteStationManager()->AddAllSupportedModes(address);
     GetWifiRemoteStationManager()->RecordAdhocPeer(address);
 }
@@ -398,6 +405,10 @@ AdhocWifiMac::SendOneBeacon()
     {
         beacon.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
         beacon.Get<EhtOperation>() = GetEhtOperation();
+    }
+    if (GetUhrSupported())
+    {
+        beacon.Get<UhrCapabilities>() = GetUhrCapabilities(SINGLE_LINK_OP_ID);
     }
 
     auto packet = Create<Packet>();

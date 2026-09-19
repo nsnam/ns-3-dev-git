@@ -2357,6 +2357,19 @@ WifiMac::GetEhtSupported(const Mac48Address& address) const
     return false;
 }
 
+bool
+WifiMac::GetUhrSupported(Mac48Address address) const
+{
+    for (const auto& [id, link] : m_links)
+    {
+        if (link->stationManager->GetUhrSupported(address))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 uint16_t
 WifiMac::GetMaxBaBufferSize(std::optional<Mac48Address> address) const
 {
@@ -2828,6 +2841,15 @@ WifiMac::GetEhtCapabilities(uint8_t linkId) const
     return capabilities;
 }
 
+UhrCapabilities
+WifiMac::GetUhrCapabilities(linkId_t linkId) const
+{
+    NS_ASSERT(GetUhrSupported());
+    UhrCapabilities capabilities;
+    // TODO: fill in fields
+    return capabilities;
+}
+
 uint32_t
 WifiMac::GetMaxAmpduSize(AcIndex ac) const
 {
@@ -2973,6 +2995,16 @@ WifiMac::RecordCapabilities(const MgtFrameType& frame, const Mac48Address& from,
         if (const auto& ehtCapabilities = frame.template Get<EhtCapabilities>())
         {
             remoteStationManager->AddStationEhtCapabilities(from, *ehtCapabilities);
+        }
+
+        if (!GetUhrSupported())
+        {
+            return;
+        }
+
+        if (const auto& uhrCapabilities = frame.template Get<UhrCapabilities>())
+        {
+            remoteStationManager->AddStationUhrCapabilities(from, *uhrCapabilities);
         }
     };
 

@@ -28,6 +28,7 @@
 #include "ns3/ht-phy.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/uhr-configuration.h"
 #include "ns3/uinteger.h"
 #include "ns3/vht-configuration.h"
 
@@ -294,6 +295,12 @@ bool
 WifiRemoteStationManager::GetEhtSupported() const
 {
     return bool(m_wifiPhy->GetDevice()->GetEhtConfiguration());
+}
+
+bool
+WifiRemoteStationManager::GetUhrSupported() const
+{
+    return bool(m_wifiPhy->GetDevice()->GetUhrConfiguration());
 }
 
 bool
@@ -1591,6 +1598,7 @@ WifiRemoteStationManager::ResetState(Mac48Address address) const
         state->m_ehtOperation = nullptr;
         state->m_mleCommonInfo = nullptr;
         state->m_emlsrEnabled = false;
+        state->m_uhrCapabilities = nullptr;
         state->m_channelWidth = m_wifiPhy->GetChannelWidth();
         state->m_guardInterval = GetGuardInterval();
         state->m_ness = 0;
@@ -1894,6 +1902,22 @@ WifiRemoteStationManager::AddStationMleCommonInfo(
         state);
 }
 
+void
+WifiRemoteStationManager::AddStationUhrCapabilities(Mac48Address from,
+                                                    const UhrCapabilities& uhrCapabilities)
+{
+    // Used by all stations to record UHR capabilities of remote stations
+    NS_LOG_FUNCTION(this << from << uhrCapabilities);
+    auto state = LookupState(from);
+    for (const auto& mcs : m_wifiPhy->GetMcsList(WIFI_MOD_CLASS_UHR))
+    {
+        // TODO: assume all MCS are supported as long as UHR capabilities IE is not fully defined
+        AddSupportedMcs(from, mcs);
+    }
+    state->m_uhrCapabilities = Create<const UhrCapabilities>(uhrCapabilities);
+    SetQosSupport(from, true);
+}
+
 Ptr<const HtCapabilities>
 WifiRemoteStationManager::GetStationHtCapabilities(Mac48Address from)
 {
@@ -1968,6 +1992,12 @@ WifiRemoteStationManager::GetStationMldCapabilities(const Mac48Address& from)
         return state->m_mleCommonInfo->m_mldCapabilities.value();
     }
     return std::nullopt;
+}
+
+Ptr<const UhrCapabilities>
+WifiRemoteStationManager::GetStationUhrCapabilities(Mac48Address from)
+{
+    return LookupState(from)->m_uhrCapabilities;
 }
 
 bool
@@ -2469,6 +2499,12 @@ WifiRemoteStationManager::GetEmlsrEnabled(const WifiRemoteStation* station) cons
     return station->m_state->m_emlsrEnabled;
 }
 
+bool
+WifiRemoteStationManager::GetUhrSupported(const WifiRemoteStation* station) const
+{
+    return (bool)(station->m_state->m_uhrCapabilities);
+}
+
 uint8_t
 WifiRemoteStationManager::GetNMcsSupported(const WifiRemoteStation* station) const
 {
@@ -2586,6 +2622,12 @@ WifiRemoteStationManager::GetEmlsrEnabled(const Mac48Address& address) const
         return stateIt->second->m_emlsrEnabled;
     }
     return false;
+}
+
+bool
+WifiRemoteStationManager::GetUhrSupported(Mac48Address address) const
+{
+    return (bool)(LookupState(address)->m_uhrCapabilities);
 }
 
 void

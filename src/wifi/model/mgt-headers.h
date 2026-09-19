@@ -34,6 +34,7 @@
 #include "ns3/mu-edca-parameter-set.h"
 #include "ns3/multi-link-element.h"
 #include "ns3/tid-to-link-mapping-element.h"
+#include "ns3/uhr-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 #include "ns3/wifi-export.h"
@@ -107,7 +108,8 @@ using BeaconElems = std::tuple<Ssid,
                                std::optional<MultiLinkElement>,
                                std::optional<EhtCapabilities>,
                                std::optional<EhtOperation>,
-                               std::vector<TidToLinkMapping>>;
+                               std::vector<TidToLinkMapping>,
+                               std::optional<UhrCapabilities>>;
 
 /// List of Information Elements included in Probe Request frames
 using ProbeRequestElems = std::tuple<Ssid,
@@ -120,7 +122,8 @@ using ProbeRequestElems = std::tuple<Ssid,
                                      std::optional<HeCapabilities>,
                                      std::optional<He6GhzBandCapabilities>,
                                      std::optional<MultiLinkElement>,
-                                     std::optional<EhtCapabilities>>;
+                                     std::optional<EhtCapabilities>,
+                                     std::optional<UhrCapabilities>>;
 
 /// List of Information Elements included in Probe Response frames
 using ProbeResponseElems = std::tuple<Ssid,
@@ -142,7 +145,8 @@ using ProbeResponseElems = std::tuple<Ssid,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
-                                      std::vector<TidToLinkMapping>>;
+                                      std::vector<TidToLinkMapping>,
+                                      std::optional<UhrCapabilities>>;
 
 /// List of Information Elements included in Association Request frames
 using AssocRequestElems = std::tuple<Ssid,
@@ -155,7 +159,8 @@ using AssocRequestElems = std::tuple<Ssid,
                                      std::optional<He6GhzBandCapabilities>,
                                      std::optional<MultiLinkElement>,
                                      std::optional<EhtCapabilities>,
-                                     std::vector<TidToLinkMapping>>;
+                                     std::vector<TidToLinkMapping>,
+                                     std::optional<UhrCapabilities>>;
 
 /// List of Information Elements included in Association Response frames
 using AssocResponseElems = std::tuple<SupportedRates,
@@ -173,7 +178,8 @@ using AssocResponseElems = std::tuple<SupportedRates,
                                       std::optional<MultiLinkElement>,
                                       std::optional<EhtCapabilities>,
                                       std::optional<EhtOperation>,
-                                      std::vector<TidToLinkMapping>>;
+                                      std::vector<TidToLinkMapping>,
+                                      std::optional<UhrCapabilities>>;
 
 // Explicit instantiation declarations.
 //

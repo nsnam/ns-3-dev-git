@@ -670,6 +670,14 @@ class WIFI_EXPORT WifiMac : public Object
     EhtCapabilities GetEhtCapabilities(uint8_t linkId) const;
 
     /**
+     * Return the UHR capabilities of the device for the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return the UHR capabilities that we support
+     */
+    UhrCapabilities GetUhrCapabilities(linkId_t linkId) const;
+
+    /**
      * Return whether the device supports QoS.
      *
      * @return true if QoS is supported, false otherwise
@@ -743,6 +751,12 @@ class WIFI_EXPORT WifiMac : public Object
      * @return true if the remote station with the given address supports EHT
      */
     bool GetEhtSupported(const Mac48Address& address) const;
+
+    /**
+     * @param address the (link or MLD) address of a remote station
+     * @return true if the remote station with the given address supports UHR
+     */
+    bool GetUhrSupported(Mac48Address address) const;
 
     /**
      * Enable or disable Robust AV Streaming support for the device.
