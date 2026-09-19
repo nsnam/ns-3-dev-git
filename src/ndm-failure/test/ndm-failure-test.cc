@@ -636,7 +636,14 @@ class NdmLossModelTestCase : public TestCase
         opts.lossProbability = p;
         opts.burstLen = burstLen;
         opts.seed = 12345;
-        auto topo = NdmTopologyHelper::CreateMultiRail(1, 2, 1, 1, 1, opts);
+
+        // Single link: isolates the loss model (a multi-hop path would
+        // compound the per-hop loss).
+        auto topo = CreateObject<NdmTopology>();
+        topo->AddNode(NdmNodeKind::HOST, 0);
+        topo->AddNode(NdmNodeKind::HOST, 1);
+        topo->AddLink(0, 1, opts.bps, opts.delay, -1, -1, false, 1000,
+                      NdmTopologyHelper::MakeLinkLoss(opts, 0));
 
         auto fwdA = CreateObject<NdmPathForwarder>();
         auto fwdB = CreateObject<NdmPathForwarder>();
