@@ -138,6 +138,11 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
     NS_ASSERT(nA->AddDevice(devA) == portA);
     NS_ASSERT(nB->AddDevice(devB) == portB);
 
+    // Stock P2P devices start LinkDown; bring both ends up (the link's own
+    // failure state is separate and driven by NdmFailureScheduler).
+    devA->LinkUp();
+    devB->LinkUp();
+
     m_links[id] = link;
     m_portToLink[pA] = id;
     m_portToLink[pB] = id;
