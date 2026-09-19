@@ -343,20 +343,32 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         bool gapOk = true;
         for (size_t i = 0; i < r.m.deliveryTimes.size(); i++)
         {
-            if (r.m.deliveryPathIds[i] == 0)
+            const Time t = r.m.deliveryTimes[i];
+            if (r.m.deliveryPathIds[i] == 0 && t > MilliSeconds(52) && t < MilliSeconds(111.5))
             {
-                const Time t = r.m.deliveryTimes[i];
-                if (t > MilliSeconds(50) && t < MilliSeconds(115))
-                {
-                    std::cerr << "[dbg] rail0 delivery " << t << std::endl;
-                }
-                if (t > MilliSeconds(52) && t < MilliSeconds(111.5))
-                {
-                    gapOk = false;
-                }
+                gapOk = false;
             }
         }
         EXPECT_TRUE(gapOk);
+
+        // Temp debug: dump deliveries 95..130ms and L0/L1 rx window.
+        for (size_t i = 0; i < r.m.deliveryTimes.size(); i++)
+        {
+            const Time t = r.m.deliveryTimes[i];
+            if (t > MilliSeconds(95) && t < MilliSeconds(130))
+            {
+                std::cerr << "[dbg] dlv t=" << t.GetMilliSeconds()
+                          << " pid=" << r.m.deliveryPathIds[i] << std::endl;
+            }
+        }
+        {
+            const auto& l0 = r.m.linkRxFirst.at(NdmLinkId{0, 0, -1});
+            std::cerr << "[dbg] L0 rxFirst=" << l0.GetMilliSeconds() << " rxLast="
+                      << r.m.linkRxLast.at(NdmLinkId{0, 0, -1}).GetMilliSeconds() << std::endl;
+            const auto& l1f = r.m.linkRxFirst.at(NdmLinkId{1, 1, -1});
+            std::cerr << "[dbg] L1 rxFirst=" << l1f.GetMilliSeconds() << " rxLast="
+                      << r.m.linkRxLast.at(NdmLinkId{1, 1, -1}).GetMilliSeconds() << std::endl;
+        }
 
         // L1 last delivery (send 109) at 110.5ms.
         EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MilliSeconds(110.5));
