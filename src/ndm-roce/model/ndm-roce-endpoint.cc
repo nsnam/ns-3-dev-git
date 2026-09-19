@@ -9,6 +9,7 @@
 #include "ns3/udp-header.h"
 
 #include <algorithm>
+#include <cstdio>
 #include <cstdint>
 
 NS_LOG_COMPONENT_DEFINE("NdmRoceEndpoint");
@@ -168,6 +169,18 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
             break;
         }
         default:
+            {
+                uint8_t dump[24] = {0};
+                p->CopyData(dump, std::min<uint32_t>(24, p->GetSize()));
+                std::fprintf(stderr, "DBG opcode=%u qp=%u psn=%u size=%u bytes:",
+                             (unsigned)bth.m_opcode, (unsigned)bth.m_destQp,
+                             (unsigned)bth.m_psn, (unsigned)p->GetSize());
+                for (int i = 0; i < 24; i++)
+                {
+                    std::fprintf(stderr, " %02x", dump[i]);
+                }
+                std::fprintf(stderr, "\n");
+            }
             NS_ABORT_MSG("NdmRoceEndpoint: unknown opcode");
     }
 }
