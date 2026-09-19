@@ -116,14 +116,14 @@ main(int argc, char* argv[])
               << " txBlocked=" << l0->GetTxBlockedCount() + l1->GetTxBlockedCount()
               << " rxLost=" << l0->GetRxLostInFlightCount() + l1->GetRxLostInFlightCount()
               << " l0down=" << (l0->IsDown() ? 1 : 0)
-              << " tdown=" << l0->GetTDown().As(MilliSeconds::S) << std::endl;
+              << " tdown=" << l0->GetTDown().GetMs() << std::endl;
     const auto& dt = fwdB->GetDeliveryTimes();
     std::cerr << "  deliveries: ";
     for (size_t i = 0; i < dt.size(); i++)
     {
         if (dt[i] > MilliSeconds(49) || i < 2)
         {
-            std::cerr << dt[i].As(MilliSeconds::S) << "ms ";
+            std::cerr << dt[i].GetMs() << "ms ";
         }
     }
     std::cerr << std::endl;
