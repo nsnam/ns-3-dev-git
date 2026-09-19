@@ -28,6 +28,7 @@
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 
+#include <iostream>
 #include <map>
 #include <vector>
 
@@ -104,6 +105,10 @@ class NdmPathForwarder : public Object
             m_pathId = start.ReadNtohU32();
             m_hop = start.ReadNtohU32();
             return 8;
+        }
+        void Print(std::ostream& os) const override
+        {
+            os << "pathId=" << m_pathId << " hop=" << m_hop;
         }
     };
 

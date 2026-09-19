@@ -2,7 +2,9 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
-#include "ns3/attributes.h"
+#include "ns3/enum.h"
+#include "ns3/double.h"
+#include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "ns3/ndm-link-loss-model.h"
 

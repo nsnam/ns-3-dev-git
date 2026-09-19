@@ -15,6 +15,7 @@
 #define NDM_IDENTITY_H
 
 #include <cstdint>
+#include <iostream>
 
 namespace ns3
 {
@@ -98,6 +99,26 @@ enum class InFlightPolicy : uint8_t
     FLUSH,
     DELIVER_THEN_DROP
 };
+
+inline std::ostream&
+operator<<(std::ostream& os, const NdmPortIdentity& p)
+{
+    return os << "(node=" << p.node << ", port=" << p.port << ")";
+}
+
+inline std::ostream&
+operator<<(std::ostream& os, const NdmLinkId& l)
+{
+    return os << "{index=" << l.index << ", rail=" << l.rail << ", plane=" << l.plane
+              << ", crossPlane=" << l.crossPlane << "}";
+}
+
+inline std::ostream&
+operator<<(std::ostream& os, const NdmNodeIdentity& n)
+{
+    return os << "{node=" << n.node << ", kind=" << uint8_t(n.kind) << ", semantic="
+              << n.semantic << "}";
+}
 
 } // namespace ns3
 

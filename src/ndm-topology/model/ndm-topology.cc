@@ -9,7 +9,8 @@
 #include "ns3/ndm-point-to-point-channel.h"
 #include "ns3/ndm-rx-guard.h"
 
-#include "ns3/attributes.h"
+#include "ns3/pointer.h"
+#include "ns3/uinteger.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/packet.h"
 #include "ns3/point-to-point-net-device.h"

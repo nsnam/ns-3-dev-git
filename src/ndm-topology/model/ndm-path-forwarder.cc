@@ -18,7 +18,6 @@ namespace ns3
 NS_LOG_COMPONENT_DEFINE("NdmPathForwarder");
 
 NS_OBJECT_ENSURE_REGISTERED(NdmPathForwarder);
-NS_OBJECT_ENSURE_REGISTERED(NdmPathForwarder::PathHdr);
 
 TypeId
 NdmPathForwarder::PathHdr::GetTypeId()

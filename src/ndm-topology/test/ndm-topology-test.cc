@@ -9,6 +9,7 @@
 #include "ns3/ndm-topology-helper.h"
 
 #include "ns3/core-module.h"
+#include "ns3/node.h"
 #include "ns3/test.h"
 
 using namespace ns3;
@@ -16,7 +17,7 @@ using namespace ns3;
 // gtest-style convenience wrappers over the ns-3 test assertions
 // (test-only; the project test files are the only users).
 #define EXPECT_EQ(a, b) NS_TEST_ASSERT_MSG_EQ(a, b, "EXPECT_EQ(" #a ", " #b ") failed")
-#define EXPECT_TRUE(c) NS_TEST_ASSERT_MSG_TRUE(c, "EXPECT_TRUE(" #c ") failed")
+#define EXPECT_TRUE(c) NS_TEST_ASSERT_MSG_EQ(c, true, "EXPECT_TRUE(" #c ") failed")
 
 namespace
 {
