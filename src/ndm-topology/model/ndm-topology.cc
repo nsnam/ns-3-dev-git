@@ -114,12 +114,12 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
     channel->SetLink(link);
     channel->Attach(devA);
     channel->Attach(devB);
+    link->SetChannel(channel);
+    link->SetDevices(devA, devB);
     devA->SetAttribute("DataRate", DataRateValue(bps));
     devB->SetAttribute("DataRate", DataRateValue(bps));
     channel->SetAttribute("Delay", TimeValue(delay));
     link->SetDelay(delay);
-    link->SetChannel(channel);
-    link->SetDevices(devA, devB);
 
     // Receive guard: failure state (and chained stochastic loss).
     if (loss != nullptr)
