@@ -97,6 +97,9 @@ NdmPathForwarder::Send(uint32_t pathId, uint32_t payloadBytes)
 {
     NS_ASSERT_MSG(pathId < m_paths.size(), "NdmPathForwarder: unknown path");
     const NdmTopology::NdmPath& path = m_paths.at(pathId);
+    std::cerr << "[dbg] Send at " << Now().GetMilliSeconds() << "ms node=" << m_node->GetId()
+              << " pathId=" << pathId << " pathStartsAt=" << path.m_nodes.front()
+              << " links=" << path.m_links.size() << std::endl;
     NS_ASSERT_MSG(path.m_nodes.front() == m_node->GetId(),
                   "NdmPathForwarder: path does not start at this node");
     if (path.m_links.empty())
