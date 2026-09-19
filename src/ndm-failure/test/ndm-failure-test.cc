@@ -34,6 +34,11 @@
 
 using namespace ns3;
 
+// gtest-style convenience wrappers over the ns-3 test assertions
+// (test-only; the project test files are the only users).
+#define EXPECT_EQ(a, b) NS_TEST_ASSERT_MSG_EQ(a, b, "EXPECT_EQ(" #a ", " #b ") failed")
+#define EXPECT_TRUE(c) NS_TEST_ASSERT_MSG_TRUE(c, "EXPECT_TRUE(" #c ") failed")
+
 namespace
 {
 
@@ -53,11 +58,16 @@ struct TestSender
     uint32_t done{0};
     uint32_t skipped{0};
     uint32_t sent{0};
-    std::function<uint32_t()> plan;
+    /// Flipped by the failure scheduler's reroute (convergence) callback:
+    /// until the convergence window opens the flow must keep its current
+    /// selection (no premature probing of alternative paths — D6).
+    bool rerouted{false};
+    /// plan(converged): pick a path id; called once per tick.
+    std::function<uint32_t(bool)> plan;
 
     void Replan()
     {
-        // plan() is evaluated lazily at each tick; nothing to cache.
+        rerouted = true;
     }
 
     void Tick()
@@ -66,7 +76,7 @@ struct TestSender
         {
             return;
         }
-        const uint32_t pid = plan();
+        const uint32_t pid = plan(rerouted);
         if (pid == kNone || !fwd->GetPath(pid).IsValid(*topo))
         {
             skipped++;
@@ -158,8 +168,12 @@ BuildTwoRail(bool withUp)
 {
     TwoRail r;
     r.topo = CreateObject<NdmTopology>();
-    r.A = r.topo->AddNode(NdmNodeKind::HOST, 0)->GetId();
-    r.B = r.topo->AddNode(NdmNodeKind::HOST, 1)->GetId();
+    // Relative node indices (0-based creation order) — the topology API is
+    // index-keyed, not ns-3 node-id-keyed.
+    r.topo->AddNode(NdmNodeKind::HOST, 0);
+    r.topo->AddNode(NdmNodeKind::HOST, 1);
+    r.A = 0;
+    r.B = 1;
     NdmTopologyHelper::Opts opts;
     opts.bps = DataRate("1 Gbps");
     opts.delay = MilliSeconds(1.5);
@@ -168,8 +182,8 @@ BuildTwoRail(bool withUp)
 
     r.fwdA = CreateObject<NdmPathForwarder>();
     r.fwdB = CreateObject<NdmPathForwarder>();
-    r.fwdA->Attach(r.topo, r.topo->GetNode(0));
-    r.fwdB->Attach(r.topo, r.topo->GetNode(1));
+    r.fwdA->Attach(r.topo, 0);
+    r.fwdB->Attach(r.topo, 1);
 
     auto paths = r.topo->FindPaths(r.A, r.B);
     NS_ASSERT_MSG(paths.size() == 2, "two-rail: expected 2 paths");
@@ -208,7 +222,11 @@ RunTwoRail(bool withUp, uint32_t nSends)
     sender.dst = r.B;
     sender.interval = MilliSeconds(2);
     sender.total = nSends;
-    sender.plan = [&]() -> uint32_t {
+    sender.plan = [&](bool converged) -> uint32_t {
+        if (!converged)
+        {
+            return 0; // initial selection; held until the convergence window
+        }
         auto paths = r.topo->FindPaths(r.A, r.B);
         if (paths.empty())
         {
@@ -249,7 +267,7 @@ RunTwoRail(bool withUp, uint32_t nSends)
     sched->Start();
 
     sender.StartAt(MilliSeconds(1)); // odd-millisecond grid: 1,3,5,...
-    Simulator::StopAt(MilliSeconds(nSends * 2 + 20));
+    Simulator::Schedule(MilliSeconds(nSends * 2 + 20), &Simulator::Stop);
     Simulator::Run();
 
     TwoRailResult out;
@@ -358,16 +376,16 @@ NdmInFlightPolicyTestCase::DoRun()
     // One link, 10 Mbps (1000 B => 0.8 ms serialization), 1 ms delay.
     // 100 packets sent at t=0. DOWN at t=10 (detection 0), no reroute.
     auto topo = CreateObject<NdmTopology>();
-    const uint32_t A = topo->AddNode(NdmNodeKind::HOST, 0)->GetId();
-    const uint32_t B = topo->AddNode(NdmNodeKind::HOST, 1)->GetId();
-    auto link = topo->AddLink(A, B, DataRate("10 Mbps"), MilliSeconds(1), -1, -1, false, 1000,
+    topo->AddNode(NdmNodeKind::HOST, 0);
+    topo->AddNode(NdmNodeKind::HOST, 1);
+    auto link = topo->AddLink(0, 1, DataRate("10 Mbps"), MilliSeconds(1), -1, -1, false, 1000,
                               nullptr);
 
     auto fwdA = CreateObject<NdmPathForwarder>();
     auto fwdB = CreateObject<NdmPathForwarder>();
     fwdA->Attach(topo, 0);
     fwdB->Attach(topo, 1);
-    auto paths = topo->FindPaths(A, B);
+    auto paths = topo->FindPaths(0, 1);
     fwdA->RegisterPath(paths[0]);
     fwdB->RegisterPath(paths[0]);
 
@@ -389,7 +407,7 @@ NdmInFlightPolicyTestCase::DoRun()
             (void)f->Send(0, 1000);
         }
     });
-    Simulator::StopAt(MilliSeconds(200));
+    Simulator::Schedule(MilliSeconds(200), &Simulator::Stop);
     Simulator::Run();
 
     // TX grid: 0, 0.8, ..., 79.2 ms. Arrivals = TX + 1 ms.
@@ -444,9 +462,9 @@ RunSwitchFailure()
 
     // Node layout (relative): 0..3 GPUs (p0g0, p0g1, p1g0, p1g1);
     // 4..7 ToRs (r0p0, r0p1, r1p0, r1p1); 8..9 spines (r0, r1).
-    const uint32_t n0 = topo->GetNode(0)->GetId(); // src GPU p0g0
-    const uint32_t n3 = topo->GetNode(3)->GetId(); // dst GPU p1g1
-    const uint32_t n4 = topo->GetNode(4)->GetId(); // ToR r0 p0 (fails)
+    const uint32_t n0 = 0; // src GPU p0g0 (relative index)
+    const uint32_t n3 = 3; // dst GPU p1g1
+    const uint32_t n4 = 4; // ToR r0 p0 (fails)
 
     auto fwds = std::vector<Ptr<NdmPathForwarder>>(topo->GetNodeCount());
     for (uint32_t i = 0; i < topo->GetNodeCount(); i++)
@@ -472,7 +490,11 @@ RunSwitchFailure()
     sender.dst = n3;
     sender.interval = MilliSeconds(2);
     sender.total = 40; // t = 1,3,...,79
-    sender.plan = [&]() -> uint32_t {
+    sender.plan = [&](bool converged) -> uint32_t {
+        if (!converged)
+        {
+            return 0; // initial selection (rail 0); held until convergence
+        }
         auto ps = topo->FindPaths(n0, n3);
         if (ps.empty())
         {
@@ -503,7 +525,7 @@ RunSwitchFailure()
     sched->Start();
 
     sender.StartAt(MilliSeconds(1));
-    Simulator::StopAt(MilliSeconds(100));
+    Simulator::Schedule(MilliSeconds(100), &Simulator::Stop);
     Simulator::Run();
 
     SwitchResult out;
@@ -605,14 +627,12 @@ class NdmLossModelTestCase : public TestCase
         opts.burstLen = burstLen;
         opts.seed = 12345;
         auto topo = NdmTopologyHelper::CreateMultiRail(1, 2, 1, 1, 1, opts);
-        const uint32_t A = topo->GetNode(0)->GetId();
-        const uint32_t B = topo->GetNode(1)->GetId();
 
         auto fwdA = CreateObject<NdmPathForwarder>();
         auto fwdB = CreateObject<NdmPathForwarder>();
         fwdA->Attach(topo, 0);
         fwdB->Attach(topo, 1);
-        auto paths = topo->FindPaths(A, B);
+        auto paths = topo->FindPaths(0, 1);
         fwdA->RegisterPath(paths[0]);
         fwdB->RegisterPath(paths[0]);
 
@@ -622,9 +642,9 @@ class NdmLossModelTestCase : public TestCase
                 (void)f->Send(0, 1200);
             }
         });
-        // All 1000 sends at t=0 serialize at 9.6us each (queue 1000 default
+        // All 1000 sends at t=0 serialize at ~9.6us each (queue 1000 default
         // in Opts is 1000) => last TX ~9.6ms, delivery ~10.6ms.
-        Simulator::StopAt(MilliSeconds(50));
+        Simulator::Schedule(MilliSeconds(50), &Simulator::Stop);
         Simulator::Run();
         return fwdB->GetDeliveredCount();
     }
@@ -658,18 +678,18 @@ class NdmQueueDropTestCase : public TestCase
     static uint32_t RunOnce()
     {
         auto topo = CreateObject<NdmTopology>();
-        const uint32_t A = topo->AddNode(NdmNodeKind::HOST, 0)->GetId();
-        const uint32_t B = topo->AddNode(NdmNodeKind::HOST, 1)->GetId();
-        // Tiny queue: with 1000 B and 1 Gbps (9.6us/packet), 6 packets fit
+        topo->AddNode(NdmNodeKind::HOST, 0);
+        topo->AddNode(NdmNodeKind::HOST, 1);
+        // Tiny queue: with 1000 B and 1 Gbps (~8us/packet), 6 packets fit
         // (1 in service + 5 queued); the remaining 94 are dropped at enqueue.
-        auto link = topo->AddLink(A, B, DataRate("1 Gbps"), MilliSeconds(1), -1, -1, false, 5,
+        auto link = topo->AddLink(0, 1, DataRate("1 Gbps"), MilliSeconds(1), -1, -1, false, 5,
                                   nullptr);
 
         auto fwdA = CreateObject<NdmPathForwarder>();
         auto fwdB = CreateObject<NdmPathForwarder>();
         fwdA->Attach(topo, 0);
         fwdB->Attach(topo, 1);
-        auto paths = topo->FindPaths(A, B);
+        auto paths = topo->FindPaths(0, 1);
         fwdA->RegisterPath(paths[0]);
         fwdB->RegisterPath(paths[0]);
 
@@ -679,7 +699,7 @@ class NdmQueueDropTestCase : public TestCase
                 (void)f->Send(0, 1000);
             }
         });
-        Simulator::StopAt(MilliSeconds(10));
+        Simulator::Schedule(MilliSeconds(10), &Simulator::Stop);
         Simulator::Run();
         return fwdB->GetDeliveredCount();
     }

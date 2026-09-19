@@ -242,13 +242,14 @@ NdmTopologyHelper::CreateMultiPlane(uint32_t planes,
         }
     }
 
-    // Optional cross-plane links: equal ordinals of adjacent planes.
+    // Optional cross-plane links: equal ordinals of adjacent planes
+    // (plane p <-> plane p+1; a line, no wrap-around double links).
     if (crossPlane)
     {
-        for (uint32_t p = 0; p < planes; p++)
+        for (uint32_t p = 0; p + 1 < planes; p++)
         {
             const uint32_t a = H + p * switchesPerPlane;
-            const uint32_t b = H + ((p + 1) % planes) * switchesPerPlane;
+            const uint32_t b = H + (p + 1) * switchesPerPlane;
             for (uint32_t w = 0; w < switchesPerPlane; w++)
             {
                 topo->AddLink(a + w, b + w, opts.bps, opts.delay, -1, -1, true,

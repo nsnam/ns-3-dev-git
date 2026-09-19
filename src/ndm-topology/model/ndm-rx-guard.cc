@@ -48,18 +48,13 @@ NdmRxGuard::DoCorrupt(Ptr<Packet> p)
 {
     if (m_link != nullptr && m_link->IsDown())
     {
-        const InFlightPolicy policy = m_link->GetPolicy();
-        bool lost;
-        if (policy == InFlightPolicy::DELIVER_THEN_DROP)
-        {
-            // Launch time = receive time minus channel delay.
-            const Time launch = Simulator::Now() - m_link->GetDelay();
-            lost = launch >= m_link->GetTDown();
-        }
-        else
-        {
-            lost = true;
-        }
+        // The link's failure state applies from the detection instant.
+        //  - DROP / FLUSH: the physical link is dead; every arrival after
+        //    detection (i.e. every in-flight packet) is lost.
+        //  - DELIVER_THEN_DROP: in-flight packets and the queued-at-detection
+        //    drain allowance both complete; only later transmissions are
+        //    blocked (by the channel, so they never arrive here).
+        const bool lost = m_link->GetPolicy() != InFlightPolicy::DELIVER_THEN_DROP;
         if (lost)
         {
             NS_LOG_INFO("NdmRxGuard: in-flight packet dropped on link "
@@ -67,7 +62,7 @@ NdmRxGuard::DoCorrupt(Ptr<Packet> p)
             m_link->CountRxLostInFlight();
             return true;
         }
-        return false; // delivered: launched before the link died
+        return false; // DELIVER_THEN_DROP: let in-flight/drain packets complete
     }
 
     if (m_loss != nullptr)

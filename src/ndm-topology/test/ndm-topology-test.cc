@@ -13,6 +13,11 @@
 
 using namespace ns3;
 
+// gtest-style convenience wrappers over the ns-3 test assertions
+// (test-only; the project test files are the only users).
+#define EXPECT_EQ(a, b) NS_TEST_ASSERT_MSG_EQ(a, b, "EXPECT_EQ(" #a ", " #b ") failed")
+#define EXPECT_TRUE(c) NS_TEST_ASSERT_MSG_TRUE(c, "EXPECT_TRUE(" #c ") failed")
+
 namespace
 {
 
@@ -96,8 +101,11 @@ class NdmParallelLinkTestCase : public TestCase
     {
         NdmTopologyHelper::Opts opts;
         auto topo = CreateObject<NdmTopology>();
-        const uint32_t a = topo->AddNode(NdmNodeKind::HOST, 0)->GetId();
-        const uint32_t b = topo->AddNode(NdmNodeKind::HOST, 1)->GetId();
+        // Relative node indices (0-based creation order).
+        const uint32_t a = 0;
+        const uint32_t b = 1;
+        topo->AddNode(NdmNodeKind::HOST, 0);
+        topo->AddNode(NdmNodeKind::HOST, 1);
         auto l0 = topo->AddLink(a, b, opts.bps, opts.delay, 0, -1, false, 100, nullptr);
         auto l1 = topo->AddLink(a, b, opts.bps, opts.delay, 1, -1, false, 100, nullptr);
 
@@ -200,10 +208,11 @@ class NdmMultiPlaneTestCase : public TestCase
         }
         EXPECT_EQ(topo->GetDiameter(), 5u); // 1 + ring(3) + 1
 
-        // With cross-plane links: switch degree 4, diameter 6.
+        // With cross-plane links (adjacent planes only: H links): switch
+        // degree 4, diameter 6 (1 + 1 + ring(3) + 1).
         auto topoX = NdmTopologyHelper::CreateMultiPlane(2, NdmTopologyHelper::PlaneKind::RING,
                                                          6, 4, 2, true, opts);
-        EXPECT_EQ(topoX->GetLinkCount(), 2 * (H + H) + 2 * H);
+        EXPECT_EQ(topoX->GetLinkCount(), 2 * (H + H) + H);
         EXPECT_EQ(topoX->GetMaxDegree(), 4u);
         EXPECT_EQ(topoX->GetDiameter(), 6u);
 
@@ -215,7 +224,7 @@ class NdmMultiPlaneTestCase : public TestCase
         const uint32_t Lf = 2 * 2; // ToRs per plane
         const uint32_t Sf = 2 * 4 / 4; // spines per plane
         EXPECT_EQ(topoF->GetNodeCount(), Hf + 2 * (Lf + Sf));
-        EXPECT_EQ(topoF->GetLinkCount(), 2 * (Hf + Lf * 2) + 2 * (Lf + Sf));
+        EXPECT_EQ(topoF->GetLinkCount(), 2 * (Hf + Lf * 2) + (Lf + Sf));
         EXPECT_EQ(topoF->GetDiameter(), 4u);
 
         // Plane identity on plane links.
@@ -225,7 +234,7 @@ class NdmMultiPlaneTestCase : public TestCase
             EXPECT_TRUE(lid.plane >= 0 && lid.plane < 2);
             EXPECT_EQ(lid.crossPlane, false);
         }
-        // Cross-plane links are marked.
+        // Cross-plane links are marked (adjacent planes only).
         uint32_t cross = 0;
         for (uint32_t i = 0; i < topoX->GetLinkCount(); i++)
         {
@@ -234,7 +243,7 @@ class NdmMultiPlaneTestCase : public TestCase
                 cross++;
             }
         }
-        EXPECT_EQ(cross, 2u * H);
+        EXPECT_EQ(cross, H);
     }
 };
 
@@ -251,10 +260,15 @@ class NdmPathQueryTestCase : public TestCase
         // Diamond: a-b-c and a-d-c.
         NdmTopologyHelper::Opts opts;
         auto topo = CreateObject<NdmTopology>();
-        const uint32_t a = topo->AddNode(NdmNodeKind::HOST, 0)->GetId();
-        const uint32_t b = topo->AddNode(NdmNodeKind::SWITCH, 0)->GetId();
-        const uint32_t c = topo->AddNode(NdmNodeKind::HOST, 1)->GetId();
-        const uint32_t d = topo->AddNode(NdmNodeKind::SWITCH, 1)->GetId();
+        // Relative node indices (0-based creation order).
+        const uint32_t a = 0;
+        const uint32_t b = 1;
+        const uint32_t c = 2;
+        const uint32_t d = 3;
+        topo->AddNode(NdmNodeKind::HOST, 0);
+        topo->AddNode(NdmNodeKind::SWITCH, 0);
+        topo->AddNode(NdmNodeKind::HOST, 1);
+        topo->AddNode(NdmNodeKind::SWITCH, 1);
         auto ab = topo->AddLink(a, b, opts.bps, opts.delay, -1, -1, false, 100, nullptr);
         auto bc = topo->AddLink(b, c, opts.bps, opts.delay, -1, -1, false, 100, nullptr);
         auto ad = topo->AddLink(a, d, opts.bps, opts.delay, -1, -1, false, 100, nullptr);
