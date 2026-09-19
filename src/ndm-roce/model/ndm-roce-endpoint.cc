@@ -120,11 +120,14 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
     rest->RemoveAtStart(outer);
 
     Ipv6Header ip;
-    rest->PeekHeader(ip);
+    const uint32_t sip = rest->PeekHeader(ip);
     UdpHeader udp;
-    rest->PeekHeader(udp);
+    const uint32_t su = rest->PeekHeader(udp);
     NdmRoceBth bth;
-    rest->PeekHeader(bth);
+    const uint32_t sb = rest->PeekHeader(bth);
+    std::fprintf(stderr, "DBG peek ip=%u udp=%u bth=%u restSize=%u\n",
+                 (unsigned)sip, (unsigned)su, (unsigned)sb,
+                 (unsigned)rest->GetSize());
 
     Ptr<Packet> payload = rest->Copy();
     payload->RemoveAtStart(kIpv6Size + kUdpSize + 16 /* NdmRoceBth */);
