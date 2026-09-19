@@ -28,6 +28,7 @@
 #include "ns3/test.h"
 
 #include <algorithm>
+#include <iostream>
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -345,6 +346,10 @@ class NdmLinkUpConvergenceTestCase : public TestCase
             if (r.m.deliveryPathIds[i] == 0)
             {
                 const Time t = r.m.deliveryTimes[i];
+                if (t > MilliSeconds(50) && t < MilliSeconds(115))
+                {
+                    std::cerr << "[dbg] rail0 delivery " << t << std::endl;
+                }
                 if (t > MilliSeconds(52) && t < MilliSeconds(111.5))
                 {
                     gapOk = false;
