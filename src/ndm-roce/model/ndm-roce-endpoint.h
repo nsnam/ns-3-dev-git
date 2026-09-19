@@ -41,6 +41,8 @@ class NdmRoceEndpoint : public SimpleRefCount<NdmRoceEndpoint>
 {
   public:
     static constexpr uint16_t kRoceUdpPort = 4791; ///< RoCEv2 UDP port
+    static constexpr uint32_t kIpv6Size = 40;     ///< fixed IPv6 header
+    static constexpr uint32_t kUdpSize = 8;       ///< fixed UDP header
 
     NdmRoceEndpoint();
     ~NdmRoceEndpoint();

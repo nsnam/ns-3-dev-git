@@ -147,7 +147,7 @@ NdmPathForwarder::SendPacket(uint32_t pathId, Ptr<Packet> p)
     Ptr<Packet> w = Create<Packet>(0);
     PathHdr hdr(pathId, 0);
     w->AddHeader(hdr);
-    w->AddAtEnd(p->Begin());
+    w->AddAtEnd(p);
     Ptr<NetDevice> dev = m_linkToDev.at(path.m_links.front());
     const bool ok = dev->Send(w, Mac48Address("00:00:00:00:00:02"), 0x86DD);
     if (!ok)

@@ -111,9 +111,7 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
     (void)pathId;
     const uint32_t total = p->GetSize();
     const uint32_t outer = NdmPathForwarder::kPathHdrSize; // 8
-    const uint32_t inner = Ipv6Header::GetSerializedSize() +
-                           UdpHeader::GetSerializedSize() +
-                           16 /* NdmRoceBth */;
+    const uint32_t inner = kIpv6Size + kUdpSize + 16 /* NdmRoceBth */;
     NS_ASSERT_MSG(total >= outer + inner,
                   "NdmRoceEndpoint: short RoCE packet on the wire");
 
@@ -128,9 +126,7 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
     rest->PeekHeader(bth);
 
     Ptr<Packet> payload = rest->Copy();
-    payload->RemoveAtStart(Ipv6Header::GetSerializedSize() +
-                           UdpHeader::GetSerializedSize() +
-                           16 /* NdmRoceBth */);
+    payload->RemoveAtStart(kIpv6Size + kUdpSize + 16 /* NdmRoceBth */);
 
     switch (bth.m_opcode)
     {
