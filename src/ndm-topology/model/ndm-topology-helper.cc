@@ -11,7 +11,6 @@
 #include "ns3/ndm-link-loss-model.h"
 
 #include "ns3/node.h"
-#include "ns3/rng-seed-manager.h"
 #include "ns3/rng-stream.h"
 
 namespace ns3
@@ -28,11 +27,9 @@ NdmTopologyHelper::MakeLinkLoss(const Opts& opts, uint64_t linkIndex)
     loss->SetAttribute("Mode", EnumValue<NdmLinkLossModel::Mode>(opts.lossMode));
     loss->SetAttribute("LossProbability", DoubleValue(opts.lossProbability));
     loss->SetAttribute("BurstLength", UintegerValue(opts.burstLen));
-    // Per-link seeded stream (determinism D7): the cell seed is split
-    // into one stream per link via the standard RngSeedManager API.
-    RngSeedManager::SetSeed(static_cast<uint32_t>(opts.seed + linkIndex));
-    Ptr<RngStream> rng = RngSeedManager::GetStream(0);
-    loss->SetRng(rng);
+    // Per-link seeded stream (determinism D7): one MRG32k3a stream per
+    // link, derived from the cell seed + link index (no global RNG state).
+    loss->SetRng(std::make_unique<RngStream>(static_cast<uint32_t>(opts.seed + linkIndex), 0, 0));
     return loss;
 }
 

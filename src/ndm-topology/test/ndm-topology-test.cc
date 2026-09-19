@@ -16,62 +16,8 @@ using namespace ns3;
 
 // gtest-style convenience wrappers over the ns-3 test assertions
 // (test-only; the project test files are the only users).
-#define EXPECT_EQ(a, b) NS_TEST_ASSERT_MSG_EQ(a, b, "EXPECT_EQ(" #a ", " #b ") failed")
-#define EXPECT_TRUE(c) NS_TEST_ASSERT_MSG_EQ(c, true, "EXPECT_TRUE(" #c ") failed")
-
-namespace
-{
-
-/// Check the fat-tree invariants for a given (k, d) construction.
-void
-CheckFatTree(uint32_t k, uint32_t d)
-{
-    NdmTopologyHelper::Opts opts;
-    auto topo = NdmTopologyHelper::CreateFatTree(k, d, opts);
-
-    const uint32_t L = d * (k / 2); // ToRs
-    const uint32_t H = d * (k / 2) * (k / 2); // hosts
-    const uint32_t S = d * k / 4; // spines
-    const uint32_t nNodes = H + L + S;
-    const uint32_t nLinks = H + L * (k / 2); // host links + uplinks
-
-    EXPECT_EQ(topo->GetNodeCount(), nNodes);
-    EXPECT_EQ(topo->GetLinkCount(), nLinks);
-
-    // Hosts: degree 1. ToRs and spines: degree k.
-    for (uint32_t i = 0; i < H; i++)
-    {
-        EXPECT_EQ(topo->GetDegree(i), 1u);
-    }
-    for (uint32_t i = 0; i < L + S; i++)
-    {
-        EXPECT_EQ(topo->GetDegree(H + i), k);
-    }
-    EXPECT_EQ(topo->GetMaxDegree(), k);
-
-    // No parallel links anywhere (in particular no duplicate ToR-spine pair).
-    EXPECT_EQ(topo->GetParallelLinkCount(), 0u);
-
-    // Diameter: host-ToR-spine-ToR-host = 4.
-    EXPECT_EQ(topo->GetDiameter(), 4u);
-
-    // Every ToR connects to exactly k/2 distinct spines (non-blocking 2-tier).
-    for (uint32_t i = 0; i < L; i++)
-    {
-        uint32_t spineLinks = 0;
-        for (const auto& l : topo->GetNodeLinks(H + i))
-        {
-            const auto pA = l->GetPortA();
-            const auto pB = l->GetPortB();
-            const uint32_t other = (pA.node == H + i) ? pB.node : pA.node;
-            if (other >= H + L)
-            {
-                spineLinks++;
-            }
-        }
-        EXPECT_EQ(spineLinks, k / 2);
-    }
-}
+#define EXPECT_EQ(a, b) NS_TEST_ASSERT_MSG_EQ(((a) == (b)), true, "EXPECT_EQ(" #a ", " #b ") failed")
+#define EXPECT_TRUE(c) NS_TEST_ASSERT_MSG_EQ(((c)), true, "EXPECT_TRUE(" #c ") failed")
 
 class NdmFatTreeTestCase : public TestCase
 {
@@ -80,7 +26,58 @@ class NdmFatTreeTestCase : public TestCase
         : TestCase("ndm-topology/fat-tree")
     {
     }
+
   protected:
+    /// Check the fat-tree invariants for a given (k, d) construction.
+    void CheckFatTree(uint32_t k, uint32_t d)
+    {
+        NdmTopologyHelper::Opts opts;
+        auto topo = NdmTopologyHelper::CreateFatTree(k, d, opts);
+
+        const uint32_t L = d * (k / 2); // ToRs
+        const uint32_t H = d * (k / 2) * (k / 2); // hosts
+        const uint32_t S = d * k / 4; // spines
+        const uint32_t nNodes = H + L + S;
+        const uint32_t nLinks = H + L * (k / 2); // host links + uplinks
+
+        EXPECT_EQ(topo->GetNodeCount(), nNodes);
+        EXPECT_EQ(topo->GetLinkCount(), nLinks);
+
+        // Hosts: degree 1. ToRs and spines: degree k.
+        for (uint32_t i = 0; i < H; i++)
+        {
+            EXPECT_EQ(topo->GetDegree(i), 1u);
+        }
+        for (uint32_t i = 0; i < L + S; i++)
+        {
+            EXPECT_EQ(topo->GetDegree(H + i), k);
+        }
+        EXPECT_EQ(topo->GetMaxDegree(), k);
+
+        // No parallel links anywhere (in particular no duplicate ToR-spine pair).
+        EXPECT_EQ(topo->GetParallelLinkCount(), 0u);
+
+        // Diameter: host-ToR-spine-ToR-host = 4.
+        EXPECT_EQ(topo->GetDiameter(), 4u);
+
+        // Every ToR connects to exactly k/2 distinct spines (non-blocking 2-tier).
+        for (uint32_t i = 0; i < L; i++)
+        {
+            uint32_t spineLinks = 0;
+            for (const auto& l : topo->GetNodeLinks(H + i))
+            {
+                const auto pA = l->GetPortA();
+                const auto pB = l->GetPortB();
+                const uint32_t other = (pA.node == H + i) ? pB.node : pA.node;
+                if (other >= H + L)
+                {
+                    spineLinks++;
+                }
+            }
+            EXPECT_EQ(spineLinks, k / 2);
+        }
+    }
+
     void DoRun() override
     {
         CheckFatTree(8, 2);

@@ -26,6 +26,8 @@
 #include "ns3/address.h"
 #include "ns3/header.h"
 #include "ns3/object.h"
+#include "ns3/packet.h"
+#include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
 
 #include <iostream>

@@ -24,8 +24,12 @@
 #include "ns3/error-model.h"
 
 #include <cstdint>
+#include <memory>
+
 namespace ns3
 {
+
+class RngStream;
 
 class NdmLinkLossModel : public ErrorModel
 {
@@ -42,9 +46,10 @@ class NdmLinkLossModel : public ErrorModel
         BURST
     };
 
-    /// Set the per-link RNG (owned by the caller; seeded by the topology
-    /// builder from the cell seed). Must be set before the first check.
-    void SetRng(Ptr<RngStream> rng);
+    /// Set the per-link RNG (built by the topology builder from the cell
+    /// seed: RngStream(seed + linkIndex, 0, 0)). Must be set before the
+    /// first check in a stochastic mode.
+    void SetRng(std::unique_ptr<RngStream> rng);
 
     Mode GetMode() const;
 
@@ -57,7 +62,7 @@ class NdmLinkLossModel : public ErrorModel
     double m_lossProbability{0.0};
     uint32_t m_burstLen{1};
     uint32_t m_burstRemaining{0};
-    Ptr<RngStream> m_rng;
+    std::unique_ptr<RngStream> m_rng;
 };
 
 } // namespace ns3

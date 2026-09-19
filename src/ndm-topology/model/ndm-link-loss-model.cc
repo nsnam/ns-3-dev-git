@@ -48,10 +48,10 @@ NdmLinkLossModel::NdmLinkLossModel() = default;
 NdmLinkLossModel::~NdmLinkLossModel() = default;
 
 void
-NdmLinkLossModel::SetRng(Ptr<RngStream> rng)
+NdmLinkLossModel::SetRng(std::unique_ptr<RngStream> rng)
 {
     NS_ASSERT_MSG(rng, "NdmLinkLossModel: rng required for stochastic modes");
-    m_rng = rng;
+    m_rng = std::move(rng);
 }
 
 bool
@@ -63,14 +63,14 @@ NdmLinkLossModel::DoCorrupt(Ptr<Packet> p)
         case Mode::NONE:
             return false;
         case Mode::BERN:
-            return m_rng->Uniform() < m_lossProbability;
+            return m_rng->RandU01() < m_lossProbability;
         case Mode::BURST:
             if (m_burstRemaining > 0)
             {
                 m_burstRemaining--;
                 return true;
             }
-            if (m_rng->Uniform() < m_lossProbability)
+            if (m_rng->RandU01() < m_lossProbability)
             {
                 m_burstRemaining = m_burstLen - 1;
                 return true;
