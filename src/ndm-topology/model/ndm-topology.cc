@@ -16,6 +16,7 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/queue.h"
 #include "ns3/node.h"
+#include "ns3/queue-size.h"
 
 #include <algorithm>
 #include <queue>
@@ -97,7 +98,7 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
 
     auto makeQueue = [queueMaxPackets]() {
         Ptr<DropTailQueue<Packet>> q = CreateObject<DropTailQueue<Packet>>();
-        q->SetAttribute("MaxPackets", UintegerValue(queueMaxPackets));
+        q->SetAttribute("MaxSize", QueueSizeValue(QueueSize(std::to_string(queueMaxPackets) + "p")));
         return q;
     };
     devA->SetAttribute("TxQueue", PointerValue(makeQueue()));
