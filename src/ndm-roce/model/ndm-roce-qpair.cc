@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <cstring>
 
-#define NS_LOG_COMPONENT_NAME "NdmRoceQPair"
+NS_LOG_COMPONENT_DEFINE("NdmRoceQPair");
 
 namespace ns3
 {

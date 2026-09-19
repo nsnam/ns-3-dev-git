@@ -6,7 +6,7 @@
 
 #include "ns3/log.h"
 
-#define NS_LOG_COMPONENT_NAME "NdmRoceRxQPair"
+NS_LOG_COMPONENT_DEFINE("NdmRoceRxQPair");
 
 namespace ns3
 {

@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#define NS_LOG_COMPONENT_NAME "NdmRoceEndpoint"
+NS_LOG_COMPONENT_DEFINE("NdmRoceEndpoint");
 
 namespace ns3
 {
@@ -68,15 +68,15 @@ NdmRoceEndpoint::OnTxSend(Ptr<Packet> pkt, uint32_t destQp)
     (void)destQp;
     Ptr<Packet> w = Create<Packet>(0);
     UdpHeader udp;
-    udp.SetRemotePort(kRoceUdpPort);
-    udp.SetLocalPort(kRoceUdpPort);
+    udp.SetDestinationPort(kRoceUdpPort);
+    udp.SetSourcePort(kRoceUdpPort);
     w->AddHeader(udp);
     Ipv6Header ip;
     ip.SetSource(m_local);
     ip.SetDestination(m_peer);
-    ip.SetNextHeader(UdpHeader::PROT_NUMBER);
+    ip.SetNextHeader(17); // UDP
     w->AddHeader(ip);
-    w->AddAtEnd(pkt->Begin()); // BTH + payload
+    w->AddAtEnd(pkt); // BTH + payload
     if (!m_fwd->SendPacket(m_pathId, w))
     {
         NS_LOG_INFO("NdmRoceEndpoint: drop (first link down), qp " << destQp);
@@ -90,15 +90,15 @@ NdmRoceEndpoint::OnCtrlSend(Ptr<Packet> pkt, uint32_t destQp)
     m_ctrlSent++;
     Ptr<Packet> w = Create<Packet>(0);
     UdpHeader udp;
-    udp.SetRemotePort(kRoceUdpPort);
-    udp.SetLocalPort(kRoceUdpPort);
+    udp.SetDestinationPort(kRoceUdpPort);
+    udp.SetSourcePort(kRoceUdpPort);
     w->AddHeader(udp);
     Ipv6Header ip;
     ip.SetSource(m_local);
     ip.SetDestination(m_peer);
-    ip.SetNextHeader(UdpHeader::PROT_NUMBER);
+    ip.SetNextHeader(17); // UDP
     w->AddHeader(ip);
-    w->AddAtEnd(pkt->Begin()); // BTH only
+    w->AddAtEnd(pkt); // BTH only
     if (!m_fwd->SendPacket(m_retPathId, w))
     {
         NS_LOG_INFO("NdmRoceEndpoint: ctrl drop (return link down)");
