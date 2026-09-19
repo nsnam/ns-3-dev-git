@@ -331,6 +331,14 @@ NdmTopology::FindPaths(uint32_t src, uint32_t dst) const
             const auto pB = l->GetPortB();
             const uint32_t v = (pA.node == s.node) ? pB.node : pA.node;
 
+            // Simple paths only: never revisit a node already on the current
+            // path. The (node, lastLink) state key alone does not prevent
+            // cut-vertex cycles (A-l1-B-l2-A-l3-C would return A,B,A,C).
+            if (std::find(s.nodes.begin(), s.nodes.end(), v) != s.nodes.end())
+            {
+                continue;
+            }
+
             if (v == dst)
             {
                 NdmPath p;

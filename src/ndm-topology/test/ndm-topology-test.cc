@@ -291,6 +291,52 @@ class NdmPathQueryTestCase : public TestCase
     }
 };
 
+class NdmSimplePathTestCase : public TestCase
+{
+  public:
+    NdmSimplePathTestCase()
+        : TestCase("ndm-topology-simple-paths")
+    {
+    }
+  protected:
+    void DoRun() override
+    {
+        // Regression (review W1): a (node, lastLink)-keyed BFS must not emit
+        // non-simple paths through a cut vertex. Graph: 0 --2-- 1 (two
+        // parallel links 2-1), and 2 -- 3; node 2 is a cut vertex between 0
+        // and the 2-1 pair.
+        NdmTopologyHelper::Opts opts;
+        auto topo = CreateObject<NdmTopology>();
+        topo->AddNode(NdmNodeKind::HOST, 0);
+        topo->AddNode(NdmNodeKind::HOST, 1);
+        topo->AddNode(NdmNodeKind::SWITCH, 2);
+        topo->AddNode(NdmNodeKind::HOST, 3);
+        topo->AddLink(0, 2, opts.bps, opts.delay, -1, -1, false, 100, nullptr); // L0
+        topo->AddLink(2, 1, opts.bps, opts.delay, -1, -1, false, 100, nullptr); // L1
+        topo->AddLink(1, 2, opts.bps, opts.delay, -1, -1, false, 100, nullptr); // L2 (parallel to L1)
+        topo->AddLink(2, 3, opts.bps, opts.delay, -1, -1, false, 100, nullptr); // L3
+
+        auto paths = topo->FindPaths(0, 3);
+        EXPECT_EQ(paths.size(), 1u);
+        for (const auto& p : paths)
+        {
+            // Simple: every node appears at most once.
+            for (size_t i = 0; i < p.m_nodes.size(); i++)
+            {
+                for (size_t j = i + 1; j < p.m_nodes.size(); j++)
+                {
+                    EXPECT_TRUE(p.m_nodes[i] != p.m_nodes[j]);
+                }
+            }
+        }
+        if (!paths.empty())
+        {
+            EXPECT_EQ(paths[0].m_nodes.size(), 3u); // 0, 2, 3
+            EXPECT_EQ(paths[0].m_links.size(), 2u);
+        }
+    }
+};
+
 class NdmTopologyTestSuite : public TestSuite
 {
   public:
@@ -302,6 +348,7 @@ class NdmTopologyTestSuite : public TestSuite
         AddTestCase(new NdmMultiRailTestCase(), Duration::QUICK);
         AddTestCase(new NdmMultiPlaneTestCase(), Duration::QUICK);
         AddTestCase(new NdmPathQueryTestCase(), Duration::QUICK);
+        AddTestCase(new NdmSimplePathTestCase(), Duration::QUICK);
     }
 };
 
