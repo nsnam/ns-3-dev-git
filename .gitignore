@@ -1,5 +1,6 @@
-build/
-build-*/
+/build/
+/build-gcc/
+/build-clang/
 test-results/
 *.log
 __pycache__/
