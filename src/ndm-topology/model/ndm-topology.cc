@@ -112,8 +112,11 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
     link->SetEnds(pA, pB);
 
     channel->SetLink(link);
-    channel->Attach(devA);
-    channel->Attach(devB);
+    // The stock PointToPointHelper attaches device-side only; the device's
+    // Attach wires its channel pointer, calls the channel-side Attach, and
+    // brings the link up (3.42 devices have no public LinkUp).
+    devA->Attach(channel);
+    devB->Attach(channel);
     link->SetChannel(channel);
     link->SetDevices(devA, devB);
     devA->SetAttribute("DataRate", DataRateValue(bps));
@@ -137,11 +140,6 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
 
     NS_ASSERT(nA->AddDevice(devA) == portA);
     NS_ASSERT(nB->AddDevice(devB) == portB);
-
-    // Stock P2P devices start LinkDown; bring both ends up (the link's own
-    // failure state is separate and driven by NdmFailureScheduler).
-    devA->LinkUp();
-    devB->LinkUp();
 
     m_links[id] = link;
     m_portToLink[pA] = id;
