@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Provision the ndm-sys experiment container on M3 (wt-1-23).
+# Provision the ndm-sys experiment container (run on the docker host that will run experiments).
 #
 # Usage (on M3):  REPO_DIR=~/ndm-sys bash container/provision.sh
 # The repo (with this container/ dir) must already be at $REPO_DIR on M3.

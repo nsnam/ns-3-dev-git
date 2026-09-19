@@ -1,4 +1,4 @@
-# ndm-sys experiment container — M3 (wt-1-23)
+# ndm-sys experiment container (build recipe; run on any docker host)
 # All ns-3 builds, unit tests, and scenario runs happen inside the container named `ndm-sys`.
 # Base: Ubuntu 24.04 (GCC 13, CMake 3.28, ninja — satisfies ns-3.42 requirements: GCC >= 9,
 # CMake >= 3.14).

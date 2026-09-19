@@ -54,3 +54,14 @@ vcpkg/
 # --- ndm-sys project additions (see AGENTS.md) ---
 test-results/
 .pi/npm/
+
+# --- ndm-sys local-only files (kept on the build host, never pushed) ---
+AGENTS.md
+PLAN.md
+ASK.md
+agents/
+reports/
+reviews/
+.pi/
+container/README.md
+tools/remote/

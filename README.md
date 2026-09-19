@@ -3,24 +3,25 @@
 
 # ndm-sys — a fork of ns-3 (pinned to ns-3.42)
 
-Simulation testbed for the OSDI extension **"the network as a recoverable dataflow machine"**:
-SRv6-driven in-network computing (INC), recoverable collectives, and framework-level failure
-recovery, built on a pinned **ns-3.42** core with **ASTRA-sim** (workload/collectives) and
-**SimAI** (NVSwitch donor for evaluation). Project modules live under `src/ndm-*/`.
+Simulation testbed for in-network computing over failure-recoverable datacenter networks:
+a pinned **ns-3.42** core with project modules under `src/ndm-*/` (topology + failure
+framework, and — as the project progresses — SRv6, MRC, RoCE baselines, collectives, and
+in-network compute), plus ASTRA-sim workload integration.
 
-| Start here | What it is |
+Key project files:
+
+| File | What it is |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | Binding instructions for any coding agent (Codex, Pi) or human working in this repo |
-| [`PLAN.md`](PLAN.md) | End-to-end phased build plan with explicit agent invocations and exit gates |
-| [`ASK.md`](ASK.md) | Unattended-operation question channel (agent ↔ user) |
-| [`agents/`](agents/) | Agent charters (testers, RFC/spec verifiers, integration reviewers) |
-| [`container/`](container/) | Docker image + provisioning for the experiment container on M3 (wt-1-23) |
-| [`docs/provenance.md`](docs/provenance.md) | Exact SHAs: ns-3 core + donor repos + licenses |
+| [`LICENSE`](LICENSE) | GPLv2 — governs the ns-3 core (unmodified except named patches in `docs/core-patches/`) |
+| [`LICENSE-PROJECT`](LICENSE-PROJECT) | Apache-2.0 — governs all project-owned additions |
+| [`docs/provenance.md`](docs/provenance.md) | Exact upstream/donor SHAs and per-repo licenses |
+| [`tools/check.sh`](tools/check.sh) | CI substitute: build + unit tests + deterministic scenario pair |
+| [`container/`](container/) | Docker build recipe for the experiment container |
 
-**Licensing boundary:** the ns-3 core stays **GPLv2** (root [`LICENSE`](LICENSE)) and is modified
-only via named patches in `docs/core-patches/` (none yet); project-owned additions are
-**Apache-2.0** ([`LICENSE-PROJECT`](LICENSE-PROJECT)); donor snippets in `donors/` keep their
-per-file licenses. Read-only research corpus: `../ndm/` (paper, standards, donors).
+**Licensing boundary:** the ns-3 core stays **GPLv2** and is modified only via named patches
+in `docs/core-patches/` (none yet); project-owned additions (`src/ndm-*/`, `tests/`, `tools/`,
+`container/`, …) are **Apache-2.0**; donor snippets (when present) keep their per-file
+licenses under `donors/`.
 
 ---
 <!-- end ndm-sys project banner -->
