@@ -669,19 +669,19 @@ class NdmLossModelTestCase : public TestCase
 
     void DoRun() override
     {
-        // Bernoulli p=0.2: deterministic per seed, sane band.
+        // Exact deterministic values for seed 12345 (single link, 1000
+        // packets; per-packet RandU01 draw): Bernoulli p=0.2 drops 212 =>
+        // 788 delivered; burst p=0.1/len=3 triggers 83 bursts => 249
+        // dropped, 751 delivered. Same seed twice must be bit-identical.
         const uint32_t b1 = RunOnce(NdmLinkLossModel::Mode::BERN, 0.2, 1);
         const uint32_t b2 = RunOnce(NdmLinkLossModel::Mode::BERN, 0.2, 1);
         EXPECT_EQ(b1, b2);
-        EXPECT_TRUE(b1 >= 780 && b1 <= 820);
+        EXPECT_EQ(b1, 788u);
 
-        // Burst p=0.1 len=3: deterministic per seed; more loss than p=0.1
-        // Bernoulli expectation on average, but only determinism is the gate.
         const uint32_t u1 = RunOnce(NdmLinkLossModel::Mode::BURST, 0.1, 3);
         const uint32_t u2 = RunOnce(NdmLinkLossModel::Mode::BURST, 0.1, 3);
         EXPECT_EQ(u1, u2);
-        EXPECT_TRUE(u1 < 1000);
-        EXPECT_TRUE(u1 > 500);
+        EXPECT_EQ(u1, 751u);
     }
 };
 
