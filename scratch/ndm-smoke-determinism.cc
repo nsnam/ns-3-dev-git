@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <functional>
 #include <memory>
 
 using namespace ns3;
@@ -81,6 +82,8 @@ struct SmokeStats
     uint64_t sumFlightNs{0};
 };
 
+SmokeStats g_stats;
+
 bool
 RxCallback(Ptr<const NetDevice>, Ptr<const Packet> p, uint16_t /*protocol*/, const Address&)
 {
@@ -93,8 +96,6 @@ RxCallback(Ptr<const NetDevice>, Ptr<const Packet> p, uint16_t /*protocol*/, con
     s.sumFlightNs += nowNs - hdr.GetSendNs();
     return true;
 }
-
-SmokeStats g_stats;
 
 } // namespace
 
@@ -129,7 +130,7 @@ main(int argc, char* argv[])
 
     Mac48Address dst = Mac48Address("00:00:00:00:00:02");
     uint32_t sent = 0;
-    auto sendNext = [&, dst]() {
+    std::function<void()> sendNext = [&, dst]() {
         if (sent >= nPackets)
         {
             return;
@@ -151,7 +152,7 @@ main(int argc, char* argv[])
     Simulator::Schedule(MilliSeconds(10), sendNext);
 
     // Stop once every packet has been received (deterministic horizon).
-    auto checkDone = []() {
+    std::function<void()> checkDone = [&]() {
         if (g_stats.delivered >= nPackets)
         {
             Simulator::Stop();
