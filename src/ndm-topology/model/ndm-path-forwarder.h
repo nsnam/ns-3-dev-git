@@ -121,6 +121,8 @@ class NdmPathForwarder : public Object
 
     Ptr<NdmTopology> m_topo;
     Ptr<Node> m_node;
+    /// NDM topology-relative node index (NOT the global ns-3 node id).
+    uint32_t m_nodeIndex{0};
     std::map<Ptr<NetDevice>, NdmLinkId> m_devToLink;
     std::map<NdmLinkId, Ptr<NetDevice>> m_linkToDev;
     std::vector<NdmTopology::NdmPath> m_paths;

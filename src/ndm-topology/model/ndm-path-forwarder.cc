@@ -59,8 +59,11 @@ NdmPathForwarder::Attach(Ptr<NdmTopology> topo, uint32_t nodeIndex)
     NS_LOG_FUNCTION(this << topo << nodeIndex);
     NS_ASSERT_MSG(m_topo == nullptr, "NdmPathForwarder: already attached");
     m_topo = topo;
+    m_nodeIndex = nodeIndex;
     m_node = m_topo->GetNode(nodeIndex);
-    const uint32_t nodeId = m_node->GetId();
+    // NDM node indices are topology-relative; ns-3 node ids are global and
+    // monotonic across the process, so never compare the two.
+    const uint32_t nodeId = nodeIndex;
     for (const auto& id : m_topo->GetNodeLinkIds(nodeIndex))
     {
         const Ptr<NdmLink> link = m_topo->GetLink(id);
@@ -97,10 +100,7 @@ NdmPathForwarder::Send(uint32_t pathId, uint32_t payloadBytes)
 {
     NS_ASSERT_MSG(pathId < m_paths.size(), "NdmPathForwarder: unknown path");
     const NdmTopology::NdmPath& path = m_paths.at(pathId);
-    std::cerr << "[dbg] Send at " << Now().GetMilliSeconds() << "ms node=" << m_node->GetId()
-              << " pathId=" << pathId << " pathStartsAt=" << path.m_nodes.front()
-              << " links=" << path.m_links.size() << std::endl;
-    NS_ASSERT_MSG(path.m_nodes.front() == m_node->GetId(),
+    NS_ASSERT_MSG(path.m_nodes.front() == m_nodeIndex,
                   "NdmPathForwarder: path does not start at this node");
     if (path.m_links.empty())
     {
