@@ -271,6 +271,7 @@ RunTwoRail(bool withUp, uint32_t nSends)
     sender.StartAt(MilliSeconds(1)); // odd-millisecond grid: 1,3,5,...
     Simulator::Schedule(MilliSeconds(nSends * 2 + 20), &Simulator::Stop);
     Simulator::Run();
+    Simulator::Destroy();
 
     TwoRailResult out;
     out.m = Collect(r.fwdB, r.l0, r.l1);
@@ -351,27 +352,11 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         }
         EXPECT_TRUE(gapOk);
 
-        // Temp debug: dump deliveries 95..130ms and L0/L1 rx window.
-        for (size_t i = 0; i < r.m.deliveryTimes.size(); i++)
-        {
-            const Time t = r.m.deliveryTimes[i];
-            if (t > MilliSeconds(95) && t < MilliSeconds(130))
-            {
-                std::cerr << "[dbg] dlv t=" << t.GetMilliSeconds()
-                          << " pid=" << r.m.deliveryPathIds[i] << std::endl;
-            }
-        }
-        {
-            const auto& l0 = r.m.linkRxFirst.at(NdmLinkId{0, 0, -1});
-            std::cerr << "[dbg] L0 rxFirst=" << l0.GetMilliSeconds() << " rxLast="
-                      << r.m.linkRxLast.at(NdmLinkId{0, 0, -1}).GetMilliSeconds() << std::endl;
-            const auto& l1f = r.m.linkRxFirst.at(NdmLinkId{1, 1, -1});
-            std::cerr << "[dbg] L1 rxFirst=" << l1f.GetMilliSeconds() << " rxLast="
-                      << r.m.linkRxLast.at(NdmLinkId{1, 1, -1}).GetMilliSeconds() << std::endl;
-        }
-
-        // L1 last delivery (send 109) at 110.5ms.
-        EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MilliSeconds(110.5));
+        // L1 last delivery (send 109) at 109 + 1.5 + serialization, where
+        // serialization is the exact stock P2P term for a 1208 B packet at
+        // 1 Gbps (computed with the same API the device uses).
+        const Time ser = DataRate("1Gbps").CalculateBytesTxTime(kPayload + 8u);
+        EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MilliSeconds(110.5) + ser);
     }
 };
 
@@ -427,25 +412,31 @@ NdmInFlightPolicyTestCase::DoRun()
     });
     Simulator::Schedule(MilliSeconds(200), &Simulator::Stop);
     Simulator::Run();
+    Simulator::Destroy();
 
-    // TX grid: 0, 0.8, ..., 79.2 ms. Arrivals = TX + 1 ms.
-    // Before tDetect: 12 delivered (TX 0..8.8); TX 9.6 in flight at 10.
+    // One link, 10 Mbps, 1 ms delay. Packet = 1000 B payload + 8 B PathHdr
+    // = 1008 B => 806.4 us serialization (exact: 1008*8/10e6 s). Stock P2P
+    // arrival model: RX at TX-start + serialization + delay; the TX machine
+    // starts back-to-back at k*806.4us for k=0..99.
+    // tDetect = 10ms: k=0..10 arrive by 9.8704ms (11 delivered); k=11
+    // (arrival 10.6768ms) and k=12 (11.4832ms) are in flight; k=13..99
+    // (87) sit in the device queue at detection.
     switch (m_policy)
     {
         case InFlightPolicy::DROP:
-            EXPECT_EQ(fwdB->GetDeliveredCount(), 12u);
-            EXPECT_EQ(link->GetRxLostInFlightCount(), 1u);
-            EXPECT_EQ(link->GetTxBlockedCount(), 87u); // TX 10.4..79.2
+            EXPECT_EQ(fwdB->GetDeliveredCount(), 11u);
+            EXPECT_EQ(link->GetRxLostInFlightCount(), 2u);
+            EXPECT_EQ(link->GetTxBlockedCount(), 87u); // TX 11.2896..79.8336
             EXPECT_EQ(link->GetQueueFlushedCount(), 0u);
             break;
         case InFlightPolicy::FLUSH:
-            EXPECT_EQ(fwdB->GetDeliveredCount(), 12u);
-            EXPECT_EQ(link->GetRxLostInFlightCount(), 1u);
+            EXPECT_EQ(fwdB->GetDeliveredCount(), 11u);
+            EXPECT_EQ(link->GetRxLostInFlightCount(), 2u);
             EXPECT_EQ(link->GetQueueFlushedCount(), 87u);
             EXPECT_EQ(link->GetTxBlockedCount(), 0u);
             break;
         case InFlightPolicy::DELIVER_THEN_DROP:
-            // On-wire (1) + queued-at-detection (87) all complete.
+            // On-wire (2) + queued-at-detection (87) all complete.
             EXPECT_EQ(fwdB->GetDeliveredCount(), 100u);
             EXPECT_EQ(link->GetRxLostInFlightCount(), 0u);
             EXPECT_EQ(link->GetTxBlockedCount(), 0u);
@@ -545,6 +536,7 @@ RunSwitchFailure()
     sender.StartAt(MilliSeconds(1));
     Simulator::Schedule(MilliSeconds(100), &Simulator::Stop);
     Simulator::Run();
+    Simulator::Destroy();
 
     SwitchResult out;
     out.dst = Collect(fwds[3], topo->GetLink(NdmLinkId{0, 0, -1}), topo->GetLink(NdmLinkId{1, 0, -1}));
@@ -664,6 +656,7 @@ class NdmLossModelTestCase : public TestCase
         // in Opts is 1000) => last TX ~9.6ms, delivery ~10.6ms.
         Simulator::Schedule(MilliSeconds(50), &Simulator::Stop);
         Simulator::Run();
+        Simulator::Destroy();
         return fwdB->GetDeliveredCount();
     }
 
@@ -719,6 +712,7 @@ class NdmQueueDropTestCase : public TestCase
         });
         Simulator::Schedule(MilliSeconds(10), &Simulator::Stop);
         Simulator::Run();
+        Simulator::Destroy();
         return fwdB->GetDeliveredCount();
     }
 
