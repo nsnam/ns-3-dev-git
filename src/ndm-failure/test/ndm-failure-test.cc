@@ -306,12 +306,12 @@ class NdmLinkDownRerouteTestCase : public TestCase
         const auto l0It = r.m.linkRxLast.find(NdmLinkId{0, 0, -1});
         EXPECT_TRUE(l0It != r.m.linkRxLast.end());
         EXPECT_TRUE(l0It->second < MilliSeconds(52));
-        EXPECT_EQ(r.m.linkRxCount.at(NdmLinkId{0, 0, -1}), 25u);
+        EXPECT_EQ(r.m.linkRxCount.at((NdmLinkId{0, 0, -1})), 25u);
 
         // Rerouting only after the convergence delay: first L1 delivery at
         // earliest 58 + 1.5 = 59.5ms.
-        EXPECT_TRUE(r.m.linkRxFirst.at(NdmLinkId{1, 1, -1}) >= MilliSeconds(59.5));
-        EXPECT_EQ(r.m.linkRxCount.at(NdmLinkId{1, 1, -1}), 11u);
+        EXPECT_TRUE((r.m.linkRxFirst.at((NdmLinkId{1, 1, -1})) >= MilliSeconds(59.5)));
+        EXPECT_EQ(r.m.linkRxCount.at((NdmLinkId{1, 1, -1})), 11u);
     }
 };
 
@@ -333,8 +333,8 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         EXPECT_EQ(r.m.delivered, 136u);
         EXPECT_EQ(r.skipped, 3u);
         EXPECT_EQ(r.m.rxLost, 1u);
-        EXPECT_EQ(r.m.linkRxCount.at(NdmLinkId{0, 0, -1}), 110u);
-        EXPECT_EQ(r.m.linkRxCount.at(NdmLinkId{1, 1, -1}), 26u);
+        EXPECT_EQ(r.m.linkRxCount.at((NdmLinkId{0, 0, -1})), 110u);
+        EXPECT_EQ(r.m.linkRxCount.at((NdmLinkId{1, 1, -1})), 26u);
 
         // No rail-0 delivery between the failure (52ms) and recovery: the
         // last pre-failure arrival is 50.5ms; the first post-recovery
@@ -354,7 +354,7 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         EXPECT_TRUE(gapOk);
 
         // L1 last delivery (send 109) at 110.5ms.
-        EXPECT_EQ(r.m.linkRxLast.at(NdmLinkId{1, 1, -1}), MilliSeconds(110.5));
+        EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MilliSeconds(110.5));
     }
 };
 

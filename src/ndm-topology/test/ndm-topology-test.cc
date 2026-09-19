@@ -113,10 +113,10 @@ class NdmParallelLinkTestCase : public TestCase
         EXPECT_EQ(topo->GetDegree(a), 2u);
         EXPECT_EQ(topo->GetDegree(b), 2u);
 
-        EXPECT_EQ(l0->GetPortA(), NdmPortIdentity{a, 0});
-        EXPECT_EQ(l1->GetPortA(), NdmPortIdentity{a, 1});
-        EXPECT_EQ(l0->GetPortB(), NdmPortIdentity{b, 0});
-        EXPECT_EQ(l1->GetPortB(), NdmPortIdentity{b, 1});
+        EXPECT_EQ(l0->GetPortA(), (NdmPortIdentity{a, 0}));
+        EXPECT_EQ(l1->GetPortA(), (NdmPortIdentity{a, 1}));
+        EXPECT_EQ(l0->GetPortB(), (NdmPortIdentity{b, 0}));
+        EXPECT_EQ(l1->GetPortB(), (NdmPortIdentity{b, 1}));
 
         // Both links individually reachable via distinct paths.
         auto paths = topo->FindPaths(a, b);
@@ -283,7 +283,7 @@ class NdmPathQueryTestCase : public TestCase
         EXPECT_EQ(paths2.size(), 1u);
         EXPECT_EQ(paths2[0].m_links.front(), ad->GetId());
         EXPECT_TRUE(paths2[0].IsValid(*topo));
-        EXPECT_TRUE(!NdmTopology::NdmPath{paths[0].m_nodes, paths[0].m_links}.IsValid(*topo));
+        EXPECT_TRUE((!NdmTopology::NdmPath{paths[0].m_nodes, paths[0].m_links}.IsValid(*topo)));
     }
 };
 
