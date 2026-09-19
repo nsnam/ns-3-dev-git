@@ -129,7 +129,8 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
 
     Ptr<Packet> payload = rest->Copy();
     payload->RemoveAtStart(Ipv6Header::GetSerializedSize() +
-                           UdpHeader::GetSerializedSize());
+                           UdpHeader::GetSerializedSize() +
+                           16 /* NdmRoceBth */);
 
     switch (bth.m_opcode)
     {
