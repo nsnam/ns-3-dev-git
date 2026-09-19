@@ -28,7 +28,6 @@
 #include "ns3/test.h"
 
 #include <algorithm>
-#include <iostream>
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -353,12 +352,10 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         EXPECT_TRUE(gapOk);
 
         // L1 last delivery (send 109) at 109 + 1.5 + serialization, where
-        // serialization is the exact stock P2P term for a 1208 B packet at
-        // 1 Gbps (computed with the same API the device uses).
-        const Time ser = DataRate("1Gbps").CalculateBytesTxTime(kPayload + 8u);
-        std::cerr << "[dbg] actual_ns=" << r.m.linkRxLast.at(NdmLinkId{1, 1, -1}).GetNanoSeconds()
-                  << " expected_ns=" << (MicroSeconds(110500) + ser).GetNanoSeconds()
-                  << " ser_ns=" << ser.GetNanoSeconds() << std::endl;
+        // serialization is the exact stock P2P term for the wire packet
+        // (1200 B payload + 8 B PathHdr + 2 B PPP header) at 1 Gbps,
+        // computed with the same API the device uses.
+        const Time ser = DataRate("1Gbps").CalculateBytesTxTime(kPayload + 8u + 2u);
         EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MicroSeconds(110500) + ser);
     }
 };
@@ -417,19 +414,19 @@ NdmInFlightPolicyTestCase::DoRun()
     Simulator::Run();
     Simulator::Destroy();
 
-    // One link, 10 Mbps, 1 ms delay. Packet = 1000 B payload + 8 B PathHdr
-    // = 1008 B => 806.4 us serialization (exact: 1008*8/10e6 s). Stock P2P
-    // arrival model: RX at TX-start + serialization + delay; the TX machine
-    // starts back-to-back at k*806.4us for k=0..99.
-    // tDetect = 10ms: k=0..10 arrive by 9.8704ms (11 delivered); k=11
-    // (arrival 10.6768ms) and k=12 (11.4832ms) are in flight; k=13..99
+    // One link, 10 Mbps, 1 ms delay. Wire packet = 1000 B payload + 8 B
+    // PathHdr + 2 B PPP = 1010 B => 808.0 us serialization (exact).
+    // Stock P2P arrival model: RX at TX-start + serialization + delay; the
+    // TX machine starts back-to-back at k*808us for k=0..99.
+    // tDetect = 10ms: k=0..10 arrive by 9.888ms (11 delivered); k=11
+    // (arrival 10.696ms) and k=12 (11.504ms) are in flight; k=13..99
     // (87) sit in the device queue at detection.
     switch (m_policy)
     {
         case InFlightPolicy::DROP:
             EXPECT_EQ(fwdB->GetDeliveredCount(), 11u);
             EXPECT_EQ(link->GetRxLostInFlightCount(), 2u);
-            EXPECT_EQ(link->GetTxBlockedCount(), 87u); // TX 11.2896..79.8336
+            EXPECT_EQ(link->GetTxBlockedCount(), 87u); // TX 10.488..79.992ms
             EXPECT_EQ(link->GetQueueFlushedCount(), 0u);
             break;
         case InFlightPolicy::FLUSH:
