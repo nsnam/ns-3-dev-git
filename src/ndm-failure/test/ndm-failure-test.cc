@@ -178,7 +178,7 @@ BuildTwoRail(bool withUp)
     r.B = 1;
     NdmTopologyHelper::Opts opts;
     opts.bps = DataRate("1Gbps");
-    opts.delay = MilliSeconds(1.5);
+    opts.delay = MicroSeconds(1500);
     r.l0 = r.topo->AddLink(r.A, r.B, opts.bps, opts.delay, 0, -1, false, 1000, nullptr);
     r.l1 = r.topo->AddLink(r.A, r.B, opts.bps, opts.delay, 1, -1, false, 1000, nullptr);
 
@@ -312,7 +312,7 @@ class NdmLinkDownRerouteTestCase : public TestCase
 
         // Rerouting only after the convergence delay: first L1 delivery at
         // earliest 58 + 1.5 = 59.5ms.
-        EXPECT_TRUE((r.m.linkRxFirst.at((NdmLinkId{1, 1, -1})) >= MilliSeconds(59.5)));
+        EXPECT_TRUE((r.m.linkRxFirst.at((NdmLinkId{1, 1, -1})) >= MicroSeconds(59500)));
         EXPECT_EQ(r.m.linkRxCount.at((NdmLinkId{1, 1, -1})), 11u);
     }
 };
@@ -345,7 +345,7 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         for (size_t i = 0; i < r.m.deliveryTimes.size(); i++)
         {
             const Time t = r.m.deliveryTimes[i];
-            if (r.m.deliveryPathIds[i] == 0 && t > MilliSeconds(52) && t < MilliSeconds(111.5))
+            if (r.m.deliveryPathIds[i] == 0 && t > MilliSeconds(52) && t < MicroSeconds(111500))
             {
                 gapOk = false;
             }
@@ -356,20 +356,7 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         // serialization is the exact stock P2P term for a 1208 B packet at
         // 1 Gbps (computed with the same API the device uses).
         const Time ser = DataRate("1Gbps").CalculateBytesTxTime(kPayload + 8u);
-        for (size_t i = 0; i < r.m.deliveryTimes.size(); i++)
-        {
-            const Time t = r.m.deliveryTimes[i];
-            if (t > MilliSeconds(105) && t < MilliSeconds(118))
-            {
-                std::cerr << "[dbg] dlv " << t.GetMilliSeconds() << " pid="
-                          << r.m.deliveryPathIds[i] << std::endl;
-            }
-        }
-        std::cerr << "[dbg] L1 rxLast actual_ms=" << r.m.linkRxLast.at(NdmLinkId{1, 1, -1}).GetMilliSeconds()
-                  << " expected_ms=" << (MilliSeconds(110.5) + ser).GetMilliSeconds()
-                  << " ser_ns=" << ser.GetNanoSeconds() << " ms1105=" << MilliSeconds(110.5).GetMilliSeconds()
-                  << std::endl;
-        EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MilliSeconds(110.5) + ser);
+        EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MicroSeconds(110500) + ser);
     }
 };
 
@@ -479,7 +466,7 @@ RunSwitchFailure()
 {
     NdmTopologyHelper::Opts opts;
     opts.bps = DataRate("1Gbps");
-    opts.delay = MilliSeconds(1.5);
+    opts.delay = MicroSeconds(1500);
     auto topo = NdmTopologyHelper::CreateMultiRail(2, 2, 2, 1, 1, opts);
 
     // Node layout (relative): 0..3 GPUs (p0g0, p0g1, p1g0, p1g1);
@@ -605,11 +592,11 @@ class NdmSwitchFailureTestCase : public TestCase
         {
             if (r.dst.deliveryPathIds[i] == 0)
             {
-                EXPECT_TRUE(r.dst.deliveryTimes[i] <= MilliSeconds(53.1));
+                EXPECT_TRUE(r.dst.deliveryTimes[i] <= MicroSeconds(53100));
             }
             else
             {
-                EXPECT_TRUE(r.dst.deliveryTimes[i] >= MilliSeconds(64.0));
+                EXPECT_TRUE(r.dst.deliveryTimes[i] >= MilliSeconds(64));
             }
         }
     }

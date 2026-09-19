@@ -30,7 +30,7 @@ main(int argc, char* argv[])
     topo->AddNode(NdmNodeKind::HOST, 1);
     NdmTopologyHelper::Opts opts;
     opts.bps = DataRate("1Gbps");
-    opts.delay = MilliSeconds(1.5);
+    opts.delay = MicroSeconds(1500);
     auto l0 = topo->AddLink(0, 1, opts.bps, opts.delay, 0, -1, false, 1000, nullptr);
     auto l1 = topo->AddLink(0, 1, opts.bps, opts.delay, 1, -1, false, 1000, nullptr);
     std::cerr << "step: attach forwarders" << std::endl;
