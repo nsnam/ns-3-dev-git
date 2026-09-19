@@ -115,7 +115,7 @@ NdmPathForwarder::Send(uint32_t pathId, uint32_t payloadBytes)
     PathHdr hdr(pathId, 0);
     p->AddHeader(hdr);
     Ptr<NetDevice> dev = m_linkToDev.at(first);
-    const bool ok = dev->Send(p, Mac48Address("00:00:00:00:00:02"), 0x0021);
+    const bool ok = dev->Send(p, Mac48Address("00:00:00:00:00:02"), 0x86DD);
     if (!ok)
     {
         return false;
@@ -214,7 +214,7 @@ NdmPathForwarder::HandleRx(Ptr<NetDevice> dev, Ptr<const Packet> p, uint16_t, co
     PathHdr fhdr(hdr.m_pathId, hdr.m_hop + 1);
     fp->AddHeader(fhdr);
     Ptr<NetDevice> outDev = m_linkToDev.at(next);
-    const bool ok = outDev->Send(fp, Mac48Address("00:00:00:00:00:02"), 0x0021);
+    const bool ok = outDev->Send(fp, Mac48Address("00:00:00:00:00:02"), 0x86DD);
     if (!ok)
     {
         m_droppedMidPath++;
