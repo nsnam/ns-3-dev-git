@@ -367,7 +367,7 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         }
         std::cerr << "[dbg] L1 rxLast actual_ms=" << r.m.linkRxLast.at(NdmLinkId{1, 1, -1}).GetMilliSeconds()
                   << " expected_ms=" << (MilliSeconds(110.5) + ser).GetMilliSeconds()
-                  << " ser_ns=" << ser.Get() << " ms1105=" << MilliSeconds(110.5).GetMilliSeconds()
+                  << " ser_ns=" << ser.GetNanoSeconds() << " ms1105=" << MilliSeconds(110.5).GetMilliSeconds()
                   << std::endl;
         EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MilliSeconds(110.5) + ser);
     }
