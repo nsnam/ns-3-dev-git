@@ -209,12 +209,14 @@ class NdmMultiPlaneTestCase : public TestCase
         EXPECT_EQ(topo->GetDiameter(), 5u); // 1 + ring(3) + 1
 
         // With cross-plane links (adjacent planes only: H links): switch
-        // degree 4, diameter 6 (1 + 1 + ring(3) + 1).
+        // degree 4. Diameter stays 5: the farthest pair is a host pair at
+        // ring distance 3 (1 + 3 + 1); the cross links never shorten a
+        // shortest path below that (hosts reach both planes directly).
         auto topoX = NdmTopologyHelper::CreateMultiPlane(2, NdmTopologyHelper::PlaneKind::RING,
                                                          6, 4, 2, true, opts);
         EXPECT_EQ(topoX->GetLinkCount(), 2 * (H + H) + H);
         EXPECT_EQ(topoX->GetMaxDegree(), 4u);
-        EXPECT_EQ(topoX->GetDiameter(), 6u);
+        EXPECT_EQ(topoX->GetDiameter(), 5u);
 
         // Two fat-tree planes (k=4, d=2 => 8 shared hosts).
         auto topoF =
