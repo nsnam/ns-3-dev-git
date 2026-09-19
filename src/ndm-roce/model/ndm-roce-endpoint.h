@@ -30,13 +30,14 @@
 #include "ns3/ndm-roce-qpair.h"
 #include "ns3/ndm-roce-rx-qpair.h"
 #include "ns3/node.h"
+#include "ns3/ref-count.h"
 
 #include <map>
 
 namespace ns3
 {
 
-class NdmRoceEndpoint
+class NdmRoceEndpoint : public RefCount
 {
   public:
     static constexpr uint16_t kRoceUdpPort = 4791; ///< RoCEv2 UDP port

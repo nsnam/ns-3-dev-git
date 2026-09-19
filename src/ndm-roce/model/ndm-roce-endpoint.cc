@@ -45,8 +45,8 @@ NdmRoceEndpoint::CreateConnection(uint32_t localQpn, uint32_t peerQpn)
 {
     NS_ASSERT_MSG(m_tx.find(localQpn) == m_tx.end(),
                   "NdmRoceEndpoint: QPN already in use");
-    auto tx = std::make_shared<NdmRoceQPair>(localQpn, peerQpn);
-    auto rx = std::make_shared<NdmRoceRxQPair>(localQpn, peerQpn);
+    auto tx = Create<NdmRoceQPair>(localQpn, peerQpn);
+    auto rx = Create<NdmRoceRxQPair>(localQpn, peerQpn);
     tx->m_sendTx = MakeCallback(&NdmRoceEndpoint::OnTxSend, this);
     rx->m_sendCtrl = MakeCallback(&NdmRoceEndpoint::OnCtrlSend, this);
     m_tx[localQpn] = tx;

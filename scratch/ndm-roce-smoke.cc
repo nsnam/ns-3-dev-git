@@ -128,8 +128,8 @@ main(int argc, char* argv[])
     const uint32_t baB = fwdB->RegisterPath(pathsBA[0]); // 0
     const uint32_t abB = fwdB->RegisterPath(pathsAB[0]); // 1
 
-    auto epA = std::make_shared<NdmRoceEndpoint>();
-    auto epB = std::make_shared<NdmRoceEndpoint>();
+    auto epA = Create<NdmRoceEndpoint>();
+    auto epB = Create<NdmRoceEndpoint>();
     epA->Attach(topo->GetNode(0), fwdA, abA, baA);
     epB->Attach(topo->GetNode(1), fwdB, abB, baB); // B: data unused; control (ACK) returns B->A via baB
     epA->SetAddresses(Ipv6Address("fe80::a"), Ipv6Address("fe80::b"));

@@ -36,6 +36,7 @@
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
+#include "ns3/ref-count.h"
 
 #include <cstdint>
 #include <vector>
@@ -43,7 +44,7 @@
 namespace ns3
 {
 
-class NdmRoceQPair
+class NdmRoceQPair : public RefCount
 {
   public:
     NdmRoceQPair(uint32_t localQpn, uint32_t peerQpn);
