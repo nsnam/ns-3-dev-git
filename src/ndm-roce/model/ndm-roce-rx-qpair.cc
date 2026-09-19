@@ -72,7 +72,7 @@ NdmRoceRxQPair::HandleData(const NdmRoceBth& bth, Ptr<Packet> payload, Time now)
 
     // In order: deliver exactly once.
     const bool isLast = (bth.m_opcode == NDM_ROCE_WRITE_WITH_IMM);
-    if (m_deliver.IsInitialized())
+    if (!m_deliver.IsNull())
     {
         m_deliver(bth.m_psn, payload, bth.m_imm, isLast);
     }

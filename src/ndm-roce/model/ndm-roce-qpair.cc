@@ -5,6 +5,7 @@
 #include "ns3/ndm-roce-qpair.h"
 
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 
 #include <algorithm>
@@ -23,7 +24,7 @@ NdmRoceQPair::NdmRoceQPair(uint32_t localQpn, uint32_t peerQpn)
 
 NdmRoceQPair::~NdmRoceQPair()
 {
-    if (m_rtoEvent.IsRunning() || m_rtoEvent.IsScheduled())
+    if (m_rtoEvent.IsRunning())
     {
         Simulator::Cancel(m_rtoEvent);
     }
@@ -116,7 +117,7 @@ NdmRoceQPair::Pump()
     }
 
     // RTO on the oldest unacked (armed only for first transmissions).
-    if (!m_rtoEvent.IsRunning() && !m_rtoEvent.IsScheduled() &&
+    if (!m_rtoEvent.IsRunning() &&
         !m_unackedSend.empty() && m_unackedFresh.front())
     {
         m_rtoEvent =
@@ -167,11 +168,8 @@ NdmRoceQPair::BuildPacket(uint32_t psn)
             const uint64_t off = static_cast<uint64_t>(i) * m_mtu;
             const uint32_t len = static_cast<uint32_t>(
                 std::min<uint64_t>(m_mtu, m.data.size() - off));
-            Ptr<Packet> pkt = Create<Packet>();
-            if (len > 0)
-            {
-                pkt->AddAtEnd(m.data.data() + off, len);
-            }
+            Ptr<Packet> pkt = len > 0 ? Create<Packet>(m.data.data() + off, len)
+                                : Create<Packet>();
             const bool last = (i + 1 == m.psns);
             NdmRoceBth bth(last ? NDM_ROCE_WRITE_WITH_IMM : NDM_ROCE_WRITE,
                            psn, m_peerQpn);
@@ -246,7 +244,7 @@ NdmRoceQPair::HandleAck(uint32_t psn, bool ecnEcho, Time now)
     }
 
     // Restart RTO for the new oldest unacked.
-    if (m_rtoEvent.IsRunning() || m_rtoEvent.IsScheduled())
+    if (m_rtoEvent.IsRunning())
     {
         Simulator::Cancel(m_rtoEvent);
     }
@@ -255,7 +253,7 @@ NdmRoceQPair::HandleAck(uint32_t psn, bool ecnEcho, Time now)
     {
         m_finished = true;
         m_cc.Stop();
-        if (m_notifyComplete.IsInitialized())
+        if (!m_notifyComplete.IsNull())
         {
             m_notifyComplete();
         }

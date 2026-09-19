@@ -239,7 +239,7 @@ NdmPathForwarder::HandleRx(Ptr<NetDevice> dev, Ptr<const Packet> p, uint16_t, co
         const uint32_t hdrSize = PathHdr().GetSerializedSize();
         NS_ASSERT_MSG(p->GetSize() >= hdrSize, "NdmPathForwarder: short delivery packet");
         m_deliveryTraced(hdr.m_pathId, p->GetSize() - hdrSize, Simulator::Now());
-        if (m_deliveryPacket.IsInitialized())
+        if (!m_deliveryPacket.IsNull())
         {
             m_deliveryPacket(hdr.m_pathId, p, Simulator::Now());
         }
@@ -255,15 +255,10 @@ NdmPathForwarder::HandleRx(Ptr<NetDevice> dev, Ptr<const Packet> p, uint16_t, co
         m_droppedMidPath++;
         return false;
     }
-    const uint32_t hdrSize = PathHdr().GetSerializedSize();
-    NS_ASSERT_MSG(p->GetSize() >= hdrSize, "NdmPathForwarder: short forwarding packet");
-    const uint32_t rest = p->GetSize() - hdrSize;
-    Ptr<Packet> fp = Create<Packet>(rest);
-    {
-        const uint8_t* src = p->Head() + hdrSize;
-        uint8_t* dst = fp->Start();
-        std::copy(src, src + rest, dst);
-    }
+    NS_ASSERT_MSG(p->GetSize() >= PathHdr().GetSerializedSize(),
+                  "NdmPathForwarder: short forwarding packet");
+    Ptr<Packet> fp = p->Copy();
+    fp->RemoveAtStart(PathHdr().GetSerializedSize());
     PathHdr fhdr(hdr.m_pathId, hdr.m_hop + 1);
     fp->AddHeader(fhdr);
     Ptr<NetDevice> outDev = m_linkToDev.at(next);

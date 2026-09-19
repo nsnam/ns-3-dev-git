@@ -66,15 +66,17 @@ OnDeliver(uint32_t psn, Ptr<Packet> payload, uint32_t imm, bool isLast)
     const uint32_t len = payload->GetSize();
     if (len > 0)
     {
-        const uint8_t* d = payload->Head();
+        std::vector<uint8_t> buf(len);
+        const uint32_t got = payload->CopyData(buf.data(), len);
+        NS_ASSERT_MSG(got == len, "smoke: short CopyData");
         for (uint32_t i = 0; i < len; i++)
         {
-            if (d[i] != PatternByte(s.rxBytes + i))
+            if (buf[i] != PatternByte(s.rxBytes + i))
             {
                 s.badByte = true;
             }
         }
-        s.rx.insert(s.rx.end(), d, d + len);
+        s.rx.insert(s.rx.end(), buf.begin(), buf.end());
         s.rxBytes += len;
     }
     s.rxPackets++;

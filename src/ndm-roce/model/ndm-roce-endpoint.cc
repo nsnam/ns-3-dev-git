@@ -117,8 +117,8 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
     NS_ASSERT_MSG(total >= outer + inner,
                   "NdmRoceEndpoint: short RoCE packet on the wire");
 
-    Ptr<Packet> rest = Create<Packet>(total - outer);
-    std::copy(p->Head() + outer, p->Head() + total, rest->Start());
+    Ptr<Packet> rest = p->Copy();
+    rest->RemoveAtStart(outer);
 
     Ipv6Header ip;
     rest->PeekHeader(ip);
@@ -127,15 +127,9 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
     NdmRoceBth bth;
     rest->PeekHeader(bth);
 
-    Ptr<Packet> payload = Create<Packet>(rest->GetSize() -
-                                         Ipv6Header::GetSerializedSize() -
-                                         UdpHeader::GetSerializedSize());
-    if (payload->GetSize() > 0)
-    {
-        std::copy(rest->Head() + Ipv6Header::GetSerializedSize() +
-                      UdpHeader::GetSerializedSize(),
-                  rest->Head() + rest->GetSize(), payload->Start());
-    }
+    Ptr<Packet> payload = rest->Copy();
+    payload->RemoveAtStart(Ipv6Header::GetSerializedSize() +
+                           UdpHeader::GetSerializedSize());
 
     switch (bth.m_opcode)
     {

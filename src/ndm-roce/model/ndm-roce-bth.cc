@@ -11,7 +11,7 @@ TypeId
 NdmRoceBth::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::NdmRoceBth")
-                            .SetBase<Header>()
+                            .SetParent<Header>()
                             .SetTypeName("NdmRoceBth")
                             .AddConstructor<NdmRoceBth>();
     return tid;

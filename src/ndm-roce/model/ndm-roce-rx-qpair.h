@@ -27,14 +27,14 @@
 #include "ns3/ndm-roce-bth.h"
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
-#include "ns3/ref-count.h"
+#include "ns3/simple-ref-count.h"
 
 #include <cstdint>
 
 namespace ns3
 {
 
-class NdmRoceRxQPair : public RefCount
+class NdmRoceRxQPair : public SimpleRefCount<NdmRoceRxQPair>
 {
   public:
     NdmRoceRxQPair(uint32_t localQpn, uint32_t peerQpn);

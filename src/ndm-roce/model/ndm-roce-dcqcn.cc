@@ -73,7 +73,7 @@ NdmRoceDcQcn::Start(Time now)
 void
 NdmRoceDcQcn::Stop()
 {
-    if (m_slotEvent.IsRunning() || m_slotEvent.IsScheduled())
+    if (m_slotEvent.IsRunning())
     {
         Simulator::Cancel(m_slotEvent);
     }
@@ -141,7 +141,7 @@ NdmRoceDcQcn::DoSlot()
         const double frac = std::min(1.0, m_slot.GetSeconds() / rp.GetSeconds());
         const double diff = (m_rate.GetBitRate() - m_target.GetBitRate()) * frac;
         m_rate = DataRate(std::max(m_target.GetBitRate(),
-                                   m_rate.GetBitRate() - diff));
+                                   static_cast<uint64_t>(m_rate.GetBitRate() - diff)));
     }
     else
     {
