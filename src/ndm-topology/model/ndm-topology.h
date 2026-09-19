@@ -95,7 +95,7 @@ class NdmTopology : public Object
     std::vector<NdmPath> FindPaths(uint32_t src, uint32_t dst) const;
 
   private:
-    NodeList m_nodes;
+    std::vector<Ptr<Node>> m_nodes; // creation order == relative index
     std::map<uint32_t, NdmNodeIdentity> m_identities;
 
     std::map<NdmLinkId, Ptr<NdmLink>> m_links;

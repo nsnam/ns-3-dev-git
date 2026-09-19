@@ -11,6 +11,7 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/point-to-point-net-device.h"
+#include "ns3/simulator.h"
 
 namespace ns3
 {
@@ -25,6 +26,12 @@ NdmPathForwarder::PathHdr::GetTypeId()
     static TypeId tid =
         TypeId("ndm::NdmPathForwarder::PathHdr").SetParent<Header>().AddConstructor<PathHdr>();
     return tid;
+}
+
+TypeId
+NdmPathForwarder::PathHdr::GetInstanceTypeId() const
+{
+    return GetTypeId();
 }
 
 TypeId

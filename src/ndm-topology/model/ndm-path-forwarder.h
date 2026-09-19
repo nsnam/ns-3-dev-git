@@ -85,6 +85,7 @@ class NdmPathForwarder : public Object
         : public Header
     {
         static TypeId GetTypeId();
+        TypeId GetInstanceTypeId() const override;
         PathHdr() = default;
         PathHdr(uint32_t pathId, uint32_t hop)
             : m_pathId(pathId),

@@ -59,8 +59,8 @@ NdmTopology::AddNode(NdmNodeKind kind, uint32_t semantic)
     // Note: ns-3 node ids are process-global and do not restart between
     // simulations; NdmTopology indexes are relative to this object's first
     // node. Tests must use captured node ids, not absolute values.
-    const uint32_t rel = m_nodes.GetN();
-    m_nodes.Add(node);
+    const uint32_t rel = m_nodes.size();
+    m_nodes.push_back(node);
     m_identities[rel] = NdmNodeIdentity{node->GetId(), kind, semantic};
     return node;
 }
@@ -74,11 +74,11 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
 {
     NS_LOG_FUNCTION(this << nodeA << nodeB);
     NS_ASSERT_MSG(nodeA != nodeB, "NdmTopology: self-loop link");
-    NS_ASSERT_MSG(nodeA < m_nodes.GetN() && nodeB < m_nodes.GetN(),
+    NS_ASSERT_MSG(nodeA < m_nodes.size() && nodeB < m_nodes.size(),
                   "NdmTopology: unknown node");
 
-    Ptr<Node> nA = m_nodes.Get(nodeA);
-    Ptr<Node> nB = m_nodes.Get(nodeB);
+    Ptr<Node> nA = m_nodes[nodeA];
+    Ptr<Node> nB = m_nodes[nodeB];
 
     // Ports are the next free device index on each node (creation order).
     const uint32_t portA = nA->GetNDevices();
@@ -146,7 +146,7 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
 Ptr<Node>
 NdmTopology::GetNode(uint32_t node) const
 {
-    return m_nodes.Get(node);
+    return m_nodes[node];
 }
 
 NdmNodeIdentity
@@ -158,7 +158,7 @@ NdmTopology::GetNodeIdentity(uint32_t node) const
 uint32_t
 NdmTopology::GetNodeCount() const
 {
-    return m_nodes.GetN();
+    return m_nodes.size();
 }
 
 uint32_t
@@ -177,7 +177,7 @@ std::vector<NdmLinkId>
 NdmTopology::GetNodeLinkIds(uint32_t node) const
 {
     std::vector<NdmLinkId> out;
-    Ptr<Node> n = m_nodes.Get(node);
+    Ptr<Node> n = m_nodes[node];
     for (uint32_t port = 0; port < n->GetNDevices(); port++)
     {
         auto it = m_portToLink.find(NdmPortIdentity{node, port});

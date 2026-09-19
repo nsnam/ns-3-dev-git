@@ -27,7 +27,7 @@ NdmLinkLossModel::GetTypeId()
             .AddAttribute("Mode",
                           "Loss mode: NONE, BERN (Bernoulli), BURST (burst runs)",
                           EnumValue<Mode>(Mode::NONE),
-                          MakeEnumAccessor(&NdmLinkLossModel::m_mode),
+                          MakeEnumAccessor<NdmLinkLossModel::Mode>(&NdmLinkLossModel::m_mode),
                           MakeEnumChecker(Mode::NONE, "NONE", Mode::BERN, "BERN", Mode::BURST,
                                           "BURST"))
             .AddAttribute("LossProbability",
