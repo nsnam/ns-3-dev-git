@@ -9,7 +9,6 @@
 #include "ns3/udp-header.h"
 
 #include <algorithm>
-#include <cstdio>
 #include <cstdint>
 
 NS_LOG_COMPONENT_DEFINE("NdmRoceEndpoint");
@@ -116,21 +115,18 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
     NS_ASSERT_MSG(total >= outer + inner,
                   "NdmRoceEndpoint: short RoCE packet on the wire");
 
+    // Decapsulate. NOTE: PeekHeader always reads from the start of the
+    // packet, so a stacked header sequence must be peeled with
+    // RemoveHeader on a mutable copy.
     Ptr<Packet> rest = p->Copy();
     rest->RemoveAtStart(outer);
-
     Ipv6Header ip;
-    const uint32_t sip = rest->PeekHeader(ip);
+    rest->RemoveHeader(ip);
     UdpHeader udp;
-    const uint32_t su = rest->PeekHeader(udp);
+    rest->RemoveHeader(udp);
     NdmRoceBth bth;
-    const uint32_t sb = rest->PeekHeader(bth);
-    std::fprintf(stderr, "DBG peek ip=%u udp=%u bth=%u restSize=%u\n",
-                 (unsigned)sip, (unsigned)su, (unsigned)sb,
-                 (unsigned)rest->GetSize());
-
-    Ptr<Packet> payload = rest->Copy();
-    payload->RemoveAtStart(kIpv6Size + kUdpSize + 16 /* NdmRoceBth */);
+    rest->RemoveHeader(bth);
+    Ptr<Packet> payload = rest; // exactly the message fragment (or empty)
 
     switch (bth.m_opcode)
     {
@@ -172,19 +168,8 @@ NdmRoceEndpoint::OnDelivered(uint32_t pathId, Ptr<const Packet> p, Time t)
             break;
         }
         default:
-            {
-                uint8_t dump[24] = {0};
-                p->CopyData(dump, std::min<uint32_t>(24, p->GetSize()));
-                std::fprintf(stderr, "DBG opcode=%u qp=%u psn=%u size=%u bytes:",
-                             (unsigned)bth.m_opcode, (unsigned)bth.m_destQp,
-                             (unsigned)bth.m_psn, (unsigned)p->GetSize());
-                for (int i = 0; i < 24; i++)
-                {
-                    std::fprintf(stderr, " %02x", dump[i]);
-                }
-                std::fprintf(stderr, "\n");
-            }
-            NS_ABORT_MSG("NdmRoceEndpoint: unknown opcode");
+            NS_ABORT_MSG("NdmRoceEndpoint: unknown opcode "
+                         << static_cast<int>(bth.m_opcode));
     }
 }
 
