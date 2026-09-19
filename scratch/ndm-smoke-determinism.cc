@@ -65,6 +65,10 @@ class SmokeTimeHdr
     {
         os << "SmokeTimeHdr(sendNs=" << m_sendNs << ")";
     }
+    TypeId GetInstanceTypeId() const override
+    {
+        return GetTypeId();
+    }
 
   private:
     uint64_t m_sendNs{0};
@@ -77,16 +81,17 @@ struct SmokeStats
     uint64_t sumFlightNs{0};
 };
 
-void
+bool
 RxCallback(Ptr<const NetDevice>, Ptr<const Packet> p, uint16_t /*protocol*/, const Address&)
 {
     SmokeTimeHdr hdr;
-    p->RemoveHeader(hdr);
+    p->PeekHeader(hdr);
     SmokeStats& s = g_stats;
     s.delivered++;
-    uint64_t nowNs = uint64_t(Simulator::Now().GetPicoseconds()) / 1000;
+    uint64_t nowNs = uint64_t(Simulator::Now().GetPicoSeconds()) / 1000;
     s.lastRxNs = nowNs;
     s.sumFlightNs += nowNs - hdr.GetSendNs();
+    return true;
 }
 
 SmokeStats g_stats;
@@ -116,12 +121,11 @@ main(int argc, char* argv[])
     devices.Get(1)->SetReceiveCallback(&RxCallback);
 
     // --- traffic: seeded inter-packet jitter ---------------------------------
-    // 3.42: RngStream is a plain class (seeded in the constructor).
-    // MilliSeconds() takes an integer — the jitter is drawn in whole us so
-    // the seed genuinely moves the schedule (a fractional double would be
-    // truncated and the "different seed" gate would be vacuous).
+    // 3.42: RngStream is a plain class (seeded in the constructor) and the
+    // RandomVariable models are gone — draw jitter directly. MilliSeconds()
+    // takes an integer, so the jitter is drawn in whole us (a fractional
+    // double would truncate and the "different seed" gate would be vacuous).
     auto rng = std::make_unique<RngStream>(static_cast<uint32_t>(seed), 0, 0);
-    Ptr<UniformVariable> jitterUs = CreateObject<UniformVariable>(0.0, 500.0, rng.get());
 
     Mac48Address dst = Mac48Address("00:00:00:00:00:02");
     uint32_t sent = 0;
@@ -131,7 +135,7 @@ main(int argc, char* argv[])
             return;
         }
         Ptr<Packet> p = Create<Packet>(1000);
-        SmokeTimeHdr hdr(uint64_t(Simulator::Now().GetPicoseconds()) / 1000);
+        SmokeTimeHdr hdr(uint64_t(Simulator::Now().GetPicoSeconds()) / 1000);
         p->AddHeader(hdr);
         bool ok = txDev->Send(p, dst, 0x86DD);
         (void)ok;
@@ -139,7 +143,8 @@ main(int argc, char* argv[])
         sent++;
         if (sent < nPackets)
         {
-            Time gap = MilliSeconds(1) + MicroSeconds(static_cast<uint32_t>(jitterUs->Value()));
+            const uint32_t jitterUs = static_cast<uint32_t>(rng->RandU01() * 500.0);
+            Time gap = MilliSeconds(1) + MicroSeconds(jitterUs);
             Simulator::Schedule(gap, sendNext);
         }
     };
