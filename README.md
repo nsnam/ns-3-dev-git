@@ -30,7 +30,18 @@ Agents run unattended on **M2** (`lahme100@login15.imec.be`, `~/Workspace/`); **
 experiments run inside the docker container `ndm-sys` on M3** (`wt-1-23`, via the lynx jump
 host). See `AGENTS.md` § Execution environment and `tools/remote/README.md`.
 
+## Licensing (GPLv2 / Apache-2.0 boundary)
+
+- The repo root **is** the ns-3.42 tree → the root [`LICENSE`](LICENSE) (GPLv2) governs the
+  core. Core is modified only via named patches in `docs/core-patches/` (none yet).
+- Project-owned additions (`src/ndm-*/`, `tests/`, `scenarios/`, `tools/`, `agents/`,
+  `container/`, `donors/` provenance notes, …) are **Apache-2.0** — see
+  [`LICENSE-PROJECT`](LICENSE-PROJECT).
+- Donor snippets in `donors/` keep their original per-file license.
+- Full version pins + per-repo license table: [`docs/provenance.md`](docs/provenance.md).
+
 ## Status
 
-Phase 0 in progress: governance + cluster + container done (2026-09-19); fork adoption + first
-in-container build open. See `PLAN.md` phase status and `ASK.md` for open questions.
+Phase 0 in progress: governance + cluster + container + first pristine in-container build done
+(2026-09-19). Open: fork adoption (Q-001), provenance/license/CI-substitute files (0.5–0.6).
+See `PLAN.md` phase status and `ASK.md` for open questions.
