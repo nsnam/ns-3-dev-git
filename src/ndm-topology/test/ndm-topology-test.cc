@@ -175,7 +175,9 @@ class NdmMultiRailTestCase : public TestCase
         // nicPerRail=2 => parallel links, one extra per (gpu, rail) pair.
         auto topo2 = NdmTopologyHelper::CreateMultiRail(1, 2, 2, 1, 2, opts);
         EXPECT_EQ(topo2->GetParallelLinkCount(), 2u * 2u); // 2 gpus x 2 rails
-        EXPECT_EQ(topo2->GetDiameter(), 2u); // single pod: gpu-ToR-gpu
+        // Rails are independent networks: the farthest pair is a cross-rail
+        // spine pair (spine0 - ToR - gpu - ToR - spine1) = 4 hops.
+        EXPECT_EQ(topo2->GetDiameter(), 4u);
     }
 };
 
