@@ -139,6 +139,7 @@ main(int argc, char* argv[])
 
     // --- one RC connection: local QP 1 (A) <-> local QP 2 (B) ------------------
     g_tx = epA->CreateConnection(1, 2);
+    epB->CreateConnection(2, 1);
     g_rx = epB->GetRxQp(2);
     g_tx->SetMtu(kMtu);
     g_tx->SetLinkRate(DataRate("10Gbps"));
