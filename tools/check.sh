@@ -5,7 +5,10 @@
 #
 # Runs (inside the ndm-sys container on M3, cwd = repo root):
 #   1. configure + full build (CMake/Ninja, NS3_TESTS=ON)
-#   2. all unit tests (ctest, parallel)
+#   2. all unit/system/performance test suites via `python3 test.py --no-build`
+#      (the upstream CI mechanism; bare `ctest` runs every executable as a
+#      ctest entry and fails on environment-bound ones like TAP/raw-socket
+#      creators inside a container)
 #   3. deterministic scenario pair: scratch/ndm-smoke-determinism twice with
 #      the same seed must produce bit-identical metrics; a different seed must
 #      not (guards against a seed that is not actually wired into the RNG).
@@ -22,8 +25,9 @@ echo "== [1/3] configure + build (jobs=$JOBS)"
 cmake -B build -G Ninja -DNS3_TESTS=ON
 ninja -C build
 
-echo "== [2/3] unit tests (ctest -j$JOBS)"
-ctest --test-dir build --output-on-failure --parallel "$JOBS"
+echo "== [2/3] unit tests (test.py --no-build)"
+mkdir -p testpy-output
+python3 test.py --no-build -b build
 
 echo "== [3/3] deterministic scenario pair"
 SMOKE="$(find build/scratch -maxdepth 1 -name 'scratch_ndm-smoke-determinism' -type f | head -1)"

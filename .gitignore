@@ -6,3 +6,4 @@ test-results/
 __pycache__/
 .pytest_cache/
 .pi/npm/
+testpy-output/
