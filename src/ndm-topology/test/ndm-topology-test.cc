@@ -303,4 +303,4 @@ class NdmTopologyTestSuite : public TestSuite
 
 static NdmTopologyTestSuite g_ndmTopologyTestSuite;
 
-} // namespace
+
