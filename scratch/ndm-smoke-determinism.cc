@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <memory>
 
 using namespace ns3;
 
@@ -38,7 +39,7 @@ class SmokeTimeHdr
     static TypeId GetTypeId()
     {
         static TypeId tid =
-            TypeId("ndm::SmokeTimeHdr").SetBase<Header>().AddConstructor<SmokeTimeHdr>();
+            TypeId("ndm::SmokeTimeHdr").SetParent<Header>().AddConstructor<SmokeTimeHdr>();
         return tid;
     }
     SmokeTimeHdr() = default;
@@ -53,11 +54,16 @@ class SmokeTimeHdr
     }
     void Serialize(Buffer::Iterator start) const override
     {
-        start.WriteHBEU64(m_sendNs);
+        start.WriteHtonU64(m_sendNs);
     }
-    void Unserialize(Buffer::Iterator start) override
+    uint32_t Deserialize(Buffer::Iterator start) override
     {
-        m_sendNs = start.ReadHBEU64();
+        m_sendNs = start.ReadNtohU64();
+        return 8;
+    }
+    void Print(std::ostream& os) const override
+    {
+        os << "SmokeTimeHdr(sendNs=" << m_sendNs << ")";
     }
 
   private:
@@ -97,21 +103,25 @@ main(int argc, char* argv[])
     cmd.AddValue("nPackets", "number of packets to send", nPackets);
     cmd.Parse(argc, argv);
 
-    // --- topology: 2 nodes, 1 link -------------------------------------------
-    NodeContainer nodes;
-    nodes.Create(2);
+    // --- topology: 2 nodes, 1 link (3.42 has no NodeContainer; the P2P
+    // helper installs directly on the two nodes) -----------------------------
+    Ptr<Node> n0 = CreateObject<Node>();
+    Ptr<Node> n1 = CreateObject<Node>();
     PointToPointHelper pp;
-    pp.SetDeviceAttribute("DataRate", DataRateValue(DataRate("1 Gbps")));
+    pp.SetDeviceAttribute("DataRate", DataRateValue(DataRate("1Gbps")));
     pp.SetChannelAttribute("Delay", TimeValue(MilliSeconds(1)));
-    NetDeviceContainer devices = pp.Install(nodes);
+    NetDeviceContainer devices = pp.Install(n0, n1);
 
     Ptr<NetDevice> txDev = devices.Get(0);
     devices.Get(1)->SetReceiveCallback(&RxCallback);
 
     // --- traffic: seeded inter-packet jitter ---------------------------------
-    Ptr<RngStream> rng = CreateObject<RngStream>();
-    rng->SetSeed(seed);
-    Ptr<UniformVariable> jitterMs = CreateObject<UniformVariable>(0.0, 0.5, rng);
+    // 3.42: RngStream is a plain class (seeded in the constructor).
+    // MilliSeconds() takes an integer — the jitter is drawn in whole us so
+    // the seed genuinely moves the schedule (a fractional double would be
+    // truncated and the "different seed" gate would be vacuous).
+    auto rng = std::make_unique<RngStream>(static_cast<uint32_t>(seed), 0, 0);
+    Ptr<UniformVariable> jitterUs = CreateObject<UniformVariable>(0.0, 500.0, rng.get());
 
     Mac48Address dst = Mac48Address("00:00:00:00:00:02");
     uint32_t sent = 0;
@@ -123,13 +133,13 @@ main(int argc, char* argv[])
         Ptr<Packet> p = Create<Packet>(1000);
         SmokeTimeHdr hdr(uint64_t(Simulator::Now().GetPicoseconds()) / 1000);
         p->AddHeader(hdr);
-        bool ok = txDev->Send(p, dst, 0, nullptr);
+        bool ok = txDev->Send(p, dst, 0x86DD);
         (void)ok;
         NS_ABORT_MSG_UNLESS(ok, "smoke: send failed");
         sent++;
         if (sent < nPackets)
         {
-            Time gap = MilliSeconds(1.0) + MilliSeconds(jitterMs->Value());
+            Time gap = MilliSeconds(1) + MicroSeconds(static_cast<uint32_t>(jitterUs->Value()));
             Simulator::Schedule(gap, sendNext);
         }
     };

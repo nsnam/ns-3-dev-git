@@ -30,9 +30,9 @@ mkdir -p testpy-output
 python3 test.py --no-build -b build
 
 echo "== [3/3] deterministic scenario pair"
-SMOKE="$(find build/scratch -maxdepth 1 -name 'scratch_ndm-smoke-determinism' -type f | head -1)"
+SMOKE="$(find build/scratch -maxdepth 1 -name '*ndm-smoke-determinism*' -type f | head -1)"
 if [ -z "$SMOKE" ]; then
-    echo "FAIL: smoke app not built (expected build/scratch/scratch_ndm-smoke-determinism)"
+    echo "FAIL: smoke app not built (expected build/scratch/*ndm-smoke-determinism*)"
     exit 1
 fi
 
