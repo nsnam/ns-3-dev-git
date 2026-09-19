@@ -356,6 +356,9 @@ class NdmLinkUpConvergenceTestCase : public TestCase
         // serialization is the exact stock P2P term for a 1208 B packet at
         // 1 Gbps (computed with the same API the device uses).
         const Time ser = DataRate("1Gbps").CalculateBytesTxTime(kPayload + 8u);
+        std::cerr << "[dbg] actual_ns=" << r.m.linkRxLast.at(NdmLinkId{1, 1, -1}).GetNanoSeconds()
+                  << " expected_ns=" << (MicroSeconds(110500) + ser).GetNanoSeconds()
+                  << " ser_ns=" << ser.GetNanoSeconds() << std::endl;
         EXPECT_EQ(r.m.linkRxLast.at((NdmLinkId{1, 1, -1})), MicroSeconds(110500) + ser);
     }
 };
