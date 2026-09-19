@@ -23,7 +23,7 @@ class NdmFatTreeTestCase : public TestCase
 {
   public:
     NdmFatTreeTestCase()
-        : TestCase("ndm-topology/fat-tree")
+        : TestCase("ndm-topology-fat-tree")
     {
     }
 
@@ -91,7 +91,7 @@ class NdmParallelLinkTestCase : public TestCase
 {
   public:
     NdmParallelLinkTestCase()
-        : TestCase("ndm-topology/parallel-links")
+        : TestCase("ndm-topology-parallel-links")
     {
     }
   protected:
@@ -130,7 +130,7 @@ class NdmMultiRailTestCase : public TestCase
 {
   public:
     NdmMultiRailTestCase()
-        : TestCase("ndm-topology/multi-rail")
+        : TestCase("ndm-topology-multi-rail")
     {
     }
   protected:
@@ -183,7 +183,7 @@ class NdmMultiPlaneTestCase : public TestCase
 {
   public:
     NdmMultiPlaneTestCase()
-        : TestCase("ndm-topology/multi-plane")
+        : TestCase("ndm-topology-multi-plane")
     {
     }
   protected:
@@ -249,7 +249,7 @@ class NdmPathQueryTestCase : public TestCase
 {
   public:
     NdmPathQueryTestCase()
-        : TestCase("ndm-topology/path-query")
+        : TestCase("ndm-topology-path-query")
     {
     }
   protected:

@@ -176,7 +176,7 @@ BuildTwoRail(bool withUp)
     r.A = 0;
     r.B = 1;
     NdmTopologyHelper::Opts opts;
-    opts.bps = DataRate("1 Gbps");
+    opts.bps = DataRate("1Gbps");
     opts.delay = MilliSeconds(1.5);
     r.l0 = r.topo->AddLink(r.A, r.B, opts.bps, opts.delay, 0, -1, false, 1000, nullptr);
     r.l1 = r.topo->AddLink(r.A, r.B, opts.bps, opts.delay, 1, -1, false, 1000, nullptr);
@@ -284,7 +284,7 @@ class NdmLinkDownRerouteTestCase : public TestCase
 {
   public:
     NdmLinkDownRerouteTestCase()
-        : TestCase("ndm-failure/link-down-reroute")
+        : TestCase("ndm-failure-link-down-reroute")
     {
     }
   protected:
@@ -319,7 +319,7 @@ class NdmLinkUpConvergenceTestCase : public TestCase
 {
   public:
     NdmLinkUpConvergenceTestCase()
-        : TestCase("ndm-failure/link-up-convergence")
+        : TestCase("ndm-failure-link-up-convergence")
     {
     }
   protected:
@@ -379,7 +379,7 @@ NdmInFlightPolicyTestCase::DoRun()
     auto topo = CreateObject<NdmTopology>();
     topo->AddNode(NdmNodeKind::HOST, 0);
     topo->AddNode(NdmNodeKind::HOST, 1);
-    auto link = topo->AddLink(0, 1, DataRate("10 Mbps"), MilliSeconds(1), -1, -1, false, 1000,
+    auto link = topo->AddLink(0, 1, DataRate("10Mbps"), MilliSeconds(1), -1, -1, false, 1000,
                               nullptr);
 
     auto fwdA = CreateObject<NdmPathForwarder>();
@@ -457,7 +457,7 @@ SwitchResult
 RunSwitchFailure()
 {
     NdmTopologyHelper::Opts opts;
-    opts.bps = DataRate("1 Gbps");
+    opts.bps = DataRate("1Gbps");
     opts.delay = MilliSeconds(1.5);
     auto topo = NdmTopologyHelper::CreateMultiRail(2, 2, 2, 1, 1, opts);
 
@@ -549,7 +549,7 @@ class NdmSwitchFailureTestCase : public TestCase
 {
   public:
     NdmSwitchFailureTestCase()
-        : TestCase("ndm-failure/planned-switch-failure")
+        : TestCase("ndm-failure-planned-switch-failure")
     {
     }
   protected:
@@ -597,7 +597,7 @@ class NdmFailureDeterminismTestCase : public TestCase
 {
   public:
     NdmFailureDeterminismTestCase()
-        : TestCase("ndm-failure/determinism-pair")
+        : TestCase("ndm-failure-determinism-pair")
     {
     }
   protected:
@@ -614,14 +614,14 @@ class NdmLossModelTestCase : public TestCase
 {
   public:
     NdmLossModelTestCase()
-        : TestCase("ndm-failure/loss-model")
+        : TestCase("ndm-failure-loss-model")
     {
     }
   protected:
     static uint32_t RunOnce(NdmLinkLossModel::Mode mode, double p, uint32_t burstLen)
     {
         NdmTopologyHelper::Opts opts;
-        opts.bps = DataRate("1 Gbps");
+        opts.bps = DataRate("1Gbps");
         opts.delay = MilliSeconds(1);
         opts.lossMode = mode;
         opts.lossProbability = p;
@@ -672,7 +672,7 @@ class NdmQueueDropTestCase : public TestCase
 {
   public:
     NdmQueueDropTestCase()
-        : TestCase("ndm-failure/queue-drops")
+        : TestCase("ndm-failure-queue-drops")
     {
     }
   protected:
@@ -683,7 +683,7 @@ class NdmQueueDropTestCase : public TestCase
         topo->AddNode(NdmNodeKind::HOST, 1);
         // Tiny queue: with 1000 B and 1 Gbps (~8us/packet), 6 packets fit
         // (1 in service + 5 queued); the remaining 94 are dropped at enqueue.
-        auto link = topo->AddLink(0, 1, DataRate("1 Gbps"), MilliSeconds(1), -1, -1, false, 5,
+        auto link = topo->AddLink(0, 1, DataRate("1Gbps"), MilliSeconds(1), -1, -1, false, 5,
                                   nullptr);
 
         auto fwdA = CreateObject<NdmPathForwarder>();
@@ -722,13 +722,13 @@ class NdmFailureTestSuite : public TestSuite
     {
         AddTestCase(new NdmLinkDownRerouteTestCase(), Duration::QUICK);
         AddTestCase(new NdmLinkUpConvergenceTestCase(), Duration::QUICK);
-        AddTestCase(new NdmInFlightPolicyTestCase("ndm-failure/inflight-policy-drop",
+        AddTestCase(new NdmInFlightPolicyTestCase("ndm-failure-inflight-policy-drop",
                                                   InFlightPolicy::DROP),
                     Duration::QUICK);
-        AddTestCase(new NdmInFlightPolicyTestCase("ndm-failure/inflight-policy-flush",
+        AddTestCase(new NdmInFlightPolicyTestCase("ndm-failure-inflight-policy-flush",
                                                   InFlightPolicy::FLUSH),
                     Duration::QUICK);
-        AddTestCase(new NdmInFlightPolicyTestCase("ndm-failure/inflight-policy-deliver-then-drop",
+        AddTestCase(new NdmInFlightPolicyTestCase("ndm-failure-inflight-policy-deliver-then-drop",
                                                   InFlightPolicy::DELIVER_THEN_DROP),
                     Duration::QUICK);
         AddTestCase(new NdmSwitchFailureTestCase(), Duration::QUICK);

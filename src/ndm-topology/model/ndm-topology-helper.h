@@ -58,7 +58,7 @@ class NdmTopologyHelper
     /// Per-link physical parameters shared by all generator links.
     struct Opts
     {
-        DataRate bps{DataRate("1 Gbps")};
+        DataRate bps{DataRate("1Gbps")};
         Time delay{MilliSeconds(1)};
         uint32_t queueMaxPackets{1000};
         // Stochastic loss (lossy Ethernet, D5). NONE keeps links lossless-queue.
