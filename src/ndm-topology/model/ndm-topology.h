@@ -21,8 +21,8 @@
 #ifndef NDM_TOPOLOGY_H
 #define NDM_TOPOLOGY_H
 
-#include "ndm-identity.h"
-#include "ndm-link.h"
+#include "ns3/ndm-identity.h"
+#include "ns3/ndm-link.h"
 
 #include "ns3/data-rate.h"
 #include "ns3/nstime.h"
@@ -95,7 +95,7 @@ class NdmTopology : public Object
     std::vector<NdmPath> FindPaths(uint32_t src, uint32_t dst) const;
 
   private:
-    NodeContainer m_nodes;
+    NodeList m_nodes;
     std::map<uint32_t, NdmNodeIdentity> m_identities;
 
     std::map<NdmLinkId, Ptr<NdmLink>> m_links;

@@ -24,7 +24,6 @@
 #include "ns3/error-model.h"
 
 #include <cstdint>
-
 namespace ns3
 {
 
@@ -47,11 +46,13 @@ class NdmLinkLossModel : public ErrorModel
     /// builder from the cell seed). Must be set before the first check.
     void SetRng(Ptr<RngStream> rng);
 
-    bool IsCorrupt(Ptr<const Packet> packet) override;
-
     Mode GetMode() const;
 
   private:
+    /// ErrorModel override: apply the loss model to one packet.
+    bool DoCorrupt(Ptr<Packet> p) override;
+    /// ErrorModel override: reset model state (keeps the RNG stream state).
+    void DoReset() override;
     Mode m_mode{Mode::NONE};
     double m_lossProbability{0.0};
     uint32_t m_burstLen{1};

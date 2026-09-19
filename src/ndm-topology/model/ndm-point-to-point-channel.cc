@@ -2,9 +2,9 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
-#include "ndm-point-to-point-channel.h"
+#include "ns3/ndm-point-to-point-channel.h"
 
-#include "ndm-link.h"
+#include "ns3/ndm-link.h"
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
@@ -20,7 +20,7 @@ TypeId
 NdmPointToPointChannel::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::NdmPointToPointChannel")
-                            .SetBase<PointToPointChannel>()
+                            .SetParent<PointToPointChannel>()
                             .SetGroupName("NdmTopology")
                             .AddConstructor<NdmPointToPointChannel>();
     return tid;

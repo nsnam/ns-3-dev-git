@@ -21,8 +21,9 @@
 #ifndef NDM_PATH_FORWARDER_H
 #define NDM_PATH_FORWARDER_H
 
-#include "ndm-topology.h"
+#include "ns3/ndm-topology.h"
 
+#include "ns3/address.h"
 #include "ns3/header.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
@@ -95,17 +96,20 @@ class NdmPathForwarder : public Object
         }
         void Serialize(Buffer::Iterator start) const override
         {
-            start.WriteHBEU32(m_pathId);
-            start.WriteHBEU32(m_hop);
+            start.WriteHtonU32(m_pathId);
+            start.WriteHtonU32(m_hop);
         }
-        void Unserialize(Buffer::Iterator start) override
+        uint32_t Deserialize(Buffer::Iterator start) override
         {
-            m_pathId = start.ReadHBEU32();
-            m_hop = start.ReadHBEU32();
+            m_pathId = start.ReadNtohU32();
+            m_hop = start.ReadNtohU32();
+            return 8;
         }
     };
 
-    void HandleRx(Ptr<const NetDevice>, Ptr<const Packet> p, uint16_t, const Address&);
+    // ReceiveCallback signature (3.42: bool, Ptr<NetDevice>, Ptr<const Packet>,
+    // uint16_t, const Address&). Returns true (handled) / false (drop).
+    bool HandleRx(Ptr<NetDevice>, Ptr<const Packet> p, uint16_t, const Address&);
 
     Ptr<NdmTopology> m_topo;
     Ptr<Node> m_node;

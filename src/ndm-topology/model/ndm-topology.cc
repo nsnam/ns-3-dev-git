@@ -3,13 +3,15 @@
  */
 
 #include "ns3/log.h"
-#include "ndm-topology.h"
+#include "ns3/ndm-topology.h"
 
-#include "ndm-link-loss-model.h"
-#include "ndm-point-to-point-channel.h"
-#include "ndm-rx-guard.h"
+#include "ns3/ndm-link-loss-model.h"
+#include "ns3/ndm-point-to-point-channel.h"
+#include "ns3/ndm-rx-guard.h"
 
+#include "ns3/attributes.h"
 #include "ns3/drop-tail-queue.h"
+#include "ns3/packet.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/queue.h"
 #include "ns3/node.h"
@@ -28,7 +30,7 @@ TypeId
 NdmTopology::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::NdmTopology").SetBase<Object>().SetGroupName("NdmTopology").AddConstructor<NdmTopology>();
+        TypeId("ns3::NdmTopology").SetParent<Object>().SetGroupName("NdmTopology").AddConstructor<NdmTopology>();
     return tid;
 }
 
@@ -93,7 +95,7 @@ NdmTopology::AddLink(uint32_t nodeA, uint32_t nodeB,
     Ptr<PointToPointNetDevice> devB = CreateObject<PointToPointNetDevice>();
 
     auto makeQueue = [queueMaxPackets]() {
-        Ptr<DropTailQueue> q = CreateObject<DropTailQueue>();
+        Ptr<DropTailQueue<Packet>> q = CreateObject<DropTailQueue<Packet>>();
         q->SetAttribute("MaxPackets", UintegerValue(queueMaxPackets));
         return q;
     };

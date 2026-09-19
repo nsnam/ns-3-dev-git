@@ -2,14 +2,15 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
-#include "ndm-path-forwarder.h"
+#include "ns3/ndm-path-forwarder.h"
 
-#include "ndm-link.h"
+#include "ns3/ndm-link.h"
 
 #include "ns3/log.h"
 #include "ns3/mac48-address.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/point-to-point-net-device.h"
 
 namespace ns3
 {
@@ -23,7 +24,7 @@ TypeId
 NdmPathForwarder::PathHdr::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ndm::NdmPathForwarder::PathHdr").SetBase<Header>().AddConstructor<PathHdr>();
+        TypeId("ndm::NdmPathForwarder::PathHdr").SetParent<Header>().AddConstructor<PathHdr>();
     return tid;
 }
 
@@ -31,7 +32,7 @@ TypeId
 NdmPathForwarder::GetTypeId()
 {
     static TypeId tid = TypeId("ns3::NdmPathForwarder")
-                            .SetBase<Object>()
+                            .SetParent<Object>()
                             .SetGroupName("NdmTopology")
                             .AddConstructor<NdmPathForwarder>()
                             .AddTraceSource("Delivery",
@@ -108,7 +109,7 @@ NdmPathForwarder::Send(uint32_t pathId, uint32_t payloadBytes)
     PathHdr hdr(pathId, 0);
     p->AddHeader(hdr);
     Ptr<NetDevice> dev = m_linkToDev.at(first);
-    const bool ok = dev->Send(p, Mac48Address("00:00:00:00:00:02"), 0, nullptr);
+    const bool ok = dev->Send(p, Mac48Address("00:00:00:00:00:02"), 0);
     if (!ok)
     {
         return false;
@@ -159,15 +160,15 @@ NdmPathForwarder::GetLinkRx() const
     return m_linkRx;
 }
 
-void
-NdmPathForwarder::HandleRx(Ptr<const NetDevice> dev, Ptr<const Packet> p, uint16_t, const Address&)
+bool
+NdmPathForwarder::HandleRx(Ptr<NetDevice> dev, Ptr<const Packet> p, uint16_t, const Address&)
 {
     auto it = m_devToLink.find(dev);
     NS_ASSERT_MSG(it != m_devToLink.end(), "NdmPathForwarder: rx on unknown device");
     const NdmLinkId rxLink = it->second;
 
     PathHdr hdr;
-    p->RemoveHeader(hdr);
+    p->PeekHeader(hdr);
     NS_ASSERT_MSG(hdr.m_pathId < m_paths.size(), "NdmPathForwarder: unknown path in packet");
     const NdmTopology::NdmPath& path = m_paths.at(hdr.m_pathId);
     NS_ASSERT_MSG(hdr.m_hop < path.m_links.size(), "NdmPathForwarder: hop out of range");
@@ -184,13 +185,15 @@ NdmPathForwarder::HandleRx(Ptr<const NetDevice> dev, Ptr<const Packet> p, uint16
 
     if (hdr.m_hop + 1 == path.m_links.size())
     {
-        // Destination.
+        // Destination. The 8-byte PathHdr stays in the packet (it is
+        // consumed here, not on the wire again); payload = size - header.
         m_delivered++;
         m_deliveryTimes.push_back(Simulator::Now());
         m_deliveryPathIds.push_back(hdr.m_pathId);
-        uint32_t payload = p->GetSize();
-        m_deliveryTraced(hdr.m_pathId, payload, Simulator::Now());
-        return;
+        const uint32_t hdrSize = PathHdr().GetSerializedSize();
+        NS_ASSERT_MSG(p->GetSize() >= hdrSize, "NdmPathForwarder: short delivery packet");
+        m_deliveryTraced(hdr.m_pathId, p->GetSize() - hdrSize, Simulator::Now());
+        return true;
     }
 
     // Forward on the next hop.
@@ -199,19 +202,20 @@ NdmPathForwarder::HandleRx(Ptr<const NetDevice> dev, Ptr<const Packet> p, uint16
     {
         NS_LOG_INFO("NdmPathForwarder: mid-path drop (next link " << next.index << " down)");
         m_droppedMidPath++;
-        return;
+        return false;
     }
-    Ptr<Packet> fp = Create<Packet>(p->GetSize());
+    Ptr<Packet> fp = Create<Packet>(p->GetSize() - PathHdr().GetSerializedSize());
     PathHdr fhdr(hdr.m_pathId, hdr.m_hop + 1);
     fp->AddHeader(fhdr);
     Ptr<NetDevice> outDev = m_linkToDev.at(next);
-    const bool ok = outDev->Send(fp, Mac48Address("00:00:00:00:00:02"), 0, nullptr);
+    const bool ok = outDev->Send(fp, Mac48Address("00:00:00:00:00:02"), 0);
     if (!ok)
     {
         m_droppedMidPath++;
-        return;
+        return false;
     }
     m_forwarded++;
+    return true;
 }
 
 } // namespace ns3

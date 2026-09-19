@@ -17,7 +17,7 @@
 #ifndef NDM_LINK_H
 #define NDM_LINK_H
 
-#include "ndm-identity.h"
+#include "ns3/ndm-identity.h"
 
 #include "ns3/data-rate.h"
 #include "ns3/nstime.h"
@@ -28,6 +28,7 @@ namespace ns3
 {
 
 class NetDevice;
+class Node;
 class PointToPointNetDevice;
 class NdmPointToPointChannel;
 class NdmLinkLossModel;

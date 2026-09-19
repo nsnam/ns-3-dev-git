@@ -35,7 +35,8 @@
 #ifndef NDM_TOPOLOGY_HELPER_H
 #define NDM_TOPOLOGY_HELPER_H
 
-#include "ndm-topology.h"
+#include "ns3/ndm-link-loss-model.h"
+#include "ns3/ndm-topology.h"
 
 #include "ns3/data-rate.h"
 #include "ns3/nstime.h"
@@ -44,8 +45,6 @@
 
 namespace ns3
 {
-
-class NdmLinkLossModel;
 
 class NdmTopologyHelper
 {

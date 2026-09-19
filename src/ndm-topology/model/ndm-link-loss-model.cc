@@ -2,11 +2,12 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
+#include "ns3/attributes.h"
 #include "ns3/log.h"
-#include "ndm-link-loss-model.h"
+#include "ns3/ndm-link-loss-model.h"
 
 #include "ns3/packet.h"
-#include "ns3/random-variable-stream.h"
+#include "ns3/rng-stream.h"
 
 namespace ns3
 {
@@ -18,7 +19,7 @@ NdmLinkLossModel::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::NdmLinkLossModel")
-            .SetBase<ErrorModel>()
+            .SetParent<ErrorModel>()
             .SetGroupName("NdmTopology")
             .AddConstructor<NdmLinkLossModel>()
             .AddAttribute("Mode",
@@ -52,8 +53,9 @@ NdmLinkLossModel::SetRng(Ptr<RngStream> rng)
 }
 
 bool
-NdmLinkLossModel::IsCorrupt(Ptr<const Packet> packet)
+NdmLinkLossModel::DoCorrupt(Ptr<Packet> p)
 {
+    (void)p; // loss is a drop, not bit flips
     switch (m_mode)
     {
         case Mode::NONE:
@@ -80,6 +82,12 @@ NdmLinkLossModel::Mode
 NdmLinkLossModel::GetMode() const
 {
     return m_mode;
+}
+
+void
+NdmLinkLossModel::DoReset()
+{
+    m_burstRemaining = 0;
 }
 
 } // namespace ns3

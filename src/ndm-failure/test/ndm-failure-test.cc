@@ -15,11 +15,11 @@
  * same-instant ties, so every expectation below is an exact value.
  */
 
-#include "ndm-failure-scheduler.h"
-#include "ndm-link.h"
-#include "ndm-path-forwarder.h"
-#include "ndm-topology.h"
-#include "ndm-topology-helper.h"
+#include "ns3/ndm-failure-scheduler.h"
+#include "ns3/ndm-link.h"
+#include "ns3/ndm-path-forwarder.h"
+#include "ns3/ndm-topology.h"
+#include "ns3/ndm-topology-helper.h"
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"

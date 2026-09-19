@@ -3,10 +3,10 @@
  */
 
 #include "ns3/log.h"
-#include "ndm-link.h"
+#include "ns3/ndm-link.h"
 
-#include "ndm-link-loss-model.h"
-#include "ndm-point-to-point-channel.h"
+#include "ns3/ndm-link-loss-model.h"
+#include "ns3/ndm-point-to-point-channel.h"
 
 #include "ns3/drop-tail-queue.h"
 #include "ns3/point-to-point-net-device.h"
@@ -15,13 +15,15 @@
 namespace ns3
 {
 
+NS_LOG_COMPONENT_DEFINE("NdmLink");
+
 NS_OBJECT_ENSURE_REGISTERED(NdmLink);
 
 TypeId
 NdmLink::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::NdmLink").SetBase<Object>().SetGroupName("NdmTopology").AddConstructor<NdmLink>();
+        TypeId("ns3::NdmLink").SetParent<Object>().SetGroupName("NdmTopology").AddConstructor<NdmLink>();
     return tid;
 }
 

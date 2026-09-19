@@ -2,10 +2,10 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
-#include "ndm-failure-scheduler.h"
+#include "ns3/ndm-failure-scheduler.h"
 
-#include "ndm-link.h"
-#include "ndm-topology.h"
+#include "ns3/ndm-link.h"
+#include "ns3/ndm-topology.h"
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
@@ -22,7 +22,7 @@ NdmFailureScheduler::GetTypeId()
 {
     static TypeId tid =
         TypeId("ns3::NdmFailureScheduler")
-            .SetBase<Object>()
+            .SetParent<Object>()
             .SetGroupName("NdmFailure")
             .AddConstructor<NdmFailureScheduler>()
             .AddTraceSource("LinkFailed",

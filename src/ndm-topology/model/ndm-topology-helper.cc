@@ -2,12 +2,15 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
+#include "ns3/attributes.h"
 #include "ns3/log.h"
-#include "ndm-topology-helper.h"
+#include "ns3/ndm-topology-helper.h"
 
-#include "ndm-link-loss-model.h"
+#include "ns3/ndm-link-loss-model.h"
 
-#include "ns3/random-variable-stream.h"
+#include "ns3/node.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/rng-stream.h"
 
 namespace ns3
 {
@@ -23,8 +26,10 @@ NdmTopologyHelper::MakeLinkLoss(const Opts& opts, uint64_t linkIndex)
     loss->SetAttribute("Mode", EnumValue<NdmLinkLossModel::Mode>(opts.lossMode));
     loss->SetAttribute("LossProbability", DoubleValue(opts.lossProbability));
     loss->SetAttribute("BurstLength", UintegerValue(opts.burstLen));
-    Ptr<RngStream> rng = CreateObject<RngStream>();
-    rng->SetSeed(opts.seed + linkIndex);
+    // Per-link seeded stream (determinism D7): the cell seed is split
+    // into one stream per link via the standard RngSeedManager API.
+    RngSeedManager::SetSeed(static_cast<uint32_t>(opts.seed + linkIndex));
+    Ptr<RngStream> rng = RngSeedManager::GetStream(0);
     loss->SetRng(rng);
     return loss;
 }

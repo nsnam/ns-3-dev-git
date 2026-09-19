@@ -2,10 +2,10 @@
  * ndm-sys project file — Apache License 2.0 (see LICENSE-PROJECT).
  */
 
-#include "ndm-rx-guard.h"
+#include "ns3/ndm-rx-guard.h"
 
-#include "ndm-link.h"
-#include "ndm-link-loss-model.h"
+#include "ns3/ndm-link.h"
+#include "ns3/ndm-link-loss-model.h"
 
 #include "ns3/log.h"
 #include "ns3/packet.h"
@@ -22,7 +22,7 @@ TypeId
 NdmRxGuard::GetTypeId()
 {
     static TypeId tid =
-        TypeId("ns3::NdmRxGuard").SetBase<ErrorModel>().SetGroupName("NdmTopology")
+        TypeId("ns3::NdmRxGuard").SetParent<ErrorModel>().SetGroupName("NdmTopology")
             .AddConstructor<NdmRxGuard>();
     return tid;
 }
@@ -44,7 +44,7 @@ NdmRxGuard::SetLossModel(Ptr<NdmLinkLossModel> loss)
 }
 
 bool
-NdmRxGuard::IsCorrupt(Ptr<const Packet> packet)
+NdmRxGuard::DoCorrupt(Ptr<Packet> p)
 {
     if (m_link != nullptr && m_link->IsDown())
     {
@@ -72,9 +72,15 @@ NdmRxGuard::IsCorrupt(Ptr<const Packet> packet)
 
     if (m_loss != nullptr)
     {
-        return m_loss->IsCorrupt(packet);
+        return m_loss->IsCorrupt(p);
     }
     return false;
+}
+
+void
+NdmRxGuard::DoReset()
+{
+    // no state
 }
 
 } // namespace ns3

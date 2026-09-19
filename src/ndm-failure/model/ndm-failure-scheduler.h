@@ -32,7 +32,7 @@
 #ifndef NDM_FAILURE_SCHEDULER_H
 #define NDM_FAILURE_SCHEDULER_H
 
-#include "ndm-identity.h"
+#include "ns3/ndm-identity.h"
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"

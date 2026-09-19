@@ -43,7 +43,11 @@ class NdmRxGuard : public ErrorModel
     /// Optional stochastic loss applied while the link is UP.
     void SetLossModel(Ptr<NdmLinkLossModel> loss);
 
-    bool IsCorrupt(Ptr<const Packet> packet) override;
+  private:
+    /// ErrorModel override: enforce the link's failure state / chain loss.
+    bool DoCorrupt(Ptr<Packet> p) override;
+    /// ErrorModel override: no state to reset.
+    void DoReset() override;
 
   private:
     Ptr<NdmLink> m_link;

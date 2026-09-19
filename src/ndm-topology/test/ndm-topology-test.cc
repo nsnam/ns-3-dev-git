@@ -5,8 +5,8 @@
  * link counts, diameters, and parallel-link preservation.
  */
 
-#include "ndm-topology.h"
-#include "ndm-topology-helper.h"
+#include "ns3/ndm-topology.h"
+#include "ns3/ndm-topology-helper.h"
 
 #include "ns3/core-module.h"
 #include "ns3/test.h"
