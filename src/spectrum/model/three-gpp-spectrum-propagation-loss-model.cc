@@ -424,16 +424,24 @@ ThreeGppSpectrumPropagationLossModel::GenSpectrumChannelMatrix(
                                                          numTxPorts,
                                                          static_cast<uint16_t>(numRb));
 
-    // Precompute the delay until numRb, numCluster or RB width changes
-    // Whenever the channelParams is updated, the number of numRbs, numClusters
-    // and RB width (12*SCS) are reset, ensuring these values are updated too
-
+    // Precompute the delay phasors until numRb, numCluster, the RB width or the
+    // delays themselves change. The dimensions alone are not a valid key: a channel
+    // model that reuses the ChannelParams object across realizations and rewrites
+    // m_delay in place with an unchanged cluster count (e.g. the spatial
+    // consistency update) would otherwise keep serving the previous realization's
+    // phasors. The sum of the delays is kept as a content key.
+    double delaySum = 0.0;
+    for (std::size_t cIndex = 0; cIndex < numCluster; cIndex++)
+    {
+        delaySum += channelParams->m_delay[cIndex];
+    }
     if (const double rbWidth = inPsd->ConstBandsBegin()->fh - inPsd->ConstBandsBegin()->fl;
         channelParams->m_cachedDelaySincos.GetNumRows() != numRb ||
         channelParams->m_cachedDelaySincos.GetNumCols() != numCluster ||
-        channelParams->m_cachedRbWidth != rbWidth)
+        channelParams->m_cachedRbWidth != rbWidth || channelParams->m_cachedDelaySum != delaySum)
     {
         channelParams->m_cachedRbWidth = rbWidth;
+        channelParams->m_cachedDelaySum = delaySum;
         channelParams->m_cachedDelaySincos = ComplexMatrixArray(numRb, numCluster);
         auto sbit = inPsd->ConstBandsBegin(); // band iterator
         for (unsigned i = 0; i < numRb; i++)

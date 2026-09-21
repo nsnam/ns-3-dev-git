@@ -17,6 +17,7 @@
 #include "ns3/phased-array-model.h"
 #include "ns3/vector.h"
 
+#include <limits>
 #include <tuple>
 
 namespace ns3
@@ -154,6 +155,15 @@ class MatrixBasedChannelModel : public Object
          * in case the number of the RBs in the channel remains constant.
          */
         mutable double m_cachedRbWidth = 0.0;
+
+        /**
+         * Content key of m_cachedDelaySincos: the sum of m_delay at fill time.
+         *
+         * The dimensions alone miss an in-place rewrite of the delays on a reused
+         * ChannelParams object (same cluster count, new realization); comparing
+         * the sum forces a refill whenever the delays change.
+         */
+        mutable double m_cachedDelaySum = std::numeric_limits<double>::quiet_NaN();
 
         /**
          * Matrix array that holds the precomputed delay sincos

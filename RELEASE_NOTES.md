@@ -65,6 +65,7 @@ Python 3.10 to 3.14.
 - (spectrum) The fixed ray-to-subcluster mapping of the two strongest clusters of the 3GPP TR 38.901 fast-fading model now follows Table 7.5-5; the previous mapping was shifted by one ray.
 - (spectrum) The cross-polarization power ratios of the 3GPP TR 38.901 fast-fading model are now drawn in dB from the Table 7.5-6 mean and standard deviation; the parameters were previously converted to linear scale before the dB draw, giving under-dispersed and under-powered ratios.
 - (spectrum) A blockage attenuation of A dB now scales the LOS ray amplitude of the 3GPP TR 38.901 fast-fading model by `10^(-A/20)`; it was previously applied as `10^(-A/10)`, doubling the attenuation.
+- (spectrum) The cached delay phasors of `ThreeGppSpectrumPropagationLossModel` are now refreshed whenever the cluster delays change; they were previously kept as long as the number of clusters did not change, so an in-place channel update with the same cluster count reused the previous realization's phasors.
 - (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
 - (mesh) #1341 Fixed dot11s regression that ignored the link rate, degrading the HWMP routing metric to hop count.
 - (core) !3006 DesMetrics now writes the command line arguments into the JSON trace header when available, instead of the empty-arguments placeholder.
