@@ -275,11 +275,12 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
         double m_blockerDcorDistance = 1;
 
         /**
-         * For LOS, LSP is following the order of [SF,K,DS,ASD,ASA,ZSD,ZSA].
-         * For NLOS, LSP is following the order of [SF,DS,ASD,ASA,ZSD,ZSA].
+         * Square root (lower triangular Cholesky factor) of the LSP cross-correlation
+         * matrix, in the order [SF,K,DS,ASD,ASA,ZSD,ZSA]. The NLOS and O2I columns
+         * have no K-factor, so their K entry is uncorrelated.
          * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
          */
-        double m_sqrtC[7][7];
+        double m_sqrtC[7][7]{};
     };
 
     /**
@@ -442,10 +443,11 @@ class ThreeGppChannelModel : public MatrixBasedChannelModel
     /**
      * @brief Per-LSP spatial correlation distances of TR 38.901 Table 7.5-6.
      *
-     * Distances are returned in the LSP-vector order used by GenerateLSPs:
-     * LOS slot [SF, K, DS, ASD, ASA, ZSD, ZSA] (7 entries) and NLOS/O2I slots
-     * [SF, DS, ASD, ASA, ZSD, ZSA] (6 entries, last entry unused). Scenarios
-     * without a Table 7.5-6 column (V2V, NTN) fall back to the UMa distances.
+     * The three arrays are indexed by the canonical parameter order
+     * [SF, K, DS, ASD, ASA, ZSD, ZSA]. The NLOS and O2I columns of the table
+     * have no K-factor, so their K entry (index 1) is a 0 placeholder, never
+     * read. Scenarios without a Table 7.5-6 column (V2V, NTN) fall back to the
+     * UMa distances.
      *
      * @param los Output array of LOS correlation distances in meters.
      * @param nlos Output array of NLOS correlation distances in meters.

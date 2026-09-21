@@ -3124,6 +3124,84 @@ ThreeGppChannelWrapAnglesTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test the K-factor of indoor LOS links. The LOS and O2I states are drawn
+ * independently, so an indoor link can be LOS. Scenarios without an O2I column
+ * in TR 38.901 Table 7.5-6, such as V2V-Urban, load the LOS column for it, so
+ * the K-factor of such a link must be drawn.
+ */
+class ThreeGppIndoorLosLspOrderingTest : public TestCase
+{
+  public:
+    ThreeGppIndoorLosLspOrderingTest()
+        : TestCase("Check the K-factor of indoor LOS links without an O2I column")
+    {
+    }
+
+  private:
+    void DoRun() override;
+};
+
+void
+ThreeGppIndoorLosLspOrderingTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // Every link is O2I, and LOS below the 18 m breakpoint of the UMa LOS probability.
+    Ptr<ChannelConditionModel> condModel = CreateObject<ThreeGppUmaChannelConditionModel>();
+    condModel->SetAttribute("O2iThreshold", DoubleValue(1.0));
+
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(5.9e9));
+    channelModel->SetAttribute("Scenario", StringValue("V2V-Urban"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    constexpr uint32_t nUes = 8;
+    NodeContainer nodes;
+    nodes.Create(1 + nUes);
+    Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
+    txMob->SetPosition(Vector(0.0, 0.0, 1.5));
+    nodes.Get(0)->AggregateObject(txMob);
+    Ptr<PhasedArrayModel> txAntenna = makeAntenna();
+
+    bool anyKFactor = false;
+    for (uint32_t i = 0; i < nUes; i++)
+    {
+        Ptr<MobilityModel> rxMob = CreateObject<ConstantPositionMobilityModel>();
+        rxMob->SetPosition(Vector(5.0 + i, 2.0, 1.5));
+        nodes.Get(1 + i)->AggregateObject(rxMob);
+        channelModel->GetChannel(txMob, rxMob, txAntenna, makeAntenna());
+        const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+            channelModel->GetParams(txMob, rxMob));
+        NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+        NS_TEST_ASSERT_MSG_EQ(params->m_losCondition,
+                              ChannelCondition::LOS,
+                              "The link should be LOS");
+        NS_TEST_ASSERT_MSG_EQ(params->m_o2iCondition,
+                              ChannelCondition::O2I,
+                              "The link should be O2I");
+        anyKFactor |= params->m_K_factor != 0.0;
+    }
+    NS_TEST_ASSERT_MSG_EQ(anyKFactor,
+                          true,
+                          "The K-factor of indoor LOS links must be drawn from the LOS column");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -3214,6 +3292,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
                     LbConfig{.columns = 64, .expectedRaysBw = 8, .largeArrayAtRx = true}),
                 TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppIndoorLosLspOrderingTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSubClusterMappingTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppLosBlockageAttenuationTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppXprDistributionTest(), TestCase::Duration::QUICK);

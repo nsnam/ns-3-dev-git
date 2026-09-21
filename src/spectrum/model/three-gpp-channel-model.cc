@@ -95,17 +95,18 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_RMa_LOS = {{
 /**
  * The square root matrix for <em>RMa NLOS</em>, which is generated using the
  * Cholesky decomposition according to table 7.5-6 Part 2 and follows the order
- * of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no K-factor).
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_RMa_NLOS = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.5, 0.866025, 0, 0, 0, 0},
-    {0.6, -0.11547, 0.791623, 0, 0, 0},
-    {0, 0, 0, 1, 0, 0},
-    {-0.04, -0.138564, 0.540662, -0.18, 0.809003, 0},
-    {-0.25, -0.606218, -0.240013, 0.26, -0.231685, 0.625392},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_RMa_NLOS = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.5, 0, 0.866025, 0, 0, 0, 0},
+    {0.6, 0, -0.11547, 0.791623, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 0},
+    {-0.04, 0, -0.138564, 0.540662, -0.18, 0.809003, 0},
+    {-0.25, 0, -0.606218, -0.240013, 0.26, -0.231685, 0.625392},
 }};
 
 /**
@@ -116,13 +117,14 @@ static constexpr std::array<std::array<double, 6>, 6> sqrtC_RMa_NLOS = {{
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_RMa_O2I = {{
-    {1, 0, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0, 0},
-    {0, 0, -0.7, 0.714143, 0, 0},
-    {0, 0, 0.66, -0.123225, 0.741091, 0},
-    {0, 0, 0.47, 0.152631, -0.393194, 0.775373},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_RMa_O2I = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {0, 0, 1, 0, 0, 0, 0},
+    {0, 0, 0, 1, 0, 0, 0},
+    {0, 0, 0, -0.7, 0.714143, 0, 0},
+    {0, 0, 0, 0.66, -0.123225, 0.741091, 0},
+    {0, 0, 0, 0.47, 0.152631, -0.393194, 0.775373},
 }};
 
 /**
@@ -146,35 +148,37 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_UMa_LOS = {{
 /**
  * The square root matrix for <em>UMa NLOS</em>, which is generated using the
  * Cholesky decomposition according to table 7.5-6 Part 1 and follows the order
- * of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_UMa_NLOS = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.4, 0.916515, 0, 0, 0, 0},
-    {-0.6, 0.174574, 0.78072, 0, 0, 0},
-    {0, 0.654654, 0.365963, 0.661438, 0, 0},
-    {0, -0.545545, 0.762422, 0.118114, 0.327327, 0},
-    {-0.4, -0.174574, -0.396459, 0.392138, 0.49099, 0.507445},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_UMa_NLOS = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.4, 0, 0.916515, 0, 0, 0, 0},
+    {-0.6, 0, 0.174574, 0.78072, 0, 0, 0},
+    {0, 0, 0.654654, 0.365963, 0.661438, 0, 0},
+    {0, 0, -0.545545, 0.762422, 0.118114, 0.327327, 0},
+    {-0.4, 0, -0.174574, -0.396459, 0.392138, 0.49099, 0.507445},
 }};
 
 /**
  * The square root matrix for <em>UMa O2I</em>, which is generated using the
  * Cholesky decomposition according to table 7.5-6 Part 1 and follows the order
- * of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_UMa_O2I = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.5, 0.866025, 0, 0, 0, 0},
-    {0.2, 0.57735, 0.791623, 0, 0, 0},
-    {0, 0.46188, -0.336861, 0.820482, 0, 0},
-    {0, -0.69282, 0.252646, 0.493742, 0.460857, 0},
-    {0, -0.23094, 0.16843, 0.808554, -0.220827, 0.464515},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_UMa_O2I = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.5, 0, 0.866025, 0, 0, 0, 0},
+    {0.2, 0, 0.57735, 0.791623, 0, 0, 0},
+    {0, 0, 0.46188, -0.336861, 0.820482, 0, 0},
+    {0, 0, -0.69282, 0.252646, 0.493742, 0.460857, 0},
+    {0, 0, -0.23094, 0.16843, 0.808554, -0.220827, 0.464515},
 }};
 
 /**
@@ -198,35 +202,37 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_UMi_LOS = {{
 /**
  * The square root matrix for <em>UMi NLOS</em>, which is generated using the
  * Cholesky decomposition according to table 7.5-6 Part 1 and follows the order
- * of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_UMi_NLOS = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.7, 0.714143, 0, 0, 0, 0},
-    {0, 0, 1, 0, 0, 0},
-    {-0.4, 0.168034, 0, 0.90098, 0, 0},
-    {0, -0.70014, 0.5, 0.130577, 0.4927, 0},
-    {0, 0, 0.5, 0.221981, -0.566238, 0.616522},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_UMi_NLOS = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.7, 0, 0.714143, 0, 0, 0, 0},
+    {0, 0, 0, 1, 0, 0, 0},
+    {-0.4, 0, 0.168034, 0, 0.90098, 0, 0},
+    {0, 0, -0.70014, 0.5, 0.130577, 0.4927, 0},
+    {0, 0, 0, 0.5, 0.221981, -0.566238, 0.616522},
 }};
 
 /**
  * The square root matrix for <em>UMi O2I</em>, which is generated using the
  * Cholesky decomposition according to table 7.5-6 Part 1 and follows the order
- * of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_UMi_O2I = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.5, 0.866025, 0, 0, 0, 0},
-    {0.2, 0.57735, 0.791623, 0, 0, 0},
-    {0, 0.46188, -0.336861, 0.820482, 0, 0},
-    {0, -0.69282, 0.252646, 0.493742, 0.460857, 0},
-    {0, -0.23094, 0.16843, 0.808554, -0.220827, 0.464515},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_UMi_O2I = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.5, 0, 0.866025, 0, 0, 0, 0},
+    {0.2, 0, 0.57735, 0.791623, 0, 0, 0},
+    {0, 0, 0.46188, -0.336861, 0.820482, 0, 0},
+    {0, 0, -0.69282, 0.252646, 0.493742, 0.460857, 0},
+    {0, 0, -0.23094, 0.16843, 0.808554, -0.220827, 0.464515},
 }};
 
 /**
@@ -250,18 +256,20 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_office_LOS = {{
 /**
  * The square root matrix for <em>Indoor-Office NLOS</em>, which is generated
  * using the Cholesky decomposition according to table 7.5-6 Part 2 and follows
- * the order of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * the order of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no
+ * K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_office_NLOS = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.5, 0.866025, 0, 0, 0, 0},
-    {0, 0.46188, 0.886942, 0, 0, 0},
-    {-0.4, -0.23094, 0.120263, 0.878751, 0, 0},
-    {0, -0.311769, 0.55697, -0.249198, 0.728344, 0},
-    {0, -0.069282, 0.295397, 0.430696, 0.468462, 0.709214},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_office_NLOS = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.5, 0, 0.866025, 0, 0, 0, 0},
+    {0, 0, 0.46188, 0.886942, 0, 0, 0},
+    {-0.4, 0, -0.23094, 0.120263, 0.878751, 0, 0},
+    {0, 0, -0.311769, 0.55697, -0.249198, 0.728344, 0},
+    {0, 0, -0.069282, 0.295397, 0.430696, 0.468462, 0.709214},
 }};
 
 /**
@@ -285,18 +293,20 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_NTN_DenseUrban_LOS =
 /**
  * The square root matrix for <em>NTN Dense Urban NLOS</em>, which is generated
  * using the Cholesky decomposition according to 3GPP TR 38.811 v15.4.0 table 6.7.2-2 and follows
- * the order of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * the order of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no
+ * K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_NTN_DenseUrban_NLOS = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.4, 0.916515, 0, 0, 0, 0},
-    {-0.6, 0.174574, 0.78072, 0, 0, 0},
-    {0, 0.654654, 0.365963, 0.661438, 0, 0},
-    {0, -0.545545, 0.762422, 0.118114, 0.327327, 0},
-    {-0.4, -0.174574, -0.396459, 0.392138, 0.49099, 0.507445},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_NTN_DenseUrban_NLOS = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.4, 0, 0.916515, 0, 0, 0, 0},
+    {-0.6, 0, 0.174574, 0.78072, 0, 0, 0},
+    {0, 0, 0.654654, 0.365963, 0.661438, 0, 0},
+    {0, 0, -0.545545, 0.762422, 0.118114, 0.327327, 0},
+    {-0.4, 0, -0.174574, -0.396459, 0.392138, 0.49099, 0.507445},
 }};
 
 /**
@@ -320,94 +330,104 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_NTN_Urban_LOS = {{
 /**
  * The square root matrix for <em>NTN Urban NLOS</em>, which is generated
  * using the Cholesky decomposition according to 3GPP TR 38.811 v15.4.0 table 6.7.2-4 and follows
- * the order of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * the order of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no
+ * K-factor).
  *
  * The square root matrix is dependent on the elevation angle, thus requiring a map.
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static const std::map<int, std::array<std::array<double, 6>, 6>> sqrtC_NTN_Urban_NLOS{
+static const std::map<int, std::array<std::array<double, 7>, 7>> sqrtC_NTN_Urban_NLOS{
     {10,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.21, 0.977701, 0, 0, 0, 0},
-         {-0.48, 0.459445, 0.747335, 0, 0, 0},
-         {-0.05, 0.377927, 0.28416, 0.879729, 0, 0},
-         {-0.02, 0.691213, 0.258017, 0.073265, 0.670734, 0},
-         {-0.31, -0.00521632, -0.115615, 0.0788023, 0.00218104, 0.940368},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.21, 0, 0.977701, 0, 0, 0, 0},
+         {-0.48, 0, 0.459445, 0.747335, 0, 0, 0},
+         {-0.05, 0, 0.377927, 0.28416, 0.879729, 0, 0},
+         {-0.02, 0, 0.691213, 0.258017, 0.073265, 0.670734, 0},
+         {-0.31, 0, -0.00521632, -0.115615, 0.0788023, 0.00218104, 0.940368},
      }}},
     {20,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.25, 0.968246, 0, 0, 0, 0},
-         {-0.52, 0.35115, 0.778648, 0, 0, 0},
-         {-0.04, 0.371806, 0.345008, 0.860889, 0, 0},
-         {0, 0.743613, 0.281102, 0.0424415, 0.605161, 0},
-         {-0.32, 0.0206559, -0.0689057, 0.154832, 0.061865, 0.929852},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.25, 0, 0.968246, 0, 0, 0, 0},
+         {-0.52, 0, 0.35115, 0.778648, 0, 0, 0},
+         {-0.04, 0, 0.371806, 0.345008, 0.860889, 0, 0},
+         {0, 0, 0.743613, 0.281102, 0.0424415, 0.605161, 0},
+         {-0.32, 0, 0.0206559, -0.0689057, 0.154832, 0.061865, 0.929852},
      }}},
     {30,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.21, 0.977701, 0, 0, 0, 0},
-         {-0.52, 0.450853, 0.725487, 0, 0, 0},
-         {-0.04, 0.288023, 0.260989, 0.920504, 0, 0},
-         {0.01, 0.697657, 0.386856, 0.0418183, 0.601472, 0},
-         {-0.33, 0.0416283, -0.0694268, 0.166137, 0.139937, 0.915075},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.21, 0, 0.977701, 0, 0, 0, 0},
+         {-0.52, 0, 0.450853, 0.725487, 0, 0, 0},
+         {-0.04, 0, 0.288023, 0.260989, 0.920504, 0, 0},
+         {0.01, 0, 0.697657, 0.386856, 0.0418183, 0.601472, 0},
+         {-0.33, 0, 0.0416283, -0.0694268, 0.166137, 0.139937, 0.915075},
      }}},
     {40,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.26, 0.965609, 0, 0, 0, 0},
-         {-0.53, 0.395813, 0.749955, 0, 0, 0},
-         {-0.04, 0.299914, 0.320139, 0.897754, 0, 0},
-         {0.01, 0.696556, 0.372815, 0.0580784, 0.610202, 0},
-         {-0.33, 0.0457742, -0.0173584, 0.154417, 0.129332, 0.920941},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.26, 0, 0.965609, 0, 0, 0, 0},
+         {-0.53, 0, 0.395813, 0.749955, 0, 0, 0},
+         {-0.04, 0, 0.299914, 0.320139, 0.897754, 0, 0},
+         {0.01, 0, 0.696556, 0.372815, 0.0580784, 0.610202, 0},
+         {-0.33, 0, 0.0457742, -0.0173584, 0.154417, 0.129332, 0.920941},
      }}},
     {50,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.25, 0.968246, 0, 0, 0, 0},
-         {-0.57, 0.420864, 0.705672, 0, 0, 0},
-         {-0.03, 0.229797, 0.235501, 0.943839, 0, 0},
-         {0.03, 0.679063, 0.384466, 0.0681379, 0.6209, 0},
-         {-0.41, -0.147173, -0.229228, 0.270707, 0.293002, 0.773668},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.25, 0, 0.968246, 0, 0, 0, 0},
+         {-0.57, 0, 0.420864, 0.705672, 0, 0, 0},
+         {-0.03, 0, 0.229797, 0.235501, 0.943839, 0, 0},
+         {0.03, 0, 0.679063, 0.384466, 0.0681379, 0.6209, 0},
+         {-0.41, 0, -0.147173, -0.229228, 0.270707, 0.293002, 0.773668},
      }}},
     {60,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.2, 0.979796, 0, 0, 0, 0},
-         {-0.53, 0.473568, 0.703444, 0, 0, 0},
-         {-0.05, 0.204124, 0.109225, 0.971547, 0, 0},
-         {0.03, 0.68994, 0.411073, 0.0676935, 0.591202, 0},
-         {-0.4, -0.224537, -0.292371, 0.275609, 0.301835, 0.732828},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.2, 0, 0.979796, 0, 0, 0, 0},
+         {-0.53, 0, 0.473568, 0.703444, 0, 0, 0},
+         {-0.05, 0, 0.204124, 0.109225, 0.971547, 0, 0},
+         {0.03, 0, 0.68994, 0.411073, 0.0676935, 0.591202, 0},
+         {-0.4, 0, -0.224537, -0.292371, 0.275609, 0.301835, 0.732828},
      }}},
     {70,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.19, 0.981784, 0, 0, 0, 0},
-         {-0.5, 0.524555, 0.689088, 0, 0, 0},
-         {-0.03, 0.228462, 0.18163, 0.955989, 0, 0},
-         {-0.02, 0.637818, 0.428725, 0.00608114, 0.639489, 0},
-         {-0.36, -0.18171, -0.282523, 0.106726, 0.123808, 0.854894},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.19, 0, 0.981784, 0, 0, 0, 0},
+         {-0.5, 0, 0.524555, 0.689088, 0, 0, 0},
+         {-0.03, 0, 0.228462, 0.18163, 0.955989, 0, 0},
+         {-0.02, 0, 0.637818, 0.428725, 0.00608114, 0.639489, 0},
+         {-0.36, 0, -0.18171, -0.282523, 0.106726, 0.123808, 0.854894},
      }}},
     {80,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.2, 0.979796, 0, 0, 0, 0},
-         {-0.49, 0.502145, 0.712566, 0, 0, 0},
-         {-0.01, 0.232702, 0.151916, 0.960558, 0, 0},
-         {-0.05, 0.612372, 0.376106, 0.0206792, 0.693265, 0},
-         {-0.37, -0.320475, -0.365405, -0.00376264, 0.0364343, 0.790907},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.2, 0, 0.979796, 0, 0, 0, 0},
+         {-0.49, 0, 0.502145, 0.712566, 0, 0, 0},
+         {-0.01, 0, 0.232702, 0.151916, 0.960558, 0, 0},
+         {-0.05, 0, 0.612372, 0.376106, 0.0206792, 0.693265, 0},
+         {-0.37, 0, -0.320475, -0.365405, -0.00376264, 0.0364343, 0.790907},
      }}},
     {90,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.19, 0.981784, 0, 0, 0, 0},
-         {-0.38, 0.58852, 0.713613, 0, 0, 0},
-         {-0.03, 0.360874, 0.12082, 0.924269, 0, 0},
-         {-0.12, 0.526796, 0.34244, 0.0594196, 0.766348, 0},
-         {-0.33, -0.257389, -0.24372, -0.257035, -0.176521, 0.817451},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.19, 0, 0.981784, 0, 0, 0, 0},
+         {-0.38, 0, 0.58852, 0.713613, 0, 0, 0},
+         {-0.03, 0, 0.360874, 0.12082, 0.924269, 0, 0},
+         {-0.12, 0, 0.526796, 0.34244, 0.0594196, 0.766348, 0},
+         {-0.33, 0, -0.257389, -0.24372, -0.257035, -0.176521, 0.817451},
      }}},
 };
 
@@ -432,18 +452,20 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_NTN_Suburban_LOS = {
 /**
  * The square root matrix for <em>NTN Suburban NLOS</em>, which is generated
  * using the Cholesky decomposition according to 3GPP TR 38.811 v15.4.0 table 6.7.2-6 and follows
- * the order of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * the order of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no
+ * K-factor).
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static constexpr std::array<std::array<double, 6>, 6> sqrtC_NTN_Suburban_NLOS = {{
-    {1, 0, 0, 0, 0, 0},
-    {-0.4, 0.916515, 0, 0, 0, 0},
-    {-0.6, 0.174574, 0.78072, 0, 0, 0},
-    {0, 0.654654, 0.365963, 0.661438, 0, 0},
-    {0, -0.545545, 0.762422, 0.118114, 0.327327, 0},
-    {-0.4, -0.174574, -0.396459, 0.392138, 0.49099, 0.507445},
+static constexpr std::array<std::array<double, 7>, 7> sqrtC_NTN_Suburban_NLOS = {{
+    {1, 0, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0},
+    {-0.4, 0, 0.916515, 0, 0, 0, 0},
+    {-0.6, 0, 0.174574, 0.78072, 0, 0, 0},
+    {0, 0, 0.654654, 0.365963, 0.661438, 0, 0},
+    {0, 0, -0.545545, 0.762422, 0.118114, 0.327327, 0},
+    {-0.4, 0, -0.174574, -0.396459, 0.392138, 0.49099, 0.507445},
 }};
 
 /**
@@ -467,101 +489,112 @@ static constexpr std::array<std::array<double, 7>, 7> sqrtC_NTN_Rural_LOS = {{
 /**
  * The square root matrix for <em>NTN Rural NLOS S Band</em>, which is generated
  * using the Cholesky decomposition according to 3GPP TR 38.811 v15.4.0 table 6.7.2-8a and follows
- * the order of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * the order of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no
+ * K-factor).
  *
  * The square root matrix is dependent on the elevation angle, thus requiring a map.
  *
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static const std::map<int, std::array<std::array<double, 6>, 6>> sqrtC_NTN_Rural_NLOS_S{
+static const std::map<int, std::array<std::array<double, 7>, 7>> sqrtC_NTN_Rural_NLOS_S{
     {10,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.36, 0.932952, 0, 0, 0, 0},
-         {0.45, 0.516639, 0.728412, 0, 0, 0},
-         {0.02, 0.329277, 0.371881, 0.867687, 0, 0},
-         {-0.06, 0.59853, 0.436258, -0.0324062, 0.668424, 0},
-         {-0.07, 0.0373009, 0.305087, -0.0280496, -0.225204, 0.921481},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.36, 0, 0.932952, 0, 0, 0, 0},
+         {0.45, 0, 0.516639, 0.728412, 0, 0, 0},
+         {0.02, 0, 0.329277, 0.371881, 0.867687, 0, 0},
+         {-0.06, 0, 0.59853, 0.436258, -0.0324062, 0.668424, 0},
+         {-0.07, 0, 0.0373009, 0.305087, -0.0280496, -0.225204, 0.921481},
      }}},
     {20,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.39, 0.920815, 0, 0, 0, 0},
-         {0.52, 0.426579, 0.740021, 0, 0, 0},
-         {0, 0.347518, -0.0381664, 0.936896, 0, 0},
-         {-0.04, 0.710675, 0.172483, 0.116993, 0.670748, 0},
-         {-0.17, -0.0394216, 0.115154, 0.243458, -0.0702635, 0.944498},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.39, 0, 0.920815, 0, 0, 0, 0},
+         {0.52, 0, 0.426579, 0.740021, 0, 0, 0},
+         {0, 0, 0.347518, -0.0381664, 0.936896, 0, 0},
+         {-0.04, 0, 0.710675, 0.172483, 0.116993, 0.670748, 0},
+         {-0.17, 0, -0.0394216, 0.115154, 0.243458, -0.0702635, 0.944498},
      }}},
     {30,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.41, 0.912086, 0, 0, 0, 0},
-         {0.54, 0.49491, 0.680782, 0, 0, 0},
-         {0, 0.350844, -0.152231, 0.923977, 0, 0},
-         {-0.04, 0.694672, 0.0702137, 0.0832998, 0.709903, 0},
-         {-0.19, -0.0854087, 0.0805978, 0.283811, -0.137441, 0.922318},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.41, 0, 0.912086, 0, 0, 0, 0},
+         {0.54, 0, 0.49491, 0.680782, 0, 0, 0},
+         {0, 0, 0.350844, -0.152231, 0.923977, 0, 0},
+         {-0.04, 0, 0.694672, 0.0702137, 0.0832998, 0.709903, 0},
+         {-0.19, 0, -0.0854087, 0.0805978, 0.283811, -0.137441, 0.922318},
      }}},
     {40,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.37, 0.929032, 0, 0, 0, 0},
-         {0.53, 0.480177, 0.698949, 0, 0, 0},
-         {0.01, 0.434538, 0.00864797, 0.900556, 0, 0},
-         {-0.05, 0.765851, -0.0303947, 0.0421641, 0.63896, 0},
-         {-0.17, -0.16458, 0.0989022, 0.158081, -0.150425, 0.941602},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.37, 0, 0.929032, 0, 0, 0, 0},
+         {0.53, 0, 0.480177, 0.698949, 0, 0, 0},
+         {0.01, 0, 0.434538, 0.00864797, 0.900556, 0, 0},
+         {-0.05, 0, 0.765851, -0.0303947, 0.0421641, 0.63896, 0},
+         {-0.17, 0, -0.16458, 0.0989022, 0.158081, -0.150425, 0.941602},
      }}},
     {50,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.4, 0.916515, 0, 0, 0, 0},
-         {0.55, 0.403703, 0.731111, 0, 0, 0},
-         {0.02, 0.499719, -0.0721341, 0.862947, 0, 0},
-         {-0.06, 0.835775, -0.156481, 0.0373835, 0.521534, 0},
-         {-0.19, -0.301141, 0.145082, 0.144564, -0.0238067, 0.911427},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.4, 0, 0.916515, 0, 0, 0, 0},
+         {0.55, 0, 0.403703, 0.731111, 0, 0, 0},
+         {0.02, 0, 0.499719, -0.0721341, 0.862947, 0, 0},
+         {-0.06, 0, 0.835775, -0.156481, 0.0373835, 0.521534, 0},
+         {-0.19, 0, -0.301141, 0.145082, 0.144564, -0.0238067, 0.911427},
      }}},
     {60,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.41, 0.912086, 0, 0, 0, 0},
-         {0.56, 0.339442, 0.755764, 0, 0, 0},
-         {0.02, 0.436582, -0.0256617, 0.899076, 0, 0},
-         {-0.07, 0.856608, -0.12116, 0.0715303, 0.491453, 0},
-         {-0.2, -0.331109, 0.15136, 0.036082, 0.031313, 0.908391},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.41, 0, 0.912086, 0, 0, 0, 0},
+         {0.56, 0, 0.339442, 0.755764, 0, 0, 0},
+         {0.02, 0, 0.436582, -0.0256617, 0.899076, 0, 0},
+         {-0.07, 0, 0.856608, -0.12116, 0.0715303, 0.491453, 0},
+         {-0.2, 0, -0.331109, 0.15136, 0.036082, 0.031313, 0.908391},
      }}},
     {70,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.4, 0.916515, 0, 0, 0, 0},
-         {0.56, 0.386246, 0.732949, 0, 0, 0},
-         {0.04, 0.573913, -0.0601289, 0.815726, 0, 0},
-         {-0.11, 0.813953, -0.0720183, 0.0281118, 0.565158, 0},
-         {-0.19, -0.432071, 0.236423, -0.0247788, -0.0557206, 0.847113},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.4, 0, 0.916515, 0, 0, 0, 0},
+         {0.56, 0, 0.386246, 0.732949, 0, 0, 0},
+         {0.04, 0, 0.573913, -0.0601289, 0.815726, 0, 0},
+         {-0.11, 0, 0.813953, -0.0720183, 0.0281118, 0.565158, 0},
+         {-0.19, 0, -0.432071, 0.236423, -0.0247788, -0.0557206, 0.847113},
      }}},
     {80,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.46, 0.887919, 0, 0, 0, 0},
-         {0.58, 0.469412, 0.665772, 0, 0, 0},
-         {0.01, 0.309262, -0.286842, 0.90663, 0, 0},
-         {-0.05, 0.762457, -0.268721, -0.0467443, 0.584605, 0},
-         {-0.23, -0.580909, 0.399665, 0.0403629, 0.326208, 0.584698},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.46, 0, 0.887919, 0, 0, 0, 0},
+         {0.58, 0, 0.469412, 0.665772, 0, 0, 0},
+         {0.01, 0, 0.309262, -0.286842, 0.90663, 0, 0},
+         {-0.05, 0, 0.762457, -0.268721, -0.0467443, 0.584605, 0},
+         {-0.23, 0, -0.580909, 0.399665, 0.0403629, 0.326208, 0.584698},
      }}},
     {90,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.3, 0.953939, 0, 0, 0, 0},
-         {0.47, 0.81871, 0.329868, 0, 0, 0},
-         {0.06, 0.0712834, -0.595875, 0.797654, 0, 0},
-         {-0.1, 0.408831, -0.0233859, 0.0412736, 0.905873, 0},
-         {-0.13, -0.407783, 0.439436, -0.0768289, -0.212875, 0.756631},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.3, 0, 0.953939, 0, 0, 0, 0},
+         {0.47, 0, 0.81871, 0.329868, 0, 0, 0},
+         {0.06, 0, 0.0712834, -0.595875, 0.797654, 0, 0},
+         {-0.1, 0, 0.408831, -0.0233859, 0.0412736, 0.905873, 0},
+         {-0.13, 0, -0.407783, 0.439436, -0.0768289, -0.212875, 0.756631},
      }}},
 };
 
 /**
  * The square root matrix for <em>NTN Rural NLOS Ka Band</em>, which is generated
  * using the Cholesky decomposition according to 3GPP TR 38.811 v15.4.0 table 6.7.2-8b and follows
- * the order of [SF, DS, ASD, ASA, ZSD, ZSA].
+ * the order of [SF, K, DS, ASD, ASA, ZSD, ZSA], with an uncorrelated K entry (no
+ * K-factor).
  *
  * The square root matrix is dependent on the elevation angle, which acts as the corresponding map's
  * key.
@@ -569,87 +602,96 @@ static const std::map<int, std::array<std::array<double, 6>, 6>> sqrtC_NTN_Rural
  * The Matlab file to generate the matrices can be found in
  * https://github.com/nyuwireless-unipd/ns3-mmwave/blob/master/src/mmwave/model/BeamFormingMatrix/SqrtMatrix.m
  */
-static const std::map<int, std::array<std::array<double, 6>, 6>> sqrtC_NTN_Rural_NLOS_Ka{
+static const std::map<int, std::array<std::array<double, 7>, 7>> sqrtC_NTN_Rural_NLOS_Ka{
     {10,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.36, 0.932952, 0, 0, 0, 0},
-         {0.45, 0.527358, 0.72069, 0, 0, 0},
-         {0.02, 0.350715, 0.355282, 0.866241, 0, 0},
-         {-0.07, 0.562515, 0.478504, 0.0162932, 0.670406, 0},
-         {-0.06, 0.0411597, 0.270982, 0.0121094, -0.159927, 0.946336},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.36, 0, 0.932952, 0, 0, 0, 0},
+         {0.45, 0, 0.527358, 0.72069, 0, 0, 0},
+         {0.02, 0, 0.350715, 0.355282, 0.866241, 0, 0},
+         {-0.07, 0, 0.562515, 0.478504, 0.0162932, 0.670406, 0},
+         {-0.06, 0, 0.0411597, 0.270982, 0.0121094, -0.159927, 0.946336},
      }}},
     {20,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.38, 0.924986, 0, 0, 0, 0},
-         {0.52, 0.473088, 0.711188, 0, 0, 0},
-         {0, 0.367573, -0.0617198, 0.927944, 0, 0},
-         {-0.04, 0.68628, 0.149228, 0.115257, 0.701332, 0},
-         {-0.16, -0.0441088, 0.118207, 0.251641, -0.0752458, 0.943131},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.38, 0, 0.924986, 0, 0, 0, 0},
+         {0.52, 0, 0.473088, 0.711188, 0, 0, 0},
+         {0, 0, 0.367573, -0.0617198, 0.927944, 0, 0},
+         {-0.04, 0, 0.68628, 0.149228, 0.115257, 0.701332, 0},
+         {-0.16, 0, -0.0441088, 0.118207, 0.251641, -0.0752458, 0.943131},
      }}},
     {30,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.42, 0.907524, 0, 0, 0, 0},
-         {0.54, 0.48131, 0.690464, 0, 0, 0},
-         {0, 0.363627, -0.137613, 0.921324, 0, 0},
-         {-0.04, 0.686704, 0.117433, 0.104693, 0.708581, 0},
-         {-0.19, -0.0438556, 0.0922685, 0.269877, -0.136292, 0.928469},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.42, 0, 0.907524, 0, 0, 0, 0},
+         {0.54, 0, 0.48131, 0.690464, 0, 0, 0},
+         {0, 0, 0.363627, -0.137613, 0.921324, 0, 0},
+         {-0.04, 0, 0.686704, 0.117433, 0.104693, 0.708581, 0},
+         {-0.19, 0, -0.0438556, 0.0922685, 0.269877, -0.136292, 0.928469},
      }}},
     {40,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.36, 0.932952, 0, 0, 0, 0},
-         {0.53, 0.483197, 0.696865, 0, 0, 0},
-         {0.01, 0.464761, -0.0285153, 0.88492, 0, 0},
-         {-0.05, 0.763169, 0.140255, 0.0562856, 0.626286, 0},
-         {-0.16, -0.126051, 0.0942905, 0.195354, -0.217188, 0.92967},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.36, 0, 0.932952, 0, 0, 0, 0},
+         {0.53, 0, 0.483197, 0.696865, 0, 0, 0},
+         {0.01, 0, 0.464761, -0.0285153, 0.88492, 0, 0},
+         {-0.05, 0, 0.763169, 0.140255, 0.0562856, 0.626286, 0},
+         {-0.16, 0, -0.126051, 0.0942905, 0.195354, -0.217188, 0.92967},
      }}},
     {50,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.39, 0.920815, 0, 0, 0, 0},
-         {0.55, 0.406705, 0.729446, 0, 0, 0},
-         {0.01, 0.503793, -0.123923, 0.854831, 0, 0},
-         {-0.06, 0.821664, -0.207246, 0.0245302, 0.526988, 0},
-         {-0.19, -0.254231, 0.10679, 0.190931, -0.0665276, 0.920316},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.39, 0, 0.920815, 0, 0, 0, 0},
+         {0.55, 0, 0.406705, 0.729446, 0, 0, 0},
+         {0.01, 0, 0.503793, -0.123923, 0.854831, 0, 0},
+         {-0.06, 0, 0.821664, -0.207246, 0.0245302, 0.526988, 0},
+         {-0.19, 0, -0.254231, 0.10679, 0.190931, -0.0665276, 0.920316},
      }}},
     {60,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.42, 0.907524, 0, 0, 0, 0},
-         {0.56, 0.391395, 0.730213, 0, 0, 0},
-         {0.02, 0.427978, -0.0393147, 0.902712, 0, 0},
-         {-0.06, 0.820694, -0.119986, 0.105509, 0.545281, 0},
-         {-0.2, -0.279882, 0.180145, 0.0563477, -0.0121631, 0.919723},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.42, 0, 0.907524, 0, 0, 0, 0},
+         {0.56, 0, 0.391395, 0.730213, 0, 0, 0},
+         {0.02, 0, 0.427978, -0.0393147, 0.902712, 0, 0},
+         {-0.06, 0, 0.820694, -0.119986, 0.105509, 0.545281, 0},
+         {-0.2, 0, -0.279882, 0.180145, 0.0563477, -0.0121631, 0.919723},
      }}},
     {70,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.36, 0.932952, 0, 0, 0, 0},
-         {0.54, 0.519212, 0.662434, 0, 0, 0},
-         {0.04, 0.412025, -0.0234416, 0.909992, 0, 0},
-         {-0.09, 0.758452, -0.0682296, 0.0214276, 0.64151, 0},
-         {-0.17, -0.387158, 0.306169, -0.0291255, -0.109344, 0.845378},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.36, 0, 0.932952, 0, 0, 0, 0},
+         {0.54, 0, 0.519212, 0.662434, 0, 0, 0},
+         {0.04, 0, 0.412025, -0.0234416, 0.909992, 0, 0},
+         {-0.09, 0, 0.758452, -0.0682296, 0.0214276, 0.64151, 0},
+         {-0.17, 0, -0.387158, 0.306169, -0.0291255, -0.109344, 0.845378},
      }}},
     {80,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.44, 0.897998, 0, 0, 0, 0},
-         {0.57, 0.43519, 0.696928, 0, 0, 0},
-         {0.01, 0.316705, -0.248988, 0.915207, 0, 0},
-         {-0.06, 0.805793, -0.296262, -0.0419182, 0.507514, 0},
-         {-0.22, -0.497551, 0.289742, 0.0785823, 0.328773, 0.711214},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.44, 0, 0.897998, 0, 0, 0, 0},
+         {0.57, 0, 0.43519, 0.696928, 0, 0, 0},
+         {0.01, 0, 0.316705, -0.248988, 0.915207, 0, 0},
+         {-0.06, 0, 0.805793, -0.296262, -0.0419182, 0.507514, 0},
+         {-0.22, 0, -0.497551, 0.289742, 0.0785823, 0.328773, 0.711214},
      }}},
     {90,
      {{
-         {1, 0, 0, 0, 0, 0},
-         {-0.27, 0.96286, 0, 0, 0, 0},
-         {0.46, 0.741748, 0.488067, 0, 0, 0},
-         {0.04, 0.0735309, -0.374828, 0.923308, 0, 0},
-         {-0.08, 0.517624, 0.128779, 0.0795063, 0.838308, 0},
-         {-0.11, -0.321646, 0.0802763, -0.131981, -0.193429, 0.907285},
+         {1, 0, 0, 0, 0, 0, 0},
+         {0, 1, 0, 0, 0, 0, 0},
+         {-0.27, 0, 0.96286, 0, 0, 0, 0},
+         {0.46, 0, 0.741748, 0.488067, 0, 0, 0},
+         {0.04, 0, 0.0735309, -0.374828, 0.923308, 0, 0},
+         {-0.08, 0, 0.517624, 0.128779, 0.0795063, 0.838308, 0},
+         {-0.11, 0, -0.321646, 0.0802763, -0.131981, -0.193429, 0.907285},
      }}},
 };
 
@@ -1411,9 +1453,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_perClusterRayDcorDistance = 60;
             table3gpp->m_blockerDcorDistance = 10;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_RMa_NLOS[row][column];
                 }
@@ -1448,9 +1490,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_perClusterRayDcorDistance = 15;
             table3gpp->m_blockerDcorDistance = 5;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_RMa_O2I[row][column];
                 }
@@ -1535,9 +1577,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterRayDcorDistance = 50;
                 table3gpp->m_blockerDcorDistance = 10;
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] = sqrtC_UMa_NLOS[row][column];
                     }
@@ -1571,9 +1613,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterRayDcorDistance = 15;
                 table3gpp->m_blockerDcorDistance = 5;
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] = sqrtC_UMa_O2I[row][column];
                     }
@@ -1653,9 +1695,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterRayDcorDistance = 15;
                 table3gpp->m_blockerDcorDistance = 10;
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] = sqrtC_UMi_NLOS[row][column];
                     }
@@ -1689,9 +1731,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterRayDcorDistance = 15;
                 table3gpp->m_blockerDcorDistance = 5;
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] = sqrtC_UMi_O2I[row][column];
                     }
@@ -1766,9 +1808,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_perClusterRayDcorDistance = 10;
             table3gpp->m_blockerDcorDistance = 5;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_office_NLOS[row][column];
                 }
@@ -1839,9 +1881,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 4;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_UMi_NLOS[row][column];
                 }
@@ -1873,9 +1915,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 4;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_UMi_LOS[row][column];
                 }
@@ -1948,9 +1990,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 4;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_UMi_LOS[row][column];
                 }
@@ -1986,9 +2028,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
             table3gpp->m_sigXpr = 3;
             table3gpp->m_perClusterShadowingStd = 4;
 
-            for (uint8_t row = 0; row < 6; row++)
+            for (uint8_t row = 0; row < 7; row++)
             {
-                for (uint8_t column = 0; column < 6; column++)
+                for (uint8_t column = 0; column < 7; column++)
                 {
                     table3gpp->m_sqrtC[row][column] = sqrtC_UMi_NLOS[row][column];
                 }
@@ -2132,9 +2174,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterShadowingStd =
                     NTNDenseUrbanNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] = sqrtC_NTN_DenseUrban_NLOS[row][column];
                     }
@@ -2207,9 +2249,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterShadowingStd =
                     NTNUrbanNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] =
                             sqrtC_NTN_Urban_NLOS.at(elevAngleQuantized)[row][column];
@@ -2291,9 +2333,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 table3gpp->m_perClusterShadowingStd =
                     NTNSuburbanNLOS.at(freqBand).at(elevAngleQuantized)[perClusterShadowingStd];
 
-                for (uint8_t row = 0; row < 6; row++)
+                for (uint8_t row = 0; row < 7; row++)
                 {
-                    for (uint8_t column = 0; column < 6; column++)
+                    for (uint8_t column = 0; column < 7; column++)
                     {
                         table3gpp->m_sqrtC[row][column] = sqrtC_NTN_Suburban_NLOS[row][column];
                     }
@@ -2368,9 +2410,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
 
                 if (freqBand == "S")
                 {
-                    for (uint8_t row = 0; row < 6; row++)
+                    for (uint8_t row = 0; row < 7; row++)
                     {
-                        for (uint8_t column = 0; column < 6; column++)
+                        for (uint8_t column = 0; column < 7; column++)
                         {
                             table3gpp->m_sqrtC[row][column] =
                                 sqrtC_NTN_Rural_NLOS_S.at(elevAngleQuantized)[row][column];
@@ -2379,9 +2421,9 @@ ThreeGppChannelModel::GetThreeGppTable(Ptr<const MobilityModel> aMob,
                 }
                 else if (freqBand == "Ka")
                 {
-                    for (uint8_t row = 0; row < 6; row++)
+                    for (uint8_t row = 0; row < 7; row++)
                     {
-                        for (uint8_t column = 0; column < 6; column++)
+                        for (uint8_t column = 0; column < 7; column++)
                         {
                             table3gpp->m_sqrtC[row][column] =
                                 sqrtC_NTN_Rural_NLOS_Ka.at(elevAngleQuantized)[row][column];
@@ -2664,7 +2706,7 @@ ThreeGppChannelModel::GetLspCorrelationDistances(std::array<double, 7>& los,
 {
     // TR 38.901 Table 7.5-6 correlation distances in the horizontal plane
     // (meters), in canonical parameter order [SF,K,DS,ASD,ASA,ZSD,ZSA]. The
-    // K entry of the NLOS/O2I sets is unused (no K column in the table).
+    // NLOS/O2I columns have no K entry, so theirs is a 0 placeholder.
     // Scenarios without a Table 7.5-6 column (V2V, NTN) fall back to the UMa
     // distances.
     los = {37, 12, 30, 18, 15, 15, 15};
@@ -2791,17 +2833,17 @@ ThreeGppChannelModel::GenerateLSPs(Ptr<const ChannelCondition> channelCondition,
                                    Ptr<const MobilityModel> termMob) const
 {
     NS_LOG_FUNCTION(this);
-    const ChannelCondition::LosConditionValue losCondition = channelCondition->GetLosCondition();
-    DoubleVector lspIndepRandomVar;
-    DoubleVector lsp;
-    const uint8_t paramNum = losCondition == ChannelCondition::LOS ? 7 : 6;
-
-    // Generate paramNum independent LSPs.
+    // Every correlation matrix follows the order [SF,K,DS,ASD,ASA,ZSD,ZSA]. The
+    // NLOS and O2I columns of TR 38.901 Table 7.5-6, which have no K-factor, have
+    // an uncorrelated K entry with zero mean and deviation, so their K-factor is
+    // 0 dB whatever its variate, and the other LSPs keep their joint distribution.
+    constexpr uint8_t numLsps = 7;
+    std::array<double, numLsps> lspIndepRandomVar;
     if (!m_channelConditionModel->IsInterUeSpatialConsistencyEnabled())
     {
-        for (uint8_t iter = 0; iter < paramNum; iter++)
+        for (auto& var : lspIndepRandomVar)
         {
-            lspIndepRandomVar.push_back(m_normalRv->GetValue());
+            var = m_normalRv->GetValue();
         }
     }
     else
@@ -2816,65 +2858,42 @@ ThreeGppChannelModel::GenerateLSPs(Ptr<const ChannelCondition> channelCondition,
         GetLspCorrelationDistances(corrLos, corrNlos, corrO2i);
 
         // Condition slot selecting the field set: LOS=0, NLOS=1, O2I=2.
-        const bool losOrdering = losCondition == ChannelCondition::LOS;
         const bool isO2i = channelCondition->GetO2iCondition() == ChannelCondition::O2I;
-        const uint8_t condSlot = isO2i ? 2 : (losOrdering ? 0 : 1);
-        const auto& corrDist = isO2i ? corrO2i : (losOrdering ? corrLos : corrNlos);
+        const bool isLos = channelCondition->GetLosCondition() == ChannelCondition::LOS;
+        const uint8_t condSlot = isO2i ? 2 : (isLos ? 0 : 1);
+        const auto& corrDist = isO2i ? corrO2i : (isLos ? corrLos : corrNlos);
         const uint32_t siteNodeId = siteMob->GetObject<Node>()->GetId();
         const Vector termPos = termMob->GetPosition();
-        for (uint8_t iter = 0; iter < paramNum; iter++)
+        for (uint8_t paramId = 0; paramId < numLsps; paramId++)
         {
-            // Canonical parameter ids [SF=0,K=1,DS=2,ASD=3,ASA=4,ZSD=5,ZSA=6]
-            // key the fields, so links whose LSP vectors use different
-            // orderings (LOS includes K at index 1, NLOS/O2I do not) still
-            // share the same per-parameter field of their condition slot.
-            const uint8_t paramId = losOrdering ? iter : (iter == 0 ? 0 : iter + 1);
-            uint8_t slot = condSlot;
-            double dist = corrDist[paramId];
-            if (paramId == 1 && isO2i)
-            {
-                // The O2I column of Table 7.5-6 has no K entry; the K-factor
-                // of an indoor LOS link belongs to the outdoor LOS path that
-                // penetrates the building, so its variate comes from the LOS
-                // field.
-                slot = 0;
-                dist = corrLos[1];
-            }
-            lspIndepRandomVar.push_back(
-                SampleSpatiallyCorrelatedNormal(siteNodeId, slot, paramId, termPos, dist));
+            // The K-factor belongs to the LOS path, so its variate always comes
+            // from the LOS field: the NLOS and O2I columns have no K entry.
+            const bool isK = paramId == 1;
+            lspIndepRandomVar[paramId] =
+                SampleSpatiallyCorrelatedNormal(siteNodeId,
+                                                isK ? 0 : condSlot,
+                                                paramId,
+                                                termPos,
+                                                isK ? corrLos[1] : corrDist[paramId]);
         }
     }
-    for (uint8_t row = 0; row < paramNum; row++)
+    std::array<double, numLsps> lsp{};
+    for (uint8_t row = 0; row < numLsps; row++)
     {
-        double temp = 0;
-        for (uint8_t column = 0; column < paramNum; column++)
+        for (uint8_t column = 0; column <= row; column++)
         {
-            temp += table3gpp->m_sqrtC[row][column] * lspIndepRandomVar[column];
+            lsp[row] += table3gpp->m_sqrtC[row][column] * lspIndepRandomVar[column];
         }
-        lsp.push_back(temp);
     }
 
-    LargeScaleParameters lsps;
     // NOTE the shadowing is generated in the propagation loss model
-    // For LOS, LSP is following the order of [SF,K,DS,ASD,ASA,ZSD,ZSA].
-    // For NLOS, LSP is following the order of [SF,DS,ASD,ASA,ZSD,ZSA].
-    if (losCondition == ChannelCondition::LOS)
-    {
-        lsps.kFactor = lsp[1] * table3gpp->m_sigK + table3gpp->m_uK;
-        lsps.DS = pow(10, lsp[2] * table3gpp->m_sigLgDS + table3gpp->m_uLgDS);
-        lsps.ASD = pow(10, lsp[3] * table3gpp->m_sigLgASD + table3gpp->m_uLgASD);
-        lsps.ASA = pow(10, lsp[4] * table3gpp->m_sigLgASA + table3gpp->m_uLgASA);
-        lsps.ZSD = pow(10, lsp[5] * table3gpp->m_sigLgZSD + table3gpp->m_uLgZSD);
-        lsps.ZSA = pow(10, lsp[6] * table3gpp->m_sigLgZSA + table3gpp->m_uLgZSA);
-    }
-    else
-    {
-        lsps.DS = pow(10, lsp[1] * table3gpp->m_sigLgDS + table3gpp->m_uLgDS);
-        lsps.ASD = pow(10, lsp[2] * table3gpp->m_sigLgASD + table3gpp->m_uLgASD);
-        lsps.ASA = pow(10, lsp[3] * table3gpp->m_sigLgASA + table3gpp->m_uLgASA);
-        lsps.ZSD = pow(10, lsp[4] * table3gpp->m_sigLgZSD + table3gpp->m_uLgZSD);
-        lsps.ZSA = pow(10, lsp[5] * table3gpp->m_sigLgZSA + table3gpp->m_uLgZSA);
-    }
+    LargeScaleParameters lsps;
+    lsps.kFactor = lsp[1] * table3gpp->m_sigK + table3gpp->m_uK;
+    lsps.DS = pow(10, lsp[2] * table3gpp->m_sigLgDS + table3gpp->m_uLgDS);
+    lsps.ASD = pow(10, lsp[3] * table3gpp->m_sigLgASD + table3gpp->m_uLgASD);
+    lsps.ASA = pow(10, lsp[4] * table3gpp->m_sigLgASA + table3gpp->m_uLgASA);
+    lsps.ZSD = pow(10, lsp[5] * table3gpp->m_sigLgZSD + table3gpp->m_uLgZSD);
+    lsps.ZSA = pow(10, lsp[6] * table3gpp->m_sigLgZSA + table3gpp->m_uLgZSA);
     lsps.ASD = std::min(lsps.ASD, 104.0);
     lsps.ASA = std::min(lsps.ASA, 104.0);
     lsps.ZSD = std::min(lsps.ZSD, 52.0);
