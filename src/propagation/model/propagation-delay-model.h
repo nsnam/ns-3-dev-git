@@ -68,7 +68,13 @@ class PropagationDelayModel : public Object
 /**
  * @ingroup propagation
  *
- * @brief the propagation delay is random
+ * The Variable attribute is used to return a random propagation delay from GetDelay().
+ * This can lead to packet reordering on the channel.  The mobility models
+ * passed in to GetDelay() are not used in the calculation, because distance is not a contributing
+ * factor. This class can also be used to configure a constant propagation delay without randomness
+ * if a ConstantRandomVariable is configured.
+ *
+ * @brief class for modeling propagation delay based on a configured ns-3 random variable
  */
 class RandomPropagationDelayModel : public PropagationDelayModel
 {
@@ -94,7 +100,12 @@ class RandomPropagationDelayModel : public PropagationDelayModel
 /**
  * @ingroup propagation
  *
- * @brief the propagation speed is constant
+ * @brief class for modeling a distance-based propagation delay based on a configured speed
+ *
+ * GetDelay() divides the distance between the two mobility models by the Speed attribute
+ * (by default, the speed of light in a vacuum) to return a propagation delay.  As the distance
+ * varies, the delay varies; for a model that instead returns a constant delay, see the
+ * RandomPropagationDelayModel configured with a ConstantRandomVariable.
  */
 class ConstantSpeedPropagationDelayModel : public PropagationDelayModel
 {

@@ -22,7 +22,7 @@ Scope and Limitations
 
 - A wide range of propagation loss models (Friis, Two-Ray Ground, Log-Distance, Nakagami, etc.) covering free-space, empirical, and stochastic channel conditions
 
-- Propagation delay modeling including constant speed and random delay models
+- Propagation delay modeling including constant speed and random variable-based delay models
 
 - Frequency-dependent propagation loss models for different simulation scenarios
 
@@ -1350,17 +1350,25 @@ The following propagation delay models are implemented:
 ConstantSpeedPropagationDelayModel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In this model, the signal travels with constant speed.
-The delay is calculated according with the transmitter and receiver positions.
-The Euclidean distance between the Tx and Rx antennas is used.
-Beware that, according to this model, the Earth is flat.
+In this model, the signal travels with constant speed based on the mobility models provided
+as inputs to the `PropagationDelayModel::GetDelay()` method. The speed is set by the `Speed`
+attribute, which defaults to the speed of light in a vacuum. The Euclidean distance between the
+Tx and Rx antennas is used, and beware that, according to this model, the Earth is flat.
 
 RandomPropagationDelayModel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The propagation delay is totally random, and it changes each time the model is called.
-All the packets (even those between two fixed nodes) experience a random delay.
-As a consequence, the packets order is not preserved.
+In this model, each call to `PropagationDelayModel::GetDelay()` returns the next value
+from the associated :cpp:class:`RandomVariableStream` object, in units of seconds. The random
+variable is set by the `Variable` attribute.  For most random variable types (e.g.,
+UniformRandomVariable), the propagation delay will change each time the model is called,
+from the configured random distribution. One consequence of this is that packet order may not
+be preserved over the medium. The mobility models passed in to the `GetDelay` method are not
+used in the delay calculation, because distance is not a contributing factor.
+
+This model may also be used to configure a constant propagation delay (constant time), independent of position,
+via use of the :cpp:class:`ConstantRandomVariable` and its `Constant` attribute.
+For a position-dependent constant propagation speed delay model, look at :cpp:class:`ConstantSpeedPropagationDelayModel`.
 
 Models for vehicular environments
 ---------------------------------
