@@ -38,7 +38,6 @@ check-style-clang-format-20:
   variables:
     MPI_CI: 1
     CLANG_TIDY_VERSION: 22
-    FILES_CHANGED: git-diff-name-only.log
   before_script:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
@@ -55,19 +54,15 @@ check-style-clang-format-20:
       git remote remove upstream ;
       fi
     - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream "${CI_MERGE_REQUEST_PROJECT_URL:-https://gitlab.com/nsnam/ns-3-dev.git}"
-    - git diff --name-only upstream/$CI_DEFAULT_BRANCH > $FILES_CHANGED
 
-    # Run clang-tidy on all files in the following cases: 1) $CLANG_TIDY_FULL_SCAN set, 2) ".clang-tidy" file or gitlab-ci-code-linting.yml file changed.
+    # Run clang-tidy on all files when the $CLANG_TIDY_FULL_SCAN environment variable is set.
     # Otherwise, run clang-tidy on changed files only.
     - |
-      if [[ -n $CLANG_TIDY_FULL_SCAN ]] ||
-         (grep -q ".clang-tidy" $FILES_CHANGED) ||
-         (grep -q "gitlab-ci-code-linting.yml" $FILES_CHANGED) ;
-      then
+      if [[ -n $CLANG_TIDY_FULL_SCAN ]] ; then
         FILES_TO_CHECK="";
         echo "Running clang-tidy on all files";
       else
-        FILES_TO_CHECK=$(cat $FILES_CHANGED);
+        FILES_TO_CHECK=$(git diff --name-only upstream/$CI_DEFAULT_BRANCH);
         echo "Running clang-tidy on the following changed files:";
         echo $FILES_TO_CHECK | fmt -w1;
       fi
@@ -78,18 +73,34 @@ check-style-clang-format-20:
   dependencies: []
   timeout: 3h
 
-clang-tidy-22-smart-scan:
+clang-tidy-22-diff-scan:
   extends: .clang-tidy-22
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
-    - when: on_success
+    - if: $CI_COMMIT_BRANCH && !$CI_OPEN_MERGE_REQUESTS
+    - changes:
+        - "**/.clang-tidy"
+        - "utils/tests/gitlab-ci-code-linting.yml"
+      when: never
+    - changes:
+        - "**/*.cc"
+        - "**/*.h"
+        - "**/CMakeLists.txt"
+        - "build-support/**/*"
+    - when: manual
+      allow_failure: true
 
 clang-tidy-22-full-scan:
   extends: .clang-tidy-22
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
+    - if: $CI_COMMIT_BRANCH && !$CI_OPEN_MERGE_REQUESTS
+      when: manual
+      allow_failure: true
+    - changes:
+        - "**/.clang-tidy"
+        - "utils/tests/gitlab-ci-code-linting.yml"
     - when: manual
       allow_failure: true
   variables:

@@ -343,12 +343,12 @@ clang-tidy integration with GitLab CI/CD
 To ensure that the |ns3| codebase follows the guidelines enforced by clang-tidy,
 there are two clang-tidy jobs in the GitLab CI/CD pipeline.
 
-* ``clang-tidy-smart-scan``: This job runs a smart clang-tidy scan on Merge Requests (MRs),
-  and only scans the files modified by the MR. In case the MR modifies clang-tidy
-  or CI/CD configurations, this job runs a full scan on the entire codebase.
+* ``clang-tidy-diff-scan``: This job runs a clang-tidy scan on Merge Requests (MRs),
+  and only scans the files modified by the MR. However, if the MR modifies clang-tidy
+  or CI/CD configurations, this job is skipped in favor of a full scan.
 * ``clang-tidy-full-scan``: This job runs a clang-tidy scan on all C++ files.
-  It runs automatically whenever new commits are pushed to the master branch and in
-  scheduled pipelines.
+  It runs automatically whenever new commits are pushed to the master branch, in
+  scheduled pipelines, and when clang-tidy or CI/CD configurations are changed.
 
 The ``clang-tidy-full-scan`` job can also be run in MR pipelines by manually triggering
 the job in the GitLab UI.
