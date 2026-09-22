@@ -69,7 +69,7 @@ check-style-clang-format-20:
       else
         FILES_TO_CHECK=$(cat $FILES_CHANGED);
         echo "Running clang-tidy on the following changed files:";
-        echo $FILES_TO_CHECK;
+        echo $FILES_TO_CHECK | fmt -w1;
       fi
     - run-clang-tidy-$CLANG_TIDY_VERSION -p cmake-cache/
       -quiet -hide-progress -use-color=true -warnings-as-errors=*
