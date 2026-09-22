@@ -3081,6 +3081,49 @@ ThreeGppLosBlockageAttenuationTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case for ThreeGppChannelModel::WrapAngles: an inclination outside
+ * [0, pi] must be mirrored through the pole (2 pi - theta, phi + pi), so a
+ * ray just past the nadir stays near the nadir and a negative inclination
+ * stays near the zenith.
+ */
+class ThreeGppChannelWrapAnglesTest : public TestCase
+{
+  public:
+    ThreeGppChannelWrapAnglesTest();
+
+  private:
+    void DoRun() override;
+};
+
+ThreeGppChannelWrapAnglesTest::ThreeGppChannelWrapAnglesTest()
+    : TestCase("Check the wrapping of azimuth and inclination angles")
+{
+}
+
+void
+ThreeGppChannelWrapAnglesTest::DoRun()
+{
+    const double tol = 1e-9;
+    // In range: unchanged.
+    auto [az, incl] = ThreeGppChannelModel::WrapAngles(0.3, 1.0);
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 0.3, tol, "azimuth changed inside the range");
+    NS_TEST_ASSERT_MSG_EQ_TOL(incl, 1.0, tol, "inclination changed inside the range");
+    // Just past the nadir: stays just above the nadir, on the opposite azimuth.
+    std::tie(az, incl) = ThreeGppChannelModel::WrapAngles(0.3, M_PI + 0.2);
+    NS_TEST_ASSERT_MSG_EQ_TOL(incl, M_PI - 0.2, tol, "inclination past the nadir");
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 0.3 + M_PI, tol, "azimuth past the nadir");
+    // Just above the zenith (negative inclination): stays near the zenith.
+    std::tie(az, incl) = ThreeGppChannelModel::WrapAngles(0.3, -0.2);
+    NS_TEST_ASSERT_MSG_EQ_TOL(incl, 0.2, tol, "negative inclination");
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 0.3 + M_PI, tol, "azimuth of a negative inclination");
+    // Azimuth wraps into [0, 2 pi).
+    std::tie(az, incl) = ThreeGppChannelModel::WrapAngles(-0.3, 1.0);
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 2 * M_PI - 0.3, tol, "negative azimuth");
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -3095,6 +3138,7 @@ class ThreeGppChannelTestSuite : public TestSuite
 ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     : TestSuite("three-gpp-channel", Type::UNIT)
 {
+    AddTestCase(new ThreeGppChannelWrapAnglesTest(), TestCase::Duration::QUICK);
     AddTestCase(
         new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::LOS, 30, 4e9),
         TestCase::Duration::QUICK);
