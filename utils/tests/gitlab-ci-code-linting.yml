@@ -129,13 +129,11 @@ cmake-format:
   image: python:3.12
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
     - changes:
         - "**/*.cmake"
         - "**/CMakeLists.txt"
         - "build-support/**/*"
         - "utils/tests/gitlab-ci-code-linting.yml"
-      when: on_success
     - when: manual
       allow_failure: true
   before_script:
@@ -158,13 +156,11 @@ python-format-latest:
   image: python:latest
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
     - changes:
         - "**/*.py"
         - "ns3"
         - "pyproject.toml"
         - "utils/tests/gitlab-ci-code-linting.yml"
-      when: on_success
     - when: manual
       allow_failure: true
   before_script:
@@ -179,12 +175,10 @@ markdown-lint:
   image: node:slim
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: on_success
     - changes:
         - "**/*.md"
         - ".markdownlint.json"
         - "utils/tests/gitlab-ci-code-linting.yml"
-      when: on_success
     - when: manual
       allow_failure: true
   before_script:
