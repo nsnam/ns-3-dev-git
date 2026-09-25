@@ -15,10 +15,20 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
 
 macro(disable_cmake_warnings)
   set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "" FORCE)
+  # Starting with CMake 4.4, --warn-uninitialized warnings are no longer
+  # suppressed by CMAKE_SUPPRESS_DEVELOPER_WARNINGS. Macros get their own
+  # diagnostic stack entry, so cmake_diagnostic(PUSH/POP) cannot span them.
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.4.0")
+    cmake_diagnostic(GET CMD_UNINITIALIZED ns3_uninitialized_diagnostic)
+    cmake_diagnostic(SET CMD_UNINITIALIZED IGNORE)
+  endif()
 endmacro()
 
 macro(enable_cmake_warnings)
   set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 0 CACHE BOOL "" FORCE)
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.4.0")
+    cmake_diagnostic(SET CMD_UNINITIALIZED ${ns3_uninitialized_diagnostic})
+  endif()
 endmacro()
 
 # Set options that are not really meant to be changed
