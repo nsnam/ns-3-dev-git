@@ -206,7 +206,7 @@ class IdealWifiManagerForGcrTest : public IdealWifiManager
             // the highest MCS is not always compatible with all combinations in case of VHT, hence
             // pick the MCS just before it
             txVector.SetMode(*std::next(st->m_state->m_operationalMcsSet.crbegin()));
-            txVector.SetChannelWidth(allowedWidth);
+            txVector.SetChannelWidth(std::min(GetChannelWidth(st), allowedWidth));
             const auto maxMcs = (mc == WIFI_MOD_CLASS_HT)
                                     ? ((txVector.GetMode().GetMcsValue() / 8) + 1)
                                     : GetNumberOfSupportedStreams(st);
@@ -1377,7 +1377,9 @@ GcrUrTest::CheckResults()
                                      : std::max(expectedNumAttempt, prevExpectedNumAttempt);
             prevExpectedNumAttempt = expectedNumAttempt;
             const std::size_t rxPsdus = (j - droppedPsdus);
-            NS_ASSERT(m_rxGroupcastPerSta.at(i).size() > rxPsdus);
+            NS_TEST_ASSERT_MSG_LT(rxPsdus,
+                                  m_rxGroupcastPerSta.at(i).size(),
+                                  "More dropped PSDUs than expected");
             NS_TEST_EXPECT_MSG_EQ(+m_rxGroupcastPerSta.at(i).at(rxPsdus),
                                   +expectedNumAttempt,
                                   "Packet has not been forwarded up at the expected TX attempt");
@@ -1818,7 +1820,7 @@ GcrBaTest::CheckResults()
             const std::size_t rxPsdus = (j - droppedPsdus);
             NS_TEST_ASSERT_MSG_LT(rxPsdus,
                                   m_rxGroupcastPerSta.at(i).size(),
-                                  "Less dropped PSDUs than expected");
+                                  "More dropped PSDUs than expected");
             NS_TEST_EXPECT_MSG_EQ(+m_rxGroupcastPerSta.at(i).at(rxPsdus),
                                   +expectedNumAttempt,
                                   "Packet has not been forwarded up at the expected TX attempt");
