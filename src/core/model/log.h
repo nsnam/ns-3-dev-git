@@ -14,6 +14,8 @@
 #include "node-printer.h"
 #include "time-printer.h"
 
+#include "ns3/core-export.h"
+
 #include <cstddef>
 #include <iostream>
 #include <list>
@@ -595,7 +597,7 @@ class ParameterLogger
     std::ostream& m_os; //!< Underlying output stream.
 
     /// Maximum number of elements to print for a container.
-    static std::size_t m_maxLoggedContainerElements;
+    CORE_EXPORT static std::size_t m_maxLoggedContainerElements;
 
     // end of class ParameterLogger
 };
