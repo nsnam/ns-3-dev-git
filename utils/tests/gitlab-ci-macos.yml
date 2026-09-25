@@ -9,7 +9,7 @@
   #tags:
   #  - saas-macos-medium-m1
   #  - saas-macos-large-m2pro
-  #image: macos-14-xcode-15
+  #image: macos-15-xcode-16
   tags:
     - macOS
     - nsnam

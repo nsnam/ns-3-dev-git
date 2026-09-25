@@ -22,8 +22,11 @@ requirements (Note: not all ns-3 features are available on all systems):
 - g++-11.1 or later, or LLVM/clang++-17 or later
 - Python 3.10 or later
 - CMake 3.25 or later
-- (macOS only) Xcode 16.2 or later
+- (macOS only) Xcode 16.3 or later
 - (Windows only) Msys2/MinGW64, Msys2/UCRT64 and ClangCL/MSVC toolchains, or WSL2
+
+This release raised the minimum AppleClang version from 15 to 17. Continuous integration
+now tests macOS 15 instead of macOS 14.
 
 The versions of clang-format enforced by the check-style-clang-format.py script for
 this release are 20 to 22.

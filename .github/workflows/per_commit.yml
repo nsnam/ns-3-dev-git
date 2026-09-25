@@ -157,7 +157,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest, macos-14 ]
+        os: [ macos-latest, macos-15 ]
     steps:
       - uses: actions/checkout@v6
       - name: Install required packages
