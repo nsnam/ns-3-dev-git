@@ -105,22 +105,24 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: msys2/setup-msys2@v2
-      - name: Install required msys2/mingw64 packages
+        with:
+          msystem: UCRT64
+      - name: Install required msys2/ucrt64 packages
         run: |
           pacman -S --noconfirm \
           unzip \
           tar \
-          mingw-w64-x86_64-curl \
-          mingw-w64-x86_64-binutils \
-          mingw-w64-x86_64-cmake \
-          mingw-w64-x86_64-gcc \
-          mingw-w64-x86_64-ninja \
-          mingw-w64-x86_64-python \
-          mingw-w64-x86_64-ccache \
-          mingw-w64-x86_64-gsl \
-          mingw-w64-x86_64-libxml2 \
-          mingw-w64-x86_64-lld \
-          mingw-w64-x86_64-sed
+          mingw-w64-ucrt-x86_64-curl \
+          mingw-w64-ucrt-x86_64-binutils \
+          mingw-w64-ucrt-x86_64-cmake \
+          mingw-w64-ucrt-x86_64-gcc \
+          mingw-w64-ucrt-x86_64-ninja \
+          mingw-w64-ucrt-x86_64-python \
+          mingw-w64-ucrt-x86_64-ccache \
+          mingw-w64-ucrt-x86_64-gsl \
+          mingw-w64-ucrt-x86_64-libxml2 \
+          mingw-w64-ucrt-x86_64-lld \
+          mingw-w64-ucrt-x86_64-sed
           pacman --noconfirm -Scc
       - name: Get timestamp
         id: time

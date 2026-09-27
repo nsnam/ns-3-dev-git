@@ -28,6 +28,9 @@ requirements (Note: not all ns-3 features are available on all systems):
 This release raised the minimum AppleClang version from 15 to 17. Continuous integration
 now tests macOS 15 instead of macOS 14.
 
+Continuous integration now tests the Msys2/UCRT64 toolchain instead of Msys2/MinGW64.
+Msys2/MinGW64 should still work, but is no longer tested.
+
 The versions of clang-format enforced by the check-style-clang-format.py script for
 this release are 20 to 22.
 

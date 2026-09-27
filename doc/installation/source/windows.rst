@@ -57,9 +57,13 @@ Installation of the Msys2 environment
 The `Msys2`_ includes ports of Unix tools for Windows built with multiple toolchains,
 including: MinGW32, MinGW64, Clang64, UCRT.
 
-|ns3| has been tested with the  MinGW64 (GCC) toolchain.  MinGW32 is 32-bit, which |ns3| does
-not support.  The project's Windows maintainer has tested Clang64 unsuccessfully, and has
-not tested the UCRT toolchain (which may work).
+|ns3| is tested with the UCRT64 (GCC) toolchain.  The MinGW64 (GCC) toolchain should also
+work, but is no longer tested.  MinGW32 is 32-bit, which |ns3| does not support.  The project's
+Windows maintainer has tested Clang64 unsuccessfully.
+
+The instructions below use the MinGW64 toolchain.  To use UCRT64 instead, replace
+``msys64\mingw64\bin`` with ``msys64\ucrt64\bin``, ``MSYSTEM MINGW64`` with ``MSYSTEM UCRT64``,
+and the ``mingw-w64-x86_64-*`` packages with ``mingw-w64-ucrt-x86_64-*``.
 
 The `Msys2`_ installer can be found on their site.
 Msys2 will be installed by default in the ``C:\msys64`` directory.
