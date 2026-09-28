@@ -389,7 +389,7 @@ IbssCapabilitiesTest::CheckResults()
         }
         else
         {
-            NS_ASSERT_MSG(false, "TX and RX standards combination not covered by the test");
+            NS_ABORT_MSG("TX and RX standards combination not covered by the test");
         }
     }
     else
@@ -404,7 +404,7 @@ IbssCapabilitiesTest::CheckResults()
         }
         else
         {
-            NS_ASSERT_MSG(false, "TX standard not covered by the test");
+            NS_ABORT_MSG("TX standard not covered by the test");
         }
     }
     NS_TEST_EXPECT_MSG_EQ(m_txVectors.at(0).GetModulationClass(),
