@@ -4168,19 +4168,36 @@ TcpSocketBase::LastAckTimeout()
     }
 }
 
-// Send 1-byte data to probe for the window size at the receiver when
-// the local knowledge tells that the receiver has zero window size
-// C.f.: RFC793 p.42, RFC1112 sec.4.2.2.17
+// Send 1-byte data (or a zero-length segment, if there is no unsent data) to
+// probe for the window size at the receiver when the local knowledge tells
+// that the receiver has zero window size
+// C.f.: RFC793 p.42, RFC1122 sec.4.2.2.17, RFC9293 sec.3.8.6.1
 void
 TcpSocketBase::PersistTimeout()
 {
     NS_LOG_LOGIC("PersistTimeout expired at " << Simulator::Now().GetSeconds());
     m_persistTimeout =
         std::min(Seconds(60), Time(2 * m_persistTimeout)); // max persist timeout = 60s
-    Ptr<Packet> p = m_txBuffer->CopyFromSequence(1, m_tcb->m_nextTxSequence)->GetPacketCopy();
-    m_txBuffer->ResetLastSegmentSent();
+    // CopyFromSequence() returns nullptr when there is no unsent data. In that
+    // case, send a zero-length probe with an already acknowledged sequence
+    // number. The receiver finds it unacceptable and must answer with an ACK
+    // carrying its current window (@RFC{9293} sec 3.10.7.4, @issueid{1326}).
+    Ptr<Packet> p;
+    SequenceNumber32 probeSeq = m_tcb->m_nextTxSequence;
+    TcpTxItem* outItem = m_txBuffer->CopyFromSequence(1, m_tcb->m_nextTxSequence);
+    if (outItem != nullptr)
+    {
+        p = outItem->GetPacketCopy();
+        // The probe byte is not accounted as sent; return it to the unsent data
+        m_txBuffer->ResetLastSegmentSent();
+    }
+    else
+    {
+        p = Create<Packet>();
+        probeSeq = m_txBuffer->HeadSequence() - 1;
+    }
     TcpHeader tcpHeader;
-    tcpHeader.SetSequenceNumber(m_tcb->m_nextTxSequence);
+    tcpHeader.SetSequenceNumber(probeSeq);
     tcpHeader.SetAckNumber(m_tcb->m_rxBuffer->NextRxSequence());
     tcpHeader.SetWindowSize(AdvertisedWindowSize());
     if (m_endPoint != nullptr)
