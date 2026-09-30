@@ -18,7 +18,9 @@
  *
  * @section install-sec Building the Documentation
  *
- * Building ns-3 Doxygen requires Doxygen version 1.11
+ * The version of Doxygen that the project tests with is maintained in
+ * utils/tests/gitlab-ci-doc.yml, and the RELEASE_NOTES.md should also
+ * identify this same version.
  *
  * Type "./ns3 docs doxygen" or "./ns3 docs doxygen-no-build" to build the
  *  documentation.  The doc/ directory contains
