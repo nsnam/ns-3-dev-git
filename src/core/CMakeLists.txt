@@ -86,6 +86,7 @@ set(example_as_test_suite)
 if(${ENABLE_EXAMPLES})
   set(example_as_test_suite
       test/examples-as-tests-test-suite.cc
+      test/log-test-suite.cc
   )
 endif()
 
@@ -316,7 +317,6 @@ set(test_sources
     test/hash-test-suite.cc
     test/int64x64-test-suite.cc
     test/length-test-suite.cc
-    test/log-test-suite.cc
     test/many-uniform-random-variables-one-get-value-call-test-suite.cc
     test/names-test-suite.cc
     test/nlohmann-json-test-suite.cc
