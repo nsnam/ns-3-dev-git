@@ -44,6 +44,9 @@ This release raised the minimum Python version for the Python bindings from 3.8 
 and the required cppyy version from 3.1.2 to 3.5.0. Pip wheels are now built for
 Python 3.10 to 3.14.
 
+The required Doxygen version for documentation generation is now version 1.16,
+but other contemporaneous versions may also work.
+
 ### New user-visible features
 
 - (propagation) A new `InterUeSpatialConsistency` attribute of `ChannelConditionModel` enables inter-UE (drop-based) spatially consistent LOS/NLOS state, indoor state, building type, shadow fading and O2I penetration loss per 3GPP TR 38.901 Sec. 7.6.3.
