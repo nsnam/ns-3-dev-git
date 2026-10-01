@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="car" vClass="passenger" guiShape="passenger"
+           accel="2.6" decel="4.5" length="4.5" minGap="2.5"
+           maxSpeed="13.9" sigma="0.5"/>
+    <vType id="bus" vClass="bus" guiShape="bus"
+           accel="1.0" decel="3.0" length="12.0" minGap="2.5"
+           maxSpeed="13.9" sigma="0.5"/>
+    <vType id="bicycle" vClass="bicycle" guiShape="bicycle"
+           accel="1.2" decel="3.0" length="1.8" minGap="0.5"
+           maxSpeed="6.94" sigma="0.4"/>
+
+       <trip id="bus-01" type="bus" depart="0" from="541008097#1" to="-129701968#5"/>
+       <trip id="car-01" type="car" depart="5" from="541008097#1" to="-129701968#5"/>
+       <trip id="bike-01" type="bicycle" depart="5" from="173496592#0" to="-1118930502"/>
+       <trip id="car-02" type="car" depart="20" from="116139659" to="-1118941477"/>
+       <trip id="car-03" type="car" depart="35" from="-303414488#3" to="1432500373"/>
+       <trip id="bike-02" type="bicycle" depart="35" from="-303414488#3" to="130673507#1"/>
+       <trip id="car-04" type="car" depart="50" from="-129701968#5" to="541008097#1"/>
+       <trip id="car-05" type="car" depart="65" from="-1118941477" to="116139659"/>
+       <trip id="bike-03" type="bicycle" depart="65" from="-1118941477" to="-173496592#0"/>
+       <trip id="car-06" type="car" depart="80" from="1432500373" to="-303414488#3"/>
+       <trip id="bus-02" type="bus" depart="90" from="-129701968#5" to="541008097#1"/>
+       <trip id="car-07" type="car" depart="95" from="541008097#1" to="-129701968#5"/>
+       <trip id="bike-04" type="bicycle" depart="95" from="-541008097#1" to="-130676629#1"/>
+       <trip id="car-08" type="car" depart="110" from="116139659" to="-1118941477"/>
+       <trip id="car-09" type="car" depart="125" from="-303414488#3" to="1432500373"/>
+       <trip id="bike-05" type="bicycle" depart="125" from="370729414#3" to="182091454#0"/>
+       <trip id="car-10" type="car" depart="140" from="-129701968#5" to="541008097#1"/>
+       <trip id="car-11" type="car" depart="155" from="-1118941477" to="116139659"/>
+       <trip id="bike-06" type="bicycle" depart="155" from="173496592#0" to="-1118930502"/>
+       <trip id="car-12" type="car" depart="170" from="1432500373" to="-303414488#3"/>
+       <trip id="bus-03" type="bus" depart="180" from="116139659" to="-1118941477"/>
+       <trip id="car-13" type="car" depart="185" from="541008097#1" to="-129701968#5"/>
+       <trip id="bike-07" type="bicycle" depart="185" from="-303414488#3" to="130673507#1"/>
+       <trip id="car-14" type="car" depart="200" from="116139659" to="-1118941477"/>
+       <trip id="car-15" type="car" depart="215" from="-303414488#3" to="1432500373"/>
+       <trip id="bike-08" type="bicycle" depart="215" from="-1118941477" to="-173496592#0"/>
+       <trip id="car-16" type="car" depart="230" from="-129701968#5" to="541008097#1"/>
+       <trip id="car-17" type="car" depart="245" from="-1118941477" to="116139659"/>
+       <trip id="bike-09" type="bicycle" depart="245" from="-541008097#1" to="-130676629#1"/>
+       <trip id="car-18" type="car" depart="260" from="1432500373" to="-303414488#3"/>
+       <trip id="bus-04" type="bus" depart="270" from="-1118941477" to="116139659"/>
+       <trip id="bike-10" type="bicycle" depart="275" from="370729414#3" to="182091454#0"/>
+       <trip id="bus-05" type="bus" depart="360" from="541008097#1" to="-129701968#5"/>
+       <trip id="bus-06" type="bus" depart="450" from="-129701968#5" to="541008097#1"/>
+</routes>

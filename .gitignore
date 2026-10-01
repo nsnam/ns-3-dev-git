@@ -36,6 +36,13 @@ TAGS
 
 build-dir/
 build/
+/results/
+/mobility/guimaraes/generated/
+/mobility/guimaraes/validation-summary.xml
+/mobility/guimaraes/summary.txt
+/mobility/guimaraes/ns3-mobility.*
+/mobility/guimaraes/guimabus_gtfs_active.txt
+/mobility/guimaraes/guimabus_gtfs_demo.zip
 /.cproject
 /.project
 

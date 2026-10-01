@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<configuration>
+    <input>
+        <net-file value="guimaraes.net.xml" />
+        <route-files value="cars.rou.xml,buses.rou.xml,bikes.rou.xml" />
+        <additional-files value="vtypes.xml,ptstops.xml,buses.add.xml" />
+    </input>
+    <time>
+        <begin value="25200" />
+        <end value="25500" />
+        <step-length value="0.1" />
+    </time>
+    <processing>
+        <lateral-resolution value="0.5" />
+    </processing>
+</configuration>

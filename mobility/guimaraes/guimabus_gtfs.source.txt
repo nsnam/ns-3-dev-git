@@ -1,0 +1,2 @@
+source=https://files.mobilitydatabase.org/mdb-2838/mdb-2838-202512190141/mdb-2838-202512190141.zip
+counts={'agencies': 1, 'routes': 59, 'stops': 1522, 'trips': 2213, 'stop_times': 81717}

@@ -4,5 +4,8 @@
 
 !nested-subdir/
 !subdir/
+!azurem-sumo/
+!README.md
+!mec-5g-guimaraes.cc
 !scratch-simulator.cc
 !CMakeLists.txt

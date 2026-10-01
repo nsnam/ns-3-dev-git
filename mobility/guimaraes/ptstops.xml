@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-09-30T14:12:40.365012+00:00 by Eclipse SUMO netconvert 1.27.1
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <osm-files value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/guimaraes.osm"/>
+    </input>
+
+    <output>
+        <output-file value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/guimaraes.net.xml"/>
+        <ptstop-output value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/ptstops.xml"/>
+        <ptline-output value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/ptlines.xml"/>
+    </output>
+
+    <projection>
+        <proj.utm value="true"/>
+    </projection>
+
+    <processing>
+        <geometry.remove value="true"/>
+    </processing>
+
+    <ramp_guessing>
+        <ramps.guess value="true"/>
+    </ramp_guessing>
+
+    <junctions>
+        <junctions.corner-detail value="5"/>
+    </junctions>
+
+    <pedestrian>
+        <sidewalks.guess value="true"/>
+        <crossings.guess value="true"/>
+    </pedestrian>
+
+</netconvertConfiguration>
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <busStop id="-12001190171" name="Rodovia de Covas (Estação CP Covas)" lane="-1286869615_1" startPos="6.04" endPos="21.04" friendlyPos="true" lines="011"/>
+    <busStop id="-12029743125" name="Moreira de Cónegos (Igreja)" lane="40278300_0" startPos="698.52" endPos="713.52" friendlyPos="true" lines="011"/>
+    <busStop id="-12029743126" name="Moreira de Cónegos (Igreja)" lane="40278300_0" startPos="696.68" endPos="711.68" friendlyPos="true" lines="011"/>
+    <busStop id="-12029743127" name="Moreira de Cónegos (Junta de Freguesia)" lane="40278300_0" startPos="743.28" endPos="758.28" friendlyPos="true" lines="011"/>
+    <busStop id="-12029743128" name="Moreira de Cónegos (Junta de Freguesia)" lane="40278300_0" startPos="743.28" endPos="758.28" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977094" name="Lameirinho" lane="-889380717#3_0" startPos="84.33" endPos="99.33" friendlyPos="true"/>
+    <busStop id="-12029977129" name="Gandarela (Boavista)" lane="-891374818#0_0" startPos="1385.83" endPos="1400.83" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977133" name="Gandarela (Padrão)" lane="-891374818#0_0" startPos="1596.40" endPos="1611.40" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977134" name="Calçada" lane="-1286869615_1" startPos="1988.20" endPos="2003.20" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977139" name="Uveiras" lane="-1156566237#1_1" startPos="10.72" endPos="25.72" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977143" name="Calços" lane="-1299820992#1_1" startPos="132.80" endPos="147.80" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977145" name="Junqueira" lane="-1299820992#1_1" startPos="848.09" endPos="863.09" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977147" name="Igreja de Conde" lane="-1299820992#0_1" startPos="62.03" endPos="77.03" friendlyPos="true" lines="011"/>
+    <busStop id="-12029977148" name="Seis Pinheiros" lane="-1299820992#0_1" startPos="541.14" endPos="556.14" friendlyPos="true" lines="011"/>
+    <busStop id="-12029992473" name="Moreira de Cónegos (Piscinas)" lane="217636187_0" startPos="723.97" endPos="738.97" friendlyPos="true" lines="011"/>
+    <busStop id="-12029992475" name="Moreira de Cónegos (Barreiro)" lane="217636187_0" startPos="431.01" endPos="446.01" friendlyPos="true" lines="011"/>
+    <busStop id="-12029992477" name="Moreira de Cónegos (Santa Marta)" lane="217636187_0" startPos="198.03" endPos="213.03" friendlyPos="true" lines="011"/>
+    <busStop id="-12032099809" name="EB1 de Selho São Cristóvão" lane="-337082361#1_1" startPos="75.65" endPos="90.65" friendlyPos="true"/>
+    <busStop id="-12032099811" name="Pontido" lane="-135595591#0_1" startPos="0.00" endPos="6.87" friendlyPos="true"/>
+    <busStop id="-12032099813" name="Barridinho" lane="-135593939#2_0" startPos="67.01" endPos="82.01" friendlyPos="true"/>
+    <busStop id="-12032099815" name="Giestal" lane="-334481033#0_1" startPos="108.98" endPos="123.98" friendlyPos="true"/>
+    <busStop id="-12032099817" name="Campinho" lane="-135593937#2_1" startPos="0.00" endPos="11.50" friendlyPos="true"/>
+    <busStop id="-12032099818" name="Igreja de Selho São Cristóvão" lane="-304278674#0_1" startPos="66.39" endPos="81.39" friendlyPos="true"/>
+    <busStop id="-12032099819" name="Penegacho" lane="-304278674#2_1" startPos="10.86" endPos="25.86" friendlyPos="true"/>
+    <busStop id="-12032099821" name="Nevogilde" lane="-784453173#0_1" startPos="3.73" endPos="18.73" friendlyPos="true"/>
+    <busStop id="-12032099826" name="Senhor do Crasto" lane="-142916630#2_0" startPos="39.14" endPos="54.14" friendlyPos="true">
+        <access lane="-183324019_0" pos="155.01" length="75.56" friendlyPos="1"/>
+        <access lane="142916630#2_0" pos="39.35" length="11.63" friendlyPos="1"/>
+        <access lane="142916630#3_0" pos="0.00" length="75.50" friendlyPos="1"/>
+        <access lane="183324019_0" pos="0.00" length="62.96" friendlyPos="1"/>
+        <access lane="183324023_0" pos="39.55" length="75.10" friendlyPos="1"/>
+    </busStop>
+    <busStop id="-12032099831" name="Capela de São Brás" lane="-183324015#1_1" startPos="0.00" endPos="0.20" friendlyPos="true"/>
+    <busStop id="-12032099833" name="Cemitério de Pevidém" lane="-1420175574#1_1" startPos="3.37" endPos="18.37" friendlyPos="true"/>
+    <busStop id="-12032099838" name="Circunvalação" lane="-137399664#9_1" startPos="135.46" endPos="150.46" friendlyPos="true"/>
+    <busStop id="-12032099839" name="EB1 Pevidém" lane="-137399664#6_1" startPos="16.19" endPos="31.19" friendlyPos="true"/>
+    <busStop id="-12032099841" name="EB23 de Pevidém" lane="-137399664#3_1" startPos="0.00" endPos="5.66" friendlyPos="true"/>
+    <busStop id="-12032099843" name="Bela Vista" lane="-340731055#1_1" startPos="89.23" endPos="104.23" friendlyPos="true"/>
+    <busStop id="-12032099845" name="Souto de Baixo" lane="-340731074#0_1" startPos="10.14" endPos="25.14" friendlyPos="true"/>
+    <busStop id="-12032099850" name="Casas Novas" lane="-340731065#0_1" startPos="17.14" endPos="32.14" friendlyPos="true"/>
+    <busStop id="-12032099861" name="Trabalhador Têxtil" lane="-142891938#2_1" startPos="33.75" endPos="48.75" friendlyPos="true"/>
+    <busStop id="-12032099863" name="Reis" lane="-328953331_0" startPos="20.31" endPos="35.31" friendlyPos="true"/>
+    <busStop id="-12033714817" name="Pojeira" lane="-342860823#1_1" startPos="173.41" endPos="188.41" friendlyPos="true"/>
+    <busStop id="-12033714820" name="Igreja de Sande Vila Nova" lane="-172903629#23_1" startPos="111.67" endPos="126.67" friendlyPos="true"/>
+    <busStop id="-12033764939" name="Alfa" lane="-303712560_0" startPos="14.99" endPos="29.99" friendlyPos="true"/>
+    <busStop id="-12033857667" name="Pontizela" lane="-170211916#9_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12033887869" name="Cemitério de Ponte" lane="-170211916#6_0" startPos="36.63" endPos="51.63" friendlyPos="true"/>
+    <busStop id="-12033887871" name="Centro de Saúde Ponte" lane="-170211916#1_0" startPos="14.10" endPos="29.10" friendlyPos="true"/>
+    <busStop id="-12033887873" name="Miogo" lane="-131244843#0_0" startPos="129.06" endPos="144.06" friendlyPos="true"/>
+    <busStop id="-12033887875" name="Pouve" lane="-170211916#0_0" startPos="33.49" endPos="48.49" friendlyPos="true"/>
+    <busStop id="-12033887877" name="Monte do Padrão" lane="-170211913#0_1" startPos="16.80" endPos="31.80" friendlyPos="true"/>
+    <busStop id="-12033887885" name="Bairro Santa Maria" lane="-107961665#1_0" startPos="209.95" endPos="224.95" friendlyPos="true"/>
+    <busStop id="-12033887889" name="Gandra" lane="-107961665#1_0" startPos="5.92" endPos="20.92" friendlyPos="true"/>
+    <busStop id="-12033887892" name="Serzedo" lane="-170211917#4_0" startPos="8.57" endPos="23.57" friendlyPos="true"/>
+    <busStop id="-12033887893" name="Valboa" lane="-170211917#1_0" startPos="4.09" endPos="19.09" friendlyPos="true"/>
+    <busStop id="-12033887899" name="Capela de Campelos" lane="-170211915#0_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12033887904" name="Centro Social de Campelos" lane="-170211908#0_0" startPos="140.13" endPos="155.13" friendlyPos="true"/>
+    <busStop id="-12033887906" name="Ferreiros" lane="-172903672#1_0" startPos="29.93" endPos="44.93" friendlyPos="true"/>
+    <busStop id="-12033887909" name="EB1 Sande Vila Nova" lane="-172903672#3_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12033887910" name="Borrecos" lane="-172903629#11_1" startPos="48.09" endPos="63.09" friendlyPos="true"/>
+    <busStop id="-12033887912" name="Egas Moniz" lane="-172903629#6_1" startPos="25.95" endPos="40.95" friendlyPos="true"/>
+    <busStop id="-12033887914" name="Chã" lane="-172903629#3_1" startPos="52.34" endPos="67.34" friendlyPos="true"/>
+    <busStop id="-12033887926" name="Brito (Sequito)" lane="-108433875#9_1" startPos="0.18" endPos="15.18" friendlyPos="true"/>
+    <busStop id="-12033887928" name="Brito (Outeiro)" lane="-184156897#1_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12033887929" name="Brito (Outeiro)" lane="-108433875#5_1" startPos="1.42" endPos="16.42" friendlyPos="true"/>
+    <busStop id="-12033887930" name="Brito (Paço)" lane="-108433875#3_1" startPos="8.60" endPos="23.60" friendlyPos="true"/>
+    <busStop id="-12033887933" name="Brito (Castelo)" lane="-108433875#0_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12033887942" name="Brito (Café Táxi)" lane="-277167077#0_0" startPos="58.92" endPos="73.92" friendlyPos="true"/>
+    <busStop id="-12034790188" name="Paço de Toriz" lane="-164448403#2_1" startPos="21.33" endPos="36.33" friendlyPos="true"/>
+    <busStop id="-12034790192" name="Castelães de Além" lane="-77619073#1_1" startPos="105.66" endPos="120.66" friendlyPos="true"/>
+    <busStop id="-12034790203" name="Subdevesa" lane="-131245692#0_0" startPos="132.27" endPos="147.27" friendlyPos="true"/>
+    <busStop id="-12034820892" name="Clube Recreativo de Candoso São Martinho" lane="-655446866#11_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12034820896" name="Soeiro" lane="-135473203#1_0" startPos="7.45" endPos="22.45" friendlyPos="true"/>
+    <busStop id="-12034820899" name="Carramão" lane="-338182842_1" startPos="35.58" endPos="50.58" friendlyPos="true"/>
+    <busStop id="-12034820900" name="Agra" lane="-142933610#1_0" startPos="92.50" endPos="107.50" friendlyPos="true"/>
+    <busStop id="-12034820903" name="Carreira" lane="-55490965#1_0" startPos="55.58" endPos="70.58" friendlyPos="true"/>
+    <busStop id="-12034820908" name="Travessa da Agrela" lane="-133475378#1_1" startPos="144.57" endPos="159.57" friendlyPos="true"/>
+    <busStop id="-12034820909" name="Ressa" lane="-183791935#1_1" startPos="217.36" endPos="232.36" friendlyPos="true"/>
+    <busStop id="-12034820913" name="Batoca" lane="-142916414#1_0" startPos="19.55" endPos="34.55" friendlyPos="true"/>
+    <busStop id="-12034820915" name="Travessa da Ressa" lane="-183791935#0_1" startPos="282.69" endPos="297.69" friendlyPos="true"/>
+    <busStop id="-12034820917" name="Penedo" lane="-142916414#0_0" startPos="138.63" endPos="153.63" friendlyPos="true"/>
+    <busStop id="-12034820925" name="Fonte da Venda" lane="-135593933#2_0" startPos="20.40" endPos="35.40" friendlyPos="true"/>
+    <busStop id="-12034820927" name="Muda" lane="-337082361#7_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="-12034820929" name="Ponte da Mansa" lane="-135593933#0_0" startPos="79.37" endPos="94.37" friendlyPos="true"/>
+    <busStop id="-12034820931" name="Mercado de Pevidém" lane="-183329074#1_1" startPos="26.53" endPos="41.53" friendlyPos="true"/>
+    <busStop id="-12034820934" name="Central" lane="-135593944#1_0" startPos="12.48" endPos="27.48" friendlyPos="true"/>
+    <busStop id="-12034892760" name="Tanque" lane="-183791926_0" startPos="92.83" endPos="107.83" friendlyPos="true"/>
+    <busStop id="-12034892762" name="Veiga" lane="-133475373#1_0" startPos="154.51" endPos="169.51" friendlyPos="true"/>
+    <busStop id="-12034892765" name="Messoulo" lane="-133475373#3_0" startPos="256.73" endPos="271.73" friendlyPos="true"/>
+    <busStop id="-12034907273" name="Rebôto" lane="-1420162191#1_0" startPos="187.94" endPos="202.94" friendlyPos="true"/>
+    <busStop id="-12034907276" name="São Martinho" lane="-578185258#0_0" startPos="351.79" endPos="366.79" friendlyPos="true"/>
+    <busStop id="-12034907278" name="Codeçal" lane="-578185258#2_0" startPos="51.92" endPos="66.92" friendlyPos="true"/>
+    <busStop id="-12034907280" name="Sernande" lane="-655446866#8_1" startPos="47.72" endPos="62.72" friendlyPos="true"/>
+    <busStop id="-12034907282" name="Cemitério de Candoso São Martinho" lane="-655446866#5_1" startPos="55.91" endPos="70.91" friendlyPos="true"/>
+    <busStop id="-12034907286" name="Pipe-Areosa" lane="-655446866#3_1" startPos="107.91" endPos="122.91" friendlyPos="true"/>
+    <busStop id="-12034907294" name="Parque Industrial de Sezim" lane="-135473211#1_0" startPos="23.46" endPos="38.46" friendlyPos="true"/>
+    <busStop id="-12034907296" name="Sezim" lane="-655446866#0_1" startPos="51.91" endPos="66.91" friendlyPos="true"/>
+    <busStop id="-12034907299" name="Candoso de Baixo" lane="-655446866#2_1" startPos="164.76" endPos="179.76" friendlyPos="true"/>
+    <busStop id="-12035737122" name="Mirante" lane="-1286869615_1" startPos="495.55" endPos="510.55" friendlyPos="true" lines="011"/>
+    <busStop id="-12035737124" name="Valinha" lane="-1286869615_1" startPos="785.97" endPos="800.97" friendlyPos="true" lines="011"/>
+    <busStop id="-12035737125" name="Pocinhas" lane="-1286869615_1" startPos="986.53" endPos="1001.53" friendlyPos="true" lines="011"/>
+    <busStop id="-12035737128" name="Pego" lane="-1286869615_1" startPos="1192.94" endPos="1207.94" friendlyPos="true" lines="011"/>
+    <busStop id="-12035737130" name="Ribeiro de Baixo" lane="-1286869615_1" startPos="1499.36" endPos="1514.36" friendlyPos="true" lines="011"/>
+    <busStop id="-12035963905" name="Fábrica Asa" lane="-1286869615_1" startPos="165.42" endPos="180.42" friendlyPos="true" lines="011"/>
+    <busStop id="-12036034567" name="Fábrica do Castanheiro" lane="-135475689_1" startPos="471.08" endPos="486.08" friendlyPos="true" lines="011"/>
+    <busStop id="-12036043470" name="Quinta da Boavista" lane="-135475689_1" startPos="260.72" endPos="275.72" friendlyPos="true" lines="011"/>
+    <busStop id="-12036043482" name="Quinta das Aldeias" lane="-1299820985_1" startPos="553.73" endPos="568.73" friendlyPos="true" lines="011"/>
+    <busStop id="-12036043501" name="Vaca Negra" lane="-1299820985_1" startPos="162.53" endPos="177.53" friendlyPos="true" lines="011"/>
+    <busStop id="-12036043503" name="EB23 Gil Vicente" lane="-135475695_0" startPos="94.81" endPos="109.81" friendlyPos="true" lines="011"/>
+    <busStop id="-12036043513" name="Nossa Senhora dos Remédios" lane="-172903752_1" startPos="158.38" endPos="173.38" friendlyPos="true" lines="011"/>
+    <busStop id="-12036300587" name="Dom João IV" lane="-502363056_0" startPos="159.02" endPos="174.02" friendlyPos="true" lines="011"/>
+    <busStop id="-12040161957" name="Gandarela (EB1)" lane="-891374818#0_0" startPos="1040.10" endPos="1055.10" friendlyPos="true" lines="011"/>
+    <busStop id="-1244214889" name="Ponte Nova" lane="-135530871#3_0" startPos="111.81" endPos="126.81" friendlyPos="true"/>
+    <busStop id="-1488495873" name="São Gualter" lane="-502363056_0" startPos="669.38" endPos="684.38" friendlyPos="true" lines="011"/>
+    <busStop id="-1936990678" name="Centro de Saúde Pevidém" lane="-353222404#2_0" startPos="171.92" endPos="186.92" friendlyPos="true"/>
+    <busStop id="-1937017464" name="Igreja de Pevidém" lane="-135595594#2_0" startPos="0.00" endPos="12.85" friendlyPos="true"/>
+    <busStop id="-2783146757" name="Ronce" lane="-1156566237#0_1" startPos="67.23" endPos="82.23" friendlyPos="true" lines="011"/>
+    <busStop id="11869834006" name="Estação CP Guimarães" lane="336363404_0" startPos="149.02" endPos="164.02" friendlyPos="true" lines="011"/>
+    <busStop id="11869834007" name="Dom João IV" lane="24267198_0" startPos="524.16" endPos="539.16" friendlyPos="true" lines="011"/>
+    <busStop id="11869834008" name="São Gualter" lane="24267198_0" startPos="62.55" endPos="77.55" friendlyPos="true" lines="011"/>
+    <busStop id="12029743125" name="Moreira de Cónegos (Igreja)" lane="217636187_0" startPos="43.51" endPos="58.51" friendlyPos="true" lines="011"/>
+    <busStop id="12029743128" name="Moreira de Cónegos (Junta de Freguesia)" lane="217636187_0" startPos="0.00" endPos="15.00" friendlyPos="true" lines="011"/>
+    <busStop id="12029977093" name="Lameirinho" lane="889380717#3_0" startPos="28.69" endPos="43.69" friendlyPos="true"/>
+    <busStop id="12029977128" name="Gandarela (Boavista)" lane="1299820988_0" startPos="291.54" endPos="306.54" friendlyPos="true" lines="011"/>
+    <busStop id="12029977132" name="Gandarela (Padrão)" lane="1299820988_0" startPos="40.74" endPos="55.74" friendlyPos="true" lines="011"/>
+    <busStop id="12029977135" name="Calçada" lane="122104223_1" startPos="300.26" endPos="315.26" friendlyPos="true" lines="011"/>
+    <busStop id="12029977136" name="EB1 de Nespereira" lane="234412901#0_1" startPos="148.77" endPos="163.77" friendlyPos="true" lines="011"/>
+    <busStop id="12029977137" name="Igreja de Nespereira" lane="1299820993#1_1" startPos="39.79" endPos="54.79" friendlyPos="true" lines="011"/>
+    <busStop id="12029977138" name="Rotunda de Nespereira" lane="550276670#4_0" startPos="0.27" endPos="15.27" friendlyPos="true" lines="011"/>
+    <busStop id="12029977140" name="Uveiras" lane="1156566237#1_1" startPos="79.02" endPos="94.02" friendlyPos="true" lines="011"/>
+    <busStop id="12029977141" name="Ronce" lane="1156566237#0_1" startPos="60.66" endPos="75.66" friendlyPos="true" lines="011"/>
+    <busStop id="12029977142" name="Calços" lane="1299820992#1_1" startPos="1061.50" endPos="1076.50" friendlyPos="true" lines="011"/>
+    <busStop id="12029977144" name="Junqueira" lane="1299820992#1_1" startPos="377.77" endPos="392.77" friendlyPos="true" lines="011"/>
+    <busStop id="12029977146" name="Igreja de Conde" lane="1299820992#0_1" startPos="607.48" endPos="622.48" friendlyPos="true" lines="011"/>
+    <busStop id="12029977149" name="Seis Pinheiros" lane="1299820992#0_1" startPos="128.57" endPos="143.57" friendlyPos="true" lines="011"/>
+    <busStop id="12029992472" name="Moreira de Cónegos (Piscinas)" lane="40278300_0" startPos="15.80" endPos="30.80" friendlyPos="true" lines="011"/>
+    <busStop id="12029992473" name="Moreira de Cónegos (Piscinas)" lane="40278300_0" startPos="17.79" endPos="32.79" friendlyPos="true" lines="011"/>
+    <busStop id="12029992474" name="Moreira de Cónegos (Barreiro)" lane="40278300_0" startPos="308.97" endPos="323.97" friendlyPos="true" lines="011"/>
+    <busStop id="12029992475" name="Moreira de Cónegos (Barreiro)" lane="40278300_0" startPos="306.06" endPos="321.06" friendlyPos="true" lines="011"/>
+    <busStop id="12029992476" name="Moreira de Cónegos (Santa Marta)" lane="40278300_0" startPos="541.76" endPos="556.76" friendlyPos="true" lines="011"/>
+    <busStop id="12029992477" name="Moreira de Cónegos (Santa Marta)" lane="40278300_0" startPos="542.40" endPos="557.40" friendlyPos="true" lines="011"/>
+    <busStop id="12032099808" name="EB1 de Selho São Cristóvão" lane="337082361#1_1" startPos="10.06" endPos="25.06" friendlyPos="true"/>
+    <busStop id="12032099810" name="Pontido" lane="135593930#2_0" startPos="0.00" endPos="10.63" friendlyPos="true"/>
+    <busStop id="12032099812" name="Barridinho" lane="135593939#2_0" startPos="2.94" endPos="17.94" friendlyPos="true"/>
+    <busStop id="12032099814" name="Giestal" lane="304278671#3_1" startPos="6.29" endPos="21.29" friendlyPos="true"/>
+    <busStop id="12032099816" name="Campinho" lane="135593937#3_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12032099820" name="Penegacho" lane="304278674#2_1" startPos="0.72" endPos="15.72" friendlyPos="true"/>
+    <busStop id="12032099822" name="Nevogilde" lane="784453173#0_1" startPos="161.83" endPos="176.83" friendlyPos="true"/>
+    <busStop id="12032099824" name="Igreja de Pevidém" lane="135595594#1_0" startPos="1.41" endPos="16.41" friendlyPos="true"/>
+    <busStop id="12032099827" name="Zona Industrial Pevidém" lane="353222404#7_0" startPos="237.33" endPos="252.33" friendlyPos="true"/>
+    <busStop id="12032099828" name="Zona Industrial Pevidém" lane="135595588#2_1" startPos="3.11" endPos="18.11" friendlyPos="true"/>
+    <busStop id="12032099832" name="Capela de São Brás" lane="183324015#2_1" startPos="16.69" endPos="31.69" friendlyPos="true"/>
+    <busStop id="12032099834" name="Cemitério de Pevidém" lane="1420175574#2_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12032099837" name="Circunvalação" lane="137399664#9_1" startPos="96.02" endPos="111.02" friendlyPos="true"/>
+    <busStop id="12032099840" name="EB1 Pevidém" lane="137399664#6_1" startPos="71.60" endPos="86.60" friendlyPos="true"/>
+    <busStop id="12032099842" name="EB23 de Pevidém" lane="137399664#3_1" startPos="0.00" endPos="5.66" friendlyPos="true"/>
+    <busStop id="12032099844" name="Bela Vista" lane="340731055#1_1" startPos="93.08" endPos="108.08" friendlyPos="true"/>
+    <busStop id="12032099846" name="Souto de Baixo" lane="340731074#0_1" startPos="137.50" endPos="152.50" friendlyPos="true"/>
+    <busStop id="12032099849" name="Casas Novas" lane="340731065#0_1" startPos="106.20" endPos="121.20" friendlyPos="true"/>
+    <busStop id="12032099862" name="Trabalhador Têxtil" lane="142891938#2_1" startPos="11.00" endPos="26.00" friendlyPos="true"/>
+    <busStop id="12032099864" name="Reis" lane="328953331_0" startPos="6.25" endPos="21.25" friendlyPos="true"/>
+    <busStop id="12033714818" name="Pojeira" lane="342860823#1_1" startPos="31.81" endPos="46.81" friendlyPos="true"/>
+    <busStop id="12033714819" name="Igreja de Sande Vila Nova" lane="172903629#23_1" startPos="7.56" endPos="22.56" friendlyPos="true"/>
+    <busStop id="12033764938" name="Alfa" lane="277167076#2_0" startPos="0.00" endPos="0.20" friendlyPos="true"/>
+    <busStop id="12033857668" name="Pontizela" lane="170211916#10_0" startPos="3.62" endPos="18.62" friendlyPos="true"/>
+    <busStop id="12033887870" name="Cemitério de Ponte" lane="170211916#6_0" startPos="75.32" endPos="90.32" friendlyPos="true"/>
+    <busStop id="12033887872" name="Centro de Saúde Ponte" lane="170211916#1_0" startPos="25.58" endPos="40.58" friendlyPos="true"/>
+    <busStop id="12033887874" name="Miogo" lane="131244843#0_0" startPos="124.74" endPos="139.74" friendlyPos="true"/>
+    <busStop id="12033887876" name="Pouve" lane="170211916#0_0" startPos="43.36" endPos="58.36" friendlyPos="true"/>
+    <busStop id="12033887878" name="Monte do Padrão" lane="170211913#0_1" startPos="127.35" endPos="142.35" friendlyPos="true"/>
+    <busStop id="12033887879" name="Assento" lane="1093403790_1" startPos="108.70" endPos="123.70" friendlyPos="true"/>
+    <busStop id="12033887880" name="Cemitério de Silvares" lane="41674464#2_0" startPos="68.38" endPos="83.38" friendlyPos="true"/>
+    <busStop id="12033887881" name="Cemitério de Silvares" lane="98494719#4_0" startPos="25.48" endPos="40.48" friendlyPos="true"/>
+    <busStop id="12033887882" name="Igreja de Silvares" lane="1421361027#1_0" startPos="34.68" endPos="49.68" friendlyPos="true"/>
+    <busStop id="12033887883" name="Igreja de Silvares" lane="172903620_0" startPos="159.60" endPos="174.60" friendlyPos="true"/>
+    <busStop id="12033887884" name="Teixugueira" lane="973003146#1_1" startPos="21.56" endPos="36.56" friendlyPos="true"/>
+    <busStop id="12033887886" name="Bairro Santa Maria" lane="107961665#1_0" startPos="13.00" endPos="28.00" friendlyPos="true"/>
+    <busStop id="12033887888" name="Gandra" lane="107961665#1_0" startPos="220.40" endPos="235.40" friendlyPos="true"/>
+    <busStop id="12033887891" name="Serzedo" lane="170211917#4_0" startPos="276.57" endPos="291.57" friendlyPos="true"/>
+    <busStop id="12033887894" name="Valboa" lane="170211917#1_0" startPos="111.03" endPos="126.03" friendlyPos="true"/>
+    <busStop id="12033887900" name="Capela de Campelos" lane="170211915#1_0" startPos="86.39" endPos="101.39" friendlyPos="true"/>
+    <busStop id="12033887903" name="Centro Social de Campelos" lane="170211908#0_0" startPos="50.67" endPos="65.67" friendlyPos="true"/>
+    <busStop id="12033887905" name="Ferreiros" lane="172903672#1_0" startPos="28.91" endPos="43.91" friendlyPos="true"/>
+    <busStop id="12033887908" name="EB1 Sande Vila Nova" lane="172903672#3_0" startPos="71.79" endPos="86.79" friendlyPos="true"/>
+    <busStop id="12033887911" name="Borrecos" lane="172903629#11_1" startPos="19.63" endPos="34.63" friendlyPos="true"/>
+    <busStop id="12033887913" name="Egas Moniz" lane="172903629#6_1" startPos="24.70" endPos="39.70" friendlyPos="true"/>
+    <busStop id="12033887915" name="Chã" lane="172903629#3_1" startPos="10.46" endPos="25.46" friendlyPos="true"/>
+    <busStop id="12033887920" name="Trigais" lane="165195038#1_0" startPos="25.21" endPos="40.21" friendlyPos="true"/>
+    <busStop id="12033887921" name="Trigais" lane="278843170#0_0" startPos="0.00" endPos="5.17" friendlyPos="true"/>
+    <busStop id="12033887922" name="Espaço Guimarães" lane="165195035_0" startPos="24.88" endPos="39.88" friendlyPos="true"/>
+    <busStop id="12033887923" name="Espaço Guimarães" lane="135530871#0_0" startPos="37.22" endPos="52.22" friendlyPos="true"/>
+    <busStop id="12033887927" name="Brito (Sequito)" lane="108433875#9_1" startPos="4.67" endPos="19.67" friendlyPos="true"/>
+    <busStop id="12033887931" name="Brito (Paço)" lane="108433875#3_1" startPos="0.94" endPos="15.94" friendlyPos="true"/>
+    <busStop id="12033887932" name="Brito (Castelo)" lane="108433875#0_1" startPos="626.60" endPos="641.60" friendlyPos="true"/>
+    <busStop id="12034790189" name="Paço de Toriz" lane="77619073#0_1" startPos="23.75" endPos="38.75" friendlyPos="true"/>
+    <busStop id="12034790191" name="Castelães de Além" lane="77619073#1_1" startPos="44.88" endPos="59.88" friendlyPos="true"/>
+    <busStop id="12034790202" name="Subdevesa" lane="131245692#0_0" startPos="51.56" endPos="66.56" friendlyPos="true"/>
+    <busStop id="12034790204" name="Parque Industrial Ponte (Rotunda Nascente)" lane="131244847#1_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12034790205" name="Parque Industrial Ponte (Rotunda Nascente)" lane="131244828#0_0" startPos="13.29" endPos="28.29" friendlyPos="true"/>
+    <busStop id="12034790206" name="Parque Industrial Ponte (Rotunda Poente)" lane="131244828#1_0" startPos="334.08" endPos="349.08" friendlyPos="true"/>
+    <busStop id="12034790207" name="Parque Industrial Ponte (Rotunda Poente)" lane="131244828#8_0" startPos="23.60" endPos="38.60" friendlyPos="true"/>
+    <busStop id="12034820891" name="Clube Recreativo de Candoso São Martinho" lane="655446866#12_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12034820897" name="Soeiro" lane="135473203#1_0" startPos="18.72" endPos="33.72" friendlyPos="true"/>
+    <busStop id="12034820898" name="Carramão" lane="337016245#2_1" startPos="65.48" endPos="80.48" friendlyPos="true"/>
+    <busStop id="12034820901" name="Agra" lane="142933610#1_0" startPos="31.47" endPos="46.47" friendlyPos="true"/>
+    <busStop id="12034820902" name="Carreira" lane="55490965#1_0" startPos="606.76" endPos="621.76" friendlyPos="true"/>
+    <busStop id="12034820907" name="Travessa da Agrela" lane="133475378#1_1" startPos="41.25" endPos="56.25" friendlyPos="true"/>
+    <busStop id="12034820910" name="Ressa" lane="183791935#1_1" startPos="31.16" endPos="46.16" friendlyPos="true"/>
+    <busStop id="12034820912" name="Batoca" lane="142916414#1_0" startPos="212.47" endPos="227.47" friendlyPos="true"/>
+    <busStop id="12034820914" name="Travessa da Ressa" lane="133475370#1_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12034820916" name="Penedo" lane="142916414#0_0" startPos="72.35" endPos="87.35" friendlyPos="true"/>
+    <busStop id="12034820918" name="Largo da Várzea" lane="1022613810#1_0" startPos="0.00" endPos="0.20" friendlyPos="true"/>
+    <busStop id="12034820919" name="Largo da Várzea" lane="1022613810#4_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12034820920" name="Costeiras" lane="133475384#6_0" startPos="27.40" endPos="42.40" friendlyPos="true"/>
+    <busStop id="12034820923" name="Senhor dos Perigos" lane="133475384#2_0" startPos="6.43" endPos="21.43" friendlyPos="true"/>
+    <busStop id="12034820924" name="Fonte da Venda" lane="135593933#2_0" startPos="76.40" endPos="91.40" friendlyPos="true"/>
+    <busStop id="12034820928" name="Muda" lane="337082361#7_1" startPos="5.96" endPos="20.96" friendlyPos="true"/>
+    <busStop id="12034820930" name="Ponte da Mansa" lane="142933610#4_0" startPos="51.83" endPos="66.83" friendlyPos="true"/>
+    <busStop id="12034820932" name="Mercado de Pevidém" lane="183329074#1_1" startPos="79.90" endPos="94.90" friendlyPos="true"/>
+    <busStop id="12034820933" name="Central" lane="135593944#1_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12034820935" name="Dom Guilherme Augusto" lane="142912765#1_1" startPos="170.63" endPos="185.63" friendlyPos="true"/>
+    <busStop id="12034892761" name="Tanque" lane="1420163598_0" startPos="94.96" endPos="109.96" friendlyPos="true"/>
+    <busStop id="12034892763" name="Veiga" lane="133475373#1_0" startPos="71.91" endPos="86.91" friendlyPos="true"/>
+    <busStop id="12034892764" name="Messoulo" lane="133475373#3_0" startPos="2.00" endPos="17.00" friendlyPos="true"/>
+    <busStop id="12034907274" name="Rebôto" lane="1420162191#1_0" startPos="52.09" endPos="67.09" friendlyPos="true"/>
+    <busStop id="12034907275" name="São Martinho" lane="578185258#0_0" startPos="36.56" endPos="51.56" friendlyPos="true"/>
+    <busStop id="12034907279" name="Codeçal" lane="578185258#2_0" startPos="27.80" endPos="42.80" friendlyPos="true"/>
+    <busStop id="12034907281" name="Sernande" lane="655446866#8_1" startPos="58.35" endPos="73.35" friendlyPos="true"/>
+    <busStop id="12034907283" name="Cemitério de Candoso São Martinho" lane="655446866#5_1" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12034907287" name="Pipe-Areosa" lane="655446866#3_1" startPos="31.02" endPos="46.02" friendlyPos="true"/>
+    <busStop id="12034907295" name="Parque Industrial de Sezim" lane="135473211#1_0" startPos="14.88" endPos="29.88" friendlyPos="true"/>
+    <busStop id="12034907297" name="Sezim" lane="655446866#0_1" startPos="64.61" endPos="79.61" friendlyPos="true"/>
+    <busStop id="12034907298" name="Candoso de Baixo" lane="655446866#2_1" startPos="594.52" endPos="609.52" friendlyPos="true"/>
+    <busStop id="12035737121" name="Mirante" lane="122104223_1" startPos="1808.56" endPos="1823.56" friendlyPos="true" lines="011"/>
+    <busStop id="12035737123" name="Valinha" lane="122104223_1" startPos="1536.22" endPos="1551.22" friendlyPos="true" lines="011"/>
+    <busStop id="12035737126" name="Pocinhas" lane="122104223_1" startPos="1256.24" endPos="1271.24" friendlyPos="true" lines="011"/>
+    <busStop id="12035737127" name="Pego" lane="122104223_1" startPos="999.16" endPos="1014.16" friendlyPos="true" lines="011"/>
+    <busStop id="12035737129" name="Ribeiro de Baixo" lane="122104223_1" startPos="725.20" endPos="740.20" friendlyPos="true" lines="011"/>
+    <busStop id="12035963904" name="Fábrica Asa" lane="122104223_1" startPos="2094.73" endPos="2109.73" friendlyPos="true" lines="011"/>
+    <busStop id="12036034568" name="Fábrica do Castanheiro" lane="135475689_1" startPos="347.90" endPos="362.90" friendlyPos="true" lines="011"/>
+    <busStop id="12036043469" name="Quinta da Boavista" lane="135475689_1" startPos="547.45" endPos="562.45" friendlyPos="true" lines="011"/>
+    <busStop id="12036043483" name="Quinta das Aldeias" lane="1299820985_1" startPos="46.87" endPos="61.87" friendlyPos="true" lines="011"/>
+    <busStop id="12036043502" name="Vaca Negra" lane="1299820985_1" startPos="404.22" endPos="419.22" friendlyPos="true" lines="011"/>
+    <busStop id="12036043504" name="EB23 Gil Vicente" lane="135475696_0" startPos="20.46" endPos="35.46" friendlyPos="true" lines="011"/>
+    <busStop id="12036043512" name="Nossa Senhora dos Remédios" lane="172903752_1" startPos="58.74" endPos="73.74" friendlyPos="true" lines="011"/>
+    <busStop id="12040161957" name="Gandarela (EB1)" lane="1299820988_0" startPos="625.73" endPos="640.73" friendlyPos="true" lines="011"/>
+    <busStop id="12040161958" name="Belfama" lane="121175410_0" startPos="0.00" endPos="15.00" friendlyPos="true"/>
+    <busStop id="12042283033" name="Alvarinho" lane="550276670#0_0" startPos="33.06" endPos="48.06" friendlyPos="true" lines="011"/>
+    <busStop id="1244214805" name="Ponte Nova" lane="135530871#3_0" startPos="91.20" endPos="106.20" friendlyPos="true"/>
+    <busStop id="1244226523" name="Brito (Café Táxi)" lane="277167077#0_0" startPos="240.20" endPos="255.20" friendlyPos="true"/>
+    <busStop id="1244228498" lane="172903620_0" startPos="160.07" endPos="175.07" friendlyPos="true"/>
+    <busStop id="13061829790" lane="1421361027#1_0" startPos="33.20" endPos="48.20" friendlyPos="true"/>
+    <busStop id="1657990644" name="Espaço Guimarães (Entrada)" lane="172903623_0" startPos="114.07" endPos="129.07" friendlyPos="true"/>
+    <busStop id="1904143081" name="Escola Secundária Martins Sarmento" lane="41779525_1" startPos="395.19" endPos="410.19" friendlyPos="true" lines="011"/>
+    <busStop id="1936990500" name="Largo do Cruzeiro" lane="142916173_0" startPos="27.60" endPos="42.60" friendlyPos="true"/>
+    <busStop id="1936990639" name="Largo do Cruzeiro" lane="142916172_0" startPos="24.40" endPos="39.40" friendlyPos="true"/>
+    <busStop id="1936990724" name="Centro de Saúde Pevidém" lane="353222404#2_0" startPos="22.50" endPos="37.50" friendlyPos="true"/>
+    <busStop id="1998859867" name="Rodovia de Covas (Estação CP Covas)" lane="172903638_1" startPos="28.11" endPos="43.11" friendlyPos="true" lines="011"/>
+    <busStop id="2633089067" name="Senhor do Crasto" lane="142916630#2_0" startPos="43.67" endPos="58.67" friendlyPos="true"/>
+    <busStop id="2633089069" name="Mouril" lane="142916414#6_0" startPos="37.61" endPos="52.61" friendlyPos="true"/>
+    <busStop id="5071309084" name="Campo da Feira" lane="1066387398_0" startPos="121.27" endPos="136.27" friendlyPos="true" lines="011"/>
+</additional>

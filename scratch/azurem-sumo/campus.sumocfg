@@ -1,0 +1,10 @@
+<configuration>
+    <input>
+        <net-file value="campus.net.xml"/>
+        <route-files value="mobility.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="900"/>
+    </time>
+</configuration>

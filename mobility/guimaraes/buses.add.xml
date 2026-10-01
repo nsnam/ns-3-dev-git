@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='utf-8'?>
+<additional>
+    <busStop id="gtfs_GUI1-1_1" lane="24267198_0" startPos="68.98" endPos="81.98" friendlyPos="true" name="SÃO GUALTER" />
+    <busStop id="gtfs_GUI1-1_2" lane="24267198_0" startPos="525.64" endPos="538.64" friendlyPos="true" name="D. JOÃO IV" />
+    <busStop id="gtfs_GUI1-1_3" lane="336363404_0" startPos="142.76" endPos="155.76" friendlyPos="true" name="ESTAÇÃO CP GUIMARÃES" />
+    <busStop id="gtfs_GUI1-1_4" lane="135475689_1" startPos="92.78" endPos="105.78" friendlyPos="true" name="CASTANHEIRO" />
+    <busStop id="gtfs_GUI3154-3_1" lane="24267198_0" startPos="68.98" endPos="81.98" friendlyPos="true" name="SÃO GUALTER" />
+    <busStop id="gtfs_GUI3154-3_2" lane="24267198_0" startPos="525.64" endPos="538.64" friendlyPos="true" name="D. JOÃO IV" />
+    <busStop id="gtfs_GUI3154-3_3" lane="336363404_0" startPos="142.76" endPos="155.76" friendlyPos="true" name="ESTAÇÃO CP GUIMARÃES" />
+    <busStop id="gtfs_GUI3154-3_4" lane="135475689_1" startPos="319.24" endPos="332.24" friendlyPos="true" name="FÁBRICA DO CASTANHEIRO" />
+    <busStop id="gtfs_GUI3154-3_5" lane="135475689_1" startPos="545.48" endPos="558.48" friendlyPos="true" name="QUINTA DA BOAVISTA" />
+    <busStop id="gtfs_GUI3154-3_6" lane="1299820985_1" startPos="40.81" endPos="53.81" friendlyPos="true" name="QUINTA DAS ALDEIAS" />
+    <busStop id="gtfs_GUI3154-3_7" lane="1299820985_1" startPos="398.80" endPos="411.80" friendlyPos="true" name="VACA NEGRA" />
+    <busStop id="gtfs_GUI3154-3_8" lane="135475696_0" startPos="25.12" endPos="38.12" friendlyPos="true" name="EB23 GIL VICENTE" />
+    <busStop id="gtfs_GUI3154-3_9" lane="172903752_1" startPos="64.26" endPos="77.26" friendlyPos="true" name="N. SRA. REMÉDIOS" />
+    <busStop id="gtfs_GUI3154-3_10" lane="77609709_1" startPos="85.77" endPos="98.77" friendlyPos="true" name="RODOVIA DE COVAS (ESTAÇÃO CP COVAS)" />
+    <busStop id="gtfs_GUI3154-3_11" lane="-1286869615_1" startPos="155.91" endPos="168.91" friendlyPos="true" name="FÁBRICA ASA" />
+    <busStop id="gtfs_GUI3154-3_12" lane="-1286869615_1" startPos="500.68" endPos="513.68" friendlyPos="true" name="MIRANTE" />
+    <busStop id="gtfs_GUI3154-3_13" lane="-1286869615_1" startPos="787.05" endPos="800.05" friendlyPos="true" name="VALINHA" />
+    <busStop id="gtfs_GUI3154-3_14" lane="-1286869615_1" startPos="991.96" endPos="1004.96" friendlyPos="true" name="POCINHAS" />
+    <busStop id="gtfs_GUI3154-3_15" lane="-1286869615_1" startPos="1194.14" endPos="1207.14" friendlyPos="true" name="PEGO" />
+    <busStop id="gtfs_GUI3154-3_16" lane="-1286869615_1" startPos="1500.44" endPos="1513.44" friendlyPos="true" name="RIBEIRO DE BAIXO" />
+    <busStop id="gtfs_GUI3154-3_17" lane="-1286869615_1" startPos="1990.41" endPos="2003.41" friendlyPos="true" name="CALÇADA" />
+    <busStop id="gtfs_GUI3154-3_18" lane="234412901#0_1" startPos="151.56" endPos="163.77" friendlyPos="true" name="EB1 DE NESPEREIRA" />
+    <busStop id="gtfs_GUI3154-3_19" lane="550276670#0_0" startPos="49.90" endPos="62.90" friendlyPos="true" name="ALVARINHO" />
+    <busStop id="gtfs_GUI3154-3_20" lane="550276670#5_0" startPos="8.61" endPos="20.70" friendlyPos="true" name="ROTUNDA DE NESPEREIRA" />
+    <busStop id="gtfs_GUI3154-3_21" lane="-1156566237#1_1" startPos="12.36" endPos="25.36" friendlyPos="true" name="UVEIRAS" />
+    <busStop id="gtfs_GUI3154-3_22" lane="-1156566237#0_1" startPos="68.38" endPos="81.38" friendlyPos="true" name="RONCE" />
+    <busStop id="gtfs_GUI3154-3_23" lane="-1299820992#1_1" startPos="153.79" endPos="166.79" friendlyPos="true" name="CALÇOS" />
+    <busStop id="gtfs_GUI3154-3_24" lane="-1299820992#1_1" startPos="850.08" endPos="863.08" friendlyPos="true" name="JUNQUEIRA" />
+    <busStop id="gtfs_GUI3154-3_25" lane="-1299820992#0_1" startPos="64.86" endPos="77.86" friendlyPos="true" name="IGREJA DE CONDE" />
+    <busStop id="gtfs_GUI3154-3_26" lane="-1299820992#0_1" startPos="595.12" endPos="608.12" friendlyPos="true" name="SEIS PINHEIROS" />
+    <busStop id="gtfs_GUI3154-3_27" lane="-1299820990_1" startPos="206.41" endPos="219.41" friendlyPos="true" name="ESTRADA NOVA" />
+    <busStop id="gtfs_GUI3154-3_28" lane="-40730206_1" startPos="170.42" endPos="183.42" friendlyPos="true" name="PENEDO REDONDO" />
+    <busStop id="gtfs_GUI3154-3_29" lane="-40730206_1" startPos="633.19" endPos="646.19" friendlyPos="true" name="GANDARELA (IGREJA)" />
+    <busStop id="gtfs_GUI3154-3_30" lane="1299820988_0" startPos="41.27" endPos="54.27" friendlyPos="true" name="GANDARELA (PADRÃO)" />
+    <busStop id="gtfs_GUI3154-3_31" lane="1299820988_0" startPos="289.99" endPos="302.99" friendlyPos="true" name="GANDARELA (BOAVISTA)" />
+    <busStop id="gtfs_GUI3154-3_32" lane="1299820988_0" startPos="634.06" endPos="647.06" friendlyPos="true" name="GANDARELA (EB1)" />
+    <busStop id="gtfs_GUI3154-3_33" lane="-891374818#0_0" startPos="784.91" endPos="797.91" friendlyPos="true" name="PARDELHAS" />
+    <busStop id="gtfs_GUI398-5_1" lane="135004836#1_0" startPos="25.69" endPos="38.69" friendlyPos="true" name="CENTRO CULTURAL VILA FLOR" />
+    <busStop id="gtfs_GUI398-5_2" lane="135475689_1" startPos="319.24" endPos="332.24" friendlyPos="true" name="FÁBRICA DO CASTANHEIRO" />
+    <busStop id="gtfs_GUI398-5_3" lane="135475689_1" startPos="545.48" endPos="558.48" friendlyPos="true" name="QUINTA DA BOAVISTA" />
+    <busStop id="gtfs_GUI398-5_4" lane="1299820985_1" startPos="40.81" endPos="53.81" friendlyPos="true" name="QUINTA DAS ALDEIAS" />
+    <busStop id="gtfs_GUI398-5_5" lane="1299820985_1" startPos="398.80" endPos="411.80" friendlyPos="true" name="VACA NEGRA" />
+    <busStop id="gtfs_GUI398-5_6" lane="-1299820985_1" startPos="51.30" endPos="64.30" friendlyPos="true" name="IGREJA DE URGEZES" />
+    <busStop id="gtfs_GUI398-5_7" lane="135475694#4_1" startPos="64.85" endPos="77.85" friendlyPos="true" name="C. SAÚDE URGEZES" />
+    <busStop id="gtfs_GUI398-5_8" lane="122104223_1" startPos="2045.16" endPos="2058.16" friendlyPos="true" name="LAMEIRAS" />
+    <busStop id="gtfs_GUI398-5_9" lane="122104223_1" startPos="2182.09" endPos="2195.09" friendlyPos="true" name="ESTAÇÃO CP COVAS" />
+    <busStop id="gtfs_GUI398-5_10" lane="135475697_1" startPos="71.28" endPos="84.28" friendlyPos="true" name="BAIRRO DOS CEGOS" />
+    <busStop id="gtfs_GUI398-5_11" lane="-135475695_0" startPos="92.15" endPos="105.15" friendlyPos="true" name="EB23 GIL VICENTE" />
+    <busStop id="gtfs_GUI398-5_12" lane="-1299820985_1" startPos="51.30" endPos="64.30" friendlyPos="true" name="IGREJA DE URGEZES" />
+    <busStop id="gtfs_GUI398-5_13" lane="135475694#4_1" startPos="64.85" endPos="77.85" friendlyPos="true" name="C. SAÚDE URGEZES" />
+    <busStop id="gtfs_GUI398-5_14" lane="-1299820985_1" startPos="538.98" endPos="551.98" friendlyPos="true" name="CERCA NOVA" />
+    <busStop id="gtfs_GUI398-5_15" lane="-1299820985_1" startPos="553.25" endPos="566.25" friendlyPos="true" name="FRANCISCO SANTOS GUIMARÃES" />
+    <busStop id="gtfs_GUI398-5_16" lane="-135475689_1" startPos="264.69" endPos="277.69" friendlyPos="true" name="QUINTA DA BOAVISTA" />
+    <busStop id="gtfs_GUI398-5_17" lane="-135475689_1" startPos="464.80" endPos="477.80" friendlyPos="true" name="FÁBRICA DO CASTANHEIRO" />
+    <busStop id="gtfs_GUI398-5_18" lane="-135004836#0_0" startPos="72.52" endPos="85.52" friendlyPos="true" name="ESTAÇÃO CP GUIMARÃES" />
+    <busStop id="gtfs_GUI398-5_19" lane="-502363056_0" startPos="160.11" endPos="173.11" friendlyPos="true" name="D. JOÃO IV" />
+    <busStop id="gtfs_GUI398-5_20" lane="-502363056_0" startPos="665.47" endPos="678.47" friendlyPos="true" name="SÃO GUALTER" />
+    <busStop id="gtfs_GUI398-5_21" lane="1066387398_0" startPos="123.25" endPos="136.25" friendlyPos="true" name="CAMPO DA FEIRA" />
+    <busStop id="gtfs_GUI398-5_22" lane="135530868_0" startPos="15.03" endPos="28.03" friendlyPos="true" name="TOURAL" />
+    <busStop id="gtfs_GUI398-5_23" lane="135004837#1_0" startPos="63.03" endPos="76.03" friendlyPos="true" name="BAIRRO C" />
+    <busStop id="gtfs_GUI398-5_24" lane="135475689_1" startPos="104.03" endPos="117.03" friendlyPos="true" name="CALDEIROA" />
+    <busStop id="gtfs_GUI441-6_1" lane="41779525_1" startPos="195.18" endPos="208.18" friendlyPos="true" name="ABADE TAGILDE" />
+    <busStop id="gtfs_GUI441-6_3" lane="41779525_1" startPos="481.26" endPos="487.76" friendlyPos="true" name="COLINA SAGRADA" />
+    <busStop id="gtfs_GUI613-8_1" lane="41779525_1" startPos="195.18" endPos="208.18" friendlyPos="true" name="ABADE TAGILDE" />
+    <busStop id="gtfs_GUI613-8_2" lane="41779525_1" startPos="322.49" endPos="335.49" friendlyPos="true" name="ESC. SEC. MARTINS SARMENTO" />
+    <busStop id="gtfs_GUI613-8_3" lane="41779525_1" startPos="337.38" endPos="350.38" friendlyPos="true" name="CASA DA MARCHA GUALTERIANA" />
+    <busStop id="gtfs_GUI721-10_1" lane="131245692#0_0" startPos="51.80" endPos="64.80" friendlyPos="true" name="SUBDEVESA" />
+    <busStop id="gtfs_GUI721-10_2" lane="-77619073#1_1" startPos="108.67" endPos="121.67" friendlyPos="true" name="CASTELÃES DE ALÉM" />
+    <busStop id="gtfs_GUI721-10_3" lane="-164448403#2_1" startPos="21.99" endPos="34.99" friendlyPos="true" name="PAÇO DE TORIZ" />
+    <busStop id="gtfs_GUI721-10_4" lane="164448403#0_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="BACOREIRA" />
+    <busStop id="gtfs_GUI721-10_5" lane="135530868_0" startPos="59.30" endPos="72.30" friendlyPos="true" name="S. DÂMASO SUL" />
+    <busStop id="gtfs_GUI779-11_1" lane="77619073#0_1" startPos="24.66" endPos="37.66" friendlyPos="true" name="PAÇO DE TORIZ" />
+    <busStop id="gtfs_GUI779-11_2" lane="77619073#1_1" startPos="46.39" endPos="59.39" friendlyPos="true" name="CASTELÃES DE ALÉM" />
+    <busStop id="gtfs_GUI779-11_3" lane="-131245692#0_0" startPos="127.64" endPos="140.64" friendlyPos="true" name="SUBDEVESA" />
+    <busStop id="gtfs_GUI779-11_4" lane="131244828#0_0" startPos="19.11" endPos="32.11" friendlyPos="true" name="P. INDUSTRIAL PONTE (ROT. NASCENTE)" />
+    <busStop id="gtfs_GUI779-11_5" lane="131244828#1_0" startPos="335.01" endPos="348.01" friendlyPos="true" name="P. INDUSTRIAL PONTE (ROT. POENTE)" />
+    <busStop id="gtfs_GUI779-11_6" lane="-131244843#0_0" startPos="129.92" endPos="142.92" friendlyPos="true" name="MIOGO" />
+    <busStop id="gtfs_GUI779-11_7" lane="-170211916#0_0" startPos="30.78" endPos="43.78" friendlyPos="true" name="POUVE" />
+    <busStop id="gtfs_GUI779-11_8" lane="-170211913#0_1" startPos="17.91" endPos="30.91" friendlyPos="true" name="MONTE DO PADRÃO" />
+    <busStop id="gtfs_GUI779-11_9" lane="-170211915#0_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="CAPELA DE CAMPELOS" />
+    <busStop id="gtfs_GUI779-11_10" lane="170211917#1_0" startPos="112.21" endPos="125.21" friendlyPos="true" name="VALBOA" />
+    <busStop id="gtfs_GUI779-11_11" lane="170211917#4_0" startPos="285.07" endPos="291.57" friendlyPos="true" name="SERZEDO" />
+    <busStop id="gtfs_GUI779-11_12" lane="-107961665#1_0" startPos="7.63" endPos="20.63" friendlyPos="true" name="GANDRA" />
+    <busStop id="gtfs_GUI779-11_13" lane="-107961665#1_0" startPos="214.99" endPos="227.99" friendlyPos="true" name="BAIRRO STA. MARIA" />
+    <busStop id="gtfs_GUI779-11_14" lane="1421361027#1_0" startPos="35.70" endPos="48.70" friendlyPos="true" name="IGREJA DE SILVARES" />
+    <busStop id="gtfs_GUI779-11_15" lane="98494719#4_0" startPos="25.77" endPos="38.77" friendlyPos="true" name="CEMITÉRIO DE SILVARES" />
+    <busStop id="gtfs_GUI779-11_16" lane="-55490965#1_0" startPos="56.67" endPos="69.67" friendlyPos="true" name="CARREIRA" />
+    <busStop id="gtfs_GUI779-11_17" lane="-55490965#0_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="SELHO DE FORA" />
+    <busStop id="gtfs_GUI779-11_18" lane="-55490965#0_0" startPos="73.48" endPos="79.98" friendlyPos="true" name="PISCA" />
+    <busStop id="gtfs_GUI779-11_19" lane="55490965#0_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="FONTINHAS" />
+    <busStop id="gtfs_GUI779-11_21" lane="135530868_0" startPos="59.30" endPos="72.30" friendlyPos="true" name="S. DÂMASO SUL" />
+    <busStop id="gtfs_GUI1010-14_1" lane="41779525_1" startPos="195.18" endPos="208.18" friendlyPos="true" name="ABADE TAGILDE" />
+    <busStop id="gtfs_GUI1010-14_3" lane="41779525_1" startPos="481.26" endPos="487.76" friendlyPos="true" name="COLINA SAGRADA" />
+    <busStop id="gtfs_GUI1179-17_1" lane="135004837#1_0" startPos="63.03" endPos="76.03" friendlyPos="true" name="BAIRRO C" />
+    <busStop id="gtfs_GUI1179-17_2" lane="135475689_1" startPos="104.03" endPos="117.03" friendlyPos="true" name="CALDEIROA" />
+    <busStop id="gtfs_GUI1179-17_3" lane="135475689_1" startPos="205.96" endPos="218.96" friendlyPos="true" name="MERCADO MUNICIPAL" />
+    <busStop id="gtfs_GUI1179-17_4" lane="135475689_1" startPos="246.35" endPos="259.35" friendlyPos="true" name="FORNOS DA CRUZ DE PEDRA" />
+    <busStop id="gtfs_GUI1179-17_5" lane="135475689_1" startPos="292.63" endPos="305.63" friendlyPos="true" name="CRUZ DE PEDRA" />
+    <busStop id="gtfs_GUI1179-17_6" lane="135475689_1" startPos="339.18" endPos="352.18" friendlyPos="true" name="ALMINHAS DO SALGUEIRAL" />
+    <busStop id="gtfs_GUI1179-17_7" lane="135475689_1" startPos="706.45" endPos="719.45" friendlyPos="true" name="SALGUEIRAL" />
+    <busStop id="gtfs_GUI1179-17_8" lane="135475689_1" startPos="826.05" endPos="837.22" friendlyPos="true" name="RODOVIA DE COVAS (CTT)" />
+    <busStop id="gtfs_GUI1179-17_9" lane="77609693#1_1" startPos="36.25" endPos="49.25" friendlyPos="true" name="RODOVIA DE COVAS (FUNDEVILA)" />
+    <busStop id="gtfs_GUI1179-17_10" lane="77609709_1" startPos="85.77" endPos="98.77" friendlyPos="true" name="RODOVIA DE COVAS (ESTAÇÃO CP COVAS)" />
+    <busStop id="gtfs_GUI1179-17_11" lane="-1286869615_1" startPos="155.91" endPos="168.91" friendlyPos="true" name="FÁBRICA ASA" />
+    <busStop id="gtfs_GUI1179-17_12" lane="-1286869615_1" startPos="388.37" endPos="401.37" friendlyPos="true" name="ESTOLEIROS" />
+    <busStop id="gtfs_GUI1179-17_13" lane="-135473211#0_0" startPos="657.34" endPos="663.84" friendlyPos="true" name="CRUZEIRO DE STO. AMARO" />
+    <busStop id="gtfs_GUI1179-17_15" lane="135473211#0_0" startPos="288.39" endPos="301.39" friendlyPos="true" name="PARQUE DE LAZER SANTO AMARO" />
+    <busStop id="gtfs_GUI1179-17_16" lane="135473211#1_0" startPos="11.77" endPos="24.77" friendlyPos="true" name="P. INDUSTRIAL SEZIM" />
+    <busStop id="gtfs_GUI1179-17_17" lane="655446866#0_1" startPos="66.62" endPos="79.62" friendlyPos="true" name="SEZIM" />
+    <busStop id="gtfs_GUI1179-17_18" lane="655446866#2_1" startPos="590.32" endPos="603.32" friendlyPos="true" name="CANDOSO DE BAIXO" />
+    <busStop id="gtfs_GUI1179-17_19" lane="655446866#3_1" startPos="32.22" endPos="45.22" friendlyPos="true" name="PIPE-AREOSA" />
+    <busStop id="gtfs_GUI1179-17_20" lane="655446866#5_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="CEMITÉRIO DE CANDOSO S. MARTINHO" />
+    <busStop id="gtfs_GUI1179-17_21" lane="655446866#8_1" startPos="62.72" endPos="75.72" friendlyPos="true" name="SERNANDE" />
+    <busStop id="gtfs_GUI1179-17_22" lane="655446866#12_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="C. RECREATIVO DE CANDOSO S. MARTINHO" />
+    <busStop id="gtfs_GUI1179-17_23" lane="135473203#1_0" startPos="19.64" endPos="32.64" friendlyPos="true" name="SOEIRO" />
+    <busStop id="gtfs_GUI1179-17_24" lane="135473203#4_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="CARRAMÃO" />
+    <busStop id="gtfs_GUI1179-17_25" lane="142933610#1_0" startPos="33.96" endPos="46.96" friendlyPos="true" name="AGRA" />
+    <busStop id="gtfs_GUI1179-17_26" lane="142933610#4_0" startPos="52.97" endPos="65.97" friendlyPos="true" name="PONTE DA MANSA" />
+    <busStop id="gtfs_GUI1179-17_27" lane="135593933#2_0" startPos="67.19" endPos="80.19" friendlyPos="true" name="FONTE DA VENDA" />
+    <busStop id="gtfs_GUI1179-17_28" lane="-183329074#1_1" startPos="28.52" endPos="41.52" friendlyPos="true" name="MERCADO DE PEVIDÉM" />
+    <busStop id="gtfs_GUI1179-17_29" lane="-353222404#2_0" startPos="172.11" endPos="185.11" friendlyPos="true" name="CENTRO SAÚDE PEVIDÉM" />
+    <busStop id="gtfs_GUI1179-17_30" lane="135595594#1_0" startPos="5.74" endPos="16.41" friendlyPos="true" name="IGREJA DE PEVIDÉM" />
+    <busStop id="gtfs_GUI1179-17_31" lane="-142916630#2_0" startPos="40.76" endPos="53.76" friendlyPos="true" name="SENHOR DO CRASTO" />
+    <busStop id="gtfs_GUI1179-17_32" lane="-328953331_0" startPos="9.11" endPos="22.11" friendlyPos="true" name="REIS" />
+    <busStop id="gtfs_GUI1179-17_33" lane="-142916631#0_0" startPos="140.29" endPos="153.29" friendlyPos="true" name="PONTA DO CAMPO" />
+    <busStop id="gtfs_GUI1179-17_34" lane="333415400#0_1" startPos="9.58" endPos="22.58" friendlyPos="true" name="VARIANTE" />
+    <busStop id="gtfs_GUI1179-17_35" lane="142892503#1_0" startPos="379.67" endPos="386.17" friendlyPos="true" name="CABREIRA DE CIMA" />
+    <busStop id="gtfs_GUI1179-17_36" lane="142916172_0" startPos="25.64" endPos="38.64" friendlyPos="true" name="LG. DO CRUZEIRO" />
+    <busStop id="gtfs_GUI1179-17_37" lane="183324015#2_1" startPos="17.28" endPos="30.28" friendlyPos="true" name="CAPELA DE S. BRÁS" />
+    <busStop id="gtfs_GUI1179-17_38" lane="1420175574#1_1" startPos="11.87" endPos="18.37" friendlyPos="true" name="CEMITÉRIO DE PEVIDÉM" />
+    <busStop id="gtfs_GUI1179-17_39" lane="1420729530_1" startPos="153.55" endPos="166.55" friendlyPos="true" name="SOUTO DE CIMA" />
+    <busStop id="gtfs_GUI1179-17_40" lane="-340731074#0_1" startPos="11.18" endPos="24.18" friendlyPos="true" name="SOUTO DE BAIXO" />
+    <busStop id="gtfs_GUI1179-17_41" lane="-340731067_1" startPos="153.63" endPos="166.63" friendlyPos="true" name="AGRELOS" />
+    <busStop id="gtfs_GUI1179-17_42" lane="340731065#0_1" startPos="115.93" endPos="128.93" friendlyPos="true" name="CASAS NOVAS" />
+    <busStop id="gtfs_GUI1179-17_43" lane="-340731055#1_1" startPos="90.13" endPos="103.13" friendlyPos="true" name="BELA VISTA" />
+    <busStop id="gtfs_GUI1179-17_44" lane="137399664#6_1" startPos="72.46" endPos="85.46" friendlyPos="true" name="EB1 PEVIDÉM" />
+    <busStop id="gtfs_GUI1179-17_45" lane="137399664#9_1" startPos="87.87" endPos="100.87" friendlyPos="true" name="CIRCUNVALAÇÃO" />
+    <busStop id="gtfs_GUI1179-17_46" lane="1022613810#4_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="LARGO DA VÁRZEA" />
+    <busStop id="gtfs_GUI1179-17_47" lane="133475370#1_1" startPos="3.65" endPos="16.65" friendlyPos="true" name="TV. RESSA" />
+    <busStop id="gtfs_GUI1179-17_48" lane="183791935#1_1" startPos="79.82" endPos="92.82" friendlyPos="true" name="RESSA" />
+    <busStop id="gtfs_GUI1179-17_49" lane="133475378#1_1" startPos="44.47" endPos="57.47" friendlyPos="true" name="TV. AGRELA" />
+    <busStop id="gtfs_GUI1179-17_50" lane="-55490965#1_0" startPos="56.67" endPos="69.67" friendlyPos="true" name="CARREIRA" />
+    <busStop id="gtfs_GUI1179-17_51" lane="-55490965#0_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="SELHO DE FORA" />
+    <busStop id="gtfs_GUI1179-17_52" lane="-55490965#0_0" startPos="73.48" endPos="79.98" friendlyPos="true" name="PISCA" />
+    <busStop id="gtfs_GUI1179-17_53" lane="135530895#0_0" startPos="85.54" endPos="98.54" friendlyPos="true" name="PAÇO" />
+    <busStop id="gtfs_GUI1179-17_55" lane="-135530895#0_0" startPos="1121.95" endPos="1128.45" friendlyPos="true" name="CUTELEIROS" />
+    <busStop id="gtfs_GUI1179-17_56" lane="135530868_0" startPos="15.03" endPos="28.03" friendlyPos="true" name="TOURAL" />
+    <busStop id="gtfs_GUI3670-19_1" lane="-135473211#0_0" startPos="135.60" endPos="148.60" friendlyPos="true" name="VENDA VELHA" />
+    <busStop id="gtfs_GUI3670-19_2" lane="-135473211#0_0" startPos="370.87" endPos="383.87" friendlyPos="true" name="TOJEIRA" />
+    <busStop id="gtfs_GUI3670-19_3" lane="-135473211#0_0" startPos="657.34" endPos="663.84" friendlyPos="true" name="STO. AMARO" />
+    <busStop id="gtfs_GUI3670-19_4" lane="135473211#0_0" startPos="142.48" endPos="155.48" friendlyPos="true" name="LARGO DOS SOBREIROS" />
+    <busStop id="gtfs_GUI3670-19_5" lane="-382226490#0_1" startPos="80.96" endPos="93.96" friendlyPos="true" name="IGREJA DE CANDOSO S. TIAGO" />
+    <busStop id="gtfs_GUI3670-19_6" lane="-133475373#4_0" startPos="49.95" endPos="62.95" friendlyPos="true" name="EB1 DE CANDOSO S. TIAGO" />
+    <busStop id="gtfs_GUI3670-19_7" lane="-133475373#3_0" startPos="256.77" endPos="269.77" friendlyPos="true" name="MESSOULO" />
+    <busStop id="gtfs_GUI3670-19_8" lane="-133475373#1_0" startPos="137.93" endPos="150.93" friendlyPos="true" name="VEIGA" />
+    <busStop id="gtfs_GUI3670-19_9" lane="-183791926_0" startPos="93.95" endPos="106.95" friendlyPos="true" name="TANQUE" />
+    <busStop id="gtfs_GUI3670-19_10" lane="-135530895#0_0" startPos="72.26" endPos="85.26" friendlyPos="true" name="CIDADE DESPORTIVA (PARQUE)" />
+    <busStop id="gtfs_GUI3670-19_11" lane="-135530895#0_0" startPos="286.55" endPos="299.55" friendlyPos="true" name="CODEÇAIS" />
+    <busStop id="gtfs_GUI3670-19_12" lane="-135530895#0_0" startPos="572.23" endPos="585.23" friendlyPos="true" name="EIRAS-MONDAS" />
+    <busStop id="gtfs_GUI3670-19_13" lane="-135530895#0_0" startPos="777.06" endPos="790.06" friendlyPos="true" name="EIRAS" />
+    <busStop id="gtfs_GUI3670-19_14" lane="-135530895#0_0" startPos="1121.95" endPos="1128.45" friendlyPos="true" name="S. MIGUEL" />
+    <busStop id="gtfs_GUI3670-19_16" lane="135530868_0" startPos="15.03" endPos="28.03" friendlyPos="true" name="TOURAL" />
+    <busStop id="gtfs_GUI3844-21_1" lane="183329074#1_1" startPos="81.37" endPos="94.37" friendlyPos="true" name="MERCADO DE PEVIDÉM" />
+    <busStop id="gtfs_GUI3844-21_2" lane="-135593933#2_0" startPos="21.47" endPos="34.47" friendlyPos="true" name="FONTE DA VENDA" />
+    <busStop id="gtfs_GUI3844-21_3" lane="-135593933#0_0" startPos="80.26" endPos="93.26" friendlyPos="true" name="PONTE DA MANSA" />
+    <busStop id="gtfs_GUI3844-21_4" lane="-337082361#7_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="MUDA" />
+    <busStop id="gtfs_GUI3844-21_5" lane="-337082361#1_1" startPos="76.64" endPos="89.64" friendlyPos="true" name="EB1 DE SELHO SÃO CRISTÓVÃO" />
+    <busStop id="gtfs_GUI3844-21_6" lane="335561245#4_0" startPos="79.32" endPos="92.32" friendlyPos="true" name="CEMITÉRIO DE SELHO SÃO CRISTÓVÃO" />
+    <busStop id="gtfs_GUI3844-21_7" lane="-334481033#0_1" startPos="113.89" endPos="124.26" friendlyPos="true" name="GIESTAL" />
+    <busStop id="gtfs_GUI3844-21_8" lane="-784453173#0_1" startPos="4.96" endPos="17.96" friendlyPos="true" name="NEVOGILDE" />
+    <busStop id="gtfs_GUI3844-21_9" lane="-304278674#2_1" startPos="17.58" endPos="25.86" friendlyPos="true" name="PENEGACHO" />
+    <busStop id="gtfs_GUI3844-21_10" lane="-304278674#0_1" startPos="59.23" endPos="72.23" friendlyPos="true" name="IGREJA DE SELHO SÃO CRISTÓVÃO" />
+    <busStop id="gtfs_GUI3844-21_11" lane="-135593937#2_1" startPos="0.00" endPos="11.50" friendlyPos="true" name="CAMPINHO" />
+    <busStop id="gtfs_GUI3844-21_12" lane="-135593939#2_0" startPos="66.72" endPos="79.72" friendlyPos="true" name="BARRIDINHO" />
+    <busStop id="gtfs_GUI3844-21_13" lane="135593930#2_0" startPos="4.13" endPos="10.63" friendlyPos="true" name="PONTIDO" />
+    <busStop id="gtfs_GUI3844-21_14" lane="-135473203#2_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="CARRAMÃO" />
+    <busStop id="gtfs_GUI3844-21_15" lane="-135473203#1_0" startPos="8.45" endPos="21.45" friendlyPos="true" name="SOEIRO" />
+    <busStop id="gtfs_GUI3844-21_16" lane="-655446866#12_1" startPos="68.62" endPos="75.12" friendlyPos="true" name="C. RECREATIVO DE CANDOSO S. MARTINHO" />
+    <busStop id="gtfs_GUI3844-21_17" lane="-578185258#0_0" startPos="23.64" endPos="36.64" friendlyPos="true" name="CODEÇAL" />
+    <busStop id="gtfs_GUI3844-21_18" lane="-578185258#0_0" startPos="386.17" endPos="398.50" friendlyPos="true" name="S. MARTINHO" />
+    <busStop id="gtfs_GUI3844-21_19" lane="-1420162191#1_0" startPos="192.09" endPos="205.09" friendlyPos="true" name="REBÔTO" />
+    <busStop id="gtfs_GUI3844-21_20" lane="-183791926_0" startPos="93.95" endPos="106.95" friendlyPos="true" name="TANQUE" />
+    <busStop id="gtfs_GUI3844-21_21" lane="-135530895#0_0" startPos="72.26" endPos="85.26" friendlyPos="true" name="CIDADE DESPORTIVA (PARQUE)" />
+    <busStop id="gtfs_GUI3844-21_22" lane="-135530895#0_0" startPos="286.55" endPos="299.55" friendlyPos="true" name="CODEÇAIS" />
+    <busStop id="gtfs_GUI3844-21_23" lane="-135530895#0_0" startPos="572.23" endPos="585.23" friendlyPos="true" name="EIRAS-MONDAS" />
+    <busStop id="gtfs_GUI3844-21_24" lane="-135530895#0_0" startPos="777.06" endPos="790.06" friendlyPos="true" name="EIRAS" />
+    <busStop id="gtfs_GUI3844-21_25" lane="-135530895#0_0" startPos="1121.95" endPos="1128.45" friendlyPos="true" name="S. MIGUEL" />
+    <busStop id="gtfs_GUI3844-21_27" lane="135530868_0" startPos="59.30" endPos="72.30" friendlyPos="true" name="S. DÂMASO SUL" />
+    <busStop id="gtfs_GUI3887-22_1" lane="-135530895#0_0" startPos="1121.95" endPos="1128.45" friendlyPos="true" name="S. MIGUEL" />
+    <busStop id="gtfs_GUI3887-22_2" lane="135530895#0_0" startPos="311.84" endPos="324.84" friendlyPos="true" name="EIRAS" />
+    <busStop id="gtfs_GUI3887-22_3" lane="135530895#0_0" startPos="548.56" endPos="561.56" friendlyPos="true" name="EIRAS-MONDAS" />
+    <busStop id="gtfs_GUI3887-22_4" lane="135530895#0_0" startPos="823.59" endPos="836.59" friendlyPos="true" name="CODEÇAIS" />
+    <busStop id="gtfs_GUI3887-22_5" lane="135530895#0_0" startPos="1023.90" endPos="1036.90" friendlyPos="true" name="CIDADE DESPORTIVA (PARQUE)" />
+    <busStop id="gtfs_GUI3887-22_6" lane="1420163598_0" startPos="69.27" endPos="82.27" friendlyPos="true" name="TANQUE" />
+    <busStop id="gtfs_GUI3887-22_7" lane="1420162191#1_0" startPos="20.88" endPos="33.88" friendlyPos="true" name="REBÔTO" />
+    <busStop id="gtfs_GUI3887-22_8" lane="578185258#0_0" startPos="6.49" endPos="19.49" friendlyPos="true" name="S. MARTINHO" />
+    <busStop id="gtfs_GUI3887-22_9" lane="578185258#2_0" startPos="28.74" endPos="41.74" friendlyPos="true" name="CODEÇAL" />
+    <busStop id="gtfs_GUI3887-22_10" lane="655446866#12_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="C. RECREATIVO DE CANDOSO S. MARTINHO" />
+    <busStop id="gtfs_GUI3887-22_11" lane="135473203#1_0" startPos="19.64" endPos="32.64" friendlyPos="true" name="SOEIRO" />
+    <busStop id="gtfs_GUI3887-22_12" lane="135473203#4_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="CARRAMÃO" />
+    <busStop id="gtfs_GUI3887-22_13" lane="-135595591#0_1" startPos="0.00" endPos="6.87" friendlyPos="true" name="PONTIDO" />
+    <busStop id="gtfs_GUI3887-22_14" lane="135593939#2_0" startPos="7.51" endPos="20.51" friendlyPos="true" name="BARRIDINHO" />
+    <busStop id="gtfs_GUI3887-22_15" lane="135593937#3_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="CAMPINHO" />
+    <busStop id="gtfs_GUI3887-22_16" lane="304278674#0_1" startPos="0.21" endPos="13.21" friendlyPos="true" name="IGREJA DE SELHO SÃO CRISTÓVÃO" />
+    <busStop id="gtfs_GUI3887-22_17" lane="304278674#2_1" startPos="2.48" endPos="15.48" friendlyPos="true" name="PENEGACHO" />
+    <busStop id="gtfs_GUI3887-22_18" lane="784453173#0_1" startPos="162.60" endPos="175.60" friendlyPos="true" name="NEVOGILDE" />
+    <busStop id="gtfs_GUI3887-22_19" lane="304278671#3_1" startPos="8.75" endPos="21.75" friendlyPos="true" name="GIESTAL" />
+    <busStop id="gtfs_GUI3887-22_20" lane="1171878219_0" startPos="18.04" endPos="31.04" friendlyPos="true" name="CEMITÉRIO DE SELHO SÃO CRISTÓVÃO" />
+    <busStop id="gtfs_GUI3887-22_21" lane="337082361#1_1" startPos="9.74" endPos="22.74" friendlyPos="true" name="EB1 DE SELHO SÃO CRISTÓVÃO" />
+    <busStop id="gtfs_GUI3887-22_22" lane="337082361#7_1" startPos="6.89" endPos="19.89" friendlyPos="true" name="MUDA" />
+    <busStop id="gtfs_GUI3887-22_23" lane="142933610#4_0" startPos="52.97" endPos="65.97" friendlyPos="true" name="PONTE DA MANSA" />
+    <busStop id="gtfs_GUI3887-22_24" lane="135593933#2_0" startPos="67.19" endPos="80.19" friendlyPos="true" name="FONTE DA VENDA" />
+    <busStop id="gtfs_GUI3887-22_25" lane="-183329074#1_1" startPos="28.52" endPos="41.52" friendlyPos="true" name="MERCADO DE PEVIDÉM" />
+    <busStop id="gtfs_GUI3887-22_26" lane="-353222404#2_0" startPos="172.11" endPos="185.11" friendlyPos="true" name="CENTRO SAÚDE PEVIDÉM" />
+    <busStop id="gtfs_GUI3887-22_27" lane="-135595592#1_0" startPos="41.69" endPos="54.69" friendlyPos="true" name="VENDA" />
+    <busStop id="gtfs_GUI3887-22_28" lane="133475384#2_0" startPos="8.59" endPos="21.43" friendlyPos="true" name="SR. DOS PERIGOS" />
+    <busStop id="gtfs_GUI3887-22_29" lane="133475384#6_0" startPos="13.65" endPos="26.65" friendlyPos="true" name="COSTEIRAS" />
+    <busStop id="gtfs_GUI3887-22_30" lane="142916414#0_0" startPos="72.62" endPos="85.62" friendlyPos="true" name="PENEDO" />
+    <busStop id="gtfs_GUI3887-22_31" lane="142916414#1_0" startPos="213.27" endPos="226.27" friendlyPos="true" name="BATOCA" />
+    <busStop id="gtfs_GUI3887-22_32" lane="142916414#6_0" startPos="43.68" endPos="56.68" friendlyPos="true" name="MOURIL" />
+    <busStop id="gtfs_GUI3887-22_33" lane="172903671#4_1" startPos="0.00" endPos="2.39" friendlyPos="true" name="ASSENTO" />
+    <busStop id="gtfs_GUI3887-22_34" lane="165195031#8_0" startPos="13.97" endPos="26.97" friendlyPos="true" name="J. FREGUESIA SILVARES" />
+    <busStop id="gtfs_GUI3887-22_35" lane="1421361027#1_0" startPos="35.70" endPos="48.70" friendlyPos="true" name="IGREJA DE SILVARES" />
+    <busStop id="gtfs_GUI3887-22_36" lane="98494719#4_0" startPos="25.77" endPos="38.77" friendlyPos="true" name="CEMITÉRIO DE SILVARES" />
+    <busStop id="gtfs_GUI3887-22_37" lane="-55490965#1_0" startPos="56.67" endPos="69.67" friendlyPos="true" name="CARREIRA" />
+    <busStop id="gtfs_GUI3887-22_38" lane="-55490965#0_0" startPos="0.00" endPos="13.00" friendlyPos="true" name="SELHO DE FORA" />
+    <busStop id="gtfs_GUI3887-22_39" lane="-55490965#0_0" startPos="73.48" endPos="79.98" friendlyPos="true" name="PISCA" />
+    <busStop id="gtfs_GUI3887-22_40" lane="135530895#0_0" startPos="85.54" endPos="98.54" friendlyPos="true" name="PAÇO" />
+    <busStop id="gtfs_GUI3887-22_42" lane="-135530895#0_0" startPos="1121.95" endPos="1128.45" friendlyPos="true" name="CUTELEIROS" />
+    <busStop id="gtfs_GUI3887-22_43" lane="135530868_0" startPos="59.30" endPos="72.30" friendlyPos="true" name="S. DÂMASO SUL" />
+    <busStop id="gtfs_GUI1911-41_1" lane="936803460#4_1" startPos="787.66" endPos="794.16" friendlyPos="true" name="CARVALHAS" />
+    <busStop id="gtfs_GUI1911-41_2" lane="-936803460#4_1" startPos="30.68" endPos="43.68" friendlyPos="true" name="ROT. PONTE" />
+    <busStop id="gtfs_GUI1911-41_3" lane="-936803460#4_1" startPos="618.99" endPos="631.99" friendlyPos="true" name="SÃO JOÃO BATISTA" />
+    <busStop id="gtfs_GUI1911-41_4" lane="-131245692#0_0" startPos="127.64" endPos="140.64" friendlyPos="true" name="SUBDEVESA" />
+    <busStop id="gtfs_GUI1911-41_5" lane="131244847#1_0" startPos="3.99" endPos="16.99" friendlyPos="true" name="P. INDUSTRIAL PONTE (ROT. NASCENTE)" />
+    <busStop id="gtfs_GUI1911-41_6" lane="131245692#0_0" startPos="51.80" endPos="64.80" friendlyPos="true" name="SUBDEVESA" />
+    <busStop id="gtfs_GUI1911-41_7" lane="-77619073#1_1" startPos="108.67" endPos="121.67" friendlyPos="true" name="CASTELÃES DE ALÉM" />
+    <busStop id="gtfs_GUI1911-41_8" lane="-164448403#2_1" startPos="21.99" endPos="34.99" friendlyPos="true" name="PAÇO DE TORIZ" />
+    <busStop id="gtfs_GUI1911-41_9" lane="164448403#0_1" startPos="0.00" endPos="13.00" friendlyPos="true" name="BACOREIRA" />
+</additional>

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<additional>
+    <vType id="cars_passenger" vClass="passenger" accel="2.0" decel="4.0" length="4.5" minGap="2.5" maxSpeed="15.3" sigma="0.5" tau="1.2" laneChangeModel="SL2015" lcStrategic="5.0" lcCooperative="1.0" lcSpeedGain="1.0" lcKeepRight="1.0" />
+    <vType id="bus" vClass="bus" accel="1.0" decel="3.0" length="12.0" minGap="2.5" maxSpeed="13.9" sigma="0.5" />
+    <vType id="bikes_bicycle" vClass="bicycle" accel="1.2" decel="3.0" length="1.8" width="0.6" minGap="1.0" maxSpeed="5.0" sigma="0.3" laneChangeModel="SL2015" latAlignment="arbitrary" minGapLat="0.5" lcSublane="1.0" />
+</additional>

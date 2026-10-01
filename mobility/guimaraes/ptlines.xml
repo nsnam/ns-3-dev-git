@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-09-30T14:12:40.366289+00:00 by Eclipse SUMO netconvert 1.27.1
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <osm-files value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/guimaraes.osm"/>
+    </input>
+
+    <output>
+        <output-file value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/guimaraes.net.xml"/>
+        <ptstop-output value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/ptstops.xml"/>
+        <ptline-output value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/ptlines.xml"/>
+    </output>
+
+    <projection>
+        <proj.utm value="true"/>
+    </projection>
+
+    <processing>
+        <geometry.remove value="true"/>
+    </processing>
+
+    <ramp_guessing>
+        <ramps.guess value="true"/>
+    </ramp_guessing>
+
+    <junctions>
+        <junctions.corner-detail value="5"/>
+    </junctions>
+
+    <pedestrian>
+        <sidewalks.guess value="true"/>
+        <crossings.guess value="true"/>
+    </pedestrian>
+
+</netconvertConfiguration>
+-->
+
+<ptLines xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/ptlines_file.xsd">
+    <ptLine id="17813357" name="011: Gandarela - Volta" line="011" type="bus" vClass="bus" completeness="0.96">
+        <route edges="-891374818#0 40730209 1299820990 1299820987 1299820992#0 1299820992#1 122104220 122104227 1156566237#0 1156566237#1 1156566237#2 1156566237#3 1299820993#0 1299820993#1 1299820993#2 122104223 172903638 172903715 -172903752 -1299820994 -135475695 135475698 425953626 -1363856860 -1299820985 -1299820983 -135475689 1118860787 -135004837#1 -135004837#0 -135004836#0 24267197 336363410 336363408 -502363056 1066387398"/>
+        <busStop id="-12040161957" name="Gandarela (EB1)"/>
+        <busStop id="-12029977129" name="Gandarela (Boavista)"/>
+        <busStop id="-12029977133" name="Gandarela (Padrão)"/>
+        <busStop id="12029977149" name="Seis Pinheiros"/>
+        <busStop id="12029977146" name="Igreja de Conde"/>
+        <busStop id="12029977144" name="Junqueira"/>
+        <busStop id="12029977142" name="Calços"/>
+        <busStop id="12029977141" name="Ronce"/>
+        <busStop id="12029977140" name="Uveiras"/>
+        <busStop id="12029977137" name="Igreja de Nespereira"/>
+        <busStop id="12029977135" name="Calçada"/>
+        <busStop id="12035737129" name="Ribeiro de Baixo"/>
+        <busStop id="12035737127" name="Pego"/>
+        <busStop id="12035737126" name="Pocinhas"/>
+        <busStop id="12035737123" name="Valinha"/>
+        <busStop id="12035737121" name="Mirante"/>
+        <busStop id="12035963904" name="Fábrica Asa"/>
+        <busStop id="1998859867" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12036043513" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12036043503" name="EB23 Gil Vicente"/>
+        <busStop id="-12036043501" name="Vaca Negra"/>
+        <busStop id="-12036043482" name="Quinta das Aldeias"/>
+        <busStop id="-12036043470" name="Quinta da Boavista"/>
+        <busStop id="-12036034567" name="Fábrica do Castanheiro"/>
+        <busStop id="-12036300587" name="Dom João IV"/>
+        <busStop id="-1488495873" name="São Gualter"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+    </ptLine>
+    <ptLine id="17813358" name="011: Pereirinhas - Volta" line="011" type="bus" vClass="bus" completeness="0.83">
+        <route edges="217636187 40278289 1299820992#0 1299820992#1 122104220 122104227 1156566237#0 1156566237#1 1156566237#2 1156566237#3 1299820993#0 1299820993#1 1299820993#2 122104223 172903638 172903715 -172903752 -1299820994 -135475695 135475698 425953626 -1363856860 -1299820985 -1299820983 -135475689 1118860787 -135004837#1 -135004837#0 -135004836#0 24267197 336363410 336363408 -502363056 1066387398"/>
+        <busStop id="12040161958" name="Belfama"/>
+        <busStop id="12029743128" name="Moreira de Cónegos (Junta de Freguesia)"/>
+        <busStop id="12029743125" name="Moreira de Cónegos (Igreja)"/>
+        <busStop id="-12029992477" name="Moreira de Cónegos (Santa Marta)"/>
+        <busStop id="-12029992475" name="Moreira de Cónegos (Barreiro)"/>
+        <busStop id="-12029992473" name="Moreira de Cónegos (Piscinas)"/>
+        <busStop id="12029977149" name="Seis Pinheiros"/>
+        <busStop id="12029977146" name="Igreja de Conde"/>
+        <busStop id="12029977144" name="Junqueira"/>
+        <busStop id="12029977142" name="Calços"/>
+        <busStop id="12029977141" name="Ronce"/>
+        <busStop id="12029977140" name="Uveiras"/>
+        <busStop id="12029977137" name="Igreja de Nespereira"/>
+        <busStop id="12029977135" name="Calçada"/>
+        <busStop id="12035737129" name="Ribeiro de Baixo"/>
+        <busStop id="12035737127" name="Pego"/>
+        <busStop id="12035737126" name="Pocinhas"/>
+        <busStop id="12035737123" name="Valinha"/>
+        <busStop id="12035737121" name="Mirante"/>
+        <busStop id="12035963904" name="Fábrica Asa"/>
+        <busStop id="1998859867" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12036043513" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12036043503" name="EB23 Gil Vicente"/>
+        <busStop id="-12036043501" name="Vaca Negra"/>
+        <busStop id="-12036043482" name="Quinta das Aldeias"/>
+        <busStop id="-12036043470" name="Quinta da Boavista"/>
+        <busStop id="-12036034567" name="Fábrica do Castanheiro"/>
+        <busStop id="-12036300587" name="Dom João IV"/>
+        <busStop id="-1488495873" name="São Gualter"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+    </ptLine>
+    <ptLine id="17813359" name="011: Gandarela - Ida" line="011" type="bus" vClass="bus" completeness="0.97">
+        <route edges="1066387398 450682083 520281210 135530868 520281211 24267198 336363401 1118860786 336363406 336363404 135004836#1 135004837#1 77609694 135475689 1299820983 1299820985 1363856860 425953625 41736409 135475696 1299820994 172903752 172903717 77609709 -1286869615 234412901#0 234412901#1 234412901#2 234412901#3 550276670#0 550276670#1 550276670#2 550276670#3 550276670#4 550276670#5 -1156566237#3 -1156566237#2 -1156566237#1 -1156566237#0 122104221 122104222 -1299820992#1 -1299820992#0 -1299820987 -1299820990 -40730206 1299820988"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+        <busStop id="11869834008" name="São Gualter"/>
+        <busStop id="11869834007" name="Dom João IV"/>
+        <busStop id="11869834006" name="Estação CP Guimarães"/>
+        <busStop id="12036034568" name="Fábrica do Castanheiro"/>
+        <busStop id="12036043469" name="Quinta da Boavista"/>
+        <busStop id="12036043483" name="Quinta das Aldeias"/>
+        <busStop id="12036043502" name="Vaca Negra"/>
+        <busStop id="12036043504" name="EB23 Gil Vicente"/>
+        <busStop id="12036043512" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12001190171" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12035963905" name="Fábrica Asa"/>
+        <busStop id="-12035737122" name="Mirante"/>
+        <busStop id="-12035737124" name="Valinha"/>
+        <busStop id="-12035737125" name="Pocinhas"/>
+        <busStop id="-12035737128" name="Pego"/>
+        <busStop id="-12035737130" name="Ribeiro de Baixo"/>
+        <busStop id="-12029977134" name="Calçada"/>
+        <busStop id="12029977136" name="EB1 de Nespereira"/>
+        <busStop id="12042283033" name="Alvarinho"/>
+        <busStop id="12029977138" name="Rotunda de Nespereira"/>
+        <busStop id="-12029977139" name="Uveiras"/>
+        <busStop id="-2783146757" name="Ronce"/>
+        <busStop id="-12029977143" name="Calços"/>
+        <busStop id="-12029977145" name="Junqueira"/>
+        <busStop id="-12029977147" name="Igreja de Conde"/>
+        <busStop id="-12029977148" name="Seis Pinheiros"/>
+        <busStop id="12029977132" name="Gandarela (Padrão)"/>
+        <busStop id="12029977128" name="Gandarela (Boavista)"/>
+        <busStop id="12040161957" name="Gandarela (EB1)"/>
+    </ptLine>
+    <ptLine id="17813360" name="011: Pereirinhas - Ida" line="011" type="bus" vClass="bus" completeness="0.87">
+        <route edges="1066387398 450682083 520281210 135530868 520281211 24267198 336363401 1118860786 336363406 336363404 135004836#1 135004837#1 77609694 135475689 1299820983 1299820985 1363856860 425953625 41736409 135475696 1299820994 172903752 172903717 77609709 -1286869615 234412901#0 234412901#1 234412901#2 234412901#3 550276670#0 550276670#1 550276670#2 550276670#3 550276670#4 550276670#5 -1156566237#3 -1156566237#2 -1156566237#1 -1156566237#0 122104221 122104222 -1299820992#1 -1299820992#0 -1299820987 40278298 40278300"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+        <busStop id="11869834008" name="São Gualter"/>
+        <busStop id="11869834007" name="Dom João IV"/>
+        <busStop id="11869834006" name="Estação CP Guimarães"/>
+        <busStop id="12036034568" name="Fábrica do Castanheiro"/>
+        <busStop id="12036043469" name="Quinta da Boavista"/>
+        <busStop id="12036043483" name="Quinta das Aldeias"/>
+        <busStop id="12036043502" name="Vaca Negra"/>
+        <busStop id="12036043504" name="EB23 Gil Vicente"/>
+        <busStop id="12036043512" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12001190171" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12035963905" name="Fábrica Asa"/>
+        <busStop id="-12035737122" name="Mirante"/>
+        <busStop id="-12035737124" name="Valinha"/>
+        <busStop id="-12035737125" name="Pocinhas"/>
+        <busStop id="-12035737128" name="Pego"/>
+        <busStop id="-12035737130" name="Ribeiro de Baixo"/>
+        <busStop id="-12029977134" name="Calçada"/>
+        <busStop id="12029977136" name="EB1 de Nespereira"/>
+        <busStop id="12042283033" name="Alvarinho"/>
+        <busStop id="12029977138" name="Rotunda de Nespereira"/>
+        <busStop id="-12029977139" name="Uveiras"/>
+        <busStop id="-2783146757" name="Ronce"/>
+        <busStop id="-12029977143" name="Calços"/>
+        <busStop id="-12029977145" name="Junqueira"/>
+        <busStop id="-12029977147" name="Igreja de Conde"/>
+        <busStop id="-12029977148" name="Seis Pinheiros"/>
+        <busStop id="12029992472" name="Moreira de Cónegos (Piscinas)"/>
+        <busStop id="12029992474" name="Moreira de Cónegos (Barreiro)"/>
+        <busStop id="12029992476" name="Moreira de Cónegos (Santa Marta)"/>
+        <busStop id="-12029743126" name="Moreira de Cónegos (Igreja)"/>
+        <busStop id="-12029743127" name="Moreira de Cónegos (Junta de Freguesia)"/>
+        <busStop id="12040161958" name="Belfama"/>
+    </ptLine>
+    <ptLine id="17817206" name="011: Pereirinhas | Gandarela - Volta" line="011" type="bus" vClass="bus" completeness="0.78">
+        <route edges="-891374818#0 40730209 1299820990 40278298 40278300 217636187 40278289 1299820992#0 1299820992#1 122104220 122104227 1156566237#0 1156566237#1 1156566237#2 1156566237#3 1299820993#0 1299820993#1 1299820993#2 122104223 172903638 172903715 -172903752 -1299820994 -135475695 135475698 425953626 -1363856860 -1299820985 -1299820983 -135475689 1118860787 -135004837#1 -135004837#0 -135004836#0 24267197 336363410 336363408 -502363056 1066387398"/>
+        <busStop id="-12040161957" name="Gandarela (EB1)"/>
+        <busStop id="-12029977129" name="Gandarela (Boavista)"/>
+        <busStop id="-12029977133" name="Gandarela (Padrão)"/>
+        <busStop id="12029992472" name="Moreira de Cónegos (Piscinas)"/>
+        <busStop id="12029992474" name="Moreira de Cónegos (Barreiro)"/>
+        <busStop id="12029992476" name="Moreira de Cónegos (Santa Marta)"/>
+        <busStop id="-12029743126" name="Moreira de Cónegos (Igreja)"/>
+        <busStop id="-12029743127" name="Moreira de Cónegos (Junta de Freguesia)"/>
+        <busStop id="12040161958" name="Belfama"/>
+        <busStop id="-12029743128" name="Moreira de Cónegos (Junta de Freguesia)"/>
+        <busStop id="-12029743125" name="Moreira de Cónegos (Igreja)"/>
+        <busStop id="12029992477" name="Moreira de Cónegos (Santa Marta)"/>
+        <busStop id="12029992475" name="Moreira de Cónegos (Barreiro)"/>
+        <busStop id="12029992473" name="Moreira de Cónegos (Piscinas)"/>
+        <busStop id="12029977149" name="Seis Pinheiros"/>
+        <busStop id="12029977146" name="Igreja de Conde"/>
+        <busStop id="12029977144" name="Junqueira"/>
+        <busStop id="12029977142" name="Calços"/>
+        <busStop id="12029977141" name="Ronce"/>
+        <busStop id="12029977140" name="Uveiras"/>
+        <busStop id="12029977137" name="Igreja de Nespereira"/>
+        <busStop id="12029977135" name="Calçada"/>
+        <busStop id="12035737129" name="Ribeiro de Baixo"/>
+        <busStop id="12035737127" name="Pego"/>
+        <busStop id="12035737126" name="Pocinhas"/>
+        <busStop id="12035737123" name="Valinha"/>
+        <busStop id="12035737121" name="Mirante"/>
+        <busStop id="12035963904" name="Fábrica Asa"/>
+        <busStop id="1998859867" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12036043513" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12036043503" name="EB23 Gil Vicente"/>
+        <busStop id="-12036043501" name="Vaca Negra"/>
+        <busStop id="-12036043482" name="Quinta das Aldeias"/>
+        <busStop id="-12036043470" name="Quinta da Boavista"/>
+        <busStop id="-12036034567" name="Fábrica do Castanheiro"/>
+        <busStop id="-12036300587" name="Dom João IV"/>
+        <busStop id="-1488495873" name="São Gualter"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+    </ptLine>
+    <ptLine id="17817207" name="011: Gandarela - Volta (Escolar)" line="011" type="bus" vClass="bus" completeness="0.97">
+        <route edges="-891374818#0 40730209 1299820990 1299820987 1299820992#0 1299820992#1 122104220 122104227 1156566237#0 1156566237#1 1156566237#2 1156566237#3 1299820993#0 1299820993#1 1299820993#2 122104223 172903638 172903715 -172903752 -1299820994 -135475695 135475698 425953626 -1363856860 -1299820985 -1299820983 -135475689 1118860787 -135004837#1 -135004837#0 -135004836#0 24267197 336363410 336363408 -502363056 1066387398 450682083 24267065 303127234 41779525"/>
+        <busStop id="-12040161957" name="Gandarela (EB1)"/>
+        <busStop id="-12029977129" name="Gandarela (Boavista)"/>
+        <busStop id="-12029977133" name="Gandarela (Padrão)"/>
+        <busStop id="12029977149" name="Seis Pinheiros"/>
+        <busStop id="12029977146" name="Igreja de Conde"/>
+        <busStop id="12029977144" name="Junqueira"/>
+        <busStop id="12029977142" name="Calços"/>
+        <busStop id="12029977141" name="Ronce"/>
+        <busStop id="12029977140" name="Uveiras"/>
+        <busStop id="12029977137" name="Igreja de Nespereira"/>
+        <busStop id="12029977135" name="Calçada"/>
+        <busStop id="12035737129" name="Ribeiro de Baixo"/>
+        <busStop id="12035737127" name="Pego"/>
+        <busStop id="12035737126" name="Pocinhas"/>
+        <busStop id="12035737123" name="Valinha"/>
+        <busStop id="12035737121" name="Mirante"/>
+        <busStop id="12035963904" name="Fábrica Asa"/>
+        <busStop id="1998859867" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12036043513" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12036043503" name="EB23 Gil Vicente"/>
+        <busStop id="-12036043501" name="Vaca Negra"/>
+        <busStop id="-12036043482" name="Quinta das Aldeias"/>
+        <busStop id="-12036043470" name="Quinta da Boavista"/>
+        <busStop id="-12036034567" name="Fábrica do Castanheiro"/>
+        <busStop id="-12036300587" name="Dom João IV"/>
+        <busStop id="-1488495873" name="São Gualter"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+        <busStop id="1904143081" name="Escola Secundária Martins Sarmento"/>
+    </ptLine>
+    <ptLine id="17817208" name="011: Pereirinhas - Volta (Escolar)" line="011" type="bus" vClass="bus" completeness="0.84">
+        <route edges="217636187 40278289 1299820992#0 1299820992#1 122104220 122104227 1156566237#0 1156566237#1 1156566237#2 1156566237#3 1299820993#0 1299820993#1 1299820993#2 122104223 172903638 172903715 -172903752 -1299820994 -135475695 135475698 425953626 -1363856860 -1299820985 -1299820983 -135475689 1118860787 -135004837#1 -135004837#0 -135004836#0 24267197 336363410 336363408 -502363056 1066387398 450682083 24267065 303127234 41779525"/>
+        <busStop id="12040161958" name="Belfama"/>
+        <busStop id="12029743128" name="Moreira de Cónegos (Junta de Freguesia)"/>
+        <busStop id="12029743125" name="Moreira de Cónegos (Igreja)"/>
+        <busStop id="-12029992477" name="Moreira de Cónegos (Santa Marta)"/>
+        <busStop id="-12029992475" name="Moreira de Cónegos (Barreiro)"/>
+        <busStop id="-12029992473" name="Moreira de Cónegos (Piscinas)"/>
+        <busStop id="12029977149" name="Seis Pinheiros"/>
+        <busStop id="12029977146" name="Igreja de Conde"/>
+        <busStop id="12029977144" name="Junqueira"/>
+        <busStop id="12029977142" name="Calços"/>
+        <busStop id="12029977141" name="Ronce"/>
+        <busStop id="12029977140" name="Uveiras"/>
+        <busStop id="12029977137" name="Igreja de Nespereira"/>
+        <busStop id="12029977135" name="Calçada"/>
+        <busStop id="12035737129" name="Ribeiro de Baixo"/>
+        <busStop id="12035737127" name="Pego"/>
+        <busStop id="12035737126" name="Pocinhas"/>
+        <busStop id="12035737123" name="Valinha"/>
+        <busStop id="12035737121" name="Mirante"/>
+        <busStop id="12035963904" name="Fábrica Asa"/>
+        <busStop id="1998859867" name="Rodovia de Covas (Estação CP Covas)"/>
+        <busStop id="-12036043513" name="Nossa Senhora dos Remédios"/>
+        <busStop id="-12036043503" name="EB23 Gil Vicente"/>
+        <busStop id="-12036043501" name="Vaca Negra"/>
+        <busStop id="-12036043482" name="Quinta das Aldeias"/>
+        <busStop id="-12036043470" name="Quinta da Boavista"/>
+        <busStop id="-12036034567" name="Fábrica do Castanheiro"/>
+        <busStop id="-12036300587" name="Dom João IV"/>
+        <busStop id="-1488495873" name="São Gualter"/>
+        <busStop id="5071309084" name="Campo da Feira"/>
+        <busStop id="1904143081" name="Escola Secundária Martins Sarmento"/>
+    </ptLine>
+</ptLines>
