@@ -49,46 +49,88 @@ but other contemporaneous versions may also work.
 
 ### New user-visible features
 
-- (applications) !2968 Added `FlentApplication` and `FlentHelper` to model the Flent network benchmarking tool (`ping`, `tcp_upload`, `tcp_download`, and `rrul` tests) and generate `.flent` JSON output files, as the outcome of the GSoC 2026 project titled "Flent Application API in ns-3"
-- (propagation) A new `InterUeSpatialConsistency` attribute of `ChannelConditionModel` enables inter-UE (drop-based) spatially consistent LOS/NLOS state, indoor state, building type, shadow fading and O2I penetration loss per 3GPP TR 38.901 Sec. 7.6.3.
-- (spectrum) `ThreeGppChannelModel` extends the drop-based spatial consistency to the large-scale parameters and the cluster and ray specific variables of the fast fading when the `InterUeSpatialConsistency` attribute of its channel condition model is enabled.
-- (propagation) New `SpatialGaussianField` class provides the stateless, position-keyed spatially-correlated Gaussian random field shared by the drop-based spatial consistency of the 3GPP propagation, channel condition and channel models.
-- (spectrum) New `LargeBandwidthArrayModeling`, `ChannelBandwidth` and `MaxRaysPerCluster` attributes of `ThreeGppChannelModel` implement the large bandwidth and large antenna array modeling of 3GPP TR 38.901 Sec. 7.6.2.2.
-- (network) IANA protocol and link types are now centralized in network module headers.
-
 - Added support for `nlohmann/json`, a header-only C++ third-party library for JSON parsing and serialization.
-- (zigbee) !2964 Added basic support for Zigbee Device Object (ZDO)
-
+- (applications) !2968 Added `FlentApplication` and `FlentHelper` to model the Flent network benchmarking tool (`ping`, `tcp_upload`, `tcp_download`, and `rrul` tests) and generate `.flent` JSON output files, as the outcome of the GSoC 2026 project titled "Flent Application API in ns-3"
+- (core) Added a `TimeSpan` class (and `TimeSpanValue`) to represent a time interval, and a `StructValue` attribute value to expose a struct through the attribute system.
+- (network) IANA protocol and link types are now centralized in network module headers.
+- (propagation) New `SpatialGaussianField` class provides the stateless, position-keyed spatially-correlated Gaussian random field shared by the drop-based spatial consistency of the 3GPP propagation, channel condition and channel models.
+- (propagation) The 3GPP NTN propagation loss models now share a `ThreeGppNTNPropagationLossModel` base class whose `IonosphericScintillationLossEnabled` and `TroposphericScintillationLossEnabled` attributes allow the scintillation losses to be disabled.
+- (propagation) A new `InterUeSpatialConsistency` attribute of `ChannelConditionModel` enables inter-UE (drop-based) spatially consistent LOS/NLOS state, indoor state, building type, shadow fading and O2I penetration loss per 3GPP TR 38.901 Sec. 7.6.3.
 - (sixlowpan) !2873 The mesh-under forwarding decision is now delegated to a pluggable policy (`SixLowPanMeshUnderRouting`); the default `SixLowPanSimpleFlooding` preserves the historical flooding behavior. The `MeshUnderJitter` and `MeshCacheLength` attributes moved from `SixLowPanNetDevice` to the policy. Mesh-under membership and relaying are now controlled separately by the `UseMeshUnder` and `ForwardMesh` attributes.
+- (sixlowpan) Added support for RFC 7400 Generic Header Compression (GHC), selected with the `GHC` value of the `SixLowPanNetDevice` `CompressionType` attribute.
+- (spectrum) `ThreeGppChannelModel` extends the drop-based spatial consistency to the large-scale parameters and the cluster and ray specific variables of the fast fading when the `InterUeSpatialConsistency` attribute of its channel condition model is enabled.
+- (spectrum) New `LosRayOnly` attribute of `ThreeGppChannelModel` suppresses the stochastic clusters and keeps only the deterministic LOS ray.
+- (spectrum) `ThreeGppChannelModel` and `ThreeGppSpectrumPropagationLossModel` are about 8-11x faster per link, with unchanged results; NS_LOG output is also several times faster.
+- (spectrum) New `LargeBandwidthArrayModeling`, `ChannelBandwidth` and `MaxRaysPerCluster` attributes of `ThreeGppChannelModel` implement the large bandwidth and large antenna array modeling of 3GPP TR 38.901 Sec. 7.6.2.2.
 - (wifi) Added support for Beacon generation in an IBSS
+- (wifi) Added the building blocks for layer-2 roaming: APs and non-AP STAs now handle disassociation and reassociation, a non-AP STA can be forced to disassociate, and the association manager can reuse AP information instead of scanning again. No roaming manager is provided yet; a `wifi-roaming` example demonstrates the building blocks.
+- (zigbee) APS data can now be sent using the 64-bit extended destination address mode, resolved through the NWK address map.
+- (zigbee) !2964 Added basic support for Zigbee Device Object (ZDO)
 
 ### Bugs fixed
 
+- (applications) #1368 Source applications now bind their socket to the address configured in the `Local` attribute.
+- (core) #147 `Config::SetDefault` can now set an attribute declared by a parent TypeId through the name of a derived TypeId.
+- (core) #781 `SystemPath::Exists` now handles bare filenames and directory paths.
+- (core) #1116 The normal random variable no longer accepts the degenerate pairs of the polar method.
+- (core) #1181 `CommandLine` now captures string values containing spaces.
+- (core) !3006 DesMetrics now writes the command line arguments into the JSON trace header when available, instead of the empty-arguments placeholder.
+- (core) Fixed serialization of nested attribute values.
+- (core) Fixed undefined behavior (signed overflow) when converting an integer to `Time` with a unit.
+- (core) The wall-clock synchronizer of the realtime scheduler now uses a monotonic clock and is free of a data race.
+- (csma) #234 Detaching a `CsmaNetDevice` from its channel now sets the link down and fires the link-change callbacks.
+- (dsr) !2762 Fixes header format to comply with RFC4728. Also other minor bug fixes and modernization.
+- (internet) #825 A router with no route to a destination now returns an ICMP Destination Unreachable (net unreachable) to the source.
+- (internet) #1036 ICMPv4 and ICMPv6 messages with an invalid checksum are now discarded when checksums are enabled.
+- (internet) #1039 An IPv6 raw socket bound to a multicast address now joins the group and receives packets sent to it.
+- (internet-apps) `V4TraceRoute` no longer leaks stale route text into the output of a subsequent hop.
+- (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
+- (lte) #447 Fixed a crash in the UE mixed CQI report when a control reception completes after the PHY was reconfigured during handover.
+- (lte) #1096 A UE receiving an RRC Connection Reestablishment (or Reject) now declares radio link failure instead of aborting the simulation.
+- (mesh) #1341 Fixed dot11s regression that ignored the link rate, degrading the HWMP routing metric to hop count.
+- (mobility) #1308 `GeocentricConstantPositionMobilityModel` now computes the elevation angle correctly for all geometries and returns a negative value for a terminal below the horizon.
+- (network) #370 Many net devices now fire their `MacRxDrop` trace for a received frame that no protocol handler consumes, instead of dropping it silently.
+- (network) #1150 Enabling pcap on several devices with the same explicit filename now shares one open file, instead of reopening and truncating it and corrupting the earlier records.
+- (network) #1340 Fixed PacketBB address block tail compression corrupting addresses.
+- (network) Fixed `NixVector` deserialization and `Packet::Deserialize` size accounting.
+- (propagation) #1092 The breakpoint distance of the 3GPP RMa/UMa/UMi models now uses the exact speed of light.
+- (propagation) #1164 Fixed three coefficients of the ITU-R P.1411 NLOS-over-rooftop model (street orientation above 55 degrees, base station below rooftop, and the metropolitan/medium-city kf coefficients).
+- (propagation) #1354 The 3GPP NTN propagation loss models now return a defined large loss, instead of an undefined value, for links outside the model domain (non-positive elevation angle, or coincident nodes).
+- (sixlowpan) #1342 Fixed a deserialization error in the MESH header.
+- (sixlowpan) #1344 The DAC flag is now honored for IPHC stateful multicast address compression.
+- (sixlowpan) #1361 Small packets are sent uncompressed on links that pad short frames (e.g., CSMA), where padding would otherwise be delivered as data.
 - (spectrum) #1369 The phased-array beamforming gain of a signal is now computed with the transmitter's beamforming vector at transmission time rather than at arrival time, which differed whenever the array was re-steered while the signal was propagating.
-- (spectrum) The number of rays per cluster of the large bandwidth modeling of the 3GPP TR 38.901 fast-fading model (Equation 7.6-8) now uses the maximum antenna aperture over the two link ends, as Sec. 7.6.2.1 prescribes, instead of the aperture of the lowest node id end.
 - (spectrum) The fixed ray-to-subcluster mapping of the two strongest clusters of the 3GPP TR 38.901 fast-fading model now follows Table 7.5-5; the previous mapping was shifted by one ray.
 - (spectrum) The cross-polarization power ratios of the 3GPP TR 38.901 fast-fading model are now drawn in dB from the Table 7.5-6 mean and standard deviation; the parameters were previously converted to linear scale before the dB draw, giving under-dispersed and under-powered ratios.
 - (spectrum) A blockage attenuation of A dB now scales the LOS ray amplitude of the 3GPP TR 38.901 fast-fading model by `10^(-A/20)`; it was previously applied as `10^(-A/10)`, doubling the attenuation.
 - (spectrum) The large-scale parameters of indoor (O2I) LOS links of the 3GPP TR 38.901 fast-fading model are now drawn with the O2I ordering of Table 7.5-6, which has no K-factor; the LOS ordering was previously applied against the O2I correlation matrix, giving wrong correlations and a constant zenith spread of arrival on every such link.
 - (spectrum) The cached delay phasors of `ThreeGppSpectrumPropagationLossModel` are now refreshed whenever the cluster delays change; they were previously kept as long as the number of clusters did not change, so an in-place channel update with the same cluster count reused the previous realization's phasors.
 - (spectrum) `ThreeGppChannelModel::WrapAngles` now mirrors an inclination outside [0, pi] through the pole; it previously subtracted pi, sending a ray just past the nadir to just below the zenith (the wrong hemisphere).
-- (lr-wpan) !2916 Pcap files are now correctly generated with and without FCS cases.
-- (mesh) #1341 Fixed dot11s regression that ignored the link rate, degrading the HWMP routing metric to hop count.
-- (core) !3006 DesMetrics now writes the command line arguments into the JSON trace header when available, instead of the empty-arguments placeholder.
-- (sixlowpan) #1342 Fixed a deserialization error in the MESH header.
-- (dsr) !2762 Fixes header format to comply with RFC4728. Also other minor bug fixes and modernization.
-- (zigbee) In the NWK, broadcast initiator devices are now registered in the BTT to avoid receiving retransmissions.
+- (spectrum) The antenna element field pattern of `ThreeGppChannelModel` is now evaluated with the direction-corrected ray angles on reversed-direction links; with directional elements, NLOS clusters on such links were previously attenuated by the back lobe (about 30 dB).
+- (tcp) #125 A receiver now sends a window update when an application read reopens a previously closed receive window, instead of waiting for the sender's persist timer.
+- (tcp) #1012 DCTCP now backs off on inferred packet loss as RFC 8257 requires.
+- (tcp) #1190 A retransmitted segment that is SACKed is no longer counted as retransmitted, which inflated the bytes in flight and stalled transmission during recovery.
+- (tcp) #1282 Fixed an integer wraparound in the PRR recovery algorithm.
 - (tcp) #1326 Fixes a crash in the persist timer when the receiver's window is zero and the sender has no unsent data.
 - (tcp) #1107 With SACK disabled, a cumulative ACK no longer turns a guess made from duplicate ACK counting into an inferred loss, which caused repeated spurious fast retransmits and kept the congestion window near its minimum.
-- (wifi) !2945 CTS-to-self frames are now transmitted over the bandwidth of the frame they protect, so that transmissions in the rest of the TXOP are no longer limited to 20 MHz.
+- (tcp) #1349 Lost retransmissions are now detected when later-sent data is SACKed.
+- (tcp) #1350 PRR no longer double-counts delivered data when SACK is enabled.
+- (tcp) #1351 PRR RecoverFS is now initialized from the FlightSize with the RFC 9937 SACK terms, instead of from the pipe.
 - (wifi) !2938 A DL MU PPDU transmitted in a non-initial frame exchange of a TXOP is now protected by an MU-RTS if any of its receivers is unprotected; previously the decision was made per MPDU and such a PPDU could be sent without the configured protection (debug builds failed an assert).
+- (wifi) !2944 An EMLSR client starting an UL TXOP while the AP was still tracking the end of a previous TXOP is now recognized as the new TXOP holder; previously the frame was treated as a continuation of the old TXOP and the blocking of the client's other links was skipped (debug builds failed an assert).
+- (wifi) !2945 CTS-to-self frames are now transmitted over the bandwidth of the frame they protect, so that transmissions in the rest of the TXOP are no longer limited to 20 MHz.
 - (wifi) Fix Duration/ID for group addressed frames sent under multiple protection setting
-- (wifi) The building blocks to enable layer-2 roaming are now added, allowing the construction of a roaming manager (no such a manager is provided yet).
 - (wifi) The TXOP Limit cannot be exceeded to transmit a DL MU PPDU
 - (wifi) TXOP limit can also be exceeded when sending a BlockAckReq
 - (wifi) A BlockAckReq shall not be transmitted on a link if its TID is not mapped to the link
 - (wifi) When a link is disabled as per the negotiated TID-to-Link Mapping, no frame shall be sent on it
-- (wifi) !2944 An EMLSR client starting an UL TXOP while the AP was still tracking the end of a previous TXOP is now recognized as the new TXOP holder; previously the frame was treated as a continuation of the old TXOP and the blocking of the client's other links was skipped (debug builds failed an assert).
+- (wifi) `IdealWifiManager` now records a 20 MHz width after a successful RTS on a 40 MHz channel (a typo compared against 42 MHz).
+- (wifi) `EhtFrameExchangeManager` now resets the channel access state when releasing the channel without transmitting on an EMLSR link.
+- (wifi) The CCFS0 and CCFS1 subfields of the EHT Operation Information field are now filled in.
+- (wifi) Fixed a segfault when `SpectrumWifiPhy` logging is enabled.
+- (wifi) Fixed spurious asserts for DL MU TXVECTORs without user info, for puncturing info with narrow channels, and for 80+80 MHz transmit spectra.
+- (wifi) The starting sequence number of an ADDBA Request is now correct when a BlockAckReq is pending after a missed BlockAck.
+- (zigbee) In the NWK, broadcast initiator devices are now registered in the BTT to avoid receiving retransmissions.
 
 ## Release 3.48
 
