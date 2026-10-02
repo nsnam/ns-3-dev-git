@@ -152,6 +152,7 @@ but other contemporaneous versions may also work.
 - (tcp) #1282 Fixed an integer wraparound in the PRR recovery algorithm.
 - (mobility) #1379 `LeoCircularOrbitMobilityModel::GetVelocity()` now returns the rate of change of the ECEF position returned by `GetPosition()`; it previously omitted the Earth's rotation (up to about 500 m/s) and pointed against the motion for inclinations above 90 degrees.
 - (mobility) #1380 `LeoCircularOrbitMobilityModel` now uses a retrograde orbit for an inclination above 90 degrees; it previously configured the prograde orbit of 180 degrees minus the inclination.
+- (mobility) #1381 The longitude and argument of latitude given to `LeoCircularOrbitMobilityModel::SetPosition()` are now measured from the ascending node, as their names say; they were previously measured from the northernmost point of the orbit, 90 degrees away in both angles.
 - (tcp) #1326 Fixes a crash in the persist timer when the receiver's window is zero and the sender has no unsent data.
 - (tcp) #1107 With SACK disabled, a cumulative ACK no longer turns a guess made from duplicate ACK counting into an inferred loss, which caused repeated spurious fast retransmits and kept the congestion window near its minimum.
 - (tcp) #1349 Lost retransmissions are now detected when later-sent data is SACKed.

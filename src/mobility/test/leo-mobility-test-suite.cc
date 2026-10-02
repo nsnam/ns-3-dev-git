@@ -58,11 +58,14 @@ static constexpr double ORBIT_HEIGHT_KM = EARTH_RADIUS_KM + 1000.0;
  * ECEF position for a given altitude, inclination, and longitude.
  *
  * With altitude = 1000 km, inclination = 45 degrees, longitude = 0 degrees, and
- * orbital offset = 0 degrees, the expected ECEF position at time 0 is:
- *   x = r * cos(45 deg) = r * sqrt(2)/2
+ * argument of latitude = 0 degrees, the satellite is at the ascending node:
+ * on the equator at longitude 0, heading north. The expected ECEF position
+ * at time 0 is:
+ *   x = r
  *   y = 0
- *   z = r * sin(45 deg) = r * sqrt(2)/2
- * where r = (R_earth + 1000 km) in meters.
+ *   z = 0
+ * where r = (R_earth + 1000 km) in meters, and the velocity has a positive
+ * z component.
  */
 class LeoInitialPositionTestCase : public TestCase
 {
@@ -88,18 +91,23 @@ LeoInitialPositionTestCase::DoRun()
     mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
     node->AggregateObject(mob);
 
-    // Set longitude = 0 degrees, orbital offset = 0 degrees
+    // Set longitude = 0 degrees, argument of latitude = 0 degrees
     mob->SetPosition(Vector(0.0, 0.0, 0.0));
 
     Vector pos = mob->GetPosition();
 
-    double expectedX = ORBIT_RADIUS_M * std::cos(std::numbers::pi / 4.0);
+    double expectedX = ORBIT_RADIUS_M;
     double expectedY = 0.0;
-    double expectedZ = ORBIT_RADIUS_M * std::sin(std::numbers::pi / 4.0);
+    double expectedZ = 0.0;
 
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.x, expectedX, TOLERANCE, "x coordinate at time 0 is incorrect");
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.y, expectedY, TOLERANCE, "y coordinate at time 0 should be zero");
-    NS_TEST_ASSERT_MSG_EQ_TOL(pos.z, expectedZ, TOLERANCE, "z coordinate at time 0 is incorrect");
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.z, expectedZ, TOLERANCE, "z coordinate at time 0 should be zero");
+
+    // The node is ascending: the satellite heads north
+    NS_TEST_ASSERT_MSG_GT(mob->GetVelocity().z,
+                          0.0,
+                          "velocity at the ascending node should point north");
 
     Simulator::Destroy();
 }
@@ -112,15 +120,15 @@ LeoInitialPositionTestCase::DoRun()
  * in the ECEF frame.
  *
  * After exactly one orbital period T, the satellite returns to its starting
- * position on the orbit (orbital offset = 0 again), but the Earth has rotated
- * eastward by angle delta = (T / 24h) * 2 * pi.  In the ECEF frame, the
- * ascending node longitude has drifted westward by delta.
+ * position on the orbit (the ascending node, argument of latitude = 0 again),
+ * but the Earth has rotated eastward by angle delta = (T / 24h) * 2 * pi.  In
+ * the ECEF frame, the ascending node longitude has drifted westward by delta.
  *
  * Expected ECEF position at time T (with longitude = 0 degrees at time zero):
  *   lon_T = -delta
- *   x = r * cos(45 deg) * cos(lon_T)
- *   y = r * cos(45 deg) * sin(lon_T)   [negative = westward drift]
- *   z = r * sin(45 deg)
+ *   x = r * cos(lon_T)
+ *   y = r * sin(lon_T)   [negative = westward drift]
+ *   z = 0
  */
 class LeoEarthRotationTestCase : public TestCase
 {
@@ -153,9 +161,9 @@ LeoEarthRotationTestCase::CheckPosition(Ptr<LeoCircularOrbitMobilityModel> mob, 
         (orbitalPeriod.GetDouble() / Hours(24).GetDouble()) * 2.0 * std::numbers::pi;
     double lonAtT = -earthRotAngle; // westward drift
 
-    double expectedX = ORBIT_RADIUS_M * std::cos(std::numbers::pi / 4.0) * std::cos(lonAtT);
-    double expectedY = ORBIT_RADIUS_M * std::cos(std::numbers::pi / 4.0) * std::sin(lonAtT);
-    double expectedZ = ORBIT_RADIUS_M * std::sin(std::numbers::pi / 4.0);
+    double expectedX = ORBIT_RADIUS_M * std::cos(lonAtT);
+    double expectedY = ORBIT_RADIUS_M * std::sin(lonAtT);
+    double expectedZ = 0.0;
 
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.x,
                               expectedX,
@@ -209,10 +217,11 @@ LeoEarthRotationTestCase::DoRun()
  * correctly at time 0.
  *
  * With longitude = 90 degrees east, inclination = 45 degrees, and
- * orbital offset = 0 degrees, the expected position at time 0 is:
- *   x = r * cos(45 deg) * cos(90 deg) = 0
- *   y = r * cos(45 deg) * sin(90 deg) = r * sqrt(2)/2
- *   z = r * sin(45 deg)               = r * sqrt(2)/2
+ * argument of latitude = 0 degrees, the satellite is at the ascending node
+ * on the equator at longitude 90, so the expected position at time 0 is:
+ *   x = r * cos(90 deg) = 0
+ *   y = r * sin(90 deg) = r
+ *   z = 0
  */
 class LeoLongitudeOffsetTestCase : public TestCase
 {
@@ -244,8 +253,8 @@ LeoLongitudeOffsetTestCase::DoRun()
     Vector pos = mob->GetPosition();
 
     double expectedX = 0.0;
-    double expectedY = ORBIT_RADIUS_M * std::cos(std::numbers::pi / 4.0);
-    double expectedZ = ORBIT_RADIUS_M * std::sin(std::numbers::pi / 4.0);
+    double expectedY = ORBIT_RADIUS_M;
+    double expectedZ = 0.0;
 
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.x,
                               expectedX,
@@ -270,27 +279,27 @@ LeoLongitudeOffsetTestCase::DoRun()
  * @brief Test that a non-zero orbital offset correctly rotates the satellite
  * along its orbital plane via the Rodrigues rotation in RotatePlane().
  *
- * An offset of 0 places the satellite at the ascending node; a non-zero
- * offset rotates it around the orbital plane normal. The first three test
- * cases all use offset = 0 degrees, meaning RotatePlane() acts as an
- * identity and is not exercised. This test uses offset = 90 degrees to
- * verify the Rodrigues rotation.
+ * An argument of latitude of 0 places the satellite at the ascending node; a
+ * non-zero value rotates it around the orbital plane normal. The first three
+ * test cases all use 0 degrees, meaning RotatePlane() acts as an identity and
+ * is not exercised. This test uses 90 degrees, which should reach the
+ * northernmost point of the orbit, to verify the Rodrigues rotation.
  *
  * RotatePlane() implements the Rodrigues rotation formula
  * (see https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula ):
  *   v' = (n . v) * n + cos(a) * ((n x v) x n) + sin(a) * (n x v)
  *
  * With altitude = 1000 km, inclination = 45 degrees, longitude = 0 degrees,
- * and orbital offset = 90 degrees, the Rodrigues rotation yields:
+ * and argument of latitude = 90 degrees, the Rodrigues rotation yields:
  *
- * The orbital plane normal is n = (-sqrt(2)/2, 0, sqrt(2)/2).
- * The ascending-node position is x = r * (sqrt(2)/2, 0, sqrt(2)/2).
+ * The orbital plane normal is n = (0, -sqrt(2)/2, sqrt(2)/2).
+ * The ascending-node position is x = (r, 0, 0).
  * Since n . x = 0, the formula simplifies:
  *   result = cos(90 deg) * ((n x x) x n) + sin(90 deg) * (n x x)
- *          = 0 + (0, r, 0)
- *          = (0, r, 0)
+ *          = 0 + r * (0, sqrt(2)/2, sqrt(2)/2)
  *
- * Expected ECEF position: (0, r, 0) where r = (R_earth + 1000 km) in meters.
+ * Expected ECEF position: r * (0, sqrt(2)/2, sqrt(2)/2), latitude 45 degrees
+ * at longitude 90, where r = (R_earth + 1000 km) in meters.
  */
 class LeoOrbitalOffsetTestCase : public TestCase
 {
@@ -316,27 +325,27 @@ LeoOrbitalOffsetTestCase::DoRun()
     mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
     node->AggregateObject(mob);
 
-    // Set longitude = 0, orbital offset = 90 degrees
+    // Set longitude = 0, argument of latitude = 90 degrees
     mob->SetPosition(Vector(0.0, 90.0, 0.0));
 
     Vector pos = mob->GetPosition();
 
     double expectedX = 0.0;
-    double expectedY = ORBIT_RADIUS_M;
-    double expectedZ = 0.0;
+    double expectedY = ORBIT_RADIUS_M * std::cos(std::numbers::pi / 4.0);
+    double expectedZ = ORBIT_RADIUS_M * std::sin(std::numbers::pi / 4.0);
 
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.x,
                               expectedX,
                               TOLERANCE,
-                              "x coordinate should be near zero for orbital offset = 90 deg");
+                              "x coordinate should be near zero for argument of latitude = 90 deg");
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.y,
                               expectedY,
                               TOLERANCE,
-                              "y coordinate should equal orbit radius for orbital offset = 90 deg");
+                              "y coordinate is incorrect for argument of latitude = 90 deg");
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.z,
                               expectedZ,
                               TOLERANCE,
-                              "z coordinate should be near zero for orbital offset = 90 deg");
+                              "z coordinate is incorrect for argument of latitude = 90 deg");
 
     Simulator::Destroy();
 }
@@ -348,10 +357,11 @@ LeoOrbitalOffsetTestCase::DoRun()
  * @brief Test that on-demand orbital progress produces the expected position
  * after a quarter orbital period.
  *
- * Starting at offset = 0 (ascending node), after T/4 the satellite should
- * have advanced 90 degrees along its orbit. This is equivalent to the
- * LeoOrbitalOffsetTestCase result (offset = 90 degrees at t=0), but
- * verified through time evolution rather than initial offset.
+ * Starting at the ascending node (argument of latitude = 0), after T/4 the
+ * satellite should have advanced 90 degrees along its orbit, to its
+ * northernmost point. This is equivalent to the LeoOrbitalOffsetTestCase
+ * result (argument of latitude = 90 degrees at t=0), but verified through
+ * time evolution rather than the initial value.
  *
  * At T/4, Earth rotation causes a small longitude drift that must be
  * accounted for in the expected position.
@@ -389,32 +399,27 @@ LeoOrbitalProgressTestCase::CheckPosition(Ptr<LeoCircularOrbitMobilityModel> mob
         (quarterPeriod.GetDouble() / Hours(24).GetDouble()) * 2.0 * std::numbers::pi;
     double lonAtT = -earthRotAngle;
 
-    // At offset = 0 degrees, the ascending-node position before Rodrigues rotation is:
-    //   x0 = r * cos(inc) * cos(lon), y0 = r * cos(inc) * sin(lon), z0 = r * sin(inc)
-    // After 90 degrees of Rodrigues rotation around the plane normal n:
-    //   Since n . x0 = 0 (ascending node is perpendicular to normal),
-    //   result = sin(pi/2) * (n x x0) = n x x0
+    // The ascending node, before the Rodrigues rotation, is on the equator at
+    // the drifted longitude:
+    //   x0 = r * cos(lon), y0 = r * sin(lon), z0 = 0
     // The plane normal at time t is:
-    //   n = (-sin(inc) * cos(lon), -sin(inc) * sin(lon), cos(inc))
+    //   n = (sin(inc) * sin(lon), -sin(inc) * cos(lon), cos(inc))
+    // After 90 degrees of Rodrigues rotation around n:
+    //   Since n . x0 = 0 (the node lies in the plane),
+    //   result = sin(pi/2) * (n x x0) = n x x0
+    //          = r * (-cos(inc) * sin(lon), cos(inc) * cos(lon), sin(inc))
+    // which is the northernmost point, at latitude inc and longitude lon + 90.
+    // Computed numerically below.
     double inc = std::numbers::pi / 4.0;
     double r = ORBIT_RADIUS_M;
 
-    // Compute n x x0 analytically:
-    // n = (-sin(inc) * cos(lon), -sin(inc) * sin(lon), cos(inc))
-    // x0 = (r * cos(inc) * cos(lon), r * cos(inc) * sin(lon), r * sin(inc))
-    // n . x0 = 0 (verified: -sin * cos^2 * cos^2(lon) - sin * cos^2 * sin^2(lon) + cos * sin = 0
-    //           when sin * cos = sin * cos, which holds for any inc)
-    // n x x0 = r * (cos(inc) * sin(lon) * cos(inc) - sin(inc) * (-sin(inc) * sin(lon)),
-    //              sin(inc) * (-sin(inc) * cos(lon)) - (-sin(inc) * cos(lon)) * cos(inc)  ... )
-    // This simplifies to (0, r, 0) only at lon = 0 degrees. At lon != 0, it is more complex.
-    // Use a direct numerical computation instead.
-    double nx = -std::sin(inc) * std::cos(lonAtT);
-    double ny = -std::sin(inc) * std::sin(lonAtT);
+    double nx = std::sin(inc) * std::sin(lonAtT);
+    double ny = -std::sin(inc) * std::cos(lonAtT);
     double nz = std::cos(inc);
 
-    double x0 = r * std::cos(inc) * std::cos(lonAtT);
-    double y0 = r * std::cos(inc) * std::sin(lonAtT);
-    double z0 = r * std::sin(inc);
+    double x0 = r * std::cos(lonAtT);
+    double y0 = r * std::sin(lonAtT);
+    double z0 = 0.0;
 
     // n x x0
     double cx = ny * z0 - nz * y0;
@@ -918,9 +923,9 @@ LeoOrbitPositionStructTestCase::DoRun()
     // Verify internal state by checking GetPosition
     Vector pos = mob->GetPosition();
 
-    // The satellite should be at the ascending node with the correct inclination
-    double expectedX = ORBIT_RADIUS_M * std::cos(std::numbers::pi / 4.0);
-    double expectedZ = ORBIT_RADIUS_M * std::sin(std::numbers::pi / 4.0);
+    // The satellite should be at the ascending node, on the equator at longitude 0
+    double expectedX = ORBIT_RADIUS_M;
+    double expectedZ = 0.0;
 
     NS_TEST_ASSERT_MSG_EQ_TOL(pos.x,
                               expectedX,

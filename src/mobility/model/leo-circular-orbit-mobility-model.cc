@@ -122,8 +122,10 @@ Vector3D
 LeoCircularOrbitMobilityModel::PlaneNorm(Time t) const
 {
     double lon = CalcLongitude(t);
-    return Vector3D(sin(-m_inclination) * cos(lon),
-                    sin(-m_inclination) * sin(lon),
+    // Unit normal of the plane through the ascending node at longitude lon,
+    // tilted by the inclination; its z component is negative above 90 degrees
+    return Vector3D(sin(m_inclination) * sin(lon),
+                    -sin(m_inclination) * cos(lon),
                     cos(m_inclination));
 }
 
@@ -171,12 +173,10 @@ Vector
 LeoCircularOrbitMobilityModel::CalcPosition(Time t) const
 {
     double lon = CalcLongitude(t);
-    // account for orbit longitude and earth rotation offset
-    Vector3D x = (m_orbitHeight * M_PER_KM *
-                  Vector3D(cos(m_inclination) * cos(lon),
-                           cos(m_inclination) * sin(lon),
-                           sin(m_inclination)));
+    // The ascending node, on the equator at the current longitude of the node
+    Vector3D x = (m_orbitHeight * M_PER_KM * Vector3D(cos(lon), sin(lon), 0));
 
+    // The argument of latitude is measured from the ascending node
     double progressAngleRad = m_argumentOfLatitude + GetAngularVelocity() * t.GetSeconds();
     return RotatePlane(progressAngleRad, x, t);
 }

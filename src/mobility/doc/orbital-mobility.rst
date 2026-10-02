@@ -61,6 +61,13 @@ The model computes satellite positions in three steps:
 The inclination also sets the direction of travel: below 90 degrees the orbit is prograde
 (the satellite moves with the Earth's rotation), and above 90 degrees it is retrograde.
 
+The two angles given to ``SetPosition()`` have their usual meanings. The first is the
+longitude of the ascending node at time zero: the point where the satellite crosses the
+equator heading north (the model works in ECEF coordinates, so this is a longitude rather
+than a right ascension, and it drifts westward as the Earth rotates). The second is the
+argument of latitude, the angle along the orbit from the ascending node: 0 places the
+satellite at the node and 90 degrees at its northernmost point.
+
 Positions are ECEF coordinates, and ``GetVelocity()`` returns their rate of change. Because
 the ECEF frame rotates with the Earth, this velocity includes an apparent westward motion
 (the Earth's rotation rate times the distance from the Earth's axis), and its magnitude

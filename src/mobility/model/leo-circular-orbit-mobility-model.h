@@ -187,8 +187,11 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
      * relative to the earth's center.
      *
      * @param position position.x is the longitude of the ascending node
-     *        in degrees; position.y is the argument of latitude on the orbital plane
-     *        in degrees.  Both are converted to radians internally.
+     *        in degrees at time zero (the node drifts westward afterwards as the
+     *        Earth rotates); position.y is the argument of latitude in degrees,
+     *        the angle along the orbit from the ascending node, so 0 places the
+     *        satellite on the equator heading north and 90 at its northernmost
+     *        point.  Both are converted to radians internally.
      */
     void DoSetPosition(const Vector& position) override;
 
@@ -204,7 +207,12 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     Vector DoGetVelocity() const override;
 
     /**
-     * @brief Get the normal vector of the orbital plane
+     * @brief Get the unit normal vector of the orbital plane
+     *
+     * The normal is the z axis tilted by the inclination, away from the
+     * ascending node, so that a positive rotation around it carries the
+     * satellite north through the node.
+     *
      * @param t the amount of time passed since the start of the simulation
      * @return the normal vector.
      */
