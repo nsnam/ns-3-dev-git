@@ -35,6 +35,11 @@ namespace ns3
  * Note: Position in `DoSetPosition()` is in degrees, not the usual meters.
  * Note: Altitude is stored in km, _not_ the usual ns-3 m.
  *
+ * `GetPosition()` and `GetVelocity()` are expressed in ECEF coordinates, which
+ * rotate with the Earth. `GetSpeed()` and `GetAngularVelocity()` describe the
+ * motion along the orbit in the non-rotating Earth-centered frame, so
+ * `GetSpeed()` is not the magnitude of `GetVelocity()`.
+ *
  * This model is distinct from `GeocentricEcefMobilityModel` in that it
  * implements a dynamic circular orbital model, whereas `GeocentricEcefMobilityModel`
  * is intended for ECEF coordinates that do not evolve according to orbital dynamics.
@@ -53,19 +58,31 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     ~LeoCircularOrbitMobilityModel() override;
 
     /**
-     * @brief Gets the speed of the node
-     * @return the speed in m/s
+     * @brief Gets the orbital speed of the node
+     *
+     * This is the speed along the circular orbit, in the non-rotating
+     * Earth-centered frame in which the orbital plane is fixed. It is the
+     * value of the Speed attribute if that is non-negative; otherwise it is
+     * derived from the orbit radius r (Earth radius plus altitude) as
+     * sqrt(GM / r).
+     *
+     * It is not the magnitude of GetVelocity(), which is the velocity of the
+     * ECEF position and so includes the rotation of the Earth.
+     *
+     * @return the orbital speed in m/s
      */
     double GetSpeed() const;
 
     /**
      * @brief Get the orbital angular velocity.
      *
-     * Computed from Keplerian mechanics: omega = sqrt(GM / r^3).
-     * Negated for retrograde orbits (inclination > 90 degrees).
+     * This is the rate at which the satellite turns around the normal of the
+     * orbital plane, in the same non-rotating frame as GetSpeed(). Its
+     * magnitude is GetSpeed() divided by the orbit radius r; when the Speed
+     * attribute is negative (the default), that is the Keplerian value
+     * omega = sqrt(GM / r^3).
      *
-     * If the user set an orbital angular velocity >= 0,
-     * it will be used instead.
+     * Negated for retrograde orbits (inclination > 90 degrees).
      *
      * @return angular velocity in rad/s
      */
@@ -125,7 +142,7 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
     void DoInitialize() override;
     void DoDispose() override;
 
-    /// Orbit height in km
+    /// Orbit radius (Earth radius plus altitude) in km
     double m_orbitHeight;
 
     /// Inclination in rad
@@ -175,6 +192,11 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
 
     /**
      * @brief Returns the current velocity of the node.
+     *
+     * This is the rate of change of the ECEF position returned by
+     * DoGetPosition(): the motion along the orbit at GetAngularVelocity(),
+     * plus the apparent westward motion caused by the rotation of the Earth.
+     *
      * @return velocity vector in m/s (ECEF)
      */
     Vector DoGetVelocity() const override;

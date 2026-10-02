@@ -58,6 +58,11 @@ The model computes satellite positions in three steps:
 - Third step: Apply the Rodrigues rotation formula (see `Rodrigues' rotation formula <https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula>`_)
   to rotate the satellite around the orbital plane normal by the computed angular position.
 
+Positions are ECEF coordinates, and ``GetVelocity()`` returns their rate of change. Because
+the ECEF frame rotates with the Earth, this velocity includes an apparent westward motion
+(the Earth's rotation rate times the distance from the Earth's axis), and its magnitude
+differs from the constant orbital speed returned by ``GetSpeed()``.
+
 The figures below illustrate how satellites are distributed along their orbits at
 different angular spacings. They can be plotted with the help of the
 ``plot-orbital-traces.py`` script.

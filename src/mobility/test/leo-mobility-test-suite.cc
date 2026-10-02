@@ -32,6 +32,9 @@ using namespace ns3;
 /// Tolerance in meters for ECEF position comparisons
 static constexpr double TOLERANCE = 10.0;
 
+/// Tolerance in m/s for velocity comparisons
+static constexpr double VELOCITY_TOLERANCE = 1e-3;
+
 /// Earth sphere radius in km (must match the model)
 static constexpr double EARTH_RADIUS_KM = GeographicPositions::EARTH_SPHERE_RADIUS / 1000.0;
 
@@ -471,6 +474,114 @@ LeoOrbitalProgressTestCase::DoRun()
  * @ingroup mobility-test
  * @ingroup leo
  *
+ * @brief Test that GetVelocity() is the rate of change of GetPosition().
+ *
+ * GetPosition() returns ECEF coordinates, in which the orbital plane drifts
+ * westward as the Earth rotates. The velocity is compared with a central
+ * difference of the position, taken 100 ms before and after the sample time;
+ * the difference is within about 1e-5 m/s of the derivative at this step.
+ *
+ * On an equatorial orbit the speed is also known in closed form: the orbital
+ * speed minus the speed of the Earth's rotation at the orbit radius.
+ */
+class LeoVelocityTestCase : public TestCase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param inclination inclination of the orbital plane in degrees
+     * @param argumentOfLatitude initial argument of latitude in degrees
+     */
+    LeoVelocityTestCase(double inclination, double argumentOfLatitude);
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Build the test case name.
+     *
+     * @param inclination inclination of the orbital plane in degrees
+     * @param argumentOfLatitude initial argument of latitude in degrees
+     * @return the test case name
+     */
+    static std::string BuildName(double inclination, double argumentOfLatitude);
+
+    double m_inclination;        ///< Inclination of the orbital plane in degrees
+    double m_argumentOfLatitude; ///< Initial argument of latitude in degrees
+};
+
+LeoVelocityTestCase::LeoVelocityTestCase(double inclination, double argumentOfLatitude)
+    : TestCase(BuildName(inclination, argumentOfLatitude)),
+      m_inclination(inclination),
+      m_argumentOfLatitude(argumentOfLatitude)
+{
+}
+
+std::string
+LeoVelocityTestCase::BuildName(double inclination, double argumentOfLatitude)
+{
+    std::ostringstream oss;
+    oss << "LEO velocity is the rate of change of the position, inclination " << inclination
+        << " deg, argument of latitude " << argumentOfLatitude << " deg";
+    return oss.str();
+}
+
+void
+LeoVelocityTestCase::DoRun()
+{
+    auto node = CreateObject<Node>();
+    auto mob = CreateObject<LeoCircularOrbitMobilityModel>();
+    mob->SetAttribute("Altitude", DoubleValue(1000.0));
+    mob->SetAttribute("Inclination", DoubleValue(m_inclination));
+    mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
+    node->AggregateObject(mob);
+
+    mob->SetPosition(Vector(0.0, m_argumentOfLatitude, 0.0));
+
+    const Time sampleTime = Seconds(100);
+    const Time halfStep = MilliSeconds(100);
+    Vector before;
+    Vector after;
+    Vector velocity;
+    Simulator::Schedule(sampleTime - halfStep, [&]() { before = mob->GetPosition(); });
+    Simulator::Schedule(sampleTime, [&]() { velocity = mob->GetVelocity(); });
+    Simulator::Schedule(sampleTime + halfStep, [&]() { after = mob->GetPosition(); });
+
+    Simulator::Run();
+    Simulator::Destroy();
+
+    Vector expected = (after - before) * (1.0 / (2 * halfStep.GetSeconds()));
+
+    NS_TEST_ASSERT_MSG_EQ_TOL(velocity.x,
+                              expected.x,
+                              VELOCITY_TOLERANCE,
+                              "x component of the velocity differs from the position difference");
+    NS_TEST_ASSERT_MSG_EQ_TOL(velocity.y,
+                              expected.y,
+                              VELOCITY_TOLERANCE,
+                              "y component of the velocity differs from the position difference");
+    NS_TEST_ASSERT_MSG_EQ_TOL(velocity.z,
+                              expected.z,
+                              VELOCITY_TOLERANCE,
+                              "z component of the velocity differs from the position difference");
+
+    if (m_inclination == 0.0)
+    {
+        double earthRotationSpeed =
+            2.0 * std::numbers::pi / Hours(24).GetSeconds() * ORBIT_RADIUS_M;
+        NS_TEST_ASSERT_MSG_EQ_TOL(velocity.GetLength(),
+                                  mob->GetSpeed() - earthRotationSpeed,
+                                  VELOCITY_TOLERANCE,
+                                  "speed on an equatorial orbit should be the orbital speed "
+                                  "minus the Earth rotation speed at the orbit radius");
+    }
+}
+
+/**
+ * @ingroup mobility-test
+ * @ingroup leo
+ *
  * @brief Test that the Walker Delta phasing factor correctly staggers
  * satellites in adjacent orbital planes.
  *
@@ -874,6 +985,11 @@ LeoMobilityTestSuite::LeoMobilityTestSuite()
     AddTestCase(new LeoLongitudeOffsetTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitalOffsetTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitalProgressTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new LeoVelocityTestCase(0.0, 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoVelocityTestCase(45.0, 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoVelocityTestCase(45.0, 90.0), TestCase::Duration::QUICK);
+    // Above 90 degrees GetAngularVelocity() is negative
+    AddTestCase(new LeoVelocityTestCase(98.0, 0.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoPhasingFactorTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoWalkerStarTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitConstructorTestCase, TestCase::Duration::QUICK);

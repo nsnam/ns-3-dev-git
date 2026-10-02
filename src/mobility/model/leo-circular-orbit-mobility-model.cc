@@ -109,10 +109,13 @@ Vector
 LeoCircularOrbitMobilityModel::DoGetVelocity() const
 {
     Time t = Simulator::Now();
-    Vector3D pos = DoGetPosition();
-    double radius = pos.GetLength();
-    Vector3D heading = CrossProduct(PlaneNorm(t), pos);
-    return (GetSpeed() / radius) * heading;
+    Vector3D pos = CalcPosition(t);
+    // Time derivative of CalcPosition(): the motion along the orbit, plus the
+    // westward drift that CalcLongitude() gives the orbital plane in ECEF
+    Vector3D orbital = GetAngularVelocity() * CrossProduct(PlaneNorm(t), pos);
+    double earthRotationRate = 2 * M_PI / Days(1).GetSeconds();
+    Vector3D planeDrift = -earthRotationRate * CrossProduct(Vector3D(0, 0, 1), pos);
+    return orbital + planeDrift;
 }
 
 Vector3D
@@ -154,7 +157,7 @@ LeoCircularOrbitMobilityModel::GetAngularVelocity() const
     }
     else
     {
-        // If the user did not setup an angular velocity, assume it based on earths gravity
+        // If the user did not set up an orbital speed, assume it is based on Earth's gravity
         // omega = sqrt(GM / r^3); units: sqrt(m^3/s^2 / m^3) = rad/s
         omega = std::sqrt(GeographicPositions::LEO_EARTH_GGC /
                           (orbitMeters * orbitMeters * orbitMeters));
