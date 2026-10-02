@@ -530,8 +530,9 @@ main(int argc, char* argv[])
     Simulator::Stop(Seconds(duration));
     Simulator::Run();
 
-    g_traciClient->SumoStop();
     Simulator::Destroy();
+    // The TraciClient destructor closes the TraCI socket.
+    g_traciClient = nullptr;
 
     NS_LOG_UNCOND("MEC_RX bus_packets=" << g_busServer->GetReceived()
                                          << " car_packets=" << g_carServer->GetReceived()
