@@ -449,7 +449,6 @@ static int gMakeBoundCallbackTest4a;
 static int gMakeBoundCallbackTest4b;
 static int gMakeBoundCallbackTest5a;
 static int gMakeBoundCallbackTest5b;
-static int gMakeBoundCallbackTest5c;
 static int gMakeBoundCallbackTest6a;
 static int gMakeBoundCallbackTest6b;
 static int gMakeBoundCallbackTest6c;
@@ -608,7 +607,6 @@ MakeBoundCallbackTestCase::DoSetup()
     gMakeBoundCallbackTest4b = 0;
     gMakeBoundCallbackTest5a = 0;
     gMakeBoundCallbackTest5b = 0;
-    gMakeBoundCallbackTest5c = 0;
     gMakeBoundCallbackTest6a = 0;
     gMakeBoundCallbackTest6b = 0;
     gMakeBoundCallbackTest6c = 0;
