@@ -114,6 +114,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (tcp) The PRR recovery algorithm, SACK-based loss detection and retransmission accounting were corrected (#1190, #1282, #1349, #1350, #1351), a receiver sends a window update when a read reopens a closed window (#125), and DCTCP halves ssthresh on inferred loss (#1012); TCP traces during loss recovery change.
 * (wifi) `IdealWifiManager` records a 20 MHz observed width after a successful RTS on a 40 MHz channel, changing its rate selection on such channels.
 * (mobility) `LeoCircularOrbitMobilityModel::GetVelocity()` now returns the rate of change of the ECEF position returned by `GetPosition()`, which includes the apparent motion caused by the Earth's rotation. It previously returned the orbital velocity of the non-rotating frame (magnitude `GetSpeed()`), and a vector pointing against the motion for inclinations above 90 degrees. Doppler shifts and relative speeds computed from it change.
+* (mobility) `LeoCircularOrbitMobilityModel` now uses a retrograde orbit for an inclination above 90 degrees. It previously configured the prograde orbit of 180 degrees minus the inclination, because `GetAngularVelocity()` negated the rate for such inclinations in addition to the reversal already given by the plane orientation. `GetAngularVelocity()` is no longer negative, and the positions over time of satellites with an inclination above 90 degrees change.
 
 ## Changes from ns-3.47 to ns-3.48
 

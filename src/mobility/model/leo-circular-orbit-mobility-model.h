@@ -82,7 +82,9 @@ class LeoCircularOrbitMobilityModel : public GeocentricConstantPositionMobilityM
      * attribute is negative (the default), that is the Keplerian value
      * omega = sqrt(GM / r^3).
      *
-     * Negated for retrograde orbits (inclination > 90 degrees).
+     * The value is never negative. The direction of travel follows from the
+     * orientation of the orbital plane: an inclination above 90 degrees
+     * gives a retrograde orbit.
      *
      * @return angular velocity in rad/s
      */

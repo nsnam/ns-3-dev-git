@@ -162,11 +162,8 @@ LeoCircularOrbitMobilityModel::GetAngularVelocity() const
         omega = std::sqrt(GeographicPositions::LEO_EARTH_GGC /
                           (orbitMeters * orbitMeters * orbitMeters));
     }
-    // Retrograde orbit: inclination > 90 degrees
-    if (m_inclination > M_PI / 2.0)
-    {
-        omega = -omega;
-    }
+    // No sign for retrograde orbits: for an inclination above 90 degrees,
+    // PlaneNorm() already reverses the sense of rotation
     return omega;
 }
 

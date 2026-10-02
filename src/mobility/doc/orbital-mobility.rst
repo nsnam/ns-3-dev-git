@@ -58,6 +58,9 @@ The model computes satellite positions in three steps:
 - Third step: Apply the Rodrigues rotation formula (see `Rodrigues' rotation formula <https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula>`_)
   to rotate the satellite around the orbital plane normal by the computed angular position.
 
+The inclination also sets the direction of travel: below 90 degrees the orbit is prograde
+(the satellite moves with the Earth's rotation), and above 90 degrees it is retrograde.
+
 Positions are ECEF coordinates, and ``GetVelocity()`` returns their rate of change. Because
 the ECEF frame rotates with the Earth, this velocity includes an apparent westward motion
 (the Earth's rotation rate times the distance from the Earth's axis), and its magnitude

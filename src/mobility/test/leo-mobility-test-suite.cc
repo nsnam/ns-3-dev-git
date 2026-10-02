@@ -35,6 +35,9 @@ static constexpr double TOLERANCE = 10.0;
 /// Tolerance in m/s for velocity comparisons
 static constexpr double VELOCITY_TOLERANCE = 1e-3;
 
+/// Tolerance in degrees for inclination comparisons
+static constexpr double INCLINATION_TOLERANCE = 1e-3;
+
 /// Earth sphere radius in km (must match the model)
 static constexpr double EARTH_RADIUS_KM = GeographicPositions::EARTH_SPHERE_RADIUS / 1000.0;
 
@@ -582,6 +585,95 @@ LeoVelocityTestCase::DoRun()
  * @ingroup mobility-test
  * @ingroup leo
  *
+ * @brief Test that the orbit has the configured inclination, which
+ * also fixes its direction: prograde below 90 degrees, retrograde above.
+ *
+ * The inclination of the orbit is the angle between the Earth's axis and the
+ * orbital angular momentum r x v, where v is the velocity in the
+ * non-rotating frame. That velocity is obtained from a central difference
+ * of GetPosition() (ECEF), taken 100 ms before and after the sample time,
+ * plus the velocity of the Earth's rotation at the satellite's position.
+ */
+class LeoOrbitInclinationTestCase : public TestCase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param inclination inclination of the orbital plane in degrees
+     */
+    LeoOrbitInclinationTestCase(double inclination);
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Build the test case name.
+     *
+     * @param inclination inclination of the orbital plane in degrees
+     * @return the test case name
+     */
+    static std::string BuildName(double inclination);
+
+    double m_inclination; ///< Inclination of the orbital plane in degrees
+};
+
+LeoOrbitInclinationTestCase::LeoOrbitInclinationTestCase(double inclination)
+    : TestCase(BuildName(inclination)),
+      m_inclination(inclination)
+{
+}
+
+std::string
+LeoOrbitInclinationTestCase::BuildName(double inclination)
+{
+    std::ostringstream oss;
+    oss << "LEO orbit has the configured inclination, inclination " << inclination << " deg";
+    return oss.str();
+}
+
+void
+LeoOrbitInclinationTestCase::DoRun()
+{
+    auto node = CreateObject<Node>();
+    auto mob = CreateObject<LeoCircularOrbitMobilityModel>();
+    mob->SetAttribute("Altitude", DoubleValue(1000.0));
+    mob->SetAttribute("Inclination", DoubleValue(m_inclination));
+    mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
+    node->AggregateObject(mob);
+
+    mob->SetPosition(Vector(0.0, 0.0, 0.0));
+
+    const Time sampleTime = Seconds(100);
+    const Time halfStep = MilliSeconds(100);
+    Vector before;
+    Vector position;
+    Vector after;
+    Simulator::Schedule(sampleTime - halfStep, [&]() { before = mob->GetPosition(); });
+    Simulator::Schedule(sampleTime, [&]() { position = mob->GetPosition(); });
+    Simulator::Schedule(sampleTime + halfStep, [&]() { after = mob->GetPosition(); });
+
+    Simulator::Run();
+    Simulator::Destroy();
+
+    Vector ecefVelocity = (after - before) * (1.0 / (2 * halfStep.GetSeconds()));
+    double earthRotationRate = 2.0 * std::numbers::pi / Hours(24).GetSeconds();
+    Vector velocity = ecefVelocity + earthRotationRate * CrossProduct(Vector(0, 0, 1), position);
+    Vector angularMomentum = CrossProduct(position, velocity);
+    double measuredInclination =
+        std::atan2(std::hypot(angularMomentum.x, angularMomentum.y), angularMomentum.z) * 180.0 /
+        std::numbers::pi;
+
+    NS_TEST_ASSERT_MSG_EQ_TOL(measuredInclination,
+                              m_inclination,
+                              INCLINATION_TOLERANCE,
+                              "the orbit does not have the configured inclination");
+}
+
+/**
+ * @ingroup mobility-test
+ * @ingroup leo
+ *
  * @brief Test that the Walker Delta phasing factor correctly staggers
  * satellites in adjacent orbital planes.
  *
@@ -988,8 +1080,11 @@ LeoMobilityTestSuite::LeoMobilityTestSuite()
     AddTestCase(new LeoVelocityTestCase(0.0, 0.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoVelocityTestCase(45.0, 0.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoVelocityTestCase(45.0, 90.0), TestCase::Duration::QUICK);
-    // Above 90 degrees GetAngularVelocity() is negative
     AddTestCase(new LeoVelocityTestCase(98.0, 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoOrbitInclinationTestCase(45.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoOrbitInclinationTestCase(98.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoOrbitInclinationTestCase(135.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoOrbitInclinationTestCase(180.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoPhasingFactorTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoWalkerStarTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitConstructorTestCase, TestCase::Duration::QUICK);

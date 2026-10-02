@@ -80,9 +80,7 @@ LEO_EARTH_GGC = 398600.7  # Earth gravitational parameter μ in km^3/s^2
 EARTH_RADIUS_KM = 6378.137
 
 
-def generate_progress_vector(
-    orbit_alt_km: float, time_step_sec: float, inc_deg: float = 28.0
-) -> np.ndarray:
+def generate_progress_vector(orbit_alt_km: float, time_step_sec: float) -> np.ndarray:
     """
     Generate an array of angular offsets ("progress vector") that advance around a circular orbit
     by a fixed time step.
@@ -99,9 +97,6 @@ def generate_progress_vector(
         Orbit altitude above the reference Earth radius, in kilometers.
     time_step_sec
         Simulation sampling interval (dt), in seconds. One progress-vector entry is produced per dt.
-    inc_deg
-        Inclination in degrees, used only to replicate the sign convention (flip for retrograde
-        if inclination > 90 deg).
 
     Returns
     -------
@@ -127,12 +122,9 @@ def generate_progress_vector(
     # Number of steps to cover ~one full orbit
     steps = int(round(1.0 / step_fraction))
 
-    # Angle advanced per step (radians), before applying sign
-    step_angle_base = 2.0 * np.pi * step_fraction
-
-    # Match C++ sign convention: flip direction for inclinations > 90° (retrograde)
-    sign = 1 if np.deg2rad(inc_deg) <= (np.pi / 2.0) else -1
-    step_angle = sign * step_angle_base
+    # Angle advanced per step (radians). As in the C++ model, it is never negative: for an
+    # inclination above 90 degrees the tilt of the orbital plane makes the orbit retrograde.
+    step_angle = 2.0 * np.pi * step_fraction
 
     # Angles from 0, step_angle, 2*step_angle, ...
     return np.array([k * step_angle for k in range(steps)], dtype=float)
@@ -267,7 +259,7 @@ def main(
     # ----------------------------
 
     # 1) Generate angular progress over ~one orbit based on orbital mechanics
-    angles = generate_progress_vector(orbit_alt_km, time_step_sec, inc_deg=inclination_deg)
+    angles = generate_progress_vector(orbit_alt_km, time_step_sec)
 
     # 2) Create initial circular orbit in XY plane (equatorial)
     r_km = EARTH_RADIUS_KM + orbit_alt_km
