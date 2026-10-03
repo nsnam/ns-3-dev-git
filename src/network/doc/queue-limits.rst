@@ -72,6 +72,28 @@ The default values are respectively 0 and DQL_MAX_LIMIT.
 Increasing the MinLimit is recommended in case of higher NetDevice transmission rate (e.g. 1 Gbps)
 while reducing the MaxLimit is recommended in case of lower NetDevice transmission rate (e.g. 500 Kbps).
 
+Effect of BQL on latency with small queue size
+##############################################
+
+BQL is essentially used to limit Netdevices queueing delay. It limits this queueing delay by
+restricting the queue size by a byte-based measure of the queue size.
+
+Here we assume the SegmentSize for TcpSocket is 1448 bytes. Datarate for the bottleneck link is 50Mbps
+with a bottleneck link delay of 5ms.
+
+1. If the queue size of DropTailQueue is three packets, BQL keeps the limit steady at 3004 bytes.
+   With the P2P header, our packet size is 1502 bytes. With the BQL limit of 3004, our queue will
+   store two packets in the queue. Thus the packets would have an extra two packet’s transmission delay
+   worth of queueing delay.
+
+2. If the queue size of DroptailQueue is one packet. BQL will keep the limit at 2642 bytes.
+   Our packet size is 1502, and queue size is just one packet BQL limit won’t have any effect
+   as it is more than the queue size. In this case, the packets would have an extra one packet’s
+   transmission delay worth of queue delay.
+
+Hence in both cases, BQL works, but the queueing delay is lower when the queue size of DropTailQueue
+is one packet compared to when the size is three packets.
+
 There is one trace source in DynamicQueueLimits class that may be hooked:
 
 * ``Limit``: Limit value calculated by DQL

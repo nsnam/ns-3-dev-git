@@ -23,6 +23,8 @@ SOURCES = \
 	$(SRC)/applications/doc/tgax-video-traffic.inc \
 	$(SRC)/applications/doc/tgax-virtual-desktop-traffic.inc \
 	$(SRC)/applications/doc/tgax-voip-traffic.inc \
+	$(SRC)/applications/doc/three-gpp-http.rst \
+	$(SRC)/applications/doc/flent.rst \
 	$(SRC)/bridge/doc/bridge.rst \
 	$(SRC)/brite/doc/brite.rst \
 	$(SRC)/buildings/doc/source/buildings.rst \
@@ -120,6 +122,7 @@ SOURCEFIGS = \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \
 	$(SRC)/applications/doc/http-parsing-time.png \
 	$(SRC)/applications/doc/http-reading-time.png \
+	$(SRC)/applications/doc/ns3-flent-rrul.png \
 	$(SRC)/dsr/doc/figures/dsrRreq.dia \
 	$(SRC)/dsr/doc/figures/dsrRrep.dia \
 	$(SRC)/network/doc/packet.dia \

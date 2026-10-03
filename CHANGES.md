@@ -16,6 +16,8 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
+* (applications) Added `FlentApplication` and `FlentHelper` to configure and run Flent network benchmarking tests (`ping`, `tcp_upload`, `tcp_download`, and `rrul`) and export `.flent` JSON results.
+* (applications) Added the `EnableSeqTsEchoHeader` attribute to `UdpEchoClient` and `UdpEchoServer`, and the `RxWithSeqTsEchoHeader` trace source to `UdpEchoClient`, to support UDP RTT measurements using `SeqTsEchoHeader`.
 * (propagation) `ChannelConditionModel` gained `InterUeSpatialConsistency` and `SiteNetDeviceTypes` attributes enabling inter-UE (drop-based) spatial consistency (3GPP TR 38.901 Sec. 7.6.3): the LOS/NLOS state, indoor state and building type of the 3GPP channel condition models, and the shadow fading and O2I penetration loss of `ThreeGppPropagationLossModel`, become spatially consistent. The attribute is the single switch of the feature, also consulted by `ThreeGppChannelModel`.
 * (propagation) `ThreeGppPropagationLossModel` gained the `GetO2iDistance2dInMax()` and `GetO2iDistance2dInSub6GhzMax()` virtual methods returning the upper bound of the O2I 2D-in distance of each scenario.
 * (spectrum) `ThreeGppChannelModel` extends the drop-based spatial consistency to the large-scale parameters and the cluster and ray specific fast-fading variables when the `InterUeSpatialConsistency` attribute of its channel condition model is enabled, and gained `LargeBandwidthArrayModeling`, `ChannelBandwidth` and `MaxRaysPerCluster` attributes implementing the large bandwidth and large antenna array modeling of 3GPP TR 38.901 Sec. 7.6.2.2.
