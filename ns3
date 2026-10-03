@@ -853,11 +853,9 @@ def search_cmake_cache(build_profile):
             if shutil.which(build_tool) and generator in supported_cmake_generators:
                 available_generators.append(generator)
 
-        # Select the first one
-        if len(available_generators) == 0:
-            raise Exception("No generator available.")
-
-        current_cmake_generator = available_generators[0]
+        # Select the first one; when there is none, the generator must be set with -G
+        if available_generators:
+            current_cmake_generator = available_generators[0]
 
     return current_cmake_cache_folder, current_cmake_generator
 
@@ -908,6 +906,8 @@ def configure_cmake(
         # Set generator if a previous cache doesn't exist
         if args.G is None:
             args.G = current_cmake_generator
+        if args.G is None:
+            raise Exception("No generator available.")
 
         # Get the current Python information to supply
         # CMake with the respective installation
