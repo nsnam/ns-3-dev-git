@@ -32,9 +32,9 @@
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
-#include "ns3/point-to-point-helper.h"
 #include "ns3/queue-disc-container.h"
 #include "ns3/queue-size.h"
+#include "ns3/simple-net-device-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/test.h"
@@ -156,9 +156,10 @@ FlentApplicationRrul::DoRun()
     n2.Add(n.Get(2));
     n2.Add(n.Get(3));
 
-    PointToPointHelper deviceHelper;
+    SimpleNetDeviceHelper deviceHelper;
     DataRate edgeRate(100 * bw.GetBitRate());
     deviceHelper.SetDeviceAttribute("DataRate", DataRateValue(edgeRate));
+    deviceHelper.SetDeviceAttribute("PointToPointMode", BooleanValue(true));
     deviceHelper.SetChannelAttribute("Delay", TimeValue(MicroSeconds(1)));
     deviceHelper.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
     NetDeviceContainer devices0;
@@ -331,9 +332,10 @@ FlentApplicationTcpUpload::DoRun()
     n2.Add(n.Get(2));
     n2.Add(n.Get(3));
 
-    PointToPointHelper deviceHelper;
+    SimpleNetDeviceHelper deviceHelper;
     DataRate edgeRate(100 * bw.GetBitRate());
     deviceHelper.SetDeviceAttribute("DataRate", DataRateValue(edgeRate));
+    deviceHelper.SetDeviceAttribute("PointToPointMode", BooleanValue(true));
     deviceHelper.SetChannelAttribute("Delay", TimeValue(MicroSeconds(1)));
     deviceHelper.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
     NetDeviceContainer devices0;
@@ -482,9 +484,10 @@ FlentApplicationTcpDownload::DoRun()
     n2.Add(n.Get(2));
     n2.Add(n.Get(3));
 
-    PointToPointHelper deviceHelper;
+    SimpleNetDeviceHelper deviceHelper;
     DataRate edgeRate(100 * bw.GetBitRate());
     deviceHelper.SetDeviceAttribute("DataRate", DataRateValue(edgeRate));
+    deviceHelper.SetDeviceAttribute("PointToPointMode", BooleanValue(true));
     deviceHelper.SetChannelAttribute("Delay", TimeValue(MicroSeconds(1)));
     deviceHelper.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
     NetDeviceContainer devices0;
@@ -635,9 +638,10 @@ FlentApplicationPing::DoRun()
     n2.Add(n.Get(2));
     n2.Add(n.Get(3));
 
-    PointToPointHelper deviceHelper;
+    SimpleNetDeviceHelper deviceHelper;
     DataRate edgeRate(100 * bw.GetBitRate());
     deviceHelper.SetDeviceAttribute("DataRate", DataRateValue(edgeRate));
+    deviceHelper.SetDeviceAttribute("PointToPointMode", BooleanValue(true));
     deviceHelper.SetChannelAttribute("Delay", TimeValue(MicroSeconds(1)));
     deviceHelper.SetQueue("ns3::DropTailQueue", "MaxSize", StringValue("1p"));
     NetDeviceContainer devices0;
