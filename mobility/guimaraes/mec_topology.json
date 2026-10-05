@@ -1,0 +1,110 @@
+{
+  "coordinate_system": "SUMO local Cartesian coordinates in metres from guimaraes.net.xml",
+  "metrics_interval_s": 1.0,
+  "migration_interval_s": 1.0,
+  "migration_hysteresis_m": 150.0,
+  "udp_port": 8080,
+  "tcp_port": 8080,
+  "mecs": [
+    {
+      "id": "MEC_0",
+      "zone": "Azur\u00e9m / Campus da Universidade do Minho",
+      "position": {
+        "x": 464.65508219669573,
+        "y": 8739.376360246912,
+        "z": 15.0
+      },
+      "capacity": {
+        "vcpus": 64,
+        "ram_gb": 128
+      },
+      "backhaul": {
+        "data_rate_bps": 10000000000,
+        "delay_ms": 1.5,
+        "network": "192.168.101.0",
+        "mask": "255.255.255.0",
+        "pgw_address": "192.168.101.9",
+        "server_address": "192.168.101.10"
+      },
+      "primary_gnb_cell_ids": [
+        "183573",
+        "667403",
+        "631563",
+        "667405",
+        "293645"
+      ]
+    },
+    {
+      "id": "MEC_1",
+      "zone": "Centro Hist\u00f3rico de Guimar\u00e3es",
+      "position": {
+        "x": 4093.452805108507,
+        "y": 3992.8913158196956,
+        "z": 15.0
+      },
+      "capacity": {
+        "vcpus": 32,
+        "ram_gb": 64
+      },
+      "backhaul": {
+        "data_rate_bps": 10000000000,
+        "delay_ms": 1.5,
+        "network": "192.168.102.0",
+        "mask": "255.255.255.0",
+        "pgw_address": "192.168.102.9",
+        "server_address": "192.168.102.10"
+      },
+      "primary_gnb_cell_ids": [
+        "168215",
+        "168205",
+        "142614",
+        "1353485",
+        "55565",
+        "55564",
+        "168203",
+        "677645",
+        "681485",
+        "681484",
+        "640534",
+        "293644"
+      ]
+    },
+    {
+      "id": "MEC_2",
+      "zone": "Veiga de Creixomil / acesso A7",
+      "position": {
+        "x": 5321.21846691356,
+        "y": 7222.387559320778,
+        "z": 15.0
+      },
+      "capacity": {
+        "vcpus": 16,
+        "ram_gb": 32
+      },
+      "backhaul": {
+        "data_rate_bps": 10000000000,
+        "delay_ms": 1.5,
+        "network": "192.168.103.0",
+        "mask": "255.255.255.0",
+        "pgw_address": "192.168.103.9",
+        "server_address": "192.168.103.10"
+      },
+      "primary_gnb_cell_ids": [
+        "122134",
+        "681493",
+        "50454",
+        "389655",
+        "439575",
+        "439574",
+        "681483",
+        "439573",
+        "47894",
+        "293643",
+        "630293",
+        "50453",
+        "293655",
+        "47893"
+      ]
+    }
+  ]
+}

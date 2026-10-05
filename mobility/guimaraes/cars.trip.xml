@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-09-30 14:12:59.635006 by Eclipse SUMO randomTrips.py v1.26.0
+<configuration>
+    <net-file value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/guimaraes.net.xml"/>
+    <output-trip-file value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/cars.trip.xml"/>
+    <vtype-output value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/generated/cars-vtypes.add.xml"/>
+    <prefix value="cars"/>
+    <vehicle-class value="passenger"/>
+    <min-distance value="1000.0"/>
+    <begin value="25200.0"/>
+    <end value="25500.0"/>
+    <insertion-rate value="600.0"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="cars0" depart="25200.00" from="142916630#2" to="-108433875#7" type="cars_passenger"/>
+    <trip id="cars1" depart="25206.00" from="-335561245#1" to="-234412890#3" type="cars_passenger"/>
+    <trip id="cars2" depart="25212.00" from="211792102" to="183323837#0" type="cars_passenger"/>
+    <trip id="cars3" depart="25218.00" from="345071245#2" to="-135530871#0" type="cars_passenger"/>
+    <trip id="cars4" depart="25224.00" from="-986524848#0" to="-108435391#1" type="cars_passenger"/>
+    <trip id="cars5" depart="25230.00" from="-185658670#0" to="131244851#2" type="cars_passenger"/>
+    <trip id="cars6" depart="25236.00" from="-108434497#1" to="-183329074#1" type="cars_passenger"/>
+    <trip id="cars7" depart="25242.00" from="1497155736" to="135593933#3" type="cars_passenger"/>
+    <trip id="cars8" depart="25248.00" from="-185658670#4" to="1420162191#1" type="cars_passenger"/>
+    <trip id="cars9" depart="25254.00" from="334481036#0" to="-107910792#0" type="cars_passenger"/>
+    <trip id="cars10" depart="25260.00" from="330032387#4" to="184156884#0" type="cars_passenger"/>
+    <trip id="cars11" depart="25266.00" from="-344565045#2" to="-142933610#3" type="cars_passenger"/>
+    <trip id="cars12" depart="25272.00" from="655446866#10" to="-346519537" type="cars_passenger"/>
+    <trip id="cars13" depart="25278.00" from="340731065#1" to="142891938#0" type="cars_passenger"/>
+    <trip id="cars14" depart="25284.00" from="333080052#1" to="234412890#9" type="cars_passenger"/>
+    <trip id="cars15" depart="25290.00" from="-55492759" to="135593945#0" type="cars_passenger"/>
+    <trip id="cars16" depart="25296.00" from="338182836" to="142916414#5" type="cars_passenger"/>
+    <trip id="cars17" depart="25302.00" from="342860818" to="137399664#3" type="cars_passenger"/>
+    <trip id="cars18" depart="25308.00" from="183324021#1" to="-1163800549#0" type="cars_passenger"/>
+    <trip id="cars19" depart="25314.00" from="-234412890#4" to="-337098573#0" type="cars_passenger"/>
+    <trip id="cars20" depart="25320.00" from="-135473201#0" to="-235954156#2" type="cars_passenger"/>
+    <trip id="cars21" depart="25326.00" from="142916414#4" to="-55492756#7" type="cars_passenger"/>
+    <trip id="cars22" depart="25332.00" from="-550276671" to="-184156890#0" type="cars_passenger"/>
+    <trip id="cars23" depart="25338.00" from="1442290601" to="142893062" type="cars_passenger"/>
+    <trip id="cars24" depart="25344.00" from="-170211913#3" to="234412890#8" type="cars_passenger"/>
+    <trip id="cars25" depart="25350.00" from="-1548599227#1" to="-655446856#0" type="cars_passenger"/>
+    <trip id="cars26" depart="25356.00" from="981589217" to="165195038#4" type="cars_passenger"/>
+    <trip id="cars27" depart="25362.00" from="135475697" to="183324017#0" type="cars_passenger"/>
+    <trip id="cars28" depart="25368.00" from="-234412890#7" to="-108436107#2" type="cars_passenger"/>
+    <trip id="cars29" depart="25374.00" from="-342634170#5" to="-326639412#0" type="cars_passenger"/>
+    <trip id="cars30" depart="25380.00" from="-184156886#2" to="655446851" type="cars_passenger"/>
+    <trip id="cars31" depart="25386.00" from="165195038#0" to="-889380717#2" type="cars_passenger"/>
+    <trip id="cars32" depart="25392.00" from="40278289" to="1156566237#2" type="cars_passenger"/>
+    <trip id="cars33" depart="25398.00" from="-328953331" to="-304278674#0" type="cars_passenger"/>
+    <trip id="cars34" depart="25404.00" from="135530895#0" to="-304317090#0" type="cars_passenger"/>
+    <trip id="cars35" depart="25410.00" from="135615532" to="347398166" type="cars_passenger"/>
+    <trip id="cars36" depart="25416.00" from="-655446866#11" to="-234412877#0" type="cars_passenger"/>
+    <trip id="cars37" depart="25422.00" from="986524333#1" to="133475370#1" type="cars_passenger"/>
+    <trip id="cars38" depart="25428.00" from="-135530899#3" to="-1163801373#1" type="cars_passenger"/>
+    <trip id="cars39" depart="25434.00" from="304316139" to="107962187#0" type="cars_passenger"/>
+    <trip id="cars40" depart="25440.00" from="-131239118#0" to="-655446856#5" type="cars_passenger"/>
+    <trip id="cars41" depart="25446.00" from="98494719#5" to="135473200#1" type="cars_passenger"/>
+    <trip id="cars42" depart="25452.00" from="936803460#0" to="342860854#2" type="cars_passenger"/>
+    <trip id="cars43" depart="25458.00" from="-107961665#3" to="211792103" type="cars_passenger"/>
+    <trip id="cars44" depart="25464.00" from="172903629#19" to="135475693" type="cars_passenger"/>
+    <trip id="cars45" depart="25470.00" from="-330032387#1" to="170211908#1" type="cars_passenger"/>
+    <trip id="cars46" depart="25476.00" from="-1363856860" to="108433875#11" type="cars_passenger"/>
+    <trip id="cars47" depart="25482.00" from="108433875#1" to="655446866#2" type="cars_passenger"/>
+    <trip id="cars48" depart="25488.00" from="342860854#3" to="-304317090#1" type="cars_passenger"/>
+    <trip id="cars49" depart="25494.00" from="1299820983" to="-172903629#10" type="cars_passenger"/>
+</routes>

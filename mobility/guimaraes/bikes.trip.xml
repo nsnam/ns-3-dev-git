@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-09-30 14:13:03.956734 by Eclipse SUMO randomTrips.py v1.26.0
+<configuration>
+    <net-file value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/guimaraes.net.xml"/>
+    <output-trip-file value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/bikes.trip.xml"/>
+    <vtype-output value="/home/vinicius/ns3_env/ns-3-dev/mobility/guimaraes/generated/bikes-vtypes.add.xml"/>
+    <prefix value="bikes"/>
+    <vehicle-class value="bicycle"/>
+    <seed value="84"/>
+    <min-distance value="500.0"/>
+    <begin value="25200.0"/>
+    <end value="25500.0"/>
+    <insertion-rate value="120.0"/>
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="bikes0" depart="25200.00" from="183791929#0" to="346519541" type="bikes_bicycle"/>
+    <trip id="bikes1" depart="25230.00" from="-1163856573#1" to="-107910208#1" type="bikes_bicycle"/>
+    <trip id="bikes2" depart="25260.00" from="981589218" to="-343712129#1" type="bikes_bicycle"/>
+    <trip id="bikes3" depart="25290.00" from="-172903752" to="1299820987" type="bikes_bicycle"/>
+    <trip id="bikes4" depart="25320.00" from="131244833#0" to="235954128#4" type="bikes_bicycle"/>
+    <trip id="bikes5" depart="25350.00" from="137399654#1" to="1340506566#1" type="bikes_bicycle"/>
+    <trip id="bikes6" depart="25380.00" from="234412890#0" to="-304317101#3" type="bikes_bicycle"/>
+    <trip id="bikes7" depart="25410.00" from="1091199236#0" to="344565302#1" type="bikes_bicycle"/>
+    <trip id="bikes8" depart="25440.00" from="183324021#0" to="142892741#2" type="bikes_bicycle"/>
+    <trip id="bikes9" depart="25470.00" from="-137399664#8" to="41674464#4" type="bikes_bicycle"/>
+</routes>
