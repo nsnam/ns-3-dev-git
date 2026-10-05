@@ -456,7 +456,7 @@ AmpduAggregationTest::DoRun()
                                                               phy->GetChannelWidth());
     auto item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), true, "a single packet should not result in an A-MPDU");
 
@@ -472,7 +472,7 @@ AmpduAggregationTest::DoRun()
     EnqueuePkts(2, 1500, Mac48Address("00:00:00:00:00:02"));
 
     item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
-    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), false, "MPDU aggregation failed");
 
@@ -507,7 +507,7 @@ AmpduAggregationTest::DoRun()
                                                               phy->GetChannelWidth());
     item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(),
                           true,
@@ -522,7 +522,7 @@ AmpduAggregationTest::DoRun()
                                                               phy->GetChannelWidth());
     item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(),
                           true,
@@ -609,8 +609,8 @@ TwoLevelAggregationTest::DoRun()
     txParams.m_txVector =
         m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
                                                               phy->GetChannelWidth());
-    htFem->TryAddMpdu(peeked, txParams, Time::Min());
-    auto item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+    htFem->TryAddMpdu(peeked, txParams, std::nullopt);
+    auto item = msduAggregator->GetNextAmsdu(peeked, txParams, std::nullopt);
 
     bool result{item};
     NS_TEST_EXPECT_MSG_EQ(result, true, "aggregation failed");
@@ -634,8 +634,8 @@ TwoLevelAggregationTest::DoRun()
     txParams.m_txVector =
         m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
                                                               phy->GetChannelWidth());
-    htFem->TryAddMpdu(peeked, txParams, Time::Min());
-    item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+    htFem->TryAddMpdu(peeked, txParams, std::nullopt);
+    item = msduAggregator->GetNextAmsdu(peeked, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(item, nullptr, "A-MSDU aggregation did not fail");
 
@@ -745,8 +745,8 @@ TwoLevelAggregationTest::DoRun()
         m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
                                                               phy->GetChannelWidth());
 
-    htFem->TryAddMpdu(peeked, txParams, Time::Min());
-    item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+    htFem->TryAddMpdu(peeked, txParams, std::nullopt);
+    item = msduAggregator->GetNextAmsdu(peeked, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(item, nullptr, "Expecting not to be able to aggregate A-MSDUs");
 
@@ -834,7 +834,7 @@ HeAggregationTest::DoRun()
                                                               phy->GetChannelWidth());
     auto item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
     DequeueMpdus(mpduList);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), false, "MPDU aggregation failed");
@@ -917,7 +917,7 @@ EhtAggregationTest::DoRun()
                                                                       phy->GetChannelWidth());
             auto item = GetBeQueue()->GetNextMpdu(linkId, peeked, txParams, {});
 
-            mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+            mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
             DequeueMpdus(mpduList);
         }
 
