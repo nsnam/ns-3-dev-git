@@ -6,6 +6,7 @@
  * Authors:
  *
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
+ *  Kazaho Nonaka <c612301468@tokushima-u.ac.jp>
  */
 
 #include "zigbee-zdo.h"
@@ -62,6 +63,12 @@ ZigbeeZdo::DoInitialize()
 void
 ZigbeeZdo::DoDispose()
 {
+    m_zdoNwkAddrRspIndCallback = MakeNullCallback<void, NwkAddrRespIndParams>();
+    m_zdoIeeeAddrRspIndCallback = MakeNullCallback<void, IeeeAddrRespIndParams>();
+
+    m_nwk = nullptr;
+    m_aps = nullptr;
+
     Object::DoDispose();
 }
 
@@ -109,6 +116,10 @@ ZigbeeZdo::ApsDataIndication(ApsdeDataIndicationParams params, Ptr<Packet> asdu)
             HandleNwkAddrRequest(asdu, params);
             break;
 
+        case ZdpClustersClientCmds::IEEE_ADDR_REQ:
+            HandleIeeeAddrRequest(asdu, params);
+            break;
+
         default:
             break;
         }
@@ -122,6 +133,10 @@ ZigbeeZdo::ApsDataIndication(ApsdeDataIndicationParams params, Ptr<Packet> asdu)
             HandleNwkAddrResponse(asdu, params);
             break;
 
+        case ZdpClustersServerCmds::IEEE_ADDR_RSP:
+            HandleIeeeAddrResponse(asdu, params);
+            break;
+
         default:
             break;
         }
@@ -133,8 +148,9 @@ ZigbeeZdo::NwkAddrRequest(NwkAddrRequestParams params)
 {
     NS_LOG_FUNCTION(this);
 
-    if (params.m_requestType == NwkAddrRequestType::EXTENDED_RESPONSE)
+    if (params.m_requestType == AddressRequestType::EXTENDED_RESPONSE)
     {
+        NS_LOG_WARN("Address request extended response not supported");
         // TODO: Add support to requests associated devices.
         return;
     }
@@ -254,14 +270,15 @@ ZigbeeZdo::HandleNwkAddrRequest(Ptr<Packet> asdu, ApsdeDataIndicationParams data
     // A match was found: the request type determines the response.
     responseParams.m_nwkAddrRemoteDev = matchedNwkAddr;
 
-    switch (static_cast<NwkAddrRequestType>(requestCmd.GetRequestType()))
+    switch (static_cast<AddressRequestType>(requestCmd.GetRequestType()))
     {
-    case NwkAddrRequestType::SINGLE_DEVICE_RESPONSE:
+    case AddressRequestType::SINGLE_DEVICE_RESPONSE:
         responseParams.m_status = ZdpStatus::SUCCESS;
         NwkAddrResponse(responseParams);
         break;
 
-    case NwkAddrRequestType::EXTENDED_RESPONSE:
+    case AddressRequestType::EXTENDED_RESPONSE:
+        NS_LOG_WARN("Address request extended response not supported");
         // TODO: An extended response must also include the list of devices
         // associated to the matched device (NumAssocDev, StartIndex and
         // NWKAddrAssocDevList fields).
@@ -311,6 +328,171 @@ void
 ZigbeeZdo::SetZdoNwkAddrRspIndCallback(ZdoNwkAddrRspIndCallback c)
 {
     m_zdoNwkAddrRspIndCallback = c;
+}
+
+void
+ZigbeeZdo::IeeeAddrRequest(IeeeAddrRequestParams params)
+{
+    NS_LOG_FUNCTION(this);
+
+    if (params.m_requestType == AddressRequestType::EXTENDED_RESPONSE)
+    {
+        NS_LOG_WARN("Address request extended response not supported");
+        // TODO: Add support to requests associated devices.
+        return;
+    }
+
+    Ptr<Packet> zdpFrame = Create<Packet>();
+
+    IeeeAddrRequestCmd ieeeAddrRequestCmd;
+    ieeeAddrRequestCmd.SetTsn(m_tsn.GetValue());
+    m_tsn++;
+    ieeeAddrRequestCmd.SetNwkAddrOfInterest(params.m_nwkAddrOfInterest);
+    ieeeAddrRequestCmd.SetRequestType(static_cast<uint8_t>(params.m_requestType));
+    ieeeAddrRequestCmd.SetStartIndex(params.m_startIndex);
+    zdpFrame->AddHeader(ieeeAddrRequestCmd);
+
+    ApsdeDataRequestParams apsdeParams;
+    apsdeParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
+    apsdeParams.m_dstAddr16 = params.m_dstAddr;
+    apsdeParams.m_dstEndPoint = 0x00;
+    apsdeParams.m_profileId = ZigbeeProfiles::ZDP_PROFILE;
+    apsdeParams.m_clusterId = ZdpClustersClientCmds::IEEE_ADDR_REQ;
+    apsdeParams.m_srcEndPoint = 0x00;
+    apsdeParams.m_asduLength = zdpFrame->GetSize();
+    apsdeParams.m_txOptions = 0;
+    apsdeParams.m_useAlias = false;
+    apsdeParams.m_radius = 0;
+
+    m_aps->ApsdeDataRequest(apsdeParams, zdpFrame);
+}
+
+void
+ZigbeeZdo::IeeeAddrResponse(IeeeAddrResponseParams params)
+{
+    NS_LOG_FUNCTION(this);
+
+    Ptr<Packet> zdpFrame = Create<Packet>();
+
+    IeeeAddrResponseCmd ieeeAddrResponseCmd;
+    ieeeAddrResponseCmd.SetTsn(params.m_tsn);
+    ieeeAddrResponseCmd.SetStatus(static_cast<uint8_t>(params.m_status));
+    ieeeAddrResponseCmd.SetIeeeAddrRemoteDev(params.m_ieeeAddrRemoteDev);
+    ieeeAddrResponseCmd.SetNwkAddrRemoteDev(params.m_nwkAddrRemoteDev);
+    zdpFrame->AddHeader(ieeeAddrResponseCmd);
+
+    ApsdeDataRequestParams apsdeParams;
+    apsdeParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
+    apsdeParams.m_dstAddr16 = params.m_dstAddr;
+    apsdeParams.m_dstEndPoint = 0x00;
+    apsdeParams.m_profileId = ZigbeeProfiles::ZDP_PROFILE;
+    apsdeParams.m_clusterId = ZdpClustersServerCmds::IEEE_ADDR_RSP;
+    apsdeParams.m_srcEndPoint = 0x00;
+    apsdeParams.m_asduLength = zdpFrame->GetSize();
+    apsdeParams.m_txOptions = 0;
+    apsdeParams.m_useAlias = false;
+    apsdeParams.m_radius = 0;
+
+    m_aps->ApsdeDataRequest(apsdeParams, zdpFrame);
+}
+
+void
+ZigbeeZdo::HandleIeeeAddrRequest(Ptr<Packet> asdu, ApsdeDataIndicationParams dataParams)
+{
+    NS_LOG_FUNCTION(this);
+
+    IeeeAddrRequestCmd requestCmd;
+    asdu->RemoveHeader(requestCmd);
+
+    Mac16Address requestedNwkAddr = requestCmd.GetNwkAddrOfInterest();
+
+    bool isBroadcast = dataParams.m_dstAddr16 == "FF:FF" || dataParams.m_dstAddr16 == "FF:FD" ||
+                       dataParams.m_dstAddr16 == "FF:FC" || dataParams.m_dstAddr16 == "FF:FB";
+
+    bool matchFound = false;
+    Mac64Address matchedIeeeAddr;
+
+    if (m_nwk->GetNetworkAddress() == requestedNwkAddr)
+    {
+        // I am the device the IEEE_addr_req is looking for.
+        matchedIeeeAddr = m_nwk->GetIeeeAddress();
+        matchFound = true;
+    }
+    else if (m_nwk->GetIeeeAddrByNwkAddr(requestedNwkAddr, matchedIeeeAddr))
+    {
+        matchFound = true;
+    }
+
+    IeeeAddrResponseParams responseParams;
+    responseParams.m_dstAddr = dataParams.m_srcAddress16;
+    responseParams.m_tsn = requestCmd.GetTsn();
+    responseParams.m_nwkAddrRemoteDev = requestedNwkAddr;
+
+    if (!matchFound)
+    {
+        if (isBroadcast)
+        {
+            return;
+        }
+        responseParams.m_status = ZdpStatus::DEVICE_NOT_FOUND;
+        responseParams.m_ieeeAddrRemoteDev = Mac64Address("FF:FF:FF:FF:FF:FF:FF:FF");
+        IeeeAddrResponse(responseParams);
+        return;
+    }
+
+    responseParams.m_ieeeAddrRemoteDev = matchedIeeeAddr;
+
+    switch (static_cast<AddressRequestType>(requestCmd.GetRequestType()))
+    {
+    case AddressRequestType::SINGLE_DEVICE_RESPONSE:
+        responseParams.m_status = ZdpStatus::SUCCESS;
+        IeeeAddrResponse(responseParams);
+        break;
+
+    case AddressRequestType::EXTENDED_RESPONSE:
+        NS_LOG_WARN("Address request extended response not supported");
+        // TODO: not currently supported.
+        break;
+
+    default:
+        if (!isBroadcast)
+        {
+            responseParams.m_status = ZdpStatus::INV_REQUESTTYPE;
+            IeeeAddrResponse(responseParams);
+        }
+        break;
+    }
+}
+
+void
+ZigbeeZdo::HandleIeeeAddrResponse(Ptr<Packet> asdu, ApsdeDataIndicationParams dataParams)
+{
+    NS_LOG_FUNCTION(this);
+
+    IeeeAddrResponseCmd responseCmd;
+    asdu->RemoveHeader(responseCmd);
+
+    if (static_cast<ZdpStatus>(responseCmd.GetStatus()) == ZdpStatus::SUCCESS)
+    {
+        m_nwk->UpdateNwkAddrMap(responseCmd.GetNwkAddrRemoteDev(),
+                                responseCmd.GetIeeeAddrRemoteDev());
+    }
+
+    // Notify the application framework (AF) that an IEEE_addr_rsp was received.
+    if (!m_zdoIeeeAddrRspIndCallback.IsNull())
+    {
+        IeeeAddrRespIndParams responseIndParams;
+        responseIndParams.m_status = static_cast<ZdpStatus>(responseCmd.GetStatus());
+        responseIndParams.m_ieeeAddrRemoteDev = responseCmd.GetIeeeAddrRemoteDev();
+        responseIndParams.m_nwkAddrRemoteDev = responseCmd.GetNwkAddrRemoteDev();
+        m_zdoIeeeAddrRspIndCallback(responseIndParams);
+    }
+}
+
+void
+ZigbeeZdo::SetZdoIeeeAddrRspIndCallback(ZdoIeeeAddrRspIndCallback c)
+{
+    m_zdoIeeeAddrRspIndCallback = c;
 }
 
 } // namespace zigbee

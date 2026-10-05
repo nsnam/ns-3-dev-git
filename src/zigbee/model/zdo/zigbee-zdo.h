@@ -6,6 +6,7 @@
  * Authors:
  *
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
+ *  Kazaho Nonaka <c612301468@tokushima-u.ac.jp>
  */
 
 #ifndef ZIGBEE_ZDO_H
@@ -72,9 +73,9 @@ enum class ZdpStatus : uint8_t
 /**
  * @ingroup zigbee
  *
- *  Zigbee Device Profile (ZDP) enumeration of request types for NWK_addr_req command.
+ *  Zigbee Device Profile (ZDP) enumeration use for different types of address requests.
  */
-enum class NwkAddrRequestType : std::uint8_t
+enum class AddressRequestType : std::uint8_t
 {
     SINGLE_DEVICE_RESPONSE = 0x00, //!< Request type for a single device response.
     EXTENDED_RESPONSE = 0x02,      //!< Request type for an extended response,
@@ -84,14 +85,14 @@ enum class NwkAddrRequestType : std::uint8_t
 /**
  * @ingroup zigbee
  *
- *  ZDO Network Address Request Parameters.
+ *  ZDO Address Request Parameters.
  */
 struct NwkAddrRequestParams
 {
     Mac16Address m_dstAddr;  //!< The destination of the request, unicast or broadcast (0xFFFF).
     Mac64Address m_ieeeAddr; //!< The known IEEE Address(64-bit address) of the device that we are
                              //!< request its network address (16-bit address).
-    NwkAddrRequestType m_requestType{NwkAddrRequestType::SINGLE_DEVICE_RESPONSE}; //!< Request type
+    AddressRequestType m_requestType{AddressRequestType::SINGLE_DEVICE_RESPONSE}; //!< Request type
                                                                                   //!< of this
                                                                                   //!< command
     uint8_t m_startIndex{0}; //!< Placeholder, not supported.
@@ -137,6 +138,65 @@ struct NwkAddrRespIndParams
     // TODO Add startIndex, numAssocDev, and associatedDevList when implementing extended response
 };
 
+/**
+ * @ingroup zigbee
+ *
+ *  ZDO IEEE Address Request Parameters.
+ */
+struct IeeeAddrRequestParams
+{
+    Mac16Address m_dstAddr; //!< The destination of the request, unicast or broadcast (0xFFFF).
+    Mac16Address m_nwkAddrOfInterest; //!< The known NWK address (16-bit address) of the device
+                                      //!< whose IEEE address (64-bit address) we want to know.
+    AddressRequestType m_requestType{AddressRequestType::SINGLE_DEVICE_RESPONSE}; //!< Request type
+    uint8_t m_startIndex{0}; //!< Placeholder, not supported.
+};
+
+/**
+ * @ingroup zigbee
+ *
+ *  ZDO IEEE Address Response Parameters.
+ */
+struct IeeeAddrResponseParams
+{
+    Mac16Address m_dstAddr; //!< The destination of the response
+                            //!< (the device that issued the IEEE_addr_req).
+    uint8_t m_tsn{0};       //!< The transaction sequence number, must match the one used in the
+                            //!< corresponding IEEE_addr_req.
+    ZdpStatus m_status{ZdpStatus::INV_REQUESTTYPE}; //!< The status of the IEEE_addr_req
+                                                    //!< being responded to.
+    Mac64Address m_ieeeAddrRemoteDev; //!< The IEEE address (64-bit address) of the remote device
+                                      //!< matching the request.
+    Mac16Address m_nwkAddrRemoteDev;  //!< The network address (16-bit address) of the remote device
+                                      //!< matching the request.
+    // TODO Add startIndex, numAssocDev, and associatedDevList when implementing extended response
+};
+
+/**
+ * @ingroup zigbee
+ *
+ *  ZDO IEEE Address Response Indication Parameters.
+ */
+struct IeeeAddrRespIndParams
+{
+    ZdpStatus m_status{
+        ZdpStatus::INV_REQUESTTYPE};  //!< The status of the IEEE_addr_req being responded to.
+    Mac64Address m_ieeeAddrRemoteDev; //!< The IEEE address (64-bit address) of the remote device
+                                      //!< matching the request.
+    Mac16Address m_nwkAddrRemoteDev;  //!< The network address (16-bit address) of the remote device
+                                      //!< matching the request.
+    // TODO Add startIndex, numAssocDev, and associatedDevList when implementing extended response
+};
+
+/**
+ * @ingroup zigbee
+ *
+ *  The class represents the Zigbee Device Object (ZDO) layer, which is responsible for managing
+ *  device discovery, network management, and other Zigbee-specific functions. Its implementation
+ *  is similar to another Zigbee layer on top of the Zigbee Application Support Sub-layer (APS)
+ * however, it is often describe as an special type of application that is used to manage the Zigbee
+ * network and its devices.
+ */
 class ZigbeeZdo : public Object
 {
   public:
@@ -150,10 +210,16 @@ class ZigbeeZdo : public Object
     ~ZigbeeZdo() override;
 
     /**
-     * This callback is called after a ASDU has successfully received and
+     * This  Nwk_Addr_Rsp callback is called after a ASDU has successfully received and
      *  APS push it to deliver it to the next higher layer (typically the application framework).
      */
     using ZdoNwkAddrRspIndCallback = Callback<void, NwkAddrRespIndParams>;
+
+    /**
+     * This IEEE_Addr_Rsp callback is called after a ASDU has successfully received and
+     * APS push it to deliver it to the next higher layer (typically the application framework).
+     */
+    using ZdoIeeeAddrRspIndCallback = Callback<void, IeeeAddrRespIndParams>;
 
     /**
      * Set the underlying APS to use in this Zigbee ZDO
@@ -234,6 +300,48 @@ class ZigbeeZdo : public Object
      */
     void SetZdoNwkAddrRspIndCallback(ZdoNwkAddrRspIndCallback c);
 
+    /**
+     * This function is used to send an IEEE Address (64-bit address) Request to a remote device
+     * when the NWK address (16-bit address) of the device is known.
+     *
+     * @param params The parameters of the IEEE Address Request.
+     */
+    void IeeeAddrRequest(IeeeAddrRequestParams params);
+
+    /**
+     * This function is used to send an IEEE Address (64-bit address) Response to a remote
+     * device in reply to a previously received IEEE_addr_req.
+     *
+     * @param params The parameters of the IEEE Address Response.
+     */
+    void IeeeAddrResponse(IeeeAddrResponseParams params);
+
+    /**
+     * Effect on Receipt (IEEE_addr_req)
+     * See Zigbee Specification 2017, Section 2.4.3.1.2
+     *
+     * @param asdu The received packet containing the IEEE_addr_req command.
+     * @param dataParams APSDE-DATA.indication parameters that carried the IEEE_addr_req command.
+     */
+    void HandleIeeeAddrRequest(Ptr<Packet> asdu, ApsdeDataIndicationParams dataParams);
+
+    /**
+     * Effect on Receipt (IEEE_addr_rsp)
+     * See Zigbee Specification 2017, Section 2.4.4.2.2
+     *
+     * @param asdu The received packet containing the IEEE_addr_rsp command.
+     * @param dataParams APSDE-DATA.indication parameters that carried the IEEE_addr_rsp command.
+     */
+    void HandleIeeeAddrResponse(Ptr<Packet> asdu, ApsdeDataIndicationParams dataParams);
+
+    /**
+     * Set the indication callback to be called when a response (IEEE_addr_rsp) to
+     * an IEEE_addr_req is received.
+     *
+     * @param c The callback to be called when an IEEE_addr_rsp is received.
+     */
+    void SetZdoIeeeAddrRspIndCallback(ZdoIeeeAddrRspIndCallback c);
+
   protected:
     void DoInitialize() override;
     void DoDispose() override;
@@ -247,6 +355,14 @@ class ZigbeeZdo : public Object
      * similar solutions are often used in ZDO implementations.
      */
     ZdoNwkAddrRspIndCallback m_zdoNwkAddrRspIndCallback;
+
+    /**
+     * This callback is used to to notify the result of an IEEE_addr_req
+     * request in the ZDO to the Application framework (AF).
+     * This callback is not standardized in the Zigbee Specification, but
+     * similar solutions are often used in ZDO implementations.
+     */
+    ZdoIeeeAddrRspIndCallback m_zdoIeeeAddrRspIndCallback;
 
     Ptr<ZigbeeNwk> m_nwk;  //!< Pointer to the Zigbee Network Layer (NWK) object.
     Ptr<ZigbeeAps> m_aps;  //!< Pointer to the Zigbee Application Support Sub-layer (APS) object.

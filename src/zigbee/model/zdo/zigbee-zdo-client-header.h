@@ -6,6 +6,7 @@
  * Authors:
  *
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
+ *  Kazaho Nonaka <c612301468@tokushima-u.ac.jp>
  */
 
 #ifndef ZIGBEE_ZDO_CLIENT_HEADER_H
@@ -144,6 +145,93 @@ class NwkAddrRequestCmd : public Header
     Mac64Address m_ieeeAddress; //!< The IEEE address of the device to be queried.
     uint8_t m_requestType{0};   //!< Single device or extended response type
     uint8_t m_startIndex{0};    //!< The starting index for the response, used for pagination.
+};
+
+/**
+ *  Implements the IEEE_addr_req command
+ *  See Zigbee Specification r22.1.0, Section 2.4.3.1.2
+ */
+class IeeeAddrRequestCmd : public Header
+{
+  public:
+    /**
+     * Get the type ID.
+     *
+     * @return The object TypeId.
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+
+    /**
+     * Set the transaction sequence number.
+     *
+     * @param tsn The transaction sequence number.
+     */
+    void SetTsn(uint8_t tsn);
+
+    /**
+     * Get the transaction sequence number.
+     *
+     * @return The transaction sequence number.
+     */
+    uint8_t GetTsn() const;
+
+    /**
+     * Set the network address of interest.
+     *
+     * @param nwkAddrOfInterest The network address that is used for IEEE address mapping.
+     */
+    void SetNwkAddrOfInterest(Mac16Address nwkAddrOfInterest);
+
+    /**
+     * Get the network address of interest.
+     *
+     * @return The network address of interest.
+     */
+    Mac16Address GetNwkAddrOfInterest() const;
+
+    /**
+     * Set the request type, either single device or extended response.
+     * Note:Extended response is not currently supported.
+     *
+     * @param type The request type.
+     */
+    void SetRequestType(uint8_t type);
+
+    /**
+     * Get the request type previously set for the IEEE address request.
+     *
+     * @return The request type.
+     */
+    uint8_t GetRequestType() const;
+
+    /**
+     * Set the start index. Used only for the pagination of extended responses.
+     * Note: Extended response is not currently supported. Therefore this is only
+     * a placeholder for future use.
+     *
+     * @param index The start index.
+     */
+    void SetStartIndex(uint8_t index);
+
+    /**
+     * Get the start index.
+     *
+     * @return The start index.
+     */
+    uint8_t GetStartIndex() const;
+
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
+
+  private:
+    uint8_t m_tsn{0};                 //!< The transaction sequence number for the request.
+    Mac16Address m_nwkAddrOfInterest; //!< The NWK address of the device whose IEEE address is
+                                      //!< being queried.
+    uint8_t m_requestType{0};         //!< Single device or extended response type
+    uint8_t m_startIndex{0};          //!< The starting index for the response, used for pagination.
 };
 
 } // namespace zigbee

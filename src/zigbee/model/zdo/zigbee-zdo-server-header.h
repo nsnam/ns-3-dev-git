@@ -6,6 +6,7 @@
  * Authors:
  *
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
+ *  Kazaho Nonaka <c612301468@tokushima-u.ac.jp>
  */
 
 #ifndef ZIGBEE_ZDO_SERVER_HEADER_H
@@ -144,6 +145,92 @@ class NwkAddrResponseCmd : public Header
     // TODO fields for the optional extended response such as the number of associated devices
     // and the list of associated devices need to be added here when the extended response is
     // implemented.
+};
+
+/**
+ * IEEE_addr_rsp Command Frame
+ * See Zigbee Specification Section 2.4.4.2.2
+ */
+class IeeeAddrResponseCmd : public Header
+{
+  public:
+    /**
+     * Get the type ID.
+     *
+     * @return The object TypeId.
+     */
+    static TypeId GetTypeId();
+    TypeId GetInstanceTypeId() const override;
+
+    /**
+     * Set the transaction sequence number of the IEEE_addr_rsp command.
+     * This value must match the one used in the corresponding IEEE_addr_req.
+     *
+     * @param tsn The transaction sequence number to set.
+     */
+    void SetTsn(uint8_t tsn);
+
+    /**
+     * Get the transaction sequence number of the IEEE_addr_rsp command.
+     *
+     * @return The transaction sequence number.
+     */
+    uint8_t GetTsn() const;
+
+    /**
+     * Set the status of the IEEE_addr_rsp command.
+     *
+     * @param status The status value to set.
+     */
+    void SetStatus(uint8_t status);
+
+    /**
+     * Get the status of the IEEE_addr_rsp command.
+     *
+     * @return The status value.
+     */
+    uint8_t GetStatus() const;
+
+    /**
+     * Set the IEEE address of the remote device.
+     *
+     * @param ieeeAddrRemoteDev The IEEE address of the remote device.
+     */
+    void SetIeeeAddrRemoteDev(Mac64Address ieeeAddrRemoteDev);
+
+    /**
+     * Get the IEEE address of the remote device.
+     *
+     * @return The IEEE address of the remote device.
+     */
+    Mac64Address GetIeeeAddrRemoteDev() const;
+
+    /**
+     * Set the network address of the remote device.
+     *
+     * @param nwkAddrRemoteDev The network address of the remote device.
+     */
+    void SetNwkAddrRemoteDev(Mac16Address nwkAddrRemoteDev);
+
+    /**
+     * Get the network address of the remote device.
+     *
+     * @return The network address of the remote device.
+     */
+    Mac16Address GetNwkAddrRemoteDev() const;
+
+    void Print(std::ostream& os) const override;
+    uint32_t GetSerializedSize() const override;
+    void Serialize(Buffer::Iterator start) const override;
+    uint32_t Deserialize(Buffer::Iterator start) override;
+
+  private:
+    uint8_t m_tsn{0};    //!< The transaction sequence number of the IEEE_addr_rsp command.
+    uint8_t m_status{0}; //!< The status of the IEEE_addr_rsp command.
+    Mac64Address m_ieeeAddrRemoteDev; //!< The IEEE address of the remote device.
+    Mac16Address m_nwkAddrRemoteDev;  //!< The network address of the remote device.
+
+    // TODO: fields for extended response not implemented
 };
 
 } // namespace zigbee

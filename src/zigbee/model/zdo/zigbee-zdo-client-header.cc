@@ -6,6 +6,7 @@
  * Authors:
  *
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
+ *  Kazaho Nonaka <c612301468@tokushima-u.ac.jp>
  */
 
 #include "zigbee-zdo-client-header.h"
@@ -127,6 +128,109 @@ NwkAddrRequestCmd::GetTypeId()
 
 TypeId
 NwkAddrRequestCmd::GetInstanceTypeId() const
+{
+    return GetTypeId();
+}
+
+void
+IeeeAddrRequestCmd::SetTsn(uint8_t tsn)
+{
+    m_tsn = tsn;
+}
+
+uint8_t
+IeeeAddrRequestCmd::GetTsn() const
+{
+    return m_tsn;
+}
+
+void
+IeeeAddrRequestCmd::SetNwkAddrOfInterest(Mac16Address nwkAddrOfInterest)
+{
+    m_nwkAddrOfInterest = nwkAddrOfInterest;
+}
+
+Mac16Address
+IeeeAddrRequestCmd::GetNwkAddrOfInterest() const
+{
+    return m_nwkAddrOfInterest;
+}
+
+void
+IeeeAddrRequestCmd::SetRequestType(uint8_t type)
+{
+    m_requestType = type;
+}
+
+uint8_t
+IeeeAddrRequestCmd::GetRequestType() const
+{
+    return m_requestType;
+}
+
+void
+IeeeAddrRequestCmd::SetStartIndex(uint8_t index)
+{
+    m_startIndex = index;
+}
+
+uint8_t
+IeeeAddrRequestCmd::GetStartIndex() const
+{
+    return m_startIndex;
+}
+
+void
+IeeeAddrRequestCmd::Serialize(Buffer::Iterator start) const
+{
+    Buffer::Iterator i = start;
+
+    i.WriteU8(m_tsn);
+    WriteTo(i, m_nwkAddrOfInterest);
+    i.WriteU8(m_requestType);
+    i.WriteU8(m_startIndex);
+}
+
+void
+IeeeAddrRequestCmd::Print(std::ostream& os) const
+{
+    os << "IeeeAddrRequestCmd: "
+       << "TSN: " << static_cast<uint32_t>(m_tsn) << ", "
+       << "NWK Address Of Interest: " << m_nwkAddrOfInterest << ", "
+       << "Request Type: " << static_cast<uint32_t>(m_requestType) << ", "
+       << "Start Index: " << static_cast<uint32_t>(m_startIndex);
+}
+
+uint32_t
+IeeeAddrRequestCmd::GetSerializedSize() const
+{
+    return 5; // TSN (1) + NWK address of interest (2) + request type (1) + start index (1)
+}
+
+uint32_t
+IeeeAddrRequestCmd::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+
+    m_tsn = i.ReadU8();
+    ReadFrom(i, m_nwkAddrOfInterest);
+    m_requestType = i.ReadU8();
+    m_startIndex = i.ReadU8();
+    return i.GetDistanceFrom(start);
+}
+
+TypeId
+IeeeAddrRequestCmd::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::zigbee::IeeeAddrRequestCmd")
+                            .SetParent<Header>()
+                            .SetGroupName("Zigbee")
+                            .AddConstructor<IeeeAddrRequestCmd>();
+    return tid;
+}
+
+TypeId
+IeeeAddrRequestCmd::GetInstanceTypeId() const
 {
     return GetTypeId();
 }

@@ -59,6 +59,18 @@ class ZigbeeZdoCommandsTestCase : public TestCase
                                  NwkAddrRespIndParams params);
 
     /**
+     * Callback for ZDO IEEE_addr_rsp indication
+     * This callback is called when an IEEE_addr_rsp is received.
+     *
+     * @param testcase The ZigbeeZdoCommandsTestCase instance
+     * @param stack The Zigbee stack that received the indication
+     * @param params The parameters of the IEEE_addr_rsp indication
+     */
+    static void ZdoIeeeAddrRspInd(ZigbeeZdoCommandsTestCase* testcase,
+                                  Ptr<ZigbeeStack> stack,
+                                  IeeeAddrRespIndParams params);
+
+    /**
      * Callback for NLME-NETWORK-DISCOVERY.confirm
      * This callback is called when a network discovery has been performed.
      *
@@ -72,7 +84,8 @@ class ZigbeeZdoCommandsTestCase : public TestCase
 
     void DoRun() override;
 
-    Mac16Address m_requestedNwkAddr; //!< The 16-bit address requested by the ZDO command.
+    Mac16Address m_requestedNwkAddr;  //!< The 16-bit address requested by a ZDO command.
+    Mac64Address m_requestedIeeeAddr; //!< The 64-bit address requested by a ZDO command.
 };
 
 ZigbeeZdoCommandsTestCase::ZigbeeZdoCommandsTestCase()
@@ -99,7 +112,26 @@ ZigbeeZdoCommandsTestCase::ZdoNwkAddrRspInd(ZigbeeZdoCommandsTestCase* testcase,
     }
     else
     {
-        std::cout << "NWK_addr_rsp not received or received with error status\n";
+        std::cout << "NWK_addr_rsp received with error status\n";
+    }
+}
+
+void
+ZigbeeZdoCommandsTestCase::ZdoIeeeAddrRspInd(ZigbeeZdoCommandsTestCase* testcase,
+                                             Ptr<ZigbeeStack> stack,
+                                             IeeeAddrRespIndParams params)
+{
+    if (params.m_status == ZdpStatus::SUCCESS)
+    {
+        testcase->m_requestedIeeeAddr = params.m_ieeeAddrRemoteDev;
+
+        std::cout << "IEEE_addr_rsp received | status: SUCCESS "
+                  << " | NWK address: " << params.m_nwkAddrRemoteDev
+                  << " | IEEE address: " << params.m_ieeeAddrRemoteDev << std::endl;
+    }
+    else
+    {
+        std::cout << "IEEE_addr_rsp received with error status\n";
     }
 }
 
@@ -134,6 +166,8 @@ ZigbeeZdoCommandsTestCase::DoRun()
     // Transmit commands and receiving a response using Zigbee's ZDO
     // The topogy includes 3 devices with the following formation:
 
+    //  dev0                       dev1              dev2
+    //[::CA:FE]                  [::00:01]        [::00:02]
     // Zigbee Coordinator ------- Router -------> Zigbee EndDevice
 
     // In this test a ZDO NWK_Addr_req command is sent to the network to
@@ -141,7 +175,9 @@ ZigbeeZdoCommandsTestCase::DoRun()
     // [00:00:00:00:00:00:00:02] which correspond to the End Device.
     // Upon receiving  this request, the EndDevice responds to the coordinator.
     // The coordinator updates its nwkAddressMap internally and reports the
-    // results of the request.
+    // results of the request. Further, the coordinator (dev0) sends a
+    // ZDO IEEE_Addr_req command to inquire the IEEE address (64-bit address)
+    // by using the 16-bit address of the device.
 
     RngSeedManager::SetSeed(3);
     RngSeedManager::SetRun(4);
@@ -206,6 +242,9 @@ ZigbeeZdoCommandsTestCase::DoRun()
     zstack0->GetZdo()->SetZdoNwkAddrRspIndCallback(
         MakeBoundCallback(&ZdoNwkAddrRspInd, this, zstack0));
 
+    zstack0->GetZdo()->SetZdoIeeeAddrRspIndCallback(
+        MakeBoundCallback(&ZdoIeeeAddrRspInd, this, zstack0));
+
     // Configure NWK hooks
     // We have ZDO, but we do not have a Commission Manager
     // (entity to simplify and handle of Network formation and Joins)
@@ -262,10 +301,11 @@ ZigbeeZdoCommandsTestCase::DoRun()
                                    zstack0->GetZdo(),
                                    zdoReqParams);
 
+    // Testing NWK_addr_req command.
     // Dev 0 (Coordinator) sends a NWK_Addr_req to all devices to
     // inquire the nwkAddress (16-bit address) of the device with IEEE Addr 00:00:00:00:00:00:00:03.
     NwkAddrRequestParams zdoNwkAddrReqParams;
-    zdoNwkAddrReqParams.m_requestType = NwkAddrRequestType::SINGLE_DEVICE_RESPONSE;
+    zdoNwkAddrReqParams.m_requestType = AddressRequestType::SINGLE_DEVICE_RESPONSE;
     zdoNwkAddrReqParams.m_ieeeAddr = Mac64Address("00:00:00:00:00:00:00:02");
     zdoNwkAddrReqParams.m_dstAddr = Mac16Address("FF:FF");
     Simulator::ScheduleWithContext(zstack0->GetNode()->GetId(),
@@ -274,6 +314,18 @@ ZigbeeZdoCommandsTestCase::DoRun()
                                    zstack0->GetZdo(),
                                    zdoNwkAddrReqParams);
 
+    // Testing IEEE_addr_req command.
+    // Dev0 sends an IEEE_addr_req using that nwkAddress (16-bit address) obtained in the
+    // previous NWK_addr_req command. We will ask directly this device (dev2) for its
+    // IEEE address (64-bit address).
+    Simulator::ScheduleWithContext(zstack0->GetNode()->GetId(), Seconds(6), [this, zstack0]() {
+        IeeeAddrRequestParams zdoIeeeReqParams;
+        zdoIeeeReqParams.m_requestType = AddressRequestType::SINGLE_DEVICE_RESPONSE;
+        zdoIeeeReqParams.m_dstAddr = m_requestedNwkAddr;
+        zdoIeeeReqParams.m_nwkAddrOfInterest = m_requestedNwkAddr;
+        zstack0->GetZdo()->IeeeAddrRequest(zdoIeeeReqParams);
+    });
+
     Simulator::Run();
 
     // Verify the dev2 64-bit address is correctly assigned.
@@ -281,11 +333,17 @@ ZigbeeZdoCommandsTestCase::DoRun()
                           Mac64Address("00:00:00:00:00:00:00:02").ConvertToInt(),
                           "Dev2 (stack2) is not using the correct 64-bit IEEE address");
 
-    // Check that the coordinator received the correct results after a NWK_Addr_req
+    // Check that the coordinator received the correct results after a NWK_Addr_req Command.
     NS_TEST_EXPECT_MSG_EQ(zstack2->GetNwk()->GetNetworkAddress().ConvertToInt(),
                           m_requestedNwkAddr.ConvertToInt(),
                           "Error: The obtained address via NWK_Addr_req do not correspond to the "
-                          "address used by the device");
+                          "address used by the device 2");
+    // Check that the coordinator received the correct results after a IEEE_Addr_req Command.
+    NS_TEST_EXPECT_MSG_EQ(
+        zstack2->GetNwk()->GetIeeeAddress().ConvertToInt(),
+        m_requestedIeeeAddr.ConvertToInt(),
+        "Error: The obtained IEEE address via IEEE_addr_req do not correspond to the "
+        "address used by the device 2");
 
     // Check that the coordinator updated its nwkAddressMap after receiving the NWK_Addr_rsp from
     // dev2

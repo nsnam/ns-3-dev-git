@@ -74,7 +74,7 @@ The APS has the following limitations:
 
 The ZDO has the following limitations:
 
-- Only ``NWK_addr_req`` command is supported.
+- Only ``NWK_addr_req`` and ``IEEE_addr_req`` commands are supported.
 
 The following Zigbee layers or services are not supported yet:
 
@@ -481,13 +481,21 @@ ZDO implements the Zigbee Device Profile (ZDP), which defines a set of standardi
 Furthermore, ZDO use the APS layer to transmit and receive ZDP commands, which are encapsulated within APS frames for communication between devices.
 In this regard, it uses the endpoint 0 (zero) exclusively and the profile ID 0x0000 (ZDP ID) to identify ZDP commands and responses.
 
-Because the APS layer is connected to ZDO and other components, a demultiplexer is used to route incoming APS frames to the appropriate destination based on the endpoint.
+Because the APS layer is connected to ZDO and other components, a demultiplexer is used to route incoming APS frames to the appropriate destination based on the endpoint 0.
 
 Transmission of ZDO commands is similar to the usage of primitives in other layers. For further details on how to use ZDO,
-please refer to the ``zigbee-zdo-test.cc`` example in the |ns3| source code.
+please refer to the ``zigbee-zdo-test.cc`` test in the |ns3| source code, furthermore, the ZDO commands are described in the Zigbee specification.
 
-.. note::
-    Only a small list of ZDO commands are currently supported.
+The following briefly lists the supported ZDO commands in this implementation:
+
++----------------------+--------------------------------------------------------------------------------------------------------------+
+| Zdo Commands         |     Description                                                                                              |
++======================+==============================================================================================================+
+|  ``Nwk_Addr_Req``    | Given a device's IEEE address, this command requests its corresponding network address from a remote device. |
++----------------------+--------------------------------------------------------------------------------------------------------------+
+|  ``IEEE_Addr_Req``   | Given a device's network address, this command requests its corresponding IEEE address from a remote device. |
++----------------------+--------------------------------------------------------------------------------------------------------------+
+
 
 Usage
 -----

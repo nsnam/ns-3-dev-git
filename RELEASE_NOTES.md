@@ -43,6 +43,7 @@ but other contemporaneous versions may also work.
 ### New user-visible features
 
 - (sixlowpan) !2881 Added `SixLowPanAdaptiveFlooding`, a mesh-under forwarding policy that adapts the re-broadcast rate to the observed network activity using the Trickle algorithm (RFC 6206).
+- (zigbee) !3047 Adds IEEE_addr_req command support to ZDO.
 
 ### Bugs fixed
 

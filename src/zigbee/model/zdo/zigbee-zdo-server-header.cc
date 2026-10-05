@@ -6,6 +6,7 @@
  * Authors:
  *
  *  Alberto Gallegos Ramonet <alramonet@is.tokushima-u.ac.jp>
+ *  Kazaho Nonaka <c612301468@tokushima-u.ac.jp>
  */
 
 #include "zigbee-zdo-server-header.h"
@@ -126,6 +127,109 @@ NwkAddrResponseCmd::GetTypeId()
 
 TypeId
 NwkAddrResponseCmd::GetInstanceTypeId() const
+{
+    return GetTypeId();
+}
+
+void
+IeeeAddrResponseCmd::SetTsn(uint8_t tsn)
+{
+    m_tsn = tsn;
+}
+
+uint8_t
+IeeeAddrResponseCmd::GetTsn() const
+{
+    return m_tsn;
+}
+
+void
+IeeeAddrResponseCmd::SetStatus(uint8_t status)
+{
+    m_status = status;
+}
+
+uint8_t
+IeeeAddrResponseCmd::GetStatus() const
+{
+    return m_status;
+}
+
+void
+IeeeAddrResponseCmd::SetIeeeAddrRemoteDev(Mac64Address ieeeAddrRemoteDev)
+{
+    m_ieeeAddrRemoteDev = ieeeAddrRemoteDev;
+}
+
+Mac64Address
+IeeeAddrResponseCmd::GetIeeeAddrRemoteDev() const
+{
+    return m_ieeeAddrRemoteDev;
+}
+
+void
+IeeeAddrResponseCmd::SetNwkAddrRemoteDev(Mac16Address nwkAddrRemoteDev)
+{
+    m_nwkAddrRemoteDev = nwkAddrRemoteDev;
+}
+
+Mac16Address
+IeeeAddrResponseCmd::GetNwkAddrRemoteDev() const
+{
+    return m_nwkAddrRemoteDev;
+}
+
+void
+IeeeAddrResponseCmd::Serialize(Buffer::Iterator start) const
+{
+    Buffer::Iterator i = start;
+
+    i.WriteU8(m_tsn);
+    i.WriteU8(m_status);
+    WriteTo(i, m_ieeeAddrRemoteDev);
+    WriteTo(i, m_nwkAddrRemoteDev);
+}
+
+void
+IeeeAddrResponseCmd::Print(std::ostream& os) const
+{
+    os << "IeeeAddrResponseCmd: "
+       << "TSN: " << static_cast<uint32_t>(m_tsn) << ", "
+       << "Status: " << static_cast<uint32_t>(m_status) << ", "
+       << "IEEE Address Remote Device: " << m_ieeeAddrRemoteDev << ", "
+       << "NWK Address Remote Device: " << m_nwkAddrRemoteDev;
+}
+
+uint32_t
+IeeeAddrResponseCmd::GetSerializedSize() const
+{
+    return 12; // TSN (1) + Status (1) + IEEE address (8) + NWK address (2)
+}
+
+uint32_t
+IeeeAddrResponseCmd::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+
+    m_tsn = i.ReadU8();
+    m_status = i.ReadU8();
+    ReadFrom(i, m_ieeeAddrRemoteDev);
+    ReadFrom(i, m_nwkAddrRemoteDev);
+    return i.GetDistanceFrom(start);
+}
+
+TypeId
+IeeeAddrResponseCmd::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::zigbee::IeeeAddrResponseCmd")
+                            .SetParent<Header>()
+                            .SetGroupName("Zigbee")
+                            .AddConstructor<IeeeAddrResponseCmd>();
+    return tid;
+}
+
+TypeId
+IeeeAddrResponseCmd::GetInstanceTypeId() const
 {
     return GetTypeId();
 }
