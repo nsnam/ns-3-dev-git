@@ -9,10 +9,12 @@
 #ifndef HWMP_PROACTIVE_REGRESSION_H
 #define HWMP_PROACTIVE_REGRESSION_H
 
+#include "hwmp-control-recorder.h"
+
 #include "ns3/ipv4-interface-container.h"
+#include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
-#include "ns3/pcap-file.h"
 #include "ns3/test.h"
 
 using namespace ns3;
@@ -31,10 +33,18 @@ using namespace ns3;
  *           |         |-------->|         |         |          PREP
  *           |         |         |<--------|         |          PREP
  *           |<--------|-------->|<--------|-------->|          Proactive PREQ
- *           |-------->|         |         |<--------|          PREP
+ *           |-------->|         |         |         |          PREP
  *           |         |-------->|         |         |          PREP
+ *  <--------|-------->|         |         |         |          Proactive PREQ
+ *  Note, that node 4 does not receive the PREQ forwarded by node 3 in the
+ *  first round, so it learns the proactive path from the next periodic
+ *  PREQ of the root (the exchanges among nodes 0 to 3 are repeated)
+ *           |         |<--------|-------->|         |          Proactive PREQ
+ *           |.........|.........|.........|.........|
+ *           |         |         |<--------|-------->|          Proactive PREQ
+ *           |         |         |         |<--------|          PREP
  *           |         |         |<--------|         |          PREP
- *  <--------|-------->|         |         |<--------|--------> Proactive PREQ
+ *           |         |         |         |<--------|--------> Proactive PREQ
  *  Note, that at this moment all routes are known, and no reactive
  *  path discovery procedure shall be initiated
  *           |         |         |<--------|-------->|          ARP request
@@ -64,7 +74,11 @@ class HwmpProactiveRegressionTest : public TestCase
     NodeContainer* m_nodes;
     /// Simulation time
     Time m_time;
+    /// Data transfer start time
+    Time m_dataStart;
     Ipv4InterfaceContainer m_interfaces; ///< interfaces
+    NetDeviceContainer m_meshDevices;    ///< mesh point devices
+    HwmpControlRecorder m_recorder;      ///< received HWMP path selection elements
 
     /// Create nodes function
     void CreateNodes();
@@ -82,6 +96,8 @@ class HwmpProactiveRegressionTest : public TestCase
 
     /// sent packets counter
     uint32_t m_sentPktsCounter;
+    /// echoed packets received by the client(s)
+    uint32_t m_echoedPktsCounter;
 
     /**
      * Send data

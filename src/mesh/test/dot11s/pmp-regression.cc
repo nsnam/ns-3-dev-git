@@ -12,8 +12,8 @@
 #include "ns3/mesh-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/pcap-file.h"
-#include "ns3/pcap-test.h"
+#include "ns3/peer-link.h"
+#include "ns3/peer-management-protocol.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
@@ -25,13 +25,11 @@
 
 using namespace ns3;
 
-/// Unique PCAP file name prefix
-const char* const PREFIX = "pmp-regression-test";
-
 PeerManagementProtocolRegressionTest::PeerManagementProtocolRegressionTest()
     : TestCase("PMP regression test"),
       m_nodes(nullptr),
-      m_time(Seconds(1))
+      m_time(Seconds(1)),
+      m_linkClose(0)
 {
 }
 
@@ -50,9 +48,8 @@ PeerManagementProtocolRegressionTest::DoRun()
 
     Simulator::Stop(m_time);
     Simulator::Run();
-    Simulator::Destroy();
-
     CheckResults();
+    Simulator::Destroy();
 
     delete m_nodes, m_nodes = nullptr;
 }
@@ -94,21 +91,67 @@ PeerManagementProtocolRegressionTest::CreateDevices()
     mesh.SetStackInstaller("ns3::Dot11sStack");
     mesh.SetMacType("RandomStart", TimeValue(Seconds(0.1)));
     mesh.SetNumberOfInterfaces(1);
-    NetDeviceContainer meshDevices = mesh.Install(wifiPhy, *m_nodes);
+    m_meshDevices = mesh.Install(wifiPhy, *m_nodes);
     // Two devices, 10 streams per device (one for mac, one for phy,
     // two for plugins, five for regular mac wifi DCF, and one for MeshPointDevice)
-    streamsUsed += mesh.AssignStreams(meshDevices, 0);
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (meshDevices.GetN() * 10), "Stream assignment mismatch");
+    streamsUsed += mesh.AssignStreams(m_meshDevices, 0);
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (m_meshDevices.GetN() * 10), "Stream assignment mismatch");
     streamsUsed += wifiChannel.AssignStreams(chan, streamsUsed);
-    // 3. write PCAP if needed
-    wifiPhy.EnablePcapAll(CreateTempDirFilename(PREFIX));
+    // 3. trace peer link events
+    m_linkOpen.resize(m_meshDevices.GetN());
+    for (uint32_t i = 0; i < m_meshDevices.GetN(); ++i)
+    {
+        auto pmp = m_meshDevices.Get(i)->GetObject<dot11s::PeerManagementProtocol>();
+        NS_TEST_ASSERT_MSG_NE(pmp, nullptr, "No peer management protocol on mesh point " << i);
+        pmp->TraceConnectWithoutContext(
+            "LinkOpen",
+            MakeCallback(&PeerManagementProtocolRegressionTest::LinkOpen, this).Bind(i));
+        pmp->TraceConnectWithoutContext(
+            "LinkClose",
+            MakeCallback(&PeerManagementProtocolRegressionTest::LinkClose, this));
+    }
+}
+
+void
+PeerManagementProtocolRegressionTest::LinkOpen(uint32_t index,
+                                               Mac48Address localIface,
+                                               Mac48Address peerIface)
+{
+    m_linkOpen[index].emplace_back(localIface, peerIface);
+}
+
+void
+PeerManagementProtocolRegressionTest::LinkClose(Mac48Address localIface, Mac48Address peerIface)
+{
+    m_linkClose++;
 }
 
 void
 PeerManagementProtocolRegressionTest::CheckResults()
 {
-    for (int i = 0; i < 2; ++i)
+    for (uint32_t i = 0; i < 2; ++i)
     {
-        NS_PCAP_TEST_EXPECT_EQ(PREFIX << "-" << i << "-1.pcap");
+        auto self = Mac48Address::ConvertFrom(m_meshDevices.Get(i)->GetAddress());
+        auto peer = Mac48Address::ConvertFrom(m_meshDevices.Get(1 - i)->GetAddress());
+
+        NS_TEST_ASSERT_MSG_EQ(m_linkOpen[i].size(),
+                              1,
+                              "Mesh point " << i << " should open exactly one peer link");
+        if (m_linkOpen[i].size() == 1)
+        {
+            NS_TEST_EXPECT_MSG_EQ(m_linkOpen[i][0].first, self, "Wrong local interface");
+            NS_TEST_EXPECT_MSG_EQ(m_linkOpen[i][0].second, peer, "Wrong peer interface");
+        }
+
+        auto links =
+            m_meshDevices.Get(i)->GetObject<dot11s::PeerManagementProtocol>()->GetPeerLinks();
+        NS_TEST_ASSERT_MSG_EQ(links.size(),
+                              1,
+                              "Mesh point " << i << " should have one established peer link");
+        if (links.size() == 1)
+        {
+            NS_TEST_EXPECT_MSG_EQ(links[0]->GetPeerAddress(), peer, "Peer link to wrong peer");
+        }
     }
+    NS_TEST_EXPECT_MSG_EQ(m_linkClose, 0, "No peer link should be closed");
 }

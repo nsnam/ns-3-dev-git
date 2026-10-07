@@ -9,12 +9,13 @@
 
 #include "ns3/abort.h"
 #include "ns3/double.h"
+#include "ns3/flame-protocol.h"
+#include "ns3/flame-rtable.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/mesh-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/pcap-test.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
@@ -26,14 +27,12 @@
 
 using namespace ns3;
 
-/// Unique PCAP file name prefix
-const char* const PREFIX = "flame-regression-test";
-
 FlameRegressionTest::FlameRegressionTest()
     : TestCase("FLAME regression test"),
       m_nodes(nullptr),
       m_time(Seconds(10)),
-      m_sentPktsCounter(0)
+      m_sentPktsCounter(0),
+      m_echoedPktsCounter(0)
 {
 }
 
@@ -53,9 +52,8 @@ FlameRegressionTest::DoRun()
 
     Simulator::Stop(m_time);
     Simulator::Run();
-    Simulator::Destroy();
-
     CheckResults();
+    Simulator::Destroy();
 
     delete m_nodes, m_nodes = nullptr;
 }
@@ -104,12 +102,12 @@ FlameRegressionTest::CreateDevices()
     mesh.SetStackInstaller("ns3::FlameStack");
     mesh.SetMacType("RandomStart", TimeValue(MilliSeconds(100)));
     mesh.SetNumberOfInterfaces(1);
-    NetDeviceContainer meshDevices = mesh.Install(wifiPhy, *m_nodes);
+    m_meshDevices = mesh.Install(wifiPhy, *m_nodes);
     // Three devices, eight streams per device
-    streamsUsed = mesh.AssignStreams(meshDevices, streamNumber);
+    streamsUsed = mesh.AssignStreams(m_meshDevices, streamNumber);
     streamNumber += streamIncrement;
     NS_TEST_ASSERT_MSG_EQ(streamsUsed,
-                          (meshDevices.GetN() * 8),
+                          (m_meshDevices.GetN() * 8),
                           "Stream assignment unexpected value");
     // No further streams used in the default wifi channel configuration
     streamsUsed = wifiChannel.AssignStreams(chan, streamNumber);
@@ -122,9 +120,7 @@ FlameRegressionTest::CreateDevices()
     internetStack.AssignStreams(*m_nodes, streamNumber);
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
-    m_interfaces = address.Assign(meshDevices);
-    // 4. write PCAP if needed
-    wifiPhy.EnablePcapAll(CreateTempDirFilename(PREFIX));
+    m_interfaces = address.Assign(m_meshDevices);
 }
 
 void
@@ -152,10 +148,32 @@ FlameRegressionTest::InstallApplications()
 void
 FlameRegressionTest::CheckResults()
 {
-    for (int i = 0; i < 3; ++i)
+    auto address = [this](uint32_t i) {
+        return Mac48Address::ConvertFrom(m_meshDevices.Get(i)->GetAddress());
+    };
+    auto rtable = [this](uint32_t i) {
+        return m_meshDevices.Get(i)->GetObject<flame::FlameProtocol>()->GetRoutingTable();
+    };
+
+    // The end stations are out of range of each other and learn routes via mesh point 1
+    for (uint32_t i : {0, 2})
     {
-        NS_PCAP_TEST_EXPECT_EQ(PREFIX << "-" << i << "-1.pcap");
+        auto route = rtable(i)->Lookup(address(2 - i));
+        NS_TEST_EXPECT_MSG_EQ(route.retransmitter,
+                              address(1),
+                              "Mesh point " << i << " should route via mesh point 1");
+        NS_TEST_EXPECT_MSG_EQ(+route.cost, 1, "Route of mesh point " << i << " has one relay");
+
+        // Mesh point 1 reaches both end stations directly
+        route = rtable(1)->Lookup(address(i));
+        NS_TEST_EXPECT_MSG_EQ(route.retransmitter,
+                              address(i),
+                              "Mesh point 1 should reach mesh point " << i << " directly");
+        NS_TEST_EXPECT_MSG_EQ(+route.cost, 0, "Direct route should have zero cost");
     }
+
+    NS_TEST_EXPECT_MSG_GT(m_sentPktsCounter, 0, "No packets sent");
+    NS_TEST_EXPECT_MSG_EQ(m_echoedPktsCounter, m_sentPktsCounter, "Every packet should be echoed");
 }
 
 void
@@ -194,5 +212,6 @@ FlameRegressionTest::HandleReadClient(Ptr<Socket> socket)
     Address from;
     while ((packet = socket->RecvFrom(from)))
     {
+        m_echoedPktsCounter++;
     }
 }

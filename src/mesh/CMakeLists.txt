@@ -69,6 +69,7 @@ build_lib(
                     ${libapplications}
   TEST_SOURCES
     test/dot11s/dot11s-test-suite.cc
+    test/dot11s/hwmp-control-recorder.cc
     test/dot11s/hwmp-proactive-regression.cc
     test/dot11s/hwmp-reactive-regression.cc
     test/dot11s/hwmp-simplest-regression.cc

@@ -15,7 +15,7 @@
 #include "ns3/mesh-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/pcap-test.h"
+#include "ns3/peer-management-protocol.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
@@ -27,14 +27,12 @@
 
 using namespace ns3;
 
-/// Unique PCAP file name prefix
-const char* const PREFIX = "hwmp-simplest-regression-test";
-
 HwmpSimplestRegressionTest::HwmpSimplestRegressionTest()
     : TestCase("Simplest HWMP regression test"),
       m_nodes(nullptr),
       m_time(Seconds(15)),
-      m_sentPktsCounter(0)
+      m_sentPktsCounter(0),
+      m_echoedPktsCounter(0)
 {
 }
 
@@ -54,9 +52,8 @@ HwmpSimplestRegressionTest::DoRun()
 
     Simulator::Stop(m_time);
     Simulator::Run();
-    Simulator::Destroy();
-
     CheckResults();
+    Simulator::Destroy();
 
     delete m_nodes, m_nodes = nullptr;
 }
@@ -138,11 +135,11 @@ HwmpSimplestRegressionTest::CreateDevices()
     mesh.SetStackInstaller("ns3::Dot11sStack");
     mesh.SetMacType("RandomStart", TimeValue(MilliSeconds(100)));
     mesh.SetNumberOfInterfaces(1);
-    NetDeviceContainer meshDevices = mesh.Install(wifiPhy, *m_nodes);
+    m_meshDevices = mesh.Install(wifiPhy, *m_nodes);
     // Two devices, ten streams per mesh device
-    streamsUsed = mesh.AssignStreams(meshDevices, streamNumber);
+    streamsUsed = mesh.AssignStreams(m_meshDevices, streamNumber);
     streamNumber += streamIncrement;
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (meshDevices.GetN() * 10), "Stream assignment mismatch");
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (m_meshDevices.GetN() * 10), "Stream assignment mismatch");
     streamsUsed = wifiChannel.AssignStreams(chan, streamNumber);
     streamNumber += streamIncrement;
     NS_TEST_ASSERT_MSG_EQ(streamsUsed, 0, "No stream assignments expected for WifiChannel");
@@ -154,17 +151,74 @@ HwmpSimplestRegressionTest::CreateDevices()
     internetStack.AssignStreams(*m_nodes, streamNumber);
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
-    m_interfaces = address.Assign(meshDevices);
-    // 4. write PCAP if needed
-    wifiPhy.EnablePcapAll(CreateTempDirFilename(PREFIX));
+    m_interfaces = address.Assign(m_meshDevices);
+    m_recorder.Connect(m_meshDevices);
 }
 
 void
 HwmpSimplestRegressionTest::CheckResults()
 {
-    for (int i = 0; i < 2; ++i)
+    using Type = HwmpControlRecorder::Type;
+    using Event = HwmpControlRecorder::Event;
+    const auto addr0 = m_recorder.GetAddress(0);
+    const auto addr1 = m_recorder.GetAddress(1);
+
+    // Path discovery started by the server when it answers the first ARP request
+    const auto preq = m_recorder.FindFirst([&](const Event& e) {
+        return e.type == Type::PREQ && e.receiver == 1 && e.originator == addr0 &&
+               e.target == addr1;
+    });
+    NS_TEST_ASSERT_MSG_NE(preq, nullptr, "No PREQ from mesh point 0 for mesh point 1");
+    if (!preq)
     {
-        NS_PCAP_TEST_EXPECT_EQ(PREFIX << "-" << i << "-1.pcap");
+        return;
+    }
+    NS_TEST_EXPECT_MSG_GT_OR_EQ(preq->time, Seconds(2), "PREQ sent before data started");
+    const auto prep = m_recorder.FindFirst([&](const Event& e) {
+        return e.type == Type::PREP && e.receiver == 0 && e.originator == addr1 &&
+               e.target == addr0;
+    });
+    NS_TEST_ASSERT_MSG_NE(prep, nullptr, "No PREP from mesh point 1 for mesh point 0");
+    if (!prep)
+    {
+        return;
+    }
+    NS_TEST_EXPECT_MSG_GT(prep->time, preq->time, "PREP should answer the PREQ");
+
+    // Path discovery started by the client after its route expired
+    const auto renewal = m_recorder.FindFirst([&](const Event& e) {
+        return e.type == Type::PREQ && e.receiver == 0 && e.originator == addr1 &&
+               e.target == addr0;
+    });
+    NS_TEST_ASSERT_MSG_NE(renewal, nullptr, "No PREQ from mesh point 1 after route expiration");
+    if (!renewal)
+    {
+        return;
+    }
+    // Data starts at 2s and the route expires after the default
+    // Dot11MeshHWMPactivePathTimeout (5.12s)
+    NS_TEST_EXPECT_MSG_GT(renewal->time, Seconds(7), "Route should expire after time 7");
+    NS_TEST_EXPECT_MSG_EQ(m_recorder.Count([&](const Event& e) {
+        return e.type == Type::PREP && e.receiver == 1 && e.originator == addr0 &&
+               e.time > renewal->time;
+    }),
+                          1,
+                          "Mesh point 0 should answer the renewed PREQ");
+    NS_TEST_EXPECT_MSG_EQ(m_recorder.Count([](const Event& e) { return e.type == Type::PERR; }),
+                          0,
+                          "No PERR expected with a single hop");
+
+    // Every packet sent in [2s, 10s) is echoed; nothing gets through after the stations move apart.
+    // One packet every 50 ms in [2s, 10s) gives 160 packets
+    NS_TEST_EXPECT_MSG_EQ(m_echoedPktsCounter, 160, "Unexpected number of echoed packets");
+
+    // Peer link is closed after the stations become unreachable
+    for (uint32_t i = 0; i < 2; ++i)
+    {
+        auto pmp = m_meshDevices.Get(i)->GetObject<dot11s::PeerManagementProtocol>();
+        NS_TEST_EXPECT_MSG_EQ(pmp->GetPeerLinks().size(),
+                              0,
+                              "Mesh point " << i << " should have closed its peer link");
     }
 }
 
@@ -204,5 +258,6 @@ HwmpSimplestRegressionTest::HandleReadClient(Ptr<Socket> socket)
     Address from;
     while ((packet = socket->RecvFrom(from)))
     {
+        m_echoedPktsCounter++;
     }
 }

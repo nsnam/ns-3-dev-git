@@ -44,6 +44,8 @@ but other contemporaneous versions may also work.
 
 ### Bugs fixed
 
+- (mesh) #682 Mesh regression tests no longer compare against reference PCAP files; they now check HWMP, peer management and FLAME behavior through trace sources.
+
 ## Release 3.49
 
 ### Availability

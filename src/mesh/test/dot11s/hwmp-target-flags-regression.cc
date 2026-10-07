@@ -15,7 +15,6 @@
 #include "ns3/mesh-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/pcap-test.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
@@ -28,16 +27,14 @@
 
 using namespace ns3;
 
-/// Unique PCAP file name prefix
-const char* const PREFIX = "hwmp-target-flags-regression-test";
-
 HwmpDoRfRegressionTest::HwmpDoRfRegressionTest()
     : TestCase("HWMP target flags regression test"),
       m_nodes(nullptr),
       m_time(Seconds(5)),
       m_sentPktsCounterA(0),
       m_sentPktsCounterB(0),
-      m_sentPktsCounterC(0)
+      m_sentPktsCounterC(0),
+      m_echoedPktsCounter(0)
 {
 }
 
@@ -57,9 +54,8 @@ HwmpDoRfRegressionTest::DoRun()
 
     Simulator::Stop(m_time);
     Simulator::Run();
-    Simulator::Destroy();
-
     CheckResults();
+    Simulator::Destroy();
 
     delete m_nodes, m_nodes = nullptr;
 }
@@ -160,11 +156,11 @@ HwmpDoRfRegressionTest::CreateDevices()
     mesh.SetStackInstaller("ns3::Dot11sStack");
     mesh.SetMacType("RandomStart", TimeValue(Seconds(0.1)));
     mesh.SetNumberOfInterfaces(1);
-    NetDeviceContainer meshDevices = mesh.Install(wifiPhy, *m_nodes);
+    m_meshDevices = mesh.Install(wifiPhy, *m_nodes);
     // Four devices, ten streams per mac
-    streamsUsed = mesh.AssignStreams(meshDevices, streamNumber);
+    streamsUsed = mesh.AssignStreams(m_meshDevices, streamNumber);
     streamNumber += streamIncrement;
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (meshDevices.GetN() * 10), "Stream assignment mismatch");
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (m_meshDevices.GetN() * 10), "Stream assignment mismatch");
     streamsUsed = wifiChannel.AssignStreams(chan, streamNumber);
     streamNumber += streamIncrement;
     NS_TEST_ASSERT_MSG_EQ(streamsUsed, 0, "No stream assignments expected for WifiChannel");
@@ -176,18 +172,72 @@ HwmpDoRfRegressionTest::CreateDevices()
     internetStack.AssignStreams(*m_nodes, streamNumber);
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
-    m_interfaces = address.Assign(meshDevices);
-    // 4. write PCAP if needed
-    wifiPhy.EnablePcapAll(CreateTempDirFilename(PREFIX));
+    m_interfaces = address.Assign(m_meshDevices);
+    m_recorder.Connect(m_meshDevices);
 }
 
 void
 HwmpDoRfRegressionTest::CheckResults()
 {
-    for (int i = 0; i < 4; ++i)
+    using Type = HwmpControlRecorder::Type;
+    using Event = HwmpControlRecorder::Event;
+    const auto addr0 = m_recorder.GetAddress(0);
+    const auto addr1 = m_recorder.GetAddress(1);
+    const auto addr3 = m_recorder.GetAddress(3);
+
+    // Mesh point 1 learns the route to mesh point 0 from the first PREQ/PREP exchange,
+    // so it never needs a path discovery of its own
+    NS_TEST_EXPECT_MSG_EQ(m_recorder.Count([&](const Event& e) {
+        return e.type == Type::PREQ && e.originator == addr1;
+    }),
+                          0,
+                          "Mesh point 1 should not start a path discovery");
+
+    // Mesh point 3 asks for mesh point 0 with DO=0, RF=1
+    const auto preq = m_recorder.FindFirst([&](const Event& e) {
+        return e.type == Type::PREQ && e.receiver == 2 && e.transmitter == 3 &&
+               e.originator == addr3 && e.target == addr0;
+    });
+    NS_TEST_ASSERT_MSG_NE(preq, nullptr, "Mesh point 2 should receive the PREQ of mesh point 3");
+    if (!preq)
     {
-        NS_PCAP_TEST_EXPECT_EQ(PREFIX << "-" << i << "-1.pcap");
+        return;
     }
+    NS_TEST_EXPECT_MSG_EQ(preq->doFlag, false, "DO flag should be cleared");
+    NS_TEST_EXPECT_MSG_EQ(preq->rfFlag, true, "RF flag should be set");
+
+    // Mesh point 2 knows a route to mesh point 0 and replies on its behalf
+    const auto prep = m_recorder.FindFirst([&](const Event& e) {
+        return e.type == Type::PREP && e.receiver == 3 && e.transmitter == 2 &&
+               e.originator == addr0 && e.target == addr3;
+    });
+    NS_TEST_ASSERT_MSG_NE(prep, nullptr, "Mesh point 2 should send an intermediate PREP");
+    if (!prep)
+    {
+        return;
+    }
+    NS_TEST_EXPECT_MSG_GT(prep->time, preq->time, "Intermediate PREP should answer the PREQ");
+
+    // ... and forwards the PREQ with DO=1, RF=0
+    const auto forwarded = m_recorder.FindFirst([&](const Event& e) {
+        return e.type == Type::PREQ && e.receiver == 1 && e.transmitter == 2 &&
+               e.originator == addr3 && e.target == addr0;
+    });
+    NS_TEST_ASSERT_MSG_NE(forwarded, nullptr, "Mesh point 2 should forward the PREQ");
+    if (!forwarded)
+    {
+        return;
+    }
+    NS_TEST_EXPECT_MSG_EQ(forwarded->doFlag, true, "Forwarded PREQ should have DO flag set");
+    NS_TEST_EXPECT_MSG_EQ(forwarded->rfFlag, false, "Forwarded PREQ should have RF flag cleared");
+
+    // Every packet of the three streams is echoed
+    NS_TEST_EXPECT_MSG_GT(m_sentPktsCounterA, 0, "No packets sent by client A");
+    NS_TEST_EXPECT_MSG_GT(m_sentPktsCounterB, 0, "No packets sent by client B");
+    NS_TEST_EXPECT_MSG_GT(m_sentPktsCounterC, 0, "No packets sent by client C");
+    NS_TEST_EXPECT_MSG_EQ(m_echoedPktsCounter,
+                          m_sentPktsCounterA + m_sentPktsCounterB + m_sentPktsCounterC,
+                          "Every packet should be echoed");
 }
 
 void
@@ -256,5 +306,6 @@ HwmpDoRfRegressionTest::HandleReadClient(Ptr<Socket> socket)
     Address from;
     while ((packet = socket->RecvFrom(from)))
     {
+        m_echoedPktsCounter++;
     }
 }

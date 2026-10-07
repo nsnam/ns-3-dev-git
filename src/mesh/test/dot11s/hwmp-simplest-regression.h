@@ -9,10 +9,12 @@
 #ifndef HWMP_SIMPLEST_REGRESSION_H
 #define HWMP_SIMPLEST_REGRESSION_H
 
+#include "hwmp-control-recorder.h"
+
 #include "ns3/ipv4-interface-container.h"
+#include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
-#include "ns3/pcap-file.h"
 #include "ns3/test.h"
 
 using namespace ns3;
@@ -76,6 +78,8 @@ class HwmpSimplestRegressionTest : public TestCase
     /// Simulation time
     Time m_time;
     Ipv4InterfaceContainer m_interfaces; ///< interfaces
+    NetDeviceContainer m_meshDevices;    ///< mesh point devices
+    HwmpControlRecorder m_recorder;      ///< received HWMP path selection elements
 
     /// Create nodes function
     void CreateNodes();
@@ -93,6 +97,8 @@ class HwmpSimplestRegressionTest : public TestCase
 
     /// sent packets counter
     uint32_t m_sentPktsCounter;
+    /// echoed packets received by the client(s)
+    uint32_t m_echoedPktsCounter;
 
     /**
      * Send data

@@ -10,9 +10,9 @@
 #define FLAME_REGRESSION_H
 
 #include "ns3/ipv4-interface-container.h"
+#include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
-#include "ns3/pcap-file.h"
 #include "ns3/test.h"
 
 using namespace ns3;
@@ -69,6 +69,8 @@ class FlameRegressionTest : public TestCase
     Time m_time;
     /// Needed to install applications
     Ipv4InterfaceContainer m_interfaces;
+    /// Mesh point devices
+    NetDeviceContainer m_meshDevices;
 
     /// Create nodes function
     void CreateNodes();
@@ -84,6 +86,8 @@ class FlameRegressionTest : public TestCase
 
     /// sent packets counter
     uint32_t m_sentPktsCounter;
+    /// echoed packets received by the client
+    uint32_t m_echoedPktsCounter;
 
     /**
      * Send data
