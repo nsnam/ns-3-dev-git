@@ -120,7 +120,7 @@ class IePreq : public WifiInformationElement
      * Get all destinations, which are stored in PREQ:
      * @returns the list of destination addresses
      */
-    std::vector<Ptr<DestinationAddressUnit>> GetDestinationList();
+    std::vector<Ptr<DestinationAddressUnit>> GetDestinationList() const;
     /// Set flag indicating that PREQ is unicast
     void SetUnicastPreq();
     /**

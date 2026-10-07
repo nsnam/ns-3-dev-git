@@ -174,6 +174,35 @@ class HwmpProtocol : public MeshL2RoutingProtocol
      */
     Ptr<HwmpRtable> GetRoutingTable() const;
 
+    /**
+     * TracedCallback signature for a received PREQ element.
+     *
+     * @param [in] preq The PREQ element, as received from the neighbor
+     * @param [in] from The MAC address of the neighbor that transmitted it
+     * @param [in] interface The interface on which it was received
+     */
+    typedef void (*PreqTracedCallback)(const IePreq& preq, Mac48Address from, uint32_t interface);
+
+    /**
+     * TracedCallback signature for a received PREP element.
+     *
+     * @param [in] prep The PREP element, as received from the neighbor
+     * @param [in] from The MAC address of the neighbor that transmitted it
+     * @param [in] interface The interface on which it was received
+     */
+    typedef void (*PrepTracedCallback)(const IePrep& prep, Mac48Address from, uint32_t interface);
+
+    /**
+     * TracedCallback signature for a received PERR element.
+     *
+     * @param [in] destinations The unreachable destinations listed in the PERR
+     * @param [in] from The MAC address of the neighbor that transmitted it
+     * @param [in] interface The interface on which it was received
+     */
+    typedef void (*PerrTracedCallback)(const std::vector<FailedDestination>& destinations,
+                                       Mac48Address from,
+                                       uint32_t interface);
+
   private:
     /// allow HwmpProtocolMac class friend access
     friend class HwmpProtocolMac;
@@ -347,6 +376,13 @@ class HwmpProtocol : public MeshL2RoutingProtocol
     typedef TracedCallback<RouteChange> RouteChangeTracedCallback;
     /// Route change trace source
     TracedCallback<RouteChange> m_routeChangeTraceSource;
+    /// Received PREQ trace source
+    TracedCallback<const IePreq&, Mac48Address, uint32_t> m_preqReceivedTrace;
+    /// Received PREP trace source
+    TracedCallback<const IePrep&, Mac48Address, uint32_t> m_prepReceivedTrace;
+    /// Received PERR trace source
+    TracedCallback<const std::vector<FailedDestination>&, Mac48Address, uint32_t>
+        m_perrReceivedTrace;
 
     // /\name Methods related to Queue/Dequeue procedures
     ///@{

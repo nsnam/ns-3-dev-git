@@ -16,9 +16,12 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### New API
 
+* (mesh) Added the `PreqReceived`, `PrepReceived` and `PerrReceived` trace sources to `dot11s::HwmpProtocol`, fired when a PREQ, PREP or PERR element is received from a neighbor, and `flame::FlameProtocol::GetRoutingTable()`.
+
 ### Changes to existing API
 
 * (internet-apps) The `LeaseInfo` class in DHCPv6 has been moved from the `ns3` namespace to become a private inner class of `Dhcp6Server` (`Dhcp6Server::LeaseInfo`), as it is an internal data structure not used in any public interface.
+* (mesh) `dot11s::IePreq::GetDestinationList()` is now a const method.
 
 ### Changes to build system
 

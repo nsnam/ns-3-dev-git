@@ -137,7 +137,19 @@ HwmpProtocol::GetTypeId()
             .AddTraceSource("RouteChange",
                             "Routing table changed",
                             MakeTraceSourceAccessor(&HwmpProtocol::m_routeChangeTraceSource),
-                            "ns3::HwmpProtocol::RouteChangeTracedCallback");
+                            "ns3::HwmpProtocol::RouteChangeTracedCallback")
+            .AddTraceSource("PreqReceived",
+                            "A PREQ element was received from a neighbor",
+                            MakeTraceSourceAccessor(&HwmpProtocol::m_preqReceivedTrace),
+                            "ns3::dot11s::HwmpProtocol::PreqTracedCallback")
+            .AddTraceSource("PrepReceived",
+                            "A PREP element was received from a neighbor",
+                            MakeTraceSourceAccessor(&HwmpProtocol::m_prepReceivedTrace),
+                            "ns3::dot11s::HwmpProtocol::PrepTracedCallback")
+            .AddTraceSource("PerrReceived",
+                            "A PERR element was received from a neighbor",
+                            MakeTraceSourceAccessor(&HwmpProtocol::m_perrReceivedTrace),
+                            "ns3::dot11s::HwmpProtocol::PerrTracedCallback");
     return tid;
 }
 
@@ -413,6 +425,7 @@ HwmpProtocol::ReceivePreq(IePreq preq,
                           uint32_t metric)
 {
     NS_LOG_FUNCTION(this << from << interface << fromMp << metric);
+    m_preqReceivedTrace(preq, from, interface);
     preq.IncrementMetric(metric);
     // acceptance criteria:
     auto i = m_hwmpSeqnoMetricDatabase.find(preq.GetOriginatorAddress());
@@ -599,6 +612,7 @@ HwmpProtocol::ReceivePrep(IePrep prep,
                           uint32_t metric)
 {
     NS_LOG_FUNCTION(this << from << interface << fromMp << metric);
+    m_prepReceivedTrace(prep, from, interface);
     prep.IncrementMetric(metric);
     // acceptance criteria:
     auto i = m_hwmpSeqnoMetricDatabase.find(prep.GetOriginatorAddress());
@@ -707,6 +721,7 @@ HwmpProtocol::ReceivePerr(std::vector<FailedDestination> destinations,
                           Mac48Address fromMp)
 {
     NS_LOG_FUNCTION(this << from << interface << fromMp);
+    m_perrReceivedTrace(destinations, from, interface);
     // Acceptance criteria:
     NS_LOG_DEBUG("I am " << GetAddress() << ", received PERR from " << from);
     std::vector<FailedDestination> retval;

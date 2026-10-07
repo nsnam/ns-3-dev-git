@@ -362,7 +362,7 @@ IePreq::Print(std::ostream& os) const
 }
 
 std::vector<Ptr<DestinationAddressUnit>>
-IePreq::GetDestinationList()
+IePreq::GetDestinationList() const
 {
     return m_destinations;
 }

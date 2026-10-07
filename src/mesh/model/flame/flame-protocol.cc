@@ -344,6 +344,12 @@ FlameProtocol::GetAddress()
     return m_address;
 }
 
+Ptr<FlameRtable>
+FlameProtocol::GetRoutingTable() const
+{
+    return m_rtable;
+}
+
 bool
 FlameProtocol::HandleDataFrame(uint16_t seqno,
                                Mac48Address source,

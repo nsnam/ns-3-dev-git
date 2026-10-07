@@ -6,6 +6,9 @@
  * Author:  Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
+#include "ns3/hwmp-protocol.h"
+#include "ns3/ie-dot11s-prep.h"
+#include "ns3/ie-dot11s-preq.h"
 #include "ns3/peer-management-protocol.h"
 #include "ns3/traced-callback-typedef-test.h"
 
@@ -22,6 +25,9 @@ namespace ns3
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 TRACED_CALLBACK_TYPENAME(dot11s::PeerManagementProtocol::LinkOpenCloseTracedCallback);
+TRACED_CALLBACK_TYPENAME(dot11s::HwmpProtocol::PreqTracedCallback);
+TRACED_CALLBACK_TYPENAME(dot11s::HwmpProtocol::PrepTracedCallback);
+TRACED_CALLBACK_TYPENAME(dot11s::HwmpProtocol::PerrTracedCallback);
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /**
@@ -49,6 +55,18 @@ Dot11sTracedCallbackTypedefTestCase::DoRun()
     TRACED_CALLBACK_CHECK(dot11s::PeerManagementProtocol::LinkOpenCloseTracedCallback,
                           Mac48Address,
                           Mac48Address);
+    TRACED_CALLBACK_CHECK(dot11s::HwmpProtocol::PreqTracedCallback,
+                          const dot11s::IePreq&,
+                          Mac48Address,
+                          uint32_t);
+    TRACED_CALLBACK_CHECK(dot11s::HwmpProtocol::PrepTracedCallback,
+                          const dot11s::IePrep&,
+                          Mac48Address,
+                          uint32_t);
+    TRACED_CALLBACK_CHECK(dot11s::HwmpProtocol::PerrTracedCallback,
+                          const std::vector<dot11s::HwmpProtocol::FailedDestination>&,
+                          Mac48Address,
+                          uint32_t);
 }
 
 /**
