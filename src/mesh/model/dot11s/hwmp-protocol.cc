@@ -137,7 +137,7 @@ HwmpProtocol::GetTypeId()
             .AddTraceSource("RouteChange",
                             "Routing table changed",
                             MakeTraceSourceAccessor(&HwmpProtocol::m_routeChangeTraceSource),
-                            "ns3::HwmpProtocol::RouteChangeTracedCallback")
+                            "ns3::dot11s::HwmpProtocol::RouteChangeTracedCallback")
             .AddTraceSource("PreqReceived",
                             "A PREQ element was received from a neighbor",
                             MakeTraceSourceAccessor(&HwmpProtocol::m_preqReceivedTrace),

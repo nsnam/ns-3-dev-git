@@ -65,11 +65,11 @@ PeerManagementProtocol::GetTypeId()
             .AddTraceSource("LinkOpen",
                             "New peer link opened",
                             MakeTraceSourceAccessor(&PeerManagementProtocol::m_linkOpenTraceSrc),
-                            "ns3::PeerManagementProtocol::LinkOpenCloseTracedCallback")
+                            "ns3::dot11s::PeerManagementProtocol::LinkOpenCloseTracedCallback")
             .AddTraceSource("LinkClose",
                             "New peer link closed",
                             MakeTraceSourceAccessor(&PeerManagementProtocol::m_linkCloseTraceSrc),
-                            "ns3::PeerManagementProtocol::LinkOpenCloseTracedCallback")
+                            "ns3::dot11s::PeerManagementProtocol::LinkOpenCloseTracedCallback")
 
         ;
     return tid;
