@@ -838,10 +838,10 @@ Dhcp6Server::CleanLeases()
     m_leaseCleanupEvent = Simulator::Schedule(m_leaseCleanup, &Dhcp6Server::CleanLeases, this);
 }
 
-LeaseInfo::LeaseInfo(Ipv6Address addressPool,
-                     Ipv6Prefix prefix,
-                     Ipv6Address minAddress,
-                     Ipv6Address maxAddress)
+Dhcp6Server::LeaseInfo::LeaseInfo(Ipv6Address addressPool,
+                                  Ipv6Prefix prefix,
+                                  Ipv6Address minAddress,
+                                  Ipv6Address maxAddress)
 {
     m_addressPool = addressPool;
     m_prefix = prefix;
@@ -851,31 +851,31 @@ LeaseInfo::LeaseInfo(Ipv6Address addressPool,
 }
 
 Ipv6Address
-LeaseInfo::GetAddressPool() const
+Dhcp6Server::LeaseInfo::GetAddressPool() const
 {
     return m_addressPool;
 }
 
 Ipv6Prefix
-LeaseInfo::GetPrefix() const
+Dhcp6Server::LeaseInfo::GetPrefix() const
 {
     return m_prefix;
 }
 
 Ipv6Address
-LeaseInfo::GetMinAddress() const
+Dhcp6Server::LeaseInfo::GetMinAddress() const
 {
     return m_minAddress;
 }
 
 Ipv6Address
-LeaseInfo::GetMaxAddress() const
+Dhcp6Server::LeaseInfo::GetMaxAddress() const
 {
     return m_maxAddress;
 }
 
 uint32_t
-LeaseInfo::GetNumAddresses() const
+Dhcp6Server::LeaseInfo::GetNumAddresses() const
 {
     return m_numAddresses;
 }

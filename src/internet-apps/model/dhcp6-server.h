@@ -31,91 +31,6 @@ class Packet;
 /**
  * @ingroup dhcp6
  *
- * @class LeaseInfo
- * @brief Includes information about available subnets and corresponding leases.
- */
-class LeaseInfo
-{
-  public:
-    /**
-     * Constructor.
-     * @param addressPool Address pool
-     * @param prefix Prefix of the address pool
-     * @param minAddress Minimum address in the pool
-     * @param maxAddress Maximum address in the pool
-     */
-    LeaseInfo(Ipv6Address addressPool,
-              Ipv6Prefix prefix,
-              Ipv6Address minAddress,
-              Ipv6Address maxAddress);
-
-    friend class Dhcp6Server;
-
-  private:
-    /**
-     * @brief Get the address pool.
-     * @return The address pool
-     */
-    Ipv6Address GetAddressPool() const;
-
-    /**
-     * @brief Get the prefix of the address pool.
-     * @return The prefix of the address pool
-     */
-    Ipv6Prefix GetPrefix() const;
-
-    /**
-     * @brief Get the minimum address in the pool.
-     * @return The minimum address in the pool
-     */
-    Ipv6Address GetMinAddress() const;
-
-    /**
-     * @brief Get the maximum address in the pool.
-     * @return The maximum address in the pool
-     */
-    Ipv6Address GetMaxAddress() const;
-
-    /**
-     * @brief Get the number of addresses leased.
-     * @return The number of addresses leased
-     */
-    uint32_t GetNumAddresses() const;
-
-    /**
-     * @brief Expired Addresses (Section 6.2 of RFC 8415)
-     * Expired time / Ipv6Address
-     */
-    typedef std::multimap<Time, std::pair<Duid, Ipv6Address>> ExpiredAddresses;
-
-    /**
-     * @brief Leased Addresses
-     * Client DUID + Ipv6Address / Lease time
-     */
-    typedef std::unordered_multimap<Duid, std::pair<Ipv6Address, Time>, Duid::DuidHash>
-        LeasedAddresses;
-
-    /**
-     * @brief Declined Addresses
-     * Ipv6Address + Client DUID
-     */
-    typedef std::unordered_map<Ipv6Address, Duid> DeclinedAddresses;
-
-    LeasedAddresses m_leasedAddresses;     //!< Leased addresses
-    ExpiredAddresses m_expiredAddresses;   //!< Expired addresses
-    DeclinedAddresses m_declinedAddresses; //!< Declined addresses
-    Ipv6Address m_maxOfferedAddress;       //!< Maximum address offered so far.
-
-    Ipv6Address m_addressPool; //!< Address pool
-    Ipv6Prefix m_prefix;       //!< Prefix of the address pool
-    Ipv6Address m_minAddress;  //!< Minimum address in the pool
-    Ipv6Address m_maxAddress;  //!< Maximum address in the pool
-    uint32_t m_numAddresses;   //!< Number of addresses leased.
-};
-
-/**
- * @ingroup dhcp6
- *
  * @class Dhcp6Server
  * @brief Implements the DHCPv6 server.
  */
@@ -219,6 +134,85 @@ class Dhcp6Server : public Application
      * @brief Clean up stale lease info.
      */
     void CleanLeases();
+
+    /**
+     * @brief Includes information about available subnets and corresponding leases.
+     */
+    class LeaseInfo
+    {
+      public:
+        /**
+         * Constructor.
+         * @param addressPool Address pool
+         * @param prefix Prefix of the address pool
+         * @param minAddress Minimum address in the pool
+         * @param maxAddress Maximum address in the pool
+         */
+        LeaseInfo(Ipv6Address addressPool,
+                  Ipv6Prefix prefix,
+                  Ipv6Address minAddress,
+                  Ipv6Address maxAddress);
+
+        /**
+         * @brief Get the address pool.
+         * @return The address pool
+         */
+        Ipv6Address GetAddressPool() const;
+
+        /**
+         * @brief Get the prefix of the address pool.
+         * @return The prefix of the address pool
+         */
+        Ipv6Prefix GetPrefix() const;
+
+        /**
+         * @brief Get the minimum address in the pool.
+         * @return The minimum address in the pool
+         */
+        Ipv6Address GetMinAddress() const;
+
+        /**
+         * @brief Get the maximum address in the pool.
+         * @return The maximum address in the pool
+         */
+        Ipv6Address GetMaxAddress() const;
+
+        /**
+         * @brief Get the number of addresses leased.
+         * @return The number of addresses leased
+         */
+        uint32_t GetNumAddresses() const;
+
+        /**
+         * @brief Expired Addresses (Section 6.2 of RFC 8415)
+         * Expired time / Ipv6Address
+         */
+        typedef std::multimap<Time, std::pair<Duid, Ipv6Address>> ExpiredAddresses;
+
+        /**
+         * @brief Leased Addresses
+         * Client DUID + Ipv6Address / Lease time
+         */
+        typedef std::unordered_multimap<Duid, std::pair<Ipv6Address, Time>, Duid::DuidHash>
+            LeasedAddresses;
+
+        /**
+         * @brief Declined Addresses
+         * Ipv6Address + Client DUID
+         */
+        typedef std::unordered_map<Ipv6Address, Duid> DeclinedAddresses;
+
+        LeasedAddresses m_leasedAddresses;     //!< Leased addresses
+        ExpiredAddresses m_expiredAddresses;   //!< Expired addresses
+        DeclinedAddresses m_declinedAddresses; //!< Declined addresses
+        Ipv6Address m_maxOfferedAddress;       //!< Maximum address offered so far.
+
+        Ipv6Address m_addressPool; //!< Address pool
+        Ipv6Prefix m_prefix;       //!< Prefix of the address pool
+        Ipv6Address m_minAddress;  //!< Minimum address in the pool
+        Ipv6Address m_maxAddress;  //!< Maximum address in the pool
+        uint32_t m_numAddresses;   //!< Number of addresses leased.
+    };
 
     Ptr<Socket> m_recvSocket;            //!< Socket bound to port 547.
     std::vector<LeaseInfo> m_subnets;    //!< List of managed subnets.
