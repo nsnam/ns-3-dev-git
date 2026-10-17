@@ -12,6 +12,8 @@
 #include "frame-capture-model.h"
 #include "wifi-units.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 /**
@@ -24,7 +26,7 @@ namespace ns3
  * the current frame is dropped and the receiver locks
  * onto the new incoming frame.
  */
-class SimpleFrameCaptureModel : public FrameCaptureModel
+class WIFI_EXPORT SimpleFrameCaptureModel : public FrameCaptureModel
 {
   public:
     /**

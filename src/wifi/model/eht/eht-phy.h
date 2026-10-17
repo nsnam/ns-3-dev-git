@@ -10,6 +10,7 @@
 #define EHT_PHY_H
 
 #include "ns3/he-phy.h"
+#include "ns3/wifi-export.h"
 
 /**
  * @file
@@ -33,7 +34,7 @@ namespace ns3
  *
  * Refer to P802.11be/D1.5.
  */
-class EhtPhy : public HePhy
+class WIFI_EXPORT EhtPhy : public HePhy
 {
   public:
     /**
@@ -72,86 +73,58 @@ class EhtPhy : public HePhy
     static WifiMode GetEhtMcs(uint8_t index);
 
     /**
-     * Return MCS 0 from EHT MCS values.
-     *
      * @return MCS 0 from EHT MCS values
      */
     static WifiMode GetEhtMcs0();
     /**
-     * Return MCS 1 from EHT MCS values.
-     *
      * @return MCS 1 from EHT MCS values
      */
     static WifiMode GetEhtMcs1();
     /**
-     * Return MCS 2 from EHT MCS values.
-     *
      * @return MCS 2 from EHT MCS values
      */
     static WifiMode GetEhtMcs2();
     /**
-     * Return MCS 3 from EHT MCS values.
-     *
      * @return MCS 3 from EHT MCS values
      */
     static WifiMode GetEhtMcs3();
     /**
-     * Return MCS 4 from EHT MCS values.
-     *
      * @return MCS 4 from EHT MCS values
      */
     static WifiMode GetEhtMcs4();
     /**
-     * Return MCS 5 from EHT MCS values.
-     *
      * @return MCS 5 from EHT MCS values
      */
     static WifiMode GetEhtMcs5();
     /**
-     * Return MCS 6 from EHT MCS values.
-     *
      * @return MCS 6 from EHT MCS values
      */
     static WifiMode GetEhtMcs6();
     /**
-     * Return MCS 7 from EHT MCS values.
-     *
      * @return MCS 7 from EHT MCS values
      */
     static WifiMode GetEhtMcs7();
     /**
-     * Return MCS 8 from EHT MCS values.
-     *
      * @return MCS 8 from EHT MCS values
      */
     static WifiMode GetEhtMcs8();
     /**
-     * Return MCS 9 from EHT MCS values.
-     *
      * @return MCS 9 from EHT MCS values
      */
     static WifiMode GetEhtMcs9();
     /**
-     * Return MCS 10 from EHT MCS values.
-     *
      * @return MCS 10 from EHT MCS values
      */
     static WifiMode GetEhtMcs10();
     /**
-     * Return MCS 11 from EHT MCS values.
-     *
      * @return MCS 11 from EHT MCS values
      */
     static WifiMode GetEhtMcs11();
     /**
-     * Return MCS 12 from EHT MCS values.
-     *
      * @return MCS 12 from EHT MCS values
      */
     static WifiMode GetEhtMcs12();
     /**
-     * Return MCS 13 from EHT MCS values.
-     *
      * @return MCS 13 from EHT MCS values
      */
     static WifiMode GetEhtMcs13();
@@ -235,10 +208,10 @@ class EhtPhy : public HePhy
 
     /**
      * Calculate the rate in bps of the non-HT Reference Rate corresponding
-     * to the supplied HE MCS index. This function calls CalculateNonHtReferenceRate
+     * to the supplied EHT MCS index. This function calls CalculateNonHtReferenceRate
      * and is used as a callback for WifiMode operation.
      *
-     * @param mcsValue the HE MCS index
+     * @param mcsValue the EHT MCS index
      * @return the rate in bps of the non-HT Reference Rate.
      */
     static uint64_t GetNonHtReferenceRate(uint8_t mcsValue);
@@ -252,6 +225,7 @@ class EhtPhy : public HePhy
                                 WifiPpduField field) override;
     WifiPhyRxfailureReason GetFailureReason(WifiPpduField field) const override;
     uint32_t GetSigBSize(const WifiTxVector& txVector) const override;
+    uint32_t GetMaxPsduSize() const override;
     dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
     const std::map<MHz_u, WifiChannelListType>& GetCcaSecondaryChannels() const override;
@@ -279,7 +253,7 @@ class EhtPhy : public HePhy
      *
      * To convert an HE MCS to its corresponding non-HT Reference Rate
      * use the modulation and coding rate of the HT MCS
-     * and lookup in Table 10-10 of IEEE P802.11ax/D6.0.
+     * and lookup in Table 10-10 of IEEE 802.11be-2024.
      */
     static uint64_t CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellationSize);
 

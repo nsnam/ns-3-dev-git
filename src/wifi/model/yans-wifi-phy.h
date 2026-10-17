@@ -13,6 +13,8 @@
 
 #include "wifi-phy.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -33,7 +35,7 @@ class YansWifiChannel;
  * and ns3::PropagationDelayModel classes, both of which are
  * members of the ns3::YansWifiChannel class.
  */
-class YansWifiPhy : public WifiPhy
+class WIFI_EXPORT YansWifiPhy : public WifiPhy
 {
   public:
     /**

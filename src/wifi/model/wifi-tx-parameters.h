@@ -13,6 +13,7 @@
 #include "wifi-tx-vector.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <memory>
@@ -33,7 +34,7 @@ struct WifiAcknowledgment;
  * acknowledgment mechanism, TX duration, ...) for a frame of different types
  * (MPDU, A-MPDU, multi-TID A-MPDU, MU PPDU, ...).
  */
-class WifiTxParameters
+class WIFI_EXPORT WifiTxParameters
 {
   public:
     WifiTxParameters();
@@ -131,7 +132,7 @@ class WifiTxParameters
     uint32_t GetSize(Mac48Address receiver) const;
 
     /// information about the frame being prepared for a specific receiver
-    struct PsduInfo
+    struct WIFI_EXPORT PsduInfo
     {
         WifiMacHeader header; //!< MAC header of the last MPDU added
         uint32_t amsduSize;   //!< the size in bytes of the MSDU or A-MSDU
@@ -183,7 +184,7 @@ class WifiTxParameters
  * @param txParams the TX parameters
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiTxParameters* txParams);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiTxParameters* txParams);
 
 } // namespace ns3
 

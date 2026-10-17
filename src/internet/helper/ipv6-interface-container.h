@@ -105,12 +105,11 @@ class Ipv6InterfaceContainer
      * for-loop to run through the pairs
      *
      * @code
-     *   Ipv6InterfaceContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
      *       std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
-     *       method (pair.first, pair.second);  // use the pair
-     *     }
+     *       method(pair.first, pair.second); // use the pair
+     *   }
      * @endcode
      *
      * @returns an iterator which refers to the first pair in the container.
@@ -127,12 +126,11 @@ class Ipv6InterfaceContainer
      * for-loop to run through the Nodes
      *
      * @code
-     *   NodeContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
      *       std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
-     *       method (pair.first, pair.second);  // use the pair
-     *     }
+     *       method(pair.first, pair.second); // use the pair
+     *   }
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.

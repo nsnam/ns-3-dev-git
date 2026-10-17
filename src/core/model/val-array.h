@@ -261,7 +261,7 @@ class ValArray : public SimpleRefCount<ValArray<T>>
     /**
      * @brief operator-= definition for ValArray<T>.
      * @param rhs The rhs ValArray to be subtracted from this ValArray.
-     ** \return a reference to this ValArray instance
+     * @return a reference to this ValArray instance
      */
     ValArray<T>& operator-=(const ValArray<T>& rhs);
     /**
@@ -464,10 +464,8 @@ template <class T>
 inline ValArray<T>
 ValArray<T>::operator*(const T& rhs) const
 {
-    return ValArray<T>(m_numRows,
-                       m_numCols,
-                       m_numPages,
-                       m_values * std::valarray<T>(rhs, m_numRows * m_numCols * m_numPages));
+    // Scalar multiply via valarray, avoiding a temporary valarray(rhs, N).
+    return ValArray<T>(m_numRows, m_numCols, m_numPages, m_values * rhs);
 }
 
 template <class T>

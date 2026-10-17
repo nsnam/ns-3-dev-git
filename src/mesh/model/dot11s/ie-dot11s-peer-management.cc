@@ -111,14 +111,14 @@ void
 IePeerManagement::SerializeInformationField(Buffer::Iterator i) const
 {
     i.WriteU8(m_subtype);
-    i.WriteHtolsbU16(m_localLinkId);
+    i.WriteU16(m_localLinkId);
     if (m_length > 3)
     {
-        i.WriteHtolsbU16(m_peerLinkId);
+        i.WriteU16(m_peerLinkId);
     }
     if (m_length > 5)
     {
-        i.WriteHtolsbU16(m_reasonCode);
+        i.WriteU16(m_reasonCode);
     }
 }
 
@@ -140,14 +140,14 @@ IePeerManagement::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     {
         NS_ASSERT(length == 7);
     }
-    m_localLinkId = i.ReadLsbtohU16();
+    m_localLinkId = i.ReadU16();
     if (m_length > 3)
     {
-        m_peerLinkId = i.ReadLsbtohU16();
+        m_peerLinkId = i.ReadU16();
     }
     if (m_length > 5)
     {
-        m_reasonCode = (PmpReasonCode)i.ReadLsbtohU16();
+        m_reasonCode = (PmpReasonCode)i.ReadU16();
     }
     return i.GetDistanceFrom(start);
 }

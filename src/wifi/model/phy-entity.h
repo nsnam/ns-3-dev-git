@@ -13,6 +13,7 @@
 #define PHY_ENTITY_H
 
 #include "wifi-phy-band.h"
+#include "wifi-phy-common.h"
 #include "wifi-phy-state-helper.h"
 #include "wifi-phy.h"
 #include "wifi-ppdu.h"
@@ -35,17 +36,11 @@
  * @ingroup wifi
  * Declaration of:
  * - ns3::PhyEntity class
- * - ns3::SignalNoiseDbm, ns3::MpduInfo, and ns3::RxSignalInfo structs
  * - ns3::RxPowerWattPerChannelBand typedef
  */
 
 namespace ns3
 {
-
-/**
- * A map of the received power for each band
- */
-using RxPowerWattPerChannelBand = std::map<WifiSpectrumBandInfo, Watt_u>;
 
 class WifiMpdu;
 class WifiPhy;
@@ -79,7 +74,7 @@ class WIFI_EXPORT PhyEntity
     /**
      * Status of the reception of the PPDU field.
      */
-    struct PhyFieldRxStatus
+    struct WIFI_EXPORT PhyFieldRxStatus
     {
         bool isSuccess{true};                   //!< outcome (\c true if success) of the reception
         WifiPhyRxfailureReason reason{UNKNOWN}; //!< failure reason
@@ -401,7 +396,8 @@ class WIFI_EXPORT PhyEntity
      *
      * @param ppdu the incoming PPDU or nullptr for any signal
      */
-    virtual void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu);
+    virtual void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu = nullptr);
+
     /**
      * Notify PHY state helper to switch to CCA busy state,
      *
@@ -939,7 +935,7 @@ class WIFI_EXPORT PhyEntity
  * @param action the action to perform in case of failure
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& action);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& action);
 /**
  * @brief Stream insertion operator.
  *
@@ -947,7 +943,7 @@ std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyRxFailureAction& 
  * @param status the status of the reception of a PPDU field
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyFieldRxStatus& status);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const PhyEntity::PhyFieldRxStatus& status);
 
 } // namespace ns3
 

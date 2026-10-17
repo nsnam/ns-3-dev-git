@@ -50,10 +50,10 @@ Here is the minimal simulation program that is needed to do an LTE-only simulati
 
 #. Initial boilerplate::
 
-    #include <ns3/core-module.h>
-    #include <ns3/network-module.h>
-    #include <ns3/mobility-module.h>
-    #include <ns3/lte-module.h>
+    #include "ns3/core-module.h"
+    #include "ns3/network-module.h"
+    #include "ns3/mobility-module.h"
+    #include "ns3/lte-module.h"
 
     using namespace ns3;
 
@@ -526,9 +526,9 @@ We now explain by examples how to use the buildings model (in particular, the ``
 
 #. Header files to be included::
 
-    #include <ns3/mobility-building-info.h>
-    #include <ns3/buildings-propagation-loss-model.h>
-    #include <ns3/building.h>
+    #include "ns3/mobility-building-info.h"
+    #include "ns3/buildings-propagation-loss-model.h"
+    #include "ns3/building.h"
 
 #. Pathloss model selection::
 
@@ -1292,8 +1292,7 @@ within the container ``devs``::
 
    std::vector<uint8_t> measIdList;
 
-   NetDeviceContainer::Iterator it;
-   for (it = devs.Begin(); it != devs.End(); it++)
+   for (auto it = devs.Begin(); it != devs.End(); it++)
    {
      Ptr<NetDevice> dev = *it;
      Ptr<LteEnbNetDevice> enbDev = dev->GetObject<LteEnbNetDevice>();

@@ -318,7 +318,7 @@ class Ipv4StaticRouting : public Ipv4RoutingProtocol
      * exactly match wildcards in the routes (see AddMulticastRoute).  That is,
      * calling RemoveMulticastRoute with the origin set to "0.0.0.0" will not
      * remove routes with any address in the origin, but will only remove routes
-     * with "0.0.0.0" set as the the origin.
+     * with "0.0.0.0" set as the origin.
      *
      * @param origin The IP address specified as the origin of packets for the
      * route.

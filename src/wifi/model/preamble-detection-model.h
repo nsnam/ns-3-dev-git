@@ -12,6 +12,7 @@
 #include "wifi-units.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -21,7 +22,7 @@ namespace ns3
  * @brief the interface for Wifi's preamble detection models
  *
  */
-class PreambleDetectionModel : public Object
+class WIFI_EXPORT PreambleDetectionModel : public Object
 {
   public:
     /**

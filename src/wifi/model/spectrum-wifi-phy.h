@@ -17,9 +17,11 @@
 #include "wifi-phy.h"
 
 #include "ns3/antenna-model.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <optional>
+#include <set>
 #include <vector>
 
 class SpectrumWifiPhyFilterTest;
@@ -32,8 +34,8 @@ struct SpectrumSignalParameters;
 class WifiSpectrumPhyInterface;
 struct WifiSpectrumSignalParameters;
 
-/// Map a spectrum band associated with an RU to the RU specification
-using RuBands = std::map<WifiSpectrumBandInfo, WifiRu::RuSpec>;
+/// Set of RU bands
+using RuBands = std::set<WifiSpectrumBandInfo>;
 
 /**
  * @brief 802.11 PHY layer model
@@ -47,7 +49,7 @@ using RuBands = std::map<WifiSpectrumBandInfo, WifiRu::RuSpec>;
  * and ns3::PropagationDelayModel classes.
  *
  */
-class SpectrumWifiPhy : public WifiPhy
+class WIFI_EXPORT SpectrumWifiPhy : public WifiPhy
 {
   public:
     /// allow SpectrumWifiPhyFilterTest class access

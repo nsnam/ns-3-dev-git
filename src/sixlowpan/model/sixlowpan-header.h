@@ -11,6 +11,7 @@
 #define SIXLOWPANHEADER_H_
 
 #include "ns3/header.h"
+#include "ns3/icmpv6-header.h"
 #include "ns3/ipv6-address.h"
 
 namespace ns3
@@ -23,20 +24,20 @@ namespace ns3
 *
 * The dispatch type is defined by a zero bit as the first bit and a one
 *  bit as the second bit.
-  \verbatim
+  @verbatim
                         1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |0 1| Dispatch  |  type-specific header
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
+  @endverbatim
 */
 class SixLowPanDispatch
 {
   public:
     /**
      * @brief Dispatch values, as defined in \RFC{4944} and \RFC{6282}
-     \verbatim
+     @verbatim
        Pattern    Header Type
      +------------+------------------------------------------------+
      | 00  xxxxxx | NALP        - Not a LoWPAN frame               |
@@ -60,7 +61,7 @@ class SixLowPanDispatch
      |   ...      | reserved    - Reserved for future use          |
      | 11  111111 | reserved    - Reserved for future use          |
      +------------+------------------------------------------------+
-     \endverbatim
+     @endverbatim
      */
     enum Dispatch_e
     {
@@ -92,6 +93,11 @@ class SixLowPanDispatch
         LOWPAN_NHC_N = 0xEF,
         LOWPAN_UDPNHC = 0xF0,
         LOWPAN_UDPNHC_N = 0xF7,
+        LOWPAN_GHC_EXT = 0xB0,
+        LOWPAN_GHC_EXT_N = 0xBF,
+        LOWPAN_GHC_UDP = 0xD0,
+        LOWPAN_GHC_UDP_N = 0xD7,
+        LOWPAN_GHC_ICMPV6 = 0xDF,
         LOWPAN_NHCUNSUPPORTED = 0xFF
     };
 
@@ -581,13 +587,13 @@ std::ostream& operator<<(std::ostream& os, const SixLowPanIpv6& header);
 /**
 * @ingroup sixlowpan
 * @brief   LOWPAN_IPHC base Encoding - see \RFC{6282}.
-  \verbatim
+  @verbatim
        0                                       1
        0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5
      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
      | 0 | 1 | 1 |  TF   |NH | HLIM  |CID|SAC|  SAM  | M |DAC|  DAM  |
      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-  \endverbatim
+  @endverbatim
 */
 class SixLowPanIphc : public Header
 {
@@ -923,12 +929,12 @@ std::ostream& operator<<(std::ostream& os, const SixLowPanIphc& header);
 /**
 * @ingroup sixlowpan
 * @brief   LOWPAN_NHC Extension Header Encoding - see \RFC{6282}.
-  \verbatim
+  @verbatim
      0   1   2   3   4   5   6   7
    +---+---+---+---+---+---+---+---+
    | 1 | 1 | 1 | 0 |    EID    |NH |
    +---+---+---+---+---+---+---+---+
-  \endverbatim
+  @endverbatim
 */
 class SixLowPanNhcExtension : public Header
 {
@@ -995,7 +1001,7 @@ class SixLowPanNhcExtension : public Header
      * @brief Get the NhcDispatch type.
      * @return The NhcDispatch type.
      */
-    virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType() const;
+    SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType() const;
 
     /**
      * @brief Set the Extension Header Type.
@@ -1067,12 +1073,12 @@ std::ostream& operator<<(std::ostream& os, const SixLowPanNhcExtension& header);
 /**
 * @ingroup sixlowpan
 * @brief   UDP LOWPAN_NHC Extension Header Encoding - see \RFC{6282}.
-  \verbatim
+  @verbatim
      0   1   2   3   4   5   6   7
    +---+---+---+---+---+---+---+---+
    | 1 | 1 | 1 | 1 | 0 | C |   P   |
    +---+---+---+---+---+---+---+---+
-  \endverbatim
+  @endverbatim
 */
 class SixLowPanUdpNhcExtension : public Header
 {
@@ -1132,7 +1138,7 @@ class SixLowPanUdpNhcExtension : public Header
      * @brief Get the NhcDispatch type.
      * @return The NhcDispatch type.
      */
-    virtual SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType() const;
+    SixLowPanDispatch::NhcDispatch_e GetNhcDispatchType() const;
 
     /**
      * @brief Set the compressed Src and Dst Ports.
@@ -1371,6 +1377,87 @@ class SixLowPanMesh : public Header
  * @returns The reference to the output stream.
  */
 std::ostream& operator<<(std::ostream& os, const SixLowPanMesh& header);
+
+/**
+ * @ingroup sixlowpan
+ * @brief 6LoWPAN Capability Indication Option - see \RFC{7400}.
+ */
+class Icmpv6OptionSixLowPanCapabilityIndication : public Icmpv6OptionHeader
+{
+  public:
+    Icmpv6OptionSixLowPanCapabilityIndication();
+
+    /**
+     * @brief Get the type ID.
+     * @return The object TypeId.
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * @brief Return the instance type identifier.
+     * @return Instance type ID.
+     */
+    TypeId GetInstanceTypeId() const override;
+
+    void Print(std::ostream& os) const override;
+
+    /**
+     * @brief Get the serialized size of the packet.
+     * @return Size.
+     */
+    uint32_t GetSerializedSize() const override;
+
+    /**
+     * @brief Serialize the packet.
+     * @param [in] start Buffer iterator.
+     */
+    void Serialize(Buffer::Iterator start) const override;
+
+    /**
+     * @brief Deserialize the packet.
+     * @param [in] start Buffer iterator.
+     * @return Size of the packet.
+     */
+    uint32_t Deserialize(Buffer::Iterator start) override;
+
+    /**
+     * @brief The Capability field bit.
+     */
+    enum SixLowPanCapability_e
+    {
+        G = 0x01, /**< Generic Header Compression (GHC) capable (see \RFC{7400}) */
+        E = 0x02, /**< The node is an IPv6 ND Registrar (see \RFC{8505}) */
+        P = 0x04, /**< The node is a Routing Registrar (see \RFC{8505}) */
+        B = 0x08, /**< The node is a 6LBR (see \RFC{8505}) */
+        L = 0x10, /**< The node is a 6LR (see \RFC{8505}) */
+        D = 0x20, /**< The 6LBR supports EDAR and EDAC messages (see \RFC{8505}) */
+    };
+
+    /**
+     * @brief Set an option.
+     * @param [in] option The option to be set.
+     */
+    void SetOption(SixLowPanCapability_e option);
+
+    /**
+     * @brief Checks an option.
+     * @param [in] option The option to be checked.
+     * @return True if the option is set, false otherwise.
+     */
+    bool CheckOption(SixLowPanCapability_e option) const;
+
+  private:
+    uint8_t m_capabilityOptionField; //!< Capability options bitfield.
+};
+
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param [in] os The reference to the output stream.
+ * @param [in] header The Mesh Extension Header.
+ * @returns The reference to the output stream.
+ */
+std::ostream& operator<<(std::ostream& os, const Icmpv6OptionSixLowPanCapabilityIndication& header);
 
 } // namespace ns3
 

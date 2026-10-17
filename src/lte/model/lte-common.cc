@@ -12,10 +12,38 @@
 #include "ns3/abort.h"
 #include "ns3/log.h"
 
+#include <array>
+
 namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("LteCommon");
+
+namespace
+{
+
+/// Upper bandwidth bounds (exclusive) for each Type 0 RBG size (3GPP TS 36.213, table 7.1.6.1-1)
+constexpr std::array<uint16_t, 4> TYPE0_ALLOCATION_RBG = {
+    10,  // RBG size 1
+    26,  // RBG size 2
+    63,  // RBG size 3
+    110, // RBG size 4
+};
+
+} // namespace
+
+std::size_t
+GetLteRbgSize(uint16_t dlBandwidth)
+{
+    for (std::size_t i = 0; i < TYPE0_ALLOCATION_RBG.size(); i++)
+    {
+        if (dlBandwidth < TYPE0_ALLOCATION_RBG[i])
+        {
+            return i + 1;
+        }
+    }
+    NS_ABORT_MSG("Unsupported downlink bandwidth of " << dlBandwidth << " resource blocks");
+}
 
 LteFlowId_t::LteFlowId_t()
 {

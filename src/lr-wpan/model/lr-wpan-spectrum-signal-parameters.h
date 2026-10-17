@@ -43,6 +43,11 @@ struct LrWpanSpectrumSignalParameters : public SpectrumSignalParameters
      * The packet burst being transmitted with this signal
      */
     Ptr<PacketBurst> packetBurst;
+
+    /**
+     * The duration of the preamble according to the PHY option selected.
+     */
+    Time preambleDuration;
 };
 
 } // namespace lrwpan

@@ -16,6 +16,7 @@
 #include "txop.h"
 
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -48,7 +49,7 @@ class WifiTxParameters;
  * This class also implements block ack sessions and MSDU aggregation (A-MSDU).
  */
 
-class QosTxop : public Txop
+class WIFI_EXPORT QosTxop : public Txop
 {
   public:
     /**
@@ -280,17 +281,14 @@ class QosTxop : public Txop
      * @param linkId the ID of the given link
      * @param peekedItem the peeked frame.
      * @param txParams the TX parameters for the frame
-     * @param availableTime the time available for the transmission of the frame
-                            (including protection and acknowledgment); a value of
-     *                      Time::Min() indicates no time constraint
-     * @param initialFrame true if the frame is the initial PPDU of a TXOP
+     * @param availableTime the limit (if any) on the time available for the transmission of the
+                            frame (including protection and acknowledgment)
      * @return the frame to transmit or a null pointer if no frame meets the time constraints
      */
     Ptr<WifiMpdu> GetNextMpdu(uint8_t linkId,
                               Ptr<WifiMpdu> peekedItem,
                               WifiTxParameters& txParams,
-                              Time availableTime,
-                              bool initialFrame);
+                              const std::optional<Time>& availableTime);
 
     /**
      * Assign a sequence number to the given MPDU, if it is not a fragment
@@ -409,7 +407,7 @@ class QosTxop : public Txop
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created.
      */
-    struct QosLinkEntity : public Txop::LinkEntity
+    struct WIFI_EXPORT QosLinkEntity : public Txop::LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         ~QosLinkEntity() override = default;

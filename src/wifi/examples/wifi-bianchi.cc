@@ -32,7 +32,6 @@
 #include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/queue-size.h"
-#include "ns3/rng-seed-manager.h"
 #include "ns3/ssid.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
@@ -45,14 +44,23 @@
 
 #include <fstream>
 #include <iomanip>
+#include <numbers>
 #include <vector>
 
-/// Avoid std::numbers::pi because it's C++20
-#define PI 3.1415926535
+/**
+ * @file
+ * Example comparing ns-3 to the Bianchi model.
+ *
+ * See the Wi-Fi Module documentation in the Models chapter.
+ */
 
 NS_LOG_COMPONENT_DEFINE("WifiBianchi");
 
 using namespace ns3;
+
+/** Unnamed namespace, to disambiguate class Experiment. */
+namespace
+{
 
 std::ofstream cwTraceFile;      ///< File that traces CW over time
 std::ofstream backoffTraceFile; ///< File that traces backoff over time
@@ -2409,6 +2417,9 @@ class Experiment
      * @param staTxPower the STA transmit power
      * @param pktInterval the packet interval
      * @return 0 if all went well
+     *
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
      */
     int Run(const WifiHelper& wifi,
             const YansWifiPhyHelper& wifiPhy,
@@ -2446,9 +2457,6 @@ Experiment::Run(const WifiHelper& helper,
                 dBm_u staTxPower,
                 Time pktInterval)
 {
-    RngSeedManager::SetSeed(10);
-    RngSeedManager::SetRun(10);
-
     NodeContainer wifiNodes;
     if (infra)
     {
@@ -2536,8 +2544,8 @@ Experiment::Run(const WifiHelper& helper,
     const auto angle = (static_cast<degree_u>(360) / (nNodes - 1));
     for (uint32_t i = 0; i < (nNodes - 1); ++i)
     {
-        positionAlloc->Add(Vector(1.0 + (distance * cos((i * angle * PI) / 180)),
-                                  1.0 + (distance * sin((i * angle * PI) / 180)),
+        positionAlloc->Add(Vector(1.0 + (distance * cos((i * angle * std::numbers::pi) / 180)),
+                                  1.0 + (distance * sin((i * angle * std::numbers::pi) / 180)),
                                   0.0));
     }
 
@@ -2843,6 +2851,8 @@ GetCount(const std::map<Mac48Address, uint64_t>& counter, Mac48Address addr)
     return count;
 }
 
+} // unnamed namespace
+
 int
 main(int argc, char* argv[])
 {
@@ -2923,7 +2933,7 @@ main(int argc, char* argv[])
                  "Set the constant channel width in MHz (only for 11n/ac/ax)",
                  channelWidth);
     cmd.AddValue("guardIntervalNs",
-                 "Set the the guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or "
+                 "Set the guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or "
                  "3200 for 11 ax)",
                  guardIntervalNs);
     cmd.AddValue("maxMpdus",
@@ -3171,12 +3181,11 @@ main(int argc, char* argv[])
                            apTxPower,
                            staTxPower,
                            MicroSeconds(pktInterval));
-            uint32_t k = 0;
             if (bytesReceived.size() != n)
             {
                 NS_FATAL_ERROR("Not all stations got traffic!");
             }
-            for (auto it = bytesReceived.begin(); it != bytesReceived.end(); it++, k++)
+            for (auto it = bytesReceived.begin(); it != bytesReceived.end(); ++it)
             {
                 Time first = timeFirstReceived.find(it->first)->second;
                 Time last = timeLastReceived.find(it->first)->second;

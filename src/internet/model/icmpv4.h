@@ -48,6 +48,18 @@ class Icmpv4Header : public Header
     void EnableChecksum();
 
     /**
+     * Checks if the message checksum is correct.
+     *
+     * The checksum is verified during Deserialize only if checksum
+     * calculation has been enabled beforehand with EnableChecksum.
+     *
+     * @returns true if the checksum is correct, false otherwise. Returns true
+     * by default if EnableChecksum has not been called before deserializing
+     * this header.
+     */
+    bool IsChecksumOk() const;
+
+    /**
      * Set ICMP type
      * @param type the ICMP type
      */
@@ -88,6 +100,7 @@ class Icmpv4Header : public Header
     uint8_t m_type;      //!< ICMP type
     uint8_t m_code;      //!< ICMP code
     bool m_calcChecksum; //!< true if checksum is calculated
+    bool m_goodChecksum; //!< true if checksum is correct
 };
 
 /**

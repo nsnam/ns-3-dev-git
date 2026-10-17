@@ -70,7 +70,7 @@ class VirtualNetDevice : public NetDevice
     /**
      * @brief Configure whether the virtual device needs ARP
      *
-     * @param needsArp the the 'needs arp' value that will be returned
+     * @param needsArp the 'needs arp' value that will be returned
      * by the NeedsArp() method.  The method IsBroadcast() will also
      * return this value.
      */

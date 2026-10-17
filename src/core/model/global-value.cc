@@ -12,9 +12,6 @@
 #include "fatal-error.h"
 #include "log.h"
 #include "string.h"
-#include "uinteger.h"
-
-#include "ns3/core-config.h"
 
 /**
  * @file

@@ -39,7 +39,7 @@ Cost231PropagationLossModel::GetTypeId()
                           MakeDoubleAccessor(&Cost231PropagationLossModel::m_lambda),
                           MakeDoubleChecker<double>())
             .AddAttribute("Frequency",
-                          "The Frequency  (default is 2.3 GHz).",
+                          "Carrier Frequency.",
                           DoubleValue(2.3e9),
                           MakeDoubleAccessor(&Cost231PropagationLossModel::m_frequency),
                           MakeDoubleChecker<double>())

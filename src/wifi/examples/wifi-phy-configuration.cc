@@ -20,6 +20,7 @@
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/yans-wifi-phy.h"
 
@@ -93,7 +94,7 @@ main(int argc, char* argv[])
                   "Ssid",
                   SsidValue(ssid),
                   "BeaconInterval",
-                  TimeValue(MicroSeconds(102400)),
+                  TimeValue(DEFAULT_BEACON_INTERVAL()),
                   "BeaconGeneration",
                   BooleanValue(true));
     NetDeviceContainer staDevice;

@@ -12,6 +12,7 @@
 #include "default-ap-emlsr-manager.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <set>
 
@@ -28,7 +29,7 @@ class WifiTxVector;
  *
  * AdvancedApEmlsrManager is an advanced AP EMLSR manager.
  */
-class AdvancedApEmlsrManager : public DefaultApEmlsrManager
+class WIFI_EXPORT AdvancedApEmlsrManager : public DefaultApEmlsrManager
 {
   public:
     /**

@@ -79,6 +79,11 @@ TcpSocketState::GetTypeId()
                             "The TCP connection's congestion window",
                             MakeTraceSourceAccessor(&TcpSocketState::m_bytesInFlight),
                             "ns3::TracedValueCallback::Uint32")
+            .AddTraceSource(
+                "FackAwnd",
+                "Estimate of amount of outstanding data in the network (if FACK option is enabled)",
+                MakeTraceSourceAccessor(&TcpSocketState::m_fackAwnd),
+                "ns3::TracedValueCallback::Uint32")
             .AddTraceSource("RTT",
                             "Smoothed RTT",
                             MakeTraceSourceAccessor(&TcpSocketState::m_srtt),
@@ -98,6 +103,7 @@ TcpSocketState::TcpSocketState(const TcpSocketState& other)
       m_initialSsThresh(other.m_initialSsThresh),
       m_segmentSize(other.m_segmentSize),
       m_lastAckedSeq(other.m_lastAckedSeq),
+      m_sackEnabled(other.m_sackEnabled),
       m_congState(other.m_congState),
       m_ecnState(other.m_ecnState),
       m_highTxMark(other.m_highTxMark),
@@ -117,6 +123,7 @@ TcpSocketState::TcpSocketState(const TcpSocketState& other)
       m_lastRtt(other.m_lastRtt),
       m_ecnMode(other.m_ecnMode),
       m_useEcn(other.m_useEcn),
+      m_abeEnabled(other.m_abeEnabled),
       m_ectCodePoint(other.m_ectCodePoint),
       m_lastAckedSackedBytes(other.m_lastAckedSackedBytes)
 

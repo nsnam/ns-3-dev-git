@@ -28,6 +28,9 @@ namespace ns3
 /**
  * @ingroup ptr
  * @brief Empty class, used as a default parent class for SimpleRefCount
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 class Empty
 {
@@ -50,20 +53,23 @@ class Empty
  * This template takes 3 arguments but only the first argument is
  * mandatory:
  *
- * @tparam T \explicit The typename of the subclass which derives
+ * @tparam T @explicit The typename of the subclass which derives
  *      from this template class. Yes, this is weird but it's a
  *      common C++ template pattern whose name is CRTP (Curiously
  *      Recursive Template Pattern)
- * @tparam PARENT \explicit The typename of the parent of this template.
+ * @tparam PARENT @explicit The typename of the parent of this template.
  *      By default, this typename is "'ns3::Empty'" which is an empty
  *      class: compilers which implement the EBCO optimization (empty
  *      base class optimization) will make this a no-op
- * @tparam DELETER \explicit The typename of a class which implements
+ * @tparam DELETER @explicit The typename of a class which implements
  *      a public static method named 'Delete'. This method will be called
  *      whenever the SimpleRefCount template detects that no references
  *      to the object it manages exist anymore.
  *
  * Interesting users of this class include ns3::Object as well as ns3::Packet.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 template <typename T, typename PARENT = Empty, typename DELETER = DefaultDeleter<T>>
 class SimpleRefCount : public PARENT

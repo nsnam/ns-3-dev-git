@@ -35,6 +35,12 @@ namespace ns3
  *  Base station Antenna Height: 30m to 200m
  *  Link Distance:up to 20 km
  *
+ *  @note Although the classical COST-231 model has been empirically validated
+ *  in the 1500 MHz to 2000 MHz frequency range, the ns-3 implementation
+ *  historically defaults to 2.3 GHz due to its original use in WiMAX studies.
+ *  Users are advised to consciously select the carrier frequency appropriate
+ *  for their scenario and to exercise caution when operating far outside the
+ *  classical validity range.
  */
 
 class Cost231PropagationLossModel : public PropagationLossModel

@@ -29,6 +29,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
+#include "ns3/wifi-export.h"
 
 #include <array>
 #include <list>
@@ -62,7 +63,7 @@ struct RxSignalInfo;
  * This class is typically subclassed and extended by
  * rate control implementations
  */
-struct WifiRemoteStation
+struct WIFI_EXPORT WifiRemoteStation
 {
     virtual ~WifiRemoteStation()
     {
@@ -77,7 +78,7 @@ struct WifiRemoteStation
 /**
  * A struct that holds information about each remote station.
  */
-struct WifiRemoteStationState
+struct WIFI_EXPORT WifiRemoteStationState
 {
     /**
      * State of the station
@@ -88,7 +89,8 @@ struct WifiRemoteStationState
         DISASSOC,
         WAIT_ASSOC_TX_OK,
         GOT_ASSOC_TX_OK,
-        ASSOC_REFUSED
+        ASSOC_REFUSED,
+        ADHOC_PEER
     } m_state;
 
     /**
@@ -139,9 +141,9 @@ struct WifiRemoteStationState
  * @ingroup wifi
  * @brief hold a list of per-remote-station state.
  *
- * \sa ns3::WifiRemoteStation.
+ * @sa ns3::WifiRemoteStation.
  */
-class WifiRemoteStationManager : public Object
+class WIFI_EXPORT WifiRemoteStationManager : public Object
 {
   public:
     /**
@@ -201,6 +203,13 @@ class WifiRemoteStationManager : public Object
      * @return the number of stream indices assigned by this model
      */
     virtual int64_t AssignStreams(int64_t stream);
+
+    /**
+     * Reset the state of the station corresponding to the given address (if one exists).
+     *
+     * @param address the MAC address of the given station
+     */
+    void ResetState(Mac48Address address) const;
 
     /**
      * Sets the maximum STA short retry count (SSRC).
@@ -827,6 +836,13 @@ class WifiRemoteStationManager : public Object
      */
     bool IsBrandNew(Mac48Address address) const;
     /**
+     * Return whether the station state is a known adhoc peer.
+     *
+     * @param address the address of the station
+     * @return true if the address is a known adhoc peer, false otherwise
+     */
+    bool IsAdhocPeer(Mac48Address address) const;
+    /**
      * Return whether the station associated.
      *
      * @param address the address of the station
@@ -872,6 +888,12 @@ class WifiRemoteStationManager : public Object
      * @param address the address of the station
      */
     void RecordDisassociated(Mac48Address address);
+    /**
+     * Records that the STA is an adhoc peer.
+     *
+     * @param address the address of the station
+     */
+    void RecordAdhocPeer(Mac48Address address);
     /**
      * Return whether we refused an association request from the given station
      *
@@ -949,10 +971,13 @@ class WifiRemoteStationManager : public Object
      * Since CTS-to-self parameters are not dependent on the station,
      * it is implemented in wifi remote station manager
      *
+     * @param allowedWidth the width of the data frame being protected, which the
+     *        CTS-to-self must cover (using the non-HT duplicate format if wider
+     *        than 20 MHz)
      * @return the transmission mode to use to send the CTS-to-self prior to the
      *         transmission of the data packet itself.
      */
-    WifiTxVector GetCtsToSelfTxVector();
+    WifiTxVector GetCtsToSelfTxVector(MHz_u allowedWidth);
     /**
      * Adjust the TXVECTOR for a control response frame to ensure that, if appropriate, the non-HT
      * duplicate format is used and the TX width matches that of the data frame transmitted (in case
@@ -995,6 +1020,31 @@ class WifiRemoteStationManager : public Object
      * @return control answer mode
      */
     WifiMode GetControlAnswerMode(WifiMode reqMode) const;
+
+    /**
+     * Return a TXVECTOR for a BlockAckReq frame sent in a frame exchange sequence involving the
+     * transmission of a data frame (e.g., a BAR-BA sequence after a DL MU PPDU). The returned
+     * TXVECTOR is determined as the TXVECTOR that would be used to transmit a BlockAck in response
+     * to a data frame sent with the given TXVECTOR.
+     *
+     * @param to the MAC address of the BlockAckReq receiver
+     * @param dataTxVector the TXVECTOR of the Data frame
+     * @return TXVECTOR for the BlockAckReq
+     */
+    virtual WifiTxVector GetBlockAckReqTxVector(Mac48Address to,
+                                                const WifiTxVector& dataTxVector) const;
+
+    /**
+     * Return a TXVECTOR for a BlockAckReq frame sent in a frame exchange sequence that does not
+     * involve the transmission of a data frame (e.g., a BAR scheduled to advance the recipient
+     * window). The returned TXVECTOR is determined as the TXVECTOR that would be used to transmit
+     * a BlockAck in response to a data frame sent to the given receiver and using the given width.
+     *
+     * @param to the MAC address of the BlockAckReq receiver
+     * @param allowedWidth the allowed width to send this BlockAckReq
+     * @return TXVECTOR for the BlockAckReq
+     */
+    virtual WifiTxVector GetBlockAckReqTxVector(Mac48Address to, MHz_u allowedWidth);
 
     /**
      * Should be invoked whenever the RtsTimeout associated to a transmission
@@ -1065,7 +1115,7 @@ class WifiRemoteStationManager : public Object
                              uint16_t nFailedMpdus,
                              double rxSnr,
                              double dataSnr,
-                             WifiTxVector dataTxVector);
+                             const WifiTxVector& dataTxVector);
 
     /**
      * @param address remote address
@@ -1559,6 +1609,7 @@ class WifiRemoteStationManager : public Object
      *
      * @param address the address of the station
      * @return WifiRemoteStationState corresponding to the address
+     * @hidecaller
      */
     std::shared_ptr<WifiRemoteStationState> LookupState(Mac48Address address) const;
     /**

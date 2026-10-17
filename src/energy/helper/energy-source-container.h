@@ -92,11 +92,10 @@ class EnergySourceContainer : public Object
      * for-loop to run through the EnergySources.
      *
      * @code
-     *   EnergySourceContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some EnergySource method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some EnergySource method
+     *   }
      * @endcode
      */
     Iterator Begin() const;
@@ -113,11 +112,10 @@ class EnergySourceContainer : public Object
      * for-loop to run through the EnergySources.
      *
      * @code
-     *   EnergySourceContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some EnergySource method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some EnergySource method
+     *   }
      * @endcode
      */
     Iterator End() const;

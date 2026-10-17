@@ -80,7 +80,7 @@ MsduAggregator::GetSizeIfAggregated(uint16_t msduSize, uint16_t amsduSize)
 Ptr<WifiMpdu>
 MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
                              WifiTxParameters& txParams,
-                             Time availableTime) const
+                             const std::optional<Time>& availableTime) const
 {
     NS_LOG_FUNCTION(this << *peekedItem << &txParams << availableTime);
 
@@ -143,7 +143,10 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
     // perform A-MSDU aggregation
     auto amsdu = queue->GetOriginal(peekedItem);
     std::size_t nMsdu = 1;
-    peekedItem = queue->PeekByTidAndAddress(tid, recipient, peekedItem->GetOriginal());
+    peekedItem = queue->PeekByTidAndAddress(tid,
+                                            recipient,
+                                            m_htFem->GetAddress(),
+                                            peekedItem->GetOriginal());
 
     // stop aggregation if we find an A-MSDU in the queue. This likely happens when an A-MSDU is
     // prepared but not transmitted due to RTS/CTS failure
@@ -157,7 +160,7 @@ MsduAggregator::GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
                       "sequence numbers were not released correctly?");
         // find the next MPDU before dequeuing the current one
         auto msdu = peekedItem->GetOriginal();
-        peekedItem = queue->PeekByTidAndAddress(tid, recipient, msdu);
+        peekedItem = queue->PeekByTidAndAddress(tid, recipient, m_htFem->GetAddress(), msdu);
         queue->DequeueIfQueued({amsdu});
         // perform A-MSDU aggregation
         amsdu->Aggregate(msdu);

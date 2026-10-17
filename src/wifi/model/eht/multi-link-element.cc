@@ -554,11 +554,11 @@ MultiLinkElement::PerStaProfileSubelement::SerializeInformationField(Buffer::Ite
     if (m_variant == PROBE_REQUEST_VARIANT)
     {
         NS_ASSERT_MSG(IsCompleteProfileSet(), "Encoding of STA Profile not supported");
-        start.WriteHtolsbU16(m_staControl);
+        start.WriteU16(m_staControl);
         return;
     }
 
-    start.WriteHtolsbU16(m_staControl);
+    start.WriteU16(m_staControl);
     start.WriteU8(GetStaInfoLength());
 
     if (HasStaMacAddress())
@@ -602,7 +602,7 @@ MultiLinkElement::PerStaProfileSubelement::DeserializeInformationField(Buffer::I
 
     Buffer::Iterator i = start;
 
-    m_staControl = i.ReadLsbtohU16();
+    m_staControl = i.ReadU16();
     i.ReadU8(); // STA Info Length
 
     if (HasStaMacAddress())
@@ -649,7 +649,7 @@ MultiLinkElement::PerStaProfileSubelement::DeserProbeReqMlePerSta(ns3::Buffer::I
     Buffer::Iterator i = start;
     uint16_t count = 0;
 
-    m_staControl = i.ReadLsbtohU16();
+    m_staControl = i.ReadU16();
     count += 2;
 
     NS_ASSERT_MSG(count <= length,
@@ -764,7 +764,7 @@ MultiLinkElement::SerializeInformationField(Buffer::Iterator start) const
             {
                 uint16_t mlControl =
                     static_cast<uint8_t>(GetVariant()) + (arg.GetPresenceBitmap() << 4);
-                start.WriteHtolsbU16(mlControl);
+                start.WriteU16(mlControl);
                 arg.Serialize(start);
             }
         },
@@ -782,7 +782,7 @@ MultiLinkElement::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     Buffer::Iterator i = start;
     uint16_t count = 0;
 
-    uint16_t mlControl = i.ReadLsbtohU16();
+    uint16_t mlControl = i.ReadU16();
     count += 2;
 
     SetVariant(static_cast<Variant>(mlControl & 0x0007));

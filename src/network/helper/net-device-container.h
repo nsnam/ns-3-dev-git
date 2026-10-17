@@ -85,11 +85,10 @@ class NetDeviceContainer
      * for-loop to run through the NetDevices
      *
      * @code
-     *   NetDeviceContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some NetDevice method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some NetDevice method
+     *   }
      * @endcode
      *
      * @returns an iterator which refers to the first NetDevice in the container.
@@ -106,11 +105,10 @@ class NetDeviceContainer
      * for-loop to run through the NetDevices
      *
      * @code
-     *   NetDeviceContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some NetDevice method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some NetDevice method
+     *   }
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.
@@ -159,6 +157,7 @@ class NetDeviceContainer
      *
      * @param i the index of the requested device pointer.
      * @returns the requested device pointer.
+     * @hidecaller
      */
     Ptr<NetDevice> Get(uint32_t i) const;
 
@@ -167,6 +166,7 @@ class NetDeviceContainer
      * this container.
      *
      * @param other The NetDeviceContainer to append.
+     * @hidecaller
      */
     void Add(NetDeviceContainer other);
 

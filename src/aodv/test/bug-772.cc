@@ -19,8 +19,6 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/mobility-model.h"
-#include "ns3/pcap-file.h"
-#include "ns3/pcap-test.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simulator.h"
@@ -80,7 +78,7 @@ void
 Bug772ChainTest::DoRun()
 {
     RngSeedManager::SetSeed(1);
-    RngSeedManager::SetRun(2);
+    RngSeedManager::SetRun(1);
 
     // Default of 3 will cause packet loss
     Config::SetDefault("ns3::ArpCache::PendingQueueSize", UintegerValue(10));
@@ -124,6 +122,9 @@ void
 Bug772ChainTest::CreateDevices()
 {
     int64_t streamsUsed = 0;
+    int64_t totalStreamsUsed = 0;
+    int64_t streamNumber = 0;
+    int64_t streamIncrement = 1000;
     // 1. Setup WiFi
     WifiMacHelper wifiMac;
     wifiMac.SetType("ns3::AdhocWifiMac");
@@ -150,28 +151,50 @@ Bug772ChainTest::CreateDevices()
     NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, *m_nodes);
 
     // Assign fixed stream numbers to wifi and channel random variables
-    streamsUsed += WifiHelper::AssignStreams(devices, streamsUsed);
-    // Assign 6 streams per device
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (devices.GetN() * 2), "Stream assignment mismatch");
-    streamsUsed += wifiChannel.AssignStreams(chan, streamsUsed);
+    streamsUsed = WifiHelper::AssignStreams(devices, streamNumber);
+    totalStreamsUsed += streamsUsed;
+    streamNumber += streamIncrement;
+    constexpr int expectedWifiStreamsPerDevice = 4;
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed,
+                          (devices.GetN() * expectedWifiStreamsPerDevice),
+                          "Stream assignment mismatch");
+    streamsUsed = wifiChannel.AssignStreams(chan, streamNumber);
+    totalStreamsUsed += streamsUsed;
+    streamNumber += streamIncrement;
     // Assign 0 streams per channel for this configuration
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed, (devices.GetN() * 2), "Stream assignment mismatch");
+    NS_TEST_ASSERT_MSG_EQ(streamsUsed, 0, "No WifiChannel stream usage expected");
 
     // 2. Setup TCP/IP & AODV
     AodvHelper aodv; // Use default parameters here
     InternetStackHelper internetStack;
+    internetStack.SetIpv6StackInstall(false);
     internetStack.SetRoutingHelper(aodv);
     internetStack.Install(*m_nodes);
-    streamsUsed += internetStack.AssignStreams(*m_nodes, streamsUsed);
-    // Expect to use (3*m_size) more streams for internet stack random variables
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed,
-                          ((devices.GetN() * 3) + (3 * m_size)),
-                          "Stream assignment mismatch");
-    streamsUsed += aodv.AssignStreams(*m_nodes, streamsUsed);
-    // Expect to use m_size more streams for AODV
-    NS_TEST_ASSERT_MSG_EQ(streamsUsed,
-                          ((devices.GetN() * 3) + (3 * m_size) + m_size),
-                          "Stream assignment mismatch");
+    streamsUsed = internetStack.AssignStreams(*m_nodes, streamNumber);
+    totalStreamsUsed += streamsUsed;
+    streamNumber += streamIncrement;
+
+    constexpr int expectedArpL3ProtocolStreams = 1;
+    constexpr int expectedInternetStreamsPerDevice = expectedArpL3ProtocolStreams;
+
+    // Expect number of streams assigned to match random variables streams used by wifi devices plus
+    // internet stack
+    NS_TEST_ASSERT_MSG_EQ(
+        totalStreamsUsed,
+        (devices.GetN() * (expectedWifiStreamsPerDevice + expectedInternetStreamsPerDevice)),
+        "Stream assignment mismatch");
+    streamsUsed = aodv.AssignStreams(*m_nodes, streamsUsed);
+    totalStreamsUsed += streamsUsed;
+    streamNumber += streamIncrement;
+
+    // Expect number of streams assigned to match random variables streams used by wifi devices plus
+    // internet and aodv stack
+    constexpr int expectedAodvStreamsPerDevice = 1;
+    NS_TEST_ASSERT_MSG_EQ(
+        totalStreamsUsed,
+        (devices.GetN() * (expectedWifiStreamsPerDevice + expectedInternetStreamsPerDevice +
+                           expectedAodvStreamsPerDevice)),
+        "Stream assignment mismatch");
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
     Ipv4InterfaceContainer interfaces = address.Assign(devices);

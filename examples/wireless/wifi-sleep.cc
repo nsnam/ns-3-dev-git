@@ -107,7 +107,7 @@ main(int argc, char* argv[])
     dBm_u txPowerStart{0.0};
     dBm_u txPowerEnd{15.0};
     uint32_t nTxPowerLevels{16};
-    uint32_t txPowerLevel{0};
+    uint32_t txPowerLevel{WIFI_MIN_TX_PWR_LEVEL};
     ampere_u idleCurrent{0.273};
     ampere_u txCurrent{0.380};
     bool verbose{false};
@@ -179,7 +179,7 @@ main(int argc, char* argv[])
     std::string transportProto = std::string("ns3::UdpSocketFactory");
     OnOffHelper onOff(transportProto, InetSocketAddress(Ipv4Address("10.1.1.2"), 9000));
 
-    onOff.SetAttribute("DataRate", DataRateValue(DataRate(dataRate)));
+    onOff.SetAttribute("DataRate", DataRateValue(dataRate));
     onOff.SetAttribute("PacketSize", UintegerValue(packetSize));
     onOff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0.001]"));
 

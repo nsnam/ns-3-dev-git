@@ -13,7 +13,6 @@
 #include "fatal-error.h"
 #include "log.h"
 
-#include <cstdlib>
 #include <iostream>
 
 /**

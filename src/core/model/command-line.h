@@ -58,7 +58,7 @@ namespace ns3
    --PrintTypeIds:              Print all TypeIds.
    --PrintAttributes=[typeid]:  Print all attributes of typeid.
    --PrintVersion:              Print the ns-3 version.
-   --PrintHelp:                 Print this help message. \endverbatim
+   --PrintHelp:                 Print this help message. @endverbatim
  *
  * The more common \c \--version is a synonym for \c \--PrintVersion.
  *
@@ -77,12 +77,12 @@ namespace ns3
  *
  * In use, arguments are given in the form
  * @verbatim
-   --arg=value --toggle first-non-option\endverbatim
+   --arg=value --toggle first-non-option @endverbatim
  * Most arguments expect a value, as in the first form, \c \--arg=value.
  * Toggles, corresponding to boolean arguments, can be given in any of
  * the forms
  * @verbatim
-   --toggle1 --toggle2=1 --toggle3=t --toggle4=true \endverbatim
+   --toggle1 --toggle2=1 --toggle3=t --toggle4=true @endverbatim
  * The first form changes the state of toggle1 from its default;
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
@@ -93,7 +93,7 @@ namespace ns3
  * Option arguments can be repeated on the command line; the last value given
  * will be the final value used.  For example,
  * @verbatim
-   --arg=one --toggle=f --arg=another --toggle \endverbatim
+   --arg=one --toggle=f --arg=another --toggle @endverbatim
  * The variable set by \c \--arg will end up with the value \c "another";
  * the boolean set by \c \--toggle will end up as \c true.
  *
@@ -106,7 +106,7 @@ namespace ns3
  * CommandLine can set the initial value of every attribute in the system
  * with the \c \--TypeIdName::AttributeName=value syntax, for example
  * @verbatim
-   --Application::StartTime=3s \endverbatim
+   --Application::StartTime=3s @endverbatim
  * In some cases you may want to highlight the use of a particular
  * attribute for a simulation script.  For example, you might want
  * to make it easy to set the \c Application::StartTime using
@@ -118,9 +118,9 @@ namespace ns3
  * CommandLine can also set the value of every GlobalValue
  * in the system with the \c \--GlobalValueName=value syntax, for example
  * @verbatim
-   --SchedulerType=HeapScheduler \endverbatim
+   --SchedulerType=HeapScheduler @endverbatim
  *
- * A simple example of CommandLine is in `src/core/example/``command-line-example.cc`
+ * A simple example of CommandLine is in `src/core/example/command-line-example.cc`
  * See that file for an example of handling non-option arguments.
  *
  * The heart of that example is this code:
@@ -142,7 +142,7 @@ namespace ns3
  *    cmd.Parse (argc, argv);
  * @endcode
  * after which it prints the values of each variable.  (The \c SetCbArg function
- * is not shown here; see `src/core/example/``command-line-example.cc`)
+ * is not shown here; see `src/core/example/command-line-example.cc`)
  *
  * Here is the output from a few runs of that program:
  *
@@ -181,7 +181,7 @@ namespace ns3
        --PrintTypeIds:              Print all TypeIds.
        --PrintAttributes=[typeid]:  Print all attributes of typeid.
        --PrintVersion:              Print the ns-3 version.
-       --PrintHelp:                 Print this help message. \endverbatim
+       --PrintHelp:                 Print this help message. @endverbatim
  *
  * Having parsed the arguments, some programs will need to perform
  * some additional validation of the received values.  A common issue at this
@@ -655,6 +655,31 @@ class CommandLine
     /** Argument list container */
     using Items = std::vector<std::shared_ptr<Item>>;
 
+    /**
+     * @brief Checks for duplicate item names in a list of items.
+     *
+     * This function checks for the existence of an item with the same name as the one provided in
+     * the list of items. If a duplicate is found, an error message is generated and the program is
+     * aborted.
+     *
+     * @param[in] name The name of the item to check.
+     * @param[in] optType The type of option that the item represents (e.g. "option", "non-option").
+     * @param[in] items A list of Items to check for duplicate names.
+     */
+    void CheckForDuplicateItemNameError(std::string name, std::string optType, const Items& items);
+    /**
+     * @brief Test for duplicate option arguments.
+     *
+     * @param name The name of the option argument to test for.
+     */
+    void TestForDuplicateOption(std::string name);
+    /**
+     * Tests for duplicate non-option arguments.
+     *
+     * @param name The name of the non-option argument to test for.
+     */
+    void TestForDuplicateNonOption(std::string name);
+
     /** The list of option arguments */
     Items m_options;
     /** The list of non-option arguments */
@@ -689,7 +714,7 @@ namespace CommandLineHelper
  *
  * @param [in] value The argument name
  * @param [out] dest The argument location
- * @tparam T \deduced The type being specialized
+ * @tparam T @deduced The type being specialized
  * @return \c true if parsing was successful
  */
 template <typename T>
@@ -713,6 +738,23 @@ bool UserItemParse<bool>(const std::string& value, bool& dest);
  */
 template <>
 bool UserItemParse<uint8_t>(const std::string& value, uint8_t& dest);
+/**
+ * @brief Specialization of CommandLine::UserItem::Parse() to \c std::string
+ *
+ * @param [in] value The argument value
+ * @param [out] dest The string variable to set
+ * @return \c true if parsing was successful
+ *
+ * @see @issueid{1181}
+ *
+ * @internal
+ * Unlike the generic implementation, which uses \c operator>> and therefore
+ * stops at the first whitespace, this assigns the whole argument value so that
+ * strings containing spaces are captured in full.
+ * @endinternal
+ */
+template <>
+bool UserItemParse<std::string>(const std::string& value, std::string& dest);
 
 /**
  * @ingroup commandlinehelper
@@ -746,6 +788,7 @@ template <typename T>
 void
 CommandLine::AddValue(const std::string& name, const std::string& help, T& value)
 {
+    TestForDuplicateOption(name);
     auto item = std::make_shared<UserItem<T>>();
     item->m_name = name;
     item->m_help = help;
@@ -762,6 +805,7 @@ template <typename T>
 void
 CommandLine::AddNonOption(const std::string& name, const std::string& help, T& value)
 {
+    TestForDuplicateNonOption(name);
     auto item = std::make_shared<UserItem<T>>();
     item->m_name = name;
     item->m_help = help;

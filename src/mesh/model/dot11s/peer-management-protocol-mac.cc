@@ -85,7 +85,7 @@ PeerManagementProtocolMac::Receive(Ptr<Packet> const_packet, const WifiMacHeader
         {
             m_protocol->ReceiveBeacon(m_ifIndex,
                                       header.GetAddr2(),
-                                      MicroSeconds(beacon_hdr.GetBeaconIntervalUs()),
+                                      MicroSeconds(beacon_hdr.m_beaconInterval),
                                       beaconTiming);
         }
         else

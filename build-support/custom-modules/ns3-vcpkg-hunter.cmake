@@ -186,6 +186,6 @@ endfunction()
 
 if(${NS3_VCPKG})
   setup_vcpkg()
-  include_directories(${VCPKG_DIR}/installed/${VCPKG_TRIPLET}/include)
+  include_directories(SYSTEM ${VCPKG_DIR}/installed/${VCPKG_TRIPLET}/include)
   link_directories(${VCPKG_DIR}/installed/${VCPKG_TRIPLET}/lib)
 endif()

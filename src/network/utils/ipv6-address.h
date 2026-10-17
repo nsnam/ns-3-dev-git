@@ -14,8 +14,12 @@
 
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/deprecated.h"
 
+#include <array>
+#include <compare>
 #include <cstring>
+#include <optional>
 #include <ostream>
 #include <stdint.h>
 
@@ -37,44 +41,46 @@ class Mac64Address;
 class Ipv6Address
 {
   public:
+    /// Address length when converted to an Address [bytes].
+    static constexpr uint8_t ADDRESS_LENGTH = 16;
+
     /**
      * @brief Default constructor.
      */
-    Ipv6Address();
+    Ipv6Address() = default;
 
     /**
      * @brief Constructs an Ipv6Address by parsing the input C-string.
-     * @param address the C-string containing the IPv6 address (e.g. 2001:660:4701::1).
+     * @param address the C-string containing the IPv6 address (e.g. 2001:db8:f00d:cafe::1).
      */
     Ipv6Address(const char* address);
+
+    /**
+     * @brief Checks if the string contains an Ipv6Address
+     *
+     * Input address is in format:
+     * \c 2001:db8:f00d:cafe::1
+     *
+     * Note: the function uses ``inet_pton`` internally.
+     *
+     * @see Address::CheckCompatible which has a similar name but which
+     * instead checks the underlying type and length embedded in the Address.
+     *
+     * @param addressStr string containing the address as described above
+     * @return true if the string can be parsed as an IPv6 address
+     */
+    static bool CheckCompatible(const std::string& addressStr);
 
     /**
      * @brief Constructs an Ipv6Address by using the input 16 bytes.
      * @param address the 128-bit address
      * @warning the parameter must point on a 16 bytes integer array!
      */
-    Ipv6Address(uint8_t address[16]);
-
-    /**
-     * @brief Copy constructor.
-     * @param addr Ipv6Address object
-     */
-    Ipv6Address(const Ipv6Address& addr);
-
-    /**
-     * @brief Copy constructor.
-     * @param addr Ipv6Address pointer
-     */
-    Ipv6Address(const Ipv6Address* addr);
-
-    /**
-     * @brief Destructor.
-     */
-    ~Ipv6Address();
+    Ipv6Address(uint8_t address[ADDRESS_LENGTH]);
 
     /**
      * @brief Sets an Ipv6Address by parsing the input C-string.
-     * @param address the C-string containing the IPv6 address (e.g. 2001:660:4701::1).
+     * @param address the C-string containing the IPv6 address (e.g. 2001:db8:f00d:cafe::1).
      */
     void Set(const char* address);
 
@@ -84,21 +90,21 @@ class Ipv6Address
      * @param address the 128-bit address
      * @warning the parameter must point on a 16 bytes integer array!
      */
-    void Set(uint8_t address[16]);
+    void Set(uint8_t address[ADDRESS_LENGTH]);
 
     /**
      * @brief Serialize this address to a 16-byte buffer.
      * @param buf the output buffer to which this address gets overwritten with this
      * Ipv6Address
      */
-    void Serialize(uint8_t buf[16]) const;
+    void Serialize(uint8_t buf[ADDRESS_LENGTH]) const;
 
     /**
      * @brief Deserialize this address.
      * @param buf buffer to read address from
      * @return an Ipv6Address
      */
-    static Ipv6Address Deserialize(const uint8_t buf[16]);
+    static Ipv6Address Deserialize(const uint8_t buf[ADDRESS_LENGTH]);
 
     /**
      * @brief Make the solicited IPv6 address.
@@ -342,6 +348,7 @@ class Ipv6Address
     /**
      * @return true if address is initialized (i.e., set to something), false otherwise
      */
+    NS_DEPRECATED_3_47("Use IsAny or std::optional")
     bool IsInitialized() const;
 
     /**
@@ -390,9 +397,53 @@ class Ipv6Address
      * @brief Get the bytes corresponding to the address.
      * @param buf buffer to store the data
      */
-    void GetBytes(uint8_t buf[16]) const;
+    void GetBytes(uint8_t buf[ADDRESS_LENGTH]) const;
+
+    /**
+     * @brief Get the address hash.
+     * @return the address hash
+     */
+    uint32_t GetHash() const;
+
+    /**
+     * @brief Three-way comparison operator.
+     *
+     * @param other the other address to compare with
+     * @returns comparison result
+     */
+    inline constexpr std::strong_ordering operator<=>(const Ipv6Address& other) const
+    {
+        return m_address <=> other.m_address;
+    }
+
+    /**
+     * @brief Equal to operator.
+     *
+     * @param other the other address to compare with
+     * @returns true if the operands are equal.
+     */
+    inline constexpr bool operator==(const Ipv6Address& other) const
+    {
+        return m_address == other.m_address;
+    }
 
   private:
+    /**
+     * @brief Mix hash keys in-place for lookuphash
+     *
+     * @param a first word of the hash key
+     * @param b second word of the hash key
+     * @param c third word of the hash key
+     */
+    static void MixHashKey(uint32_t& a, uint32_t& b, uint32_t& c);
+
+    /**
+     * @brief Generate and return a hash key.
+     * @return hash
+     * @note Adapted from Jens Jakobsen implementation (chillispot).
+     */
+    uint32_t GenerateHash() const;
+
     /**
      * @brief Return the Type of address.
      * @return type of address
@@ -402,35 +453,12 @@ class Ipv6Address
     /**
      * @brief The address representation on 128 bits (16 bytes).
      */
-    uint8_t m_address[16];
-    bool m_initialized; //!< IPv6 address has been explicitly initialized to a valid value.
+    std::array<uint8_t, ADDRESS_LENGTH> m_address{};
 
     /**
-     * @brief Equal to operator.
-     *
-     * @param a the first operand.
-     * @param b the first operand.
-     * @returns true if the operands are equal.
+     * @brief address hash.
      */
-    friend bool operator==(const Ipv6Address& a, const Ipv6Address& b);
-
-    /**
-     * @brief Not equal to operator.
-     *
-     * @param a the first operand.
-     * @param b the first operand.
-     * @returns true if the operands are not equal.
-     */
-    friend bool operator!=(const Ipv6Address& a, const Ipv6Address& b);
-
-    /**
-     * @brief Less than to operator.
-     *
-     * @param a the first operand.
-     * @param b the first operand.
-     * @returns true if the first operand is less than the second.
-     */
-    friend bool operator<(const Ipv6Address& a, const Ipv6Address& b);
+    mutable std::optional<uint32_t> m_hash;
 };
 
 /**
@@ -445,14 +473,16 @@ class Ipv6Prefix
   public:
     /**
      * @brief Default constructor.
+     *
+     * The default prefix is empty, corresponding to /0
      */
-    Ipv6Prefix();
+    Ipv6Prefix() = default;
 
     /**
      * @brief Constructs an Ipv6Prefix by using the input 16 bytes.
      *
      * The prefix length is calculated as the minimum prefix length, i.e.,
-     * 2001:db8:cafe:: will have a 47 bit prefix length.
+     * 2001:db8:cafe:: will have a 47 bit prefix length (0xE is 0b1110).
      *
      * @param prefix the 128-bit prefix
      */
@@ -490,27 +520,17 @@ class Ipv6Prefix
     Ipv6Prefix(uint8_t prefix);
 
     /**
-     * @brief Copy constructor.
-     * @param prefix Ipv6Prefix object
-     */
-    Ipv6Prefix(const Ipv6Prefix& prefix);
-
-    /**
-     * @brief Copy constructor.
-     * @param prefix Ipv6Prefix pointer
-     */
-    Ipv6Prefix(const Ipv6Prefix* prefix);
-
-    /**
-     * @brief Destructor.
-     */
-    ~Ipv6Prefix();
-
-    /**
-     * @brief If the Address match the type.
-     * @param a a first address
-     * @param b a second address
-     * @return true if the type match, false otherwise
+     * @brief Check whether two addresses have the same bits in the prefix
+     * portion of their addresses.
+     *
+     * If the prefix length is 0, this method will return true regardless
+     * of the two address argument values.  If the prefix length is 128,
+     * this method will require that the two address arguments are the same.
+     *
+     * @param a first address to compare
+     * @param b second address to compare
+     * @return true if both addresses are equal in their masked bits,
+     * corresponding to the prefix length.
      */
     bool IsMatch(Ipv6Address a, Ipv6Address b) const;
 
@@ -571,34 +591,24 @@ class Ipv6Prefix
      */
     static Ipv6Prefix GetZero();
 
+    /**
+     * @brief Three-way comparison operator.
+     *
+     * @param other the other prefix to compare with
+     * @returns comparison result
+     */
+    constexpr std::strong_ordering operator<=>(const Ipv6Prefix& other) const = default;
+
   private:
     /**
      * @brief The prefix representation.
      */
-    uint8_t m_prefix[16];
+    std::array<uint8_t, 16> m_prefix{};
 
     /**
      * @brief The prefix length.
      */
-    uint8_t m_prefixLength;
-
-    /**
-     * @brief Equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are equal
-     */
-    friend bool operator==(const Ipv6Prefix& a, const Ipv6Prefix& b);
-
-    /**
-     * @brief Not equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are not equal
-     */
-    friend bool operator!=(const Ipv6Prefix& a, const Ipv6Prefix& b);
+    uint8_t m_prefixLength{0};
 };
 
 ATTRIBUTE_HELPER_HEADER(Ipv6Address);
@@ -640,41 +650,11 @@ std::istream& operator>>(std::istream& is, Ipv6Address& address);
  */
 std::istream& operator>>(std::istream& is, Ipv6Prefix& prefix);
 
-inline bool
-operator==(const Ipv6Address& a, const Ipv6Address& b)
-{
-    return !std::memcmp(a.m_address, b.m_address, 16);
-}
-
-inline bool
-operator!=(const Ipv6Address& a, const Ipv6Address& b)
-{
-    return std::memcmp(a.m_address, b.m_address, 16);
-}
-
-inline bool
-operator<(const Ipv6Address& a, const Ipv6Address& b)
-{
-    return std::memcmp(a.m_address, b.m_address, 16) < 0;
-}
-
-inline bool
-operator==(const Ipv6Prefix& a, const Ipv6Prefix& b)
-{
-    return !std::memcmp(a.m_prefix, b.m_prefix, 16);
-}
-
-inline bool
-operator!=(const Ipv6Prefix& a, const Ipv6Prefix& b)
-{
-    return std::memcmp(a.m_prefix, b.m_prefix, 16);
-}
-
 /**
  * @class Ipv6AddressHash
  * @brief Hash function class for IPv6 addresses.
  */
-class Ipv6AddressHash
+class NS_DEPRECATED_3_47("Unnecessary thanks to std::hash specialization, remove") Ipv6AddressHash
 {
   public:
     /**
@@ -686,5 +666,26 @@ class Ipv6AddressHash
 };
 
 } /* namespace ns3 */
+
+namespace std
+{
+
+/**
+ * @brief Hash function class for IPv6 addresses.
+ */
+template <>
+struct hash<ns3::Ipv6Address>
+{
+    /**
+     * @brief Returns the hash of an IPv6 address.
+     * @param addr IPv6 address to hash
+     * @returns the hash of the address
+     */
+    size_t operator()(const ns3::Ipv6Address& addr) const
+    {
+        return addr.GetHash();
+    }
+};
+} // namespace std
 
 #endif /* IPV6_ADDRESS_H */

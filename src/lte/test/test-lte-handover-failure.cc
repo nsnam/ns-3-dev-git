@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE("LteHandoverFailureTest");
  * 3. Handover failure due to HANDOVER JOINING timeout (3 cases)
  * 4. Handover failure due to HANDOVER LEAVING timeout (3 cases)
  *
- * \sa ns3::LteHandoverFailureTestCase
+ * @sa ns3::LteHandoverFailureTestCase
  */
 class LteHandoverFailureTestCase : public TestCase
 {

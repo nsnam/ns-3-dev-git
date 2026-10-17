@@ -11,6 +11,8 @@
 
 #include "wifi-protection-manager.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -24,7 +26,7 @@ class WifiMacHeader;
  * WifiDefaultProtectionManager is the default protection manager, which selects
  * the protection method for a frame based on its size.
  */
-class WifiDefaultProtectionManager : public WifiProtectionManager
+class WIFI_EXPORT WifiDefaultProtectionManager : public WifiProtectionManager
 {
   public:
     /**

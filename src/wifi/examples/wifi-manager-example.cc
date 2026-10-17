@@ -94,7 +94,7 @@ RateChange(uint64_t oldVal, uint64_t newVal)
 /// Step structure
 struct Step
 {
-    dBm_u stepSize;  ///< step size
+    dB_u stepSize;   ///< step size
     double stepTime; ///< step size in seconds
 };
 
@@ -175,16 +175,17 @@ ChangeSignalAndReportRate(Ptr<FixedRssLossModel> rssModel,
     // Calculate received rate since last interval
     double currentRate = ((g_intervalBytes * 8) / step.stepTime) / 1e6; // Mb/s
     actualDataset.Add(snr, currentRate);
-    rssModel->SetRss(rss - step.stepSize);
+    const auto newRss = rss - step.stepSize;
+    rssModel->SetRss(newRss);
     NS_LOG_INFO("At time " << Simulator::Now().As(Time::S) << "; selected rate "
                            << (g_intervalRate / 1e6) << "; observed rate " << currentRate
-                           << "; setting new power to " << rss - step.stepSize);
+                           << "; setting new power to " << newRss);
     g_intervalBytes = 0;
     Simulator::Schedule(Seconds(step.stepTime),
                         &ChangeSignalAndReportRate,
                         rssModel,
                         step,
-                        (rss - step.stepSize),
+                        newRss,
                         noise,
                         rateDataset,
                         actualDataset);
@@ -198,7 +199,7 @@ main(int argc, char* argv[])
     uint32_t steps;
     uint32_t rtsThreshold = 999999; // disabled even for large A-MPDU
     uint32_t maxAmpduSize = 65535;
-    dBm_u stepSize{1};
+    dB_u stepSize{1};
     double stepTime = 1;        // seconds
     uint32_t packetSize = 1024; // bytes
     bool broadcast = false;

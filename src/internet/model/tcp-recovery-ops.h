@@ -85,13 +85,15 @@ class TcpRecoveryOps : public Object
      *
      * @param tcb internal congestion state
      * @param dupAckCount duplicate acknowledgement count
-     * @param unAckDataCount total bytes of data unacknowledged
+     * @param unAckDataCount total bytes of data unacknowledged (SND.NXT - SND.UNA)
      * @param deliveredBytes bytes (S)ACKed in the last (S)ACK
+     * @param bytesSacked total bytes SACKed in the scoreboard (post-ACK)
      */
     virtual void EnterRecovery(Ptr<TcpSocketState> tcb,
                                uint32_t dupAckCount,
                                uint32_t unAckDataCount,
-                               uint32_t deliveredBytes) = 0;
+                               uint32_t deliveredBytes,
+                               uint32_t bytesSacked) = 0;
 
     /**
      * @brief Performs recovery based on the recovery algorithm
@@ -178,7 +180,8 @@ class TcpClassicRecovery : public TcpRecoveryOps
     void EnterRecovery(Ptr<TcpSocketState> tcb,
                        uint32_t dupAckCount,
                        uint32_t unAckDataCount,
-                       uint32_t deliveredBytes) override;
+                       uint32_t deliveredBytes,
+                       uint32_t bytesSacked) override;
 
     void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, bool isDupAck) override;
 

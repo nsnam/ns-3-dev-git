@@ -308,10 +308,15 @@ struct MacPibAttributes : public SimpleRefCount<MacPibAttributes>
     bool macAssociationPermit{true};         //!< Indication of whether the coordinator is allowing
                                              //!< association.
     bool macRxOnWhenIdle{true}; //!< Indication of whether the MAC is enabled during idle periods.
-    bool macPromiscuousMode{false}; //!< Indication of whether the mac is in promiscuous mode
-                                    //!<  (Receive all mode).
-    uint8_t pCurrentChannel{11};    //!< The current logical channel in used in the PHY
-    uint8_t pCurrentPage{0};        //!< The current logical page in use in the PHY
+    bool macPromiscuousMode{false};       //!< Indication of whether the mac is in promiscuous mode
+                                          //!<  (Receive all mode).
+    uint8_t pCurrentChannel{11};          //!< The current logical channel in used in the PHY
+    uint8_t pCurrentPage{0};              //!< The current logical page in use in the PHY
+    Mac16Address macCoordShortAddress;    //!< The 16-bit short address assigned to the coordinator
+                                          //!< through which the device is associated. 0xFFFE = Ext
+                                          //!< address mode 0xFFFF = Unknown.
+    Mac64Address macCoordExtendedAddress; //!< The 64-bit address of the coordinator through which
+                                          //!< the device is associated.
     // TODO: complete other MAC pib attributes
 };
 
@@ -330,7 +335,9 @@ struct McpsDataConfirmParams
 /**
  * @ingroup lr-wpan
  *
- * MCPS-DATA.indication params. See 7.1.1.3
+ * MCPS-DATA.indication params.
+ * See IEEE 802.15.4-2011, Section 7.1.1.1
+ * See IEEE 802.15.4-2015, Section 8.3.3 (e.g., RSSI)
  */
 struct McpsDataIndicationParams
 {
@@ -343,6 +350,9 @@ struct McpsDataIndicationParams
     Mac16Address m_dstAddr;            //!< Destination address
     Mac64Address m_dstExtAddr;         //!< Destination extended address
     uint8_t m_mpduLinkQuality{0};      //!< LQI value measured during reception of the MPDU
+    int8_t m_rssi{-128};               //!< RSSI value measured after the preamble
+                                       //!< during the reception of the packet SFD.
+                                       //!< (IEEE 802.15.4-2015 onwards)
     uint8_t m_dsn{0};                  //!< The DSN of the received data frame
 };
 

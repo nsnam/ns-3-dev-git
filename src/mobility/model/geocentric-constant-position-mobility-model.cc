@@ -195,12 +195,19 @@ GeocentricConstantPositionMobilityModel::DoGetElevationAngle(
     Vector me = this->DoGetGeocentricPosition();
     Vector them = other->DoGetGeocentricPosition();
 
-    // a is assumed to be the terminal with the lowest altitude
-    Vector& a = (me.z < them.z ? me : them);
-    Vector& b = (me.z < them.z ? them : me);
+    // a is the terminal with the lowest altitude, used as the vertex whose local
+    // vertical (the radial direction a/|a|) defines the horizon. The altitude is
+    // approximated by the distance from the Earth's centre, not by the ECEF
+    // z-coordinate, which is the distance from the equatorial plane
+    // (@issueid{1308}).
+    Vector& a = (me.GetLength() < them.GetLength() ? me : them);
+    Vector& b = (me.GetLength() < them.GetLength() ? them : me);
 
     Vector bMinusA = b - a;
-    double numerator = std::abs(a * bMinusA);
+    // sin(elevation) = (a . (b - a)) / (|a| |b - a|). The dot product is signed:
+    // it is negative when the other terminal is below the local horizon, so the
+    // sign must be preserved.
+    double numerator = a * bMinusA;
     double denominator = a.GetLength() * bMinusA.GetLength();
     double x = numerator / denominator;
 
@@ -208,8 +215,9 @@ GeocentricConstantPositionMobilityModel::DoGetElevationAngle(
     x = std::min(x, 1.0);
     x = std::max(x, -1.0);
 
-    // asin returns radians, we convert to degrees
-    double elevAngle = std::abs((180.0 * M_1_PI) * asin(x));
+    // asin returns radians, we convert to degrees. A negative result means the
+    // other terminal is below the local horizon.
+    double elevAngle = (180.0 * M_1_PI) * asin(x);
 
     return elevAngle;
 }

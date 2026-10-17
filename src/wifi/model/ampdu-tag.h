@@ -12,6 +12,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/tag.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -22,7 +23,7 @@ namespace ns3
  * The aim of the AmpduTag is to provide means for a MAC to specify that a packet includes A-MPDU
  * since this is done in HT-SIG and there is no HT-SIG representation in ns-3
  */
-class AmpduTag : public Tag
+class WIFI_EXPORT AmpduTag : public Tag
 {
   public:
     /**

@@ -402,10 +402,17 @@ Identifiers
 Each client and server has a unique identifier (DHCP Unique Identifier), which is used to identify the client and server in the message exchange.
 There are four types of DUIDs that can be used in DHCPv6:
 
-1. DUID-LLT (Link-layer Address plus Time): The DUID-LLT consists of a 32-bit timestamp and a variable-length link layer address. Not supported in this implementation.
-2. Vendor-assigned unique ID based on Enterprise Number: This consists of the vendor's enterprise number and an identifier whose source is defined by the vendor. Not supported in this implementation.
-3. **DUID-LL (Link-layer address)**: DUID-LL consists of a variable-length link-layer address as the identifier. Supported in this implementation.
-4. UUID (Universally unique identifier): This should be an identifier that is persistent across system restarts and reconfigurations. Not supported in this implementation.
+1. **DUID-LLT (Link-layer Address plus Time)**: The DUID-LLT consists of a 32-bit timestamp and a variable-length link layer address.
+2. **DUID-EN (Vendor-assigned unique ID based on Enterprise Number)**: This consists of the vendor's enterprise number and an identifier whose source is defined by the vendor.
+3. **DUID-LL (Link-layer address)**: DUID-LL consists of a variable-length link-layer address as the identifier.
+4. **DUID-UUID (Universally unique identifier)**: This should be an identifier that is persistent across system restarts and reconfigurations.
+
+In the current implementation, the DUID is created as follows:
+
+* DUID-LLT and DUID-LL: the identifier is created by selecting the NetDevices with the longest MAC address length, and among them, the one with the smallest index.
+* DUID-LLT: the creation time is taken from the simulation time.
+* DUID-EN: the Enterprise number is 0xf00dcafe (arbitrary number), and the identifier is based on the Node ID.
+* DUID-UUID: the UUID is based on the Node ID.
 
 Usage
 =====

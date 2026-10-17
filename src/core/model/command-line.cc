@@ -9,7 +9,6 @@
 #include "command-line.h"
 
 #include "config.h"
-#include "des-metrics.h"
 #include "environment-variable.h"
 #include "global-value.h"
 #include "log.h"
@@ -21,11 +20,16 @@
 #include "version.h"
 #endif
 
+#ifdef ENABLE_DES_METRICS
+#include "des-metrics.h"
+#endif
+
 #include <algorithm> // transform
 #include <cctype>    // tolower
 #include <cstdlib>   // exit
 #include <cstring>   // strlen
-#include <iomanip>   // setw, boolalpha
+#include <fstream>
+#include <iomanip> // setw, boolalpha
 #include <set>
 #include <sstream>
 
@@ -473,7 +477,7 @@ CommandLine::PrintDoxygenUsage() const
 
     std::fstream os(outf, std::fstream::out);
 
-    os << "/**\n \\file " << m_shortName << ".cc\n"
+    os << "/**\n @file " << m_shortName << ".cc\n"
        << "<h3>Usage</h3>\n"
        << "<code>$ ./ns3 run \"" << m_shortName << (!m_options.empty() ? " [Program Options]" : "")
        << (!nonOptions.empty() ? " [Program Arguments]" : "") << "\"</code>\n";
@@ -501,12 +505,12 @@ CommandLine::PrintDoxygenUsage() const
 
     if (!m_options.empty())
     {
-        listOptions("Program Options", m_options, "\\c --");
+        listOptions("Program Options", m_options, "@c --");
     }
 
     if (!nonOptions.empty())
     {
-        listOptions("Program Arguments", nonOptions, "\\c ");
+        listOptions("Program Arguments", nonOptions, "@c ");
     }
 
     os << "*/" << std::endl;
@@ -738,6 +742,7 @@ CommandLine::AddValue(const std::string& name,
                       std::size_t num)
 {
     NS_LOG_FUNCTION(this << name << help << value << num);
+    TestForDuplicateOption(name);
     auto item = std::make_shared<CharStarItem>();
     item->m_name = name;
     item->m_help = help;
@@ -755,6 +760,7 @@ CommandLine::AddValue(const std::string& name,
 
 {
     NS_LOG_FUNCTION(this << &name << &help << &callback);
+    TestForDuplicateOption(name);
     auto item = std::make_shared<CallbackItem>();
     item->m_name = name;
     item->m_help = help;
@@ -767,6 +773,7 @@ void
 CommandLine::AddValue(const std::string& name, const std::string& attributePath)
 {
     NS_LOG_FUNCTION(this << name << attributePath);
+    TestForDuplicateOption(name);
     // Attribute name is last token
     std::size_t colon = attributePath.rfind("::");
     const std::string typeName = attributePath.substr(0, colon);
@@ -827,6 +834,31 @@ CommandLine::HandleAttribute(const std::string& name, const std::string& value)
 {
     return Config::SetGlobalFailSafe(name, StringValue(value)) ||
            Config::SetDefaultFailSafe(name, StringValue(value));
+}
+
+void
+CommandLine::CheckForDuplicateItemNameError(std::string name,
+                                            std::string optType,
+                                            const Items& items)
+{
+    // Check for existing parameter name
+    auto existingNameIt = std::find_if(items.begin(), items.end(), [name](const auto& itemPtr) {
+        return itemPtr->m_name == name;
+    });
+    NS_ABORT_MSG_IF(existingNameIt != items.end(),
+                    "Duplicate " << optType << " CommandLine argument named: " << name);
+}
+
+void
+CommandLine::TestForDuplicateOption(std::string name)
+{
+    CheckForDuplicateItemNameError(name, "option", m_options);
+}
+
+void
+CommandLine::TestForDuplicateNonOption(std::string name)
+{
+    CheckForDuplicateItemNameError(name, "non-option", m_nonOptions);
 }
 
 bool
@@ -964,6 +996,18 @@ CommandLineHelper::UserItemParse<uint8_t>(const std::string& value, uint8_t& des
         return false;
     }
     dest = newDest;
+    return true;
+}
+
+// Doxygen parses incorrectly the qualified name of this out-of-line specialization
+// and would otherwise report as undocumented.
+/** @copydoc ns3::CommandLineHelper::UserItemParse<std::string> */
+template <>
+bool
+CommandLineHelper::UserItemParse<std::string>(const std::string& value, std::string& dest)
+{
+    // Assign the whole value verbatim; see the header for the rationale.
+    dest = value;
     return true;
 }
 

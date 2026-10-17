@@ -70,6 +70,13 @@ class MockNetDevice : public NetDevice
     Address GetAddress() const override;
     bool SetMtu(const uint16_t mtu) override;
     uint16_t GetMtu() const override;
+    uint16_t GetPaddingThreshold() const override;
+
+    /**
+     * Set the padding threshold reported by the device.
+     * @param paddingThreshold The padding threshold in bytes.
+     */
+    void SetPaddingThreshold(uint16_t paddingThreshold);
     bool IsLinkUp() const override;
     void AddLinkChangeCallback(Callback<void> callback) override;
     bool IsBroadcast() const override;
@@ -111,6 +118,7 @@ class MockNetDevice : public NetDevice
     NetDevice::PromiscReceiveCallback m_sendCallback;    //!< Send callback
     Ptr<Node> m_node;                                    //!< Node this netDevice is associated to
     uint16_t m_mtu;                                      //!< MTU
+    uint16_t m_paddingThreshold{0};                      //!< Padding threshold
     uint32_t m_ifIndex;                                  //!< Interface index
     Address m_address;                                   //!< MAC address
 

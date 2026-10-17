@@ -48,7 +48,10 @@ if(NOT
   return()
 endif()
 
-include_directories(${openflow_INCLUDE_DIRS})
+include_directories(
+  SYSTEM
+  ${openflow_INCLUDE_DIRS}
+)
 add_definitions(
   -DNS3_OPENFLOW
   -DENABLE_OPENFLOW

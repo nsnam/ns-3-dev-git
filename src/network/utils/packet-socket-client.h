@@ -34,8 +34,8 @@ class Packet;
  * what concerns the underlying NetDevice and the Address scheme.
  * It is meant to be used in ns-3 tests.
  *
- * The application will send `MaxPackets' packets, one every `Interval'
- * time. Packet size (`PacketSize') can be configured.
+ * The application will send `MaxPackets` packets, one every `Interval`
+ * time. Packet size (`PacketSize`) can be configured.
  * Provides a "Tx" Traced Callback (transmitted packets, source address).
  *
  * Note: packets larger than the NetDevice MTU will not be sent.

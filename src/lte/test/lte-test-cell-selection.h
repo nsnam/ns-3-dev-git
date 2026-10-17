@@ -31,7 +31,7 @@ using namespace ns3;
  * @brief Test suite for executing the cell selection test cases in without-EPC
  *        and with-EPC scenarios.
  *
- * \sa ns3::LteCellSelectionTestCase
+ * @sa ns3::LteCellSelectionTestCase
  */
 class LteCellSelectionTestSuite : public TestSuite
 {

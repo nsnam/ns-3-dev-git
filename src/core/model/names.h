@@ -328,6 +328,8 @@ class Names
      *
      * @returns A smart pointer to the named object converted to
      *          the requested type.
+     *
+     * @hidecaller
      */
     template <typename T>
     static Ptr<T> Find(std::string path);

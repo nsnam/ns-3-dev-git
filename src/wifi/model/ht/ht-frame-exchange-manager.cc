@@ -61,6 +61,15 @@ HtFrameExchangeManager::~HtFrameExchangeManager()
 }
 
 void
+HtFrameExchangeManager::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    m_flushGroupcastMpdusEvent.Cancel();
+    m_psdu = nullptr;
+    QosFrameExchangeManager::Reset();
+}
+
+void
 HtFrameExchangeManager::DoDispose()
 {
     NS_LOG_FUNCTION(this);
@@ -126,7 +135,7 @@ HtFrameExchangeManager::NeedSetupBlockAck(Mac48Address recipient, uint8_t tid)
     // NOLINTEND(bugprone-branch-clone)
     else
     {
-        WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, recipient, tid};
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, recipient, tid);
         uint32_t packets = qosTxop->GetWifiMacQueue()->GetNPackets(queueId);
         establish =
             (m_mac->Is6GhzBand(m_linkId) ||
@@ -152,7 +161,8 @@ HtFrameExchangeManager::NeedSetupGcrBlockAck(const WifiMacHeader& header)
         m_mpduAggregator->GetMaxAmpduSize(groupAddress, tid, WIFI_MOD_CLASS_HT);
     const auto isGcrBa = (m_apMac->GetGcrManager()->GetRetransmissionPolicy() ==
                           GroupAddressRetransmissionPolicy::GCR_BLOCK_ACK);
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::GROUPCAST, groupAddress, tid};
+    const auto queueId =
+        MakeWifiGroupcastQueueId(WIFI_QOSDATA_QUEUE, groupAddress, GetAddress(), tid);
 
     for (const auto& recipients =
              m_apMac->GetGcrManager()->GetMemberStasForGroupAddress(groupAddress);
@@ -186,7 +196,7 @@ HtFrameExchangeManager::SendAddBaRequest(Mac48Address dest,
                                          uint16_t startingSeq,
                                          uint16_t timeout,
                                          bool immediateBAck,
-                                         Time availableTime,
+                                         const std::optional<Time>& availableTime,
                                          std::optional<Mac48Address> gcrGroupAddr)
 {
     NS_LOG_FUNCTION(this << dest << +tid << startingSeq << timeout << immediateBAck << availableTime
@@ -403,29 +413,106 @@ HtFrameExchangeManager::SendDelbaFrame(Mac48Address addr,
 }
 
 uint16_t
-HtFrameExchangeManager::GetBaAgreementStartingSequenceNumber(const WifiMacHeader& header)
+HtFrameExchangeManager::GetBaAgreementStartingSequenceNumber(Ptr<const WifiMpdu> mpdu)
 {
-    // if the peeked MPDU has been already transmitted, use its sequence number
-    // as the starting sequence number for the BA agreement, otherwise use the
-    // next available sequence number
-    return header.IsRetry()
+    // if the peeked MPDU has been already assigned a sequence number, use its sequence number as
+    // the starting sequence number for the BA agreement, otherwise use the next available sequence
+    // number
+    const auto& header = mpdu->GetHeader();
+    return mpdu->HasSeqNoAssigned()
                ? header.GetSequenceNumber()
                : m_txMiddle->GetNextSeqNumberByTidAndAddress(header.GetQosTid(), header.GetAddr1());
 }
 
 bool
-HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+HtFrameExchangeManager::SendBufferedUnit(Mac48Address sender)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_ASSERT_MSG(GetWifiRemoteStationManager()->IsInPsMode(sender),
+                  sender << " is not in powersave mode");
 
-    // First, check if there is a BAR to be transmitted
-    if (auto mpdu = GetBar(edca->GetAccessCategory());
-        mpdu && SendMpduFromBaManager(mpdu, availableTime, initialFrame))
+    auto senderMld = GetWifiRemoteStationManager()->GetMldAddress(sender).value_or(sender);
+
+    for (auto aciIt = wifiAcList.crbegin(); aciIt != wifiAcList.crend(); ++aciIt)
     {
-        return true;
+        // unblock queues storing control frames, otherwise GetBar() will not return a BlockAckReq
+        if (GetWifiRemoteStationManager()->GetMldAddress(sender))
+        {
+            // the sender is an MLD, unblock queues storing control frames that use MLD addresses
+            m_mac->GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::POWER_SAVE_MODE,
+                                                         aciIt->first,
+                                                         {WIFI_CTL_QUEUE},
+                                                         senderMld,
+                                                         m_mac->GetLocalAddress(senderMld),
+                                                         {},
+                                                         {m_linkId});
+        }
+        // unblock queues storing control frames that use link addresses
+        m_mac->GetMacQueueScheduler()->UnblockQueues(WifiQueueBlockedReason::POWER_SAVE_MODE,
+                                                     aciIt->first,
+                                                     {WIFI_CTL_QUEUE},
+                                                     sender,
+                                                     GetAddress(),
+                                                     {},
+                                                     {m_linkId});
+
+        auto mpdu = GetBar(aciIt->first, aciIt->second.GetHighTid(), senderMld);
+        if (!mpdu)
+        {
+            mpdu = GetBar(aciIt->first, aciIt->second.GetLowTid(), senderMld);
+        }
+
+        // block queues storing control frames
+        if (GetWifiRemoteStationManager()->GetMldAddress(sender))
+        {
+            m_mac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::POWER_SAVE_MODE,
+                                                       aciIt->first,
+                                                       {WIFI_CTL_QUEUE},
+                                                       senderMld,
+                                                       m_mac->GetLocalAddress(senderMld),
+                                                       {},
+                                                       {m_linkId});
+        }
+        m_mac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::POWER_SAVE_MODE,
+                                                   aciIt->first,
+                                                   {WIFI_CTL_QUEUE},
+                                                   sender,
+                                                   GetAddress(),
+                                                   {},
+                                                   {m_linkId});
+
+        if (mpdu && SendMpduFromBaManager(mpdu, {}))
+        {
+            return true;
+        }
     }
 
-    Ptr<WifiMpdu> peekedItem = edca->PeekNextMpdu(m_linkId);
+    return QosFrameExchangeManager::SendBufferedUnit(sender);
+}
+
+bool
+HtFrameExchangeManager::StartFrameExchange()
+{
+    NS_LOG_FUNCTION(this);
+
+    // First, check if there is a BAR to be transmitted.
+    // The TXOP holder may exceed the TXOP limit only if it does not transmit more than one Data or
+    // Management frame in the TXOP [..] and only for the following situations:
+    // - Transmission of a Control frame or a QoS Null frame, not in an A-MPDU consisting of more
+    //   than one MPDU
+    // (Sec. 10.23.2.9 of 802.11-2024)
+    const auto canExceedTxopLimit = m_edca->GetTxopStartTime(m_linkId) == Simulator::Now();
+
+    if (auto mpdu = GetBar(m_edca->GetAccessCategory()))
+    {
+        const auto availableTime = GetAvailTxopTime(mpdu->GetHeader().GetAddr1());
+        const auto actualAvailableTime = (canExceedTxopLimit ? std::nullopt : availableTime);
+        if (SendMpduFromBaManager(mpdu, actualAvailableTime))
+        {
+            return true;
+        }
+    }
+
+    auto peekedItem = m_edca->PeekNextMpdu(m_linkId);
 
     // Even though channel access is requested when the queue is not empty, at
     // the time channel access is granted the lifetime of the packet might be
@@ -436,6 +523,9 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
         return false;
     }
 
+    const auto availableTime = GetAvailTxopTime(peekedItem->GetHeader().GetAddr1());
+    const auto actualAvailableTime = (canExceedTxopLimit ? std::nullopt : availableTime);
+
     const WifiMacHeader& hdr = peekedItem->GetHeader();
     // setup a Block Ack agreement if needed
     if (hdr.IsQosData() && !hdr.GetAddr1().IsGroup() &&
@@ -443,10 +533,10 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     {
         return SendAddBaRequest(hdr.GetAddr1(),
                                 hdr.GetQosTid(),
-                                GetBaAgreementStartingSequenceNumber(hdr),
-                                edca->GetBlockAckInactivityTimeout(),
+                                GetBaAgreementStartingSequenceNumber(peekedItem),
+                                m_edca->GetBlockAckInactivityTimeout(),
                                 true,
-                                availableTime);
+                                actualAvailableTime);
     }
     else if (IsGcr(m_mac, hdr))
     {
@@ -454,10 +544,10 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
         {
             return SendAddBaRequest(addbaRecipient.value(),
                                     hdr.GetQosTid(),
-                                    GetBaAgreementStartingSequenceNumber(hdr),
-                                    edca->GetBlockAckInactivityTimeout(),
+                                    GetBaAgreementStartingSequenceNumber(peekedItem),
+                                    m_edca->GetBlockAckInactivityTimeout(),
                                     true,
-                                    availableTime,
+                                    actualAvailableTime,
                                     hdr.GetAddr1());
         }
     }
@@ -467,7 +557,7 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
         !GetWifiRemoteStationManager()->NeedFragmentation(peekedItem =
                                                               CreateAliasIfNeeded(peekedItem)))
     {
-        return SendDataFrame(peekedItem, availableTime, initialFrame);
+        return SendDataFrame(peekedItem, availableTime);
     }
 
     // Use the QoS FEM to transmit the frame in all the other cases, i.e.:
@@ -475,12 +565,18 @@ HtFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
     // - the frame is a broadcast QoS data frame
     // - the frame is a fragment
     // - the frame must be fragmented
-    return QosFrameExchangeManager::StartFrameExchange(edca, availableTime, initialFrame);
+    return QosFrameExchangeManager::StartFrameExchange();
+}
+
+bool
+HtFrameExchangeManager::CanTransmitBarTo(Mac48Address recipient, tid_t tid) const
+{
+    return true;
 }
 
 Ptr<WifiMpdu>
 HtFrameExchangeManager::GetBar(AcIndex ac,
-                               std::optional<uint8_t> optTid,
+                               std::optional<tid_t> optTid,
                                std::optional<Mac48Address> optAddress)
 {
     NS_LOG_FUNCTION(this << +ac << optTid.has_value() << optAddress.has_value());
@@ -505,8 +601,17 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         {
             CtrlBAckRequestHeader reqHdr;
             bar->GetPacket()->PeekHeader(reqHdr);
-            auto tid = reqHdr.GetTidInfo();
-            Mac48Address recipient = bar->GetHeader().GetAddr1();
+            const auto tid = reqHdr.GetTidInfo();
+            const auto recipient = bar->GetHeader().GetAddr1();
+
+            if (!CanTransmitBarTo(recipient, tid))
+            {
+                NS_LOG_DEBUG("BAR " << *bar << " cannot be transmitted to " << recipient << " TID "
+                                    << +tid << " on link " << +m_linkId);
+                prevBar = bar;
+                continue;
+            }
+
             auto recipientMld = m_mac->GetMldAddress(recipient);
 
             // the scheduler should not return a BlockAckReq that cannot be sent on this link:
@@ -569,10 +674,7 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
             // needed after sending a BAR to that recipient on this link)
             if (bar->GetHeader().GetAddr2() == m_self && recipientMld)
             {
-                WifiContainerQueueId queueId{WIFI_CTL_QUEUE,
-                                             WifiRcvAddr::UNICAST,
-                                             *recipientMld,
-                                             std::nullopt};
+                const auto queueId = MakeWifiUnicastQueueId(WIFI_CTL_QUEUE, *recipientMld);
                 Ptr<WifiMpdu> otherBar;
                 while ((otherBar = queue->PeekByQueueId(queueId, otherBar)))
                 {
@@ -604,13 +706,12 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
         auto baManager = m_mac->GetQosTxop(ac)->GetBaManager();
         for (const auto& [recipient, tid] : baManager->GetSendBarIfDataQueuedList())
         {
-            WifiContainerQueueId queueId(
+            const auto queueId = MakeWifiUnicastQueueId(
                 WIFI_QOSDATA_QUEUE,
-                WifiRcvAddr::UNICAST,
                 GetWifiRemoteStationManager()->GetMldAddress(recipient).value_or(recipient),
                 tid);
             // check if data is queued and can be transmitted on this link
-            if (queue->PeekByTidAndAddress(tid, recipient) &&
+            if (queue->PeekByTidAndAddress(tid, recipient, GetAddress()) &&
                 !m_mac->GetTxBlockedOnLink(QosUtilsMapTidToAc(tid), queueId, m_linkId))
             {
                 auto [reqHdr, hdr] = m_mac->GetQosTxop(ac)->PrepareBlockAckRequest(recipient, tid);
@@ -646,10 +747,9 @@ HtFrameExchangeManager::GetBar(AcIndex ac,
 
 bool
 HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
-                                              Time availableTime,
-                                              bool initialFrame)
+                                              const std::optional<Time>& availableTime)
 {
-    NS_LOG_FUNCTION(this << *mpdu << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << *mpdu << availableTime);
 
     // First, check if there is a BAR to be transmitted
     if (!mpdu->GetHeader().IsBlockAckReq())
@@ -658,13 +758,10 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
         return false;
     }
 
-    // Prepare the TX parameters. Note that the default ack manager expects the
-    // data TxVector in the m_txVector field to compute the BlockAck TxVector.
-    // The m_txVector field of the TX parameters is set to the BlockAckReq TxVector
-    // a few lines below.
+    // Prepare the TX parameters. Note that the default ack manager expects the data TxVector in the
+    // m_txVector field to compute the BlockAck TxVector.
     WifiTxParameters txParams;
-    txParams.m_txVector =
-        GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
+    txParams.m_txVector = GetBlockAckReqTxVector(mpdu->GetHeader().GetAddr1());
 
     if (!TryAddMpdu(mpdu, txParams, availableTime))
     {
@@ -674,30 +771,38 @@ HtFrameExchangeManager::SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
 
     NS_ABORT_IF(txParams.m_acknowledgment->method != WifiAcknowledgment::BLOCK_ACK);
 
-    // the BlockAckReq frame is sent using the same TXVECTOR as the BlockAck frame
-    auto blockAcknowledgment = static_cast<WifiBlockAck*>(txParams.m_acknowledgment.get());
-    txParams.m_txVector = blockAcknowledgment->blockAckTxVector;
-
     // we can transmit the BlockAckReq frame
     SendPsduWithProtection(GetWifiPsdu(mpdu, txParams.m_txVector), txParams);
     return true;
 }
 
+WifiTxVector
+HtFrameExchangeManager::GetBlockAckReqTxVector(Mac48Address to) const
+{
+    if (m_txParams.m_acknowledgment &&
+        m_txParams.m_acknowledgment->method == WifiAcknowledgment::BAR_BLOCK_ACK)
+    {
+        NS_LOG_DEBUG("Acknowledging a data frame with BAR_BLOCK_ACK sequence");
+        return GetWifiRemoteStationManager()->GetBlockAckReqTxVector(to, m_txParams.m_txVector);
+    }
+
+    // this is a BAR sent in a frame exchange sequence that does not include a data frame
+    return GetWifiRemoteStationManager()->GetBlockAckReqTxVector(to, m_allowedWidth);
+}
+
 bool
 HtFrameExchangeManager::SendDataFrame(Ptr<WifiMpdu> peekedItem,
-                                      Time availableTime,
-                                      bool initialFrame)
+                                      const std::optional<Time>& availableTime)
 {
     NS_ASSERT(peekedItem && peekedItem->GetHeader().IsQosData() &&
               !peekedItem->GetHeader().GetAddr1().IsBroadcast() && !peekedItem->IsFragment());
-    NS_LOG_FUNCTION(this << *peekedItem << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << *peekedItem << availableTime);
 
     Ptr<QosTxop> edca = m_mac->GetQosTxop(peekedItem->GetHeader().GetQosTid());
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(peekedItem->GetHeader(), m_allowedWidth);
-    Ptr<WifiMpdu> mpdu =
-        edca->GetNextMpdu(m_linkId, peekedItem, txParams, availableTime, initialFrame);
+    auto mpdu = edca->GetNextMpdu(m_linkId, peekedItem, txParams, availableTime);
 
     if (!mpdu)
     {
@@ -866,11 +971,9 @@ HtFrameExchangeManager::TransmissionSucceeded()
         // f) Any number of BlockAckReq frames
         // (Sec. 10.22.2.8 of 802.11-2016)
         NS_LOG_DEBUG("Schedule a transmission from Block Ack Manager in a SIFS");
-        bool (HtFrameExchangeManager::*fp)(Ptr<QosTxop>, Time) =
-            &HtFrameExchangeManager::StartTransmission;
+        bool (HtFrameExchangeManager::*fp)() = &HtFrameExchangeManager::StartTransmission;
 
-        // TXOP limit is null, hence the txopDuration parameter is unused
-        Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+        Simulator::Schedule(m_phy->GetSifs(), fp, this);
 
         if (m_protectedIfResponded)
         {
@@ -1033,13 +1136,14 @@ HtFrameExchangeManager::GetPsduDurationId(Time txDuration, const WifiTxParameter
 {
     NS_LOG_FUNCTION(this << txDuration << &txParams);
 
-    NS_ASSERT(m_edca);
     NS_ASSERT(txParams.m_acknowledgment &&
               txParams.m_acknowledgment->acknowledgmentTime.has_value());
 
     const auto singleDurationId = *txParams.m_acknowledgment->acknowledgmentTime;
 
-    if (m_edca->GetTxopLimit(m_linkId).IsZero())
+    // m_edca is null if we were given the right to transmit a frame (e.g., we received a PS-Poll
+    // frame); in such a case, use the Duration/ID value for the single protection case
+    if (!m_edca || m_edca->GetTxopLimit(m_linkId).IsZero())
     {
         return singleDurationId;
     }
@@ -1186,13 +1290,16 @@ HtFrameExchangeManager::SendPsdu()
                 DequeuePsdu(m_psdu);
             }
         }
-        else if (tids.empty() || m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK)
-        {
-            // No acknowledgment, hence dequeue the PSDU if it is stored in a queue
-            DequeuePsdu(m_psdu);
-        }
 
+        m_psdu->SetDuration(GetPsduDurationId(txDuration, m_txParams));
         Simulator::Schedule(txDuration, [=, this]() {
+            if ((!m_apMac || !m_apMac->UseGcr(m_psdu->GetHeader(0))) &&
+                (tids.empty() ||
+                 m_psdu->GetAckPolicyForTid(*tids.begin()) == WifiMacHeader::NO_ACK))
+            {
+                // No acknowledgment, hence dequeue the PSDU if it is stored in a queue
+                DequeuePsdu(m_psdu);
+            }
             TransmissionSucceeded();
             m_psdu = nullptr;
         });
@@ -1282,12 +1389,6 @@ HtFrameExchangeManager::SendPsdu()
     {
         NS_ASSERT(m_sentFrameTo.empty());
         m_sentFrameTo = {m_psdu->GetAddr1()};
-    }
-
-    if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
-    {
-        // we are done in case the A-MPDU does not require acknowledgment
-        m_psdu = nullptr;
     }
 }
 
@@ -1379,13 +1480,23 @@ HtFrameExchangeManager::ForwardPsduDown(Ptr<const WifiPsdu> psdu, WifiTxVector& 
     const auto txDuration = WifiPhy::CalculateTxDuration(psdu, txVector, m_phy->GetPhyBand());
     SetTxNav(*psdu->begin(), txDuration);
 
+    const auto& hdr = psdu->GetHeader(0);
+    // if this is an Ack or BlockAck sent to acknowledge a frame in response to a PS-Poll that we
+    // sent, we need to take the actions required to conclude a frame exchange
+    if (m_txTimer.IsRunning() && m_txTimer.GetReason() == WifiTxTimer::WAIT_DATA_AFTER_PS_POLL &&
+        (hdr.IsAck() || hdr.IsBlockAck()) && hdr.GetAddr1() == m_bssid)
+    {
+        ReceiveFrameAfterPsPoll();
+        Simulator::Schedule(txDuration, &HtFrameExchangeManager::TransmissionSucceeded, this);
+    }
+
     m_phy->Send(psdu, txVector);
 }
 
 bool
 HtFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
                                                 const WifiTxParameters& txParams,
-                                                Time ppduDurationLimit) const
+                                                const std::optional<Time>& ppduDurationLimit) const
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << ppduDurationLimit);
@@ -1453,7 +1564,7 @@ HtFrameExchangeManager::IsWithinAmpduSizeLimit(uint32_t ampduSize,
 bool
 HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
                                          WifiTxParameters& txParams,
-                                         Time availableTime) const
+                                         const std::optional<Time>& availableTime) const
 {
     NS_ASSERT(msdu && msdu->GetHeader().IsQosData());
     NS_LOG_FUNCTION(this << *msdu << &txParams << availableTime);
@@ -1503,10 +1614,10 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
     }
     NS_ASSERT(acknowledgmentTime.has_value());
 
-    Time ppduDurationLimit = Time::Min();
-    if (availableTime != Time::Min())
+    std::optional<Time> ppduDurationLimit;
+    if (availableTime)
     {
-        ppduDurationLimit = availableTime - *protectionTime - *acknowledgmentTime;
+        ppduDurationLimit = *availableTime - *protectionTime - *acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAggregateMsdu(msdu, txParams, ppduDurationLimit))
@@ -1530,9 +1641,10 @@ HtFrameExchangeManager::TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
 }
 
 bool
-HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(Ptr<const WifiMpdu> msdu,
-                                                      const WifiTxParameters& txParams,
-                                                      Time ppduDurationLimit) const
+HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu(
+    Ptr<const WifiMpdu> msdu,
+    const WifiTxParameters& txParams,
+    const std::optional<Time>& ppduDurationLimit) const
 {
     NS_ASSERT(msdu && msdu->GetHeader().IsQosData());
     NS_LOG_FUNCTION(this << *msdu << &txParams << ppduDurationLimit);
@@ -1586,7 +1698,14 @@ HtFrameExchangeManager::BlockAckTimeout(Ptr<WifiPsdu> psdu, const WifiTxVector& 
     MissedBlockAck(psdu, txVector);
 
     m_psdu = nullptr;
-    TransmissionFailed();
+    if (m_edca)
+    {
+        TransmissionFailed();
+    }
+    else
+    {
+        m_sentFrameTo.clear();
+    }
 }
 
 void
@@ -1657,7 +1776,7 @@ HtFrameExchangeManager::MissedBlockAck(Ptr<WifiPsdu> psdu, const WifiTxVector& t
             {
                 psdu->GetHeader(0).SetRetry();
             }
-            else
+            else if (m_mac->CanForwardPacketsTo(recipient))
             {
                 // missed block ack after data frame with Implicit BAR Ack policy
                 auto [reqHdr, hdr] = edca->PrepareBlockAckRequest(recipient, tid);
@@ -1838,8 +1957,12 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
             m_txTimer.Cancel();
             m_channelAccessManager->NotifyAckTimeoutResetNow();
 
-            // Reset the CW
-            m_edca->ResetCw(m_linkId);
+            // Reset the CW, unless m_edca is null, which means we were given the right to transmit
+            // a frame (e.g., we received a PS-Poll frame)
+            if (m_edca)
+            {
+                m_edca->ResetCw(m_linkId);
+            }
 
             // if this BlockAck was sent in response to a BlockAckReq, dequeue the blockAckReq
             if (m_psdu && m_psdu->GetNMpdus() == 1 && m_psdu->GetHeader(0).IsBlockAckReq())
@@ -1847,7 +1970,14 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 DequeuePsdu(m_psdu);
             }
             m_psdu = nullptr;
-            TransmissionSucceeded();
+            if (m_edca)
+            {
+                TransmissionSucceeded();
+            }
+            else
+            {
+                m_sentFrameTo.clear();
+            }
         }
         else if (hdr.IsBlockAckReq())
         {
@@ -1886,7 +2016,7 @@ HtFrameExchangeManager::ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                 &HtFrameExchangeManager::SendBlockAck,
                 this,
                 *agreement,
-                hdr.GetDuration(),
+                hdr.IsPsPoll() ? Seconds(0) : hdr.GetDuration(),
                 GetWifiRemoteStationManager()->GetBlockAckTxVector(sender, txVector),
                 rxSnr,
                 blockAckReq.IsGcr() ? std::optional{blockAckReq.GetGcrGroupAddress()}

@@ -9,6 +9,8 @@
 #ifndef BLOCK_ACK_TYPE_H
 #define BLOCK_ACK_TYPE_H
 
+#include "ns3/wifi-export.h"
+
 #include <cstdint>
 #include <ostream>
 #include <vector>
@@ -20,7 +22,7 @@ namespace ns3
  * @ingroup wifi
  * The different BlockAck variants.
  */
-struct BlockAckType
+struct WIFI_EXPORT BlockAckType
 {
     /**
      * @enum Variant
@@ -63,7 +65,7 @@ struct BlockAckType
  * @ingroup wifi
  * The different BlockAckRequest variants.
  */
-struct BlockAckReqType
+struct WIFI_EXPORT BlockAckReqType
 {
     /**
      * @enum Variant
@@ -109,7 +111,7 @@ struct BlockAckReqType
  * @param type block ack type
  * @return std::ostream
  */
-std::ostream& operator<<(std::ostream& os, const BlockAckType& type);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const BlockAckType& type);
 
 /**
  * Serialize BlockAckReqType to ostream in a human-readable form.
@@ -118,7 +120,7 @@ std::ostream& operator<<(std::ostream& os, const BlockAckType& type);
  * @param type block ack request type
  * @return std::ostream
  */
-std::ostream& operator<<(std::ostream& os, const BlockAckReqType& type);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const BlockAckReqType& type);
 
 } // namespace ns3
 

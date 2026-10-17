@@ -13,6 +13,7 @@
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <unordered_map>
@@ -34,7 +35,7 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
  * a frame that solicits a response. The timeout can be rescheduled (multiple times)
  * when the RXSTART.indication is received from the PHY.
  */
-class WifiTxTimer
+class WIFI_EXPORT WifiTxTimer
 {
   public:
     /**
@@ -53,6 +54,7 @@ class WifiTxTimer
         WAIT_TB_PPDU_AFTER_BASIC_TF,
         WAIT_QOS_NULL_AFTER_BSRP_TF,
         WAIT_BLOCK_ACK_AFTER_TB_PPDU,
+        WAIT_DATA_AFTER_PS_POLL,
     };
 
     /** Default constructor */
@@ -65,9 +67,9 @@ class WifiTxTimer
      * This method starts a timer of the given duration and schedules a call to
      * the given method in case the timer expires.
      *
-     * @tparam MEM \deduced Class method function signature type
-     * @tparam OBJ \deduced Class type of the object
-     * @tparam Args \deduced Type template parameter pack
+     * @tparam MEM @deduced Class method function signature type
+     * @tparam OBJ @deduced Class type of the object
+     * @tparam Args @deduced Type template parameter pack
      * @param reason the reason why the timer was started
      * @param delay the time to the expiration of the timer
      * @param from the set of stations we expect to receive a response from
@@ -185,9 +187,9 @@ class WifiTxTimer
      * This method is called when the timer expires. It invokes the callbacks
      * and the method set by the user.
      *
-     * @tparam MEM \deduced Class method function signature type
-     * @tparam OBJ \deduced Class type of the object
-     * @tparam Args \deduced Type template parameter pack
+     * @tparam MEM @deduced Class method function signature type
+     * @tparam OBJ @deduced Class type of the object
+     * @tparam Args @deduced Type template parameter pack
      * @param mem_ptr Member method pointer to invoke
      * @param obj The object on which to invoke the member method
      * @param args The arguments to pass to the invoked method
@@ -281,10 +283,10 @@ template <typename MEM, typename OBJ, typename... Args>
 void
 WifiTxTimer::Timeout(MEM mem_ptr, OBJ obj, Args... args)
 {
-    FeedTraceSource(std::forward<Args>(args)...);
+    FeedTraceSource(args...);
 
     // Invoke the method set by the user
-    ((*obj).*mem_ptr)(std::forward<Args>(args)...);
+    ((*obj).*mem_ptr)(std::move(args)...);
 }
 
 } // namespace ns3

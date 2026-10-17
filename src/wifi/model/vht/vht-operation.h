@@ -9,6 +9,7 @@
 #ifndef VHT_OPERATION_H
 #define VHT_OPERATION_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 namespace ns3
@@ -21,7 +22,7 @@ namespace ns3
  * This class knows how to serialize and deserialize
  * the VHT Operation Information Element
  */
-class VhtOperation : public WifiInformationElement
+class WIFI_EXPORT VhtOperation : public WifiInformationElement
 {
   public:
     VhtOperation();

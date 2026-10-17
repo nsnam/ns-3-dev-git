@@ -10,14 +10,33 @@
 
 #include "adhoc-wifi-mac.h"
 
+#include "capability-information.h"
+#include "channel-access-manager.h"
+#include "edca-parameter-set.h"
+#include "mac-tx-middle.h"
+#include "mgt-headers.h"
 #include "qos-txop.h"
+#include "supported-rates.h"
+#include "wifi-mac-queue.h"
+#include "wifi-phy.h"
 
+#include "ns3/dsss-parameter-set.h"
 #include "ns3/eht-capabilities.h"
+#include "ns3/eht-operation.h"
+#include "ns3/erp-information.h"
 #include "ns3/he-capabilities.h"
+#include "ns3/he-configuration.h"
+#include "ns3/he-operation.h"
 #include "ns3/ht-capabilities.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/ht-operation.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/pointer.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/string.h"
 #include "ns3/vht-capabilities.h"
+#include "ns3/vht-operation.h"
 
 namespace ns3
 {
@@ -29,16 +48,58 @@ NS_OBJECT_ENSURE_REGISTERED(AdhocWifiMac);
 TypeId
 AdhocWifiMac::GetTypeId()
 {
-    static TypeId tid = TypeId("ns3::AdhocWifiMac")
-                            .SetParent<WifiMac>()
-                            .SetGroupName("Wifi")
-                            .AddConstructor<AdhocWifiMac>();
+    static TypeId tid =
+        TypeId("ns3::AdhocWifiMac")
+            .SetParent<WifiMac>()
+            .SetGroupName("Wifi")
+            .AddConstructor<AdhocWifiMac>()
+            .AddAttribute("BeaconInterval",
+                          "Delay between two beacons",
+                          TimeValue(DEFAULT_BEACON_INTERVAL()),
+                          MakeTimeAccessor(&AdhocWifiMac::GetBeaconInterval,
+                                           &AdhocWifiMac::SetBeaconInterval),
+                          MakeTimeChecker())
+            .AddAttribute("BeaconGeneration",
+                          "Whether or not beacons are generated. Must be set uniformly across the "
+                          "IBSS.",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&AdhocWifiMac::SetBeaconGeneration),
+                          MakeBooleanChecker())
+            .AddAttribute("BeaconJitter",
+                          "A random variable to cause the initial beacon starting time (after "
+                          "simulation time 0) to be distributed between 0 and the BeaconInterval. "
+                          "Generated values must be between 0 and 1.",
+                          StringValue("ns3::UniformRandomVariable"),
+                          MakePointerAccessor(&AdhocWifiMac::m_beaconJitter),
+                          MakePointerChecker<RandomVariableStream>())
+            .AddAttribute("EnableBeaconJitter",
+                          "If beacons are enabled, whether to jitter the initial send event.",
+                          BooleanValue(true),
+                          MakeBooleanAccessor(&AdhocWifiMac::m_enableBeaconJitter),
+                          MakeBooleanChecker())
+            .AddAttribute("BeaconAc",
+                          "The Access Category whose EDCA parameters are used for the Beacon Txop "
+                          "if QoS is supported.",
+                          EnumValue(AcIndex::AC_VI),
+                          MakeEnumAccessor<AcIndex>(&AdhocWifiMac::m_beaconAc),
+                          MakeEnumChecker(AcIndex::AC_BE,
+                                          "AC_BE",
+                                          AcIndex::AC_VI,
+                                          "AC_VI",
+                                          AcIndex::AC_VO,
+                                          "AC_VO",
+                                          AcIndex::AC_BK,
+                                          "AC_BK"));
     return tid;
 }
 
 AdhocWifiMac::AdhocWifiMac()
+    : m_enableBeaconGeneration(false)
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop = CreateObjectWithAttributes<Txop>("AcIndex", StringValue("AC_BEACON"));
+    m_beaconTxop->SetTxMiddle(m_txMiddle);
+
     // Let the lower layers know that we are acting in an IBSS
     SetTypeOfStation(ADHOC_STA);
 }
@@ -49,15 +110,160 @@ AdhocWifiMac::~AdhocWifiMac()
 }
 
 void
+AdhocWifiMac::DoInitialize()
+{
+    NS_LOG_FUNCTION(this);
+    m_beaconTxop->Initialize();
+
+    if (m_enableBeaconGeneration)
+    {
+        m_tbttEvent.Cancel();
+        m_beaconEvent.Cancel();
+        uint64_t jitterUs{0};
+        if (m_enableBeaconJitter)
+        {
+            const auto value = m_beaconJitter->GetValue();
+            NS_ABORT_MSG_IF(value < 0 || value > 1,
+                            "Jitter (" << value << ") must be between 0 and 1");
+            jitterUs = static_cast<uint64_t>(value * (GetBeaconInterval().GetMicroSeconds()));
+        }
+        NS_LOG_DEBUG("Scheduling initial TBTT for IBSS STA " << GetAddress() << " at time "
+                                                             << jitterUs << "us");
+        m_tbttEvent = Simulator::Schedule(MicroSeconds(jitterUs), &AdhocWifiMac::TbttTimeout, this);
+    }
+    WifiMac::DoInitialize();
+}
+
+void
+AdhocWifiMac::DoDispose()
+{
+    NS_LOG_FUNCTION(this);
+    m_beaconTxop->Dispose();
+    m_beaconTxop = nullptr;
+    m_enableBeaconGeneration = false;
+    m_tbttEvent.Cancel();
+    m_beaconEvent.Cancel();
+    WifiMac::DoDispose();
+}
+
+void
+AdhocWifiMac::SetBeaconGeneration(bool enable)
+{
+    NS_LOG_FUNCTION(this << enable);
+    if (!enable)
+    {
+        m_tbttEvent.Cancel();
+        CancelPendingBeacon();
+    }
+    else if (!m_enableBeaconGeneration)
+    {
+        m_tbttEvent = Simulator::ScheduleNow(&AdhocWifiMac::TbttTimeout, this);
+    }
+    m_enableBeaconGeneration = enable;
+}
+
+void
+AdhocWifiMac::SetBeaconInterval(Time interval)
+{
+    NS_LOG_FUNCTION(this << interval);
+    if ((interval.GetMicroSeconds() % 1024) != 0)
+    {
+        NS_FATAL_ERROR("beacon interval should be multiple of 1024us (802.11 time unit), see IEEE "
+                       "Std. 802.11-2012");
+    }
+    if (interval.GetMicroSeconds() > (1024 * 65535))
+    {
+        NS_FATAL_ERROR(
+            "beacon interval should be smaller then or equal to 65535 * 1024us (802.11 time unit)");
+    }
+    m_beaconInterval = interval;
+}
+
+Time
+AdhocWifiMac::GetBeaconInterval() const
+{
+    return m_beaconInterval;
+}
+
+int64_t
+AdhocWifiMac::AssignStreams(int64_t stream)
+{
+    NS_LOG_FUNCTION(this << stream);
+    m_beaconJitter->SetStream(stream);
+    auto currentStream = stream + 1;
+    currentStream += m_beaconTxop->AssignStreams(currentStream);
+    currentStream += WifiMac::AssignStreams(currentStream);
+    return (currentStream - stream);
+}
+
+void
 AdhocWifiMac::DoCompleteConfig()
 {
     NS_LOG_FUNCTION(this);
+    m_beaconTxop->SetWifiMac(this);
+    auto txop = GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
+    m_beaconTxop->SetAifsns(txop->GetAifsns());
+    m_beaconTxop->SetMinCws(txop->GetMinCws());
+    m_beaconTxop->SetMaxCws(txop->GetMaxCws());
+    for (uint8_t linkId = 0; linkId < GetNLinks(); ++linkId)
+    {
+        GetLink(linkId).channelAccessManager->Add(m_beaconTxop);
+    }
+}
+
+Ptr<Txop>
+AdhocWifiMac::GetTxopFor(AcIndex ac) const
+{
+    if (ac == AC_BEACON)
+    {
+        return m_beaconTxop;
+    }
+    return WifiMac::GetTxopFor(ac);
 }
 
 bool
 AdhocWifiMac::CanForwardPacketsTo(Mac48Address to) const
 {
-    return true;
+    return (!m_enableBeaconGeneration || !GetWifiRemoteStationManager()->IsBrandNew(to));
+}
+
+void
+AdhocWifiMac::SetAllCapabilities(Mac48Address address)
+{
+    // assume the destination supports all the capabilities we support
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        GetWifiRemoteStationManager()->AddAllSupportedMcs(address);
+        GetWifiRemoteStationManager()->AddStationHtCapabilities(
+            address,
+            GetHtCapabilities(SINGLE_LINK_OP_ID));
+    }
+    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    {
+        GetWifiRemoteStationManager()->AddStationVhtCapabilities(
+            address,
+            GetVhtCapabilities(SINGLE_LINK_OP_ID));
+    }
+    if (GetHeSupported())
+    {
+        GetWifiRemoteStationManager()->AddStationHeCapabilities(
+            address,
+            GetHeCapabilities(SINGLE_LINK_OP_ID));
+        if (Is6GhzBand(SINGLE_LINK_OP_ID))
+        {
+            GetWifiRemoteStationManager()->AddStationHe6GhzCapabilities(
+                address,
+                GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID));
+        }
+    }
+    if (GetEhtSupported())
+    {
+        GetWifiRemoteStationManager()->AddStationEhtCapabilities(
+            address,
+            GetEhtCapabilities(SINGLE_LINK_OP_ID));
+    }
+    GetWifiRemoteStationManager()->AddAllSupportedModes(address);
+    GetWifiRemoteStationManager()->RecordAdhocPeer(address);
 }
 
 void
@@ -67,40 +273,16 @@ AdhocWifiMac::Enqueue(Ptr<WifiMpdu> mpdu, Mac48Address to, Mac48Address from)
 
     if (GetWifiRemoteStationManager()->IsBrandNew(to))
     {
-        // In ad hoc mode, we assume that every destination supports all the rates we support.
-        if (GetHtSupported(SINGLE_LINK_OP_ID))
+        if (m_enableBeaconGeneration)
         {
-            GetWifiRemoteStationManager()->AddAllSupportedMcs(to);
-            GetWifiRemoteStationManager()->AddStationHtCapabilities(
-                to,
-                GetHtCapabilities(SINGLE_LINK_OP_ID));
+            NS_LOG_LOGIC("Capabilities for " << to << " are unknown: drop packet");
+            NotifyTxDrop(mpdu->GetPacket());
+            return;
         }
-        if (GetVhtSupported(SINGLE_LINK_OP_ID))
+        else
         {
-            GetWifiRemoteStationManager()->AddStationVhtCapabilities(
-                to,
-                GetVhtCapabilities(SINGLE_LINK_OP_ID));
+            SetAllCapabilities(to);
         }
-        if (GetHeSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationHeCapabilities(
-                to,
-                GetHeCapabilities(SINGLE_LINK_OP_ID));
-            if (Is6GhzBand(SINGLE_LINK_OP_ID))
-            {
-                GetWifiRemoteStationManager()->AddStationHe6GhzCapabilities(
-                    to,
-                    GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID));
-            }
-        }
-        if (GetEhtSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationEhtCapabilities(
-                to,
-                GetEhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        GetWifiRemoteStationManager()->AddAllSupportedModes(to);
-        GetWifiRemoteStationManager()->RecordDisassociated(to);
     }
 
     auto& hdr = mpdu->GetHeader();
@@ -129,60 +311,435 @@ AdhocWifiMac::SetLinkUpCallback(Callback<void> linkUp)
 }
 
 void
+AdhocWifiMac::TbttTimeout()
+{
+    NS_LOG_FUNCTION(this);
+    m_tbttEvent = Simulator::Schedule(GetBeaconInterval(), &AdhocWifiMac::TbttTimeout, this);
+    // Random delay uniformly distributed in [0, 2 * aCWmin * aSlotTime]
+    // (IEEE 802.11-2024, sec. 11.1.3.5 "Beacon generation in an IBSS")
+    const auto txop = GetQosSupported() ? StaticCast<Txop>(GetQosTxop(m_beaconAc)) : GetTxop();
+    const auto cwMin = txop->GetMinCw(SINGLE_LINK_OP_ID);
+    const auto value = m_beaconJitter->GetValue();
+    NS_ABORT_MSG_IF(value < 0 || value > 1, "Jitter (" << value << ") must be between 0 and 1");
+    const auto delay = GetWifiPhy()->GetSlot() * (2 * cwMin * value);
+    NS_LOG_DEBUG("Scheduling Beacon after IBSS random delay of " << delay.As(Time::US) << "us");
+    m_beaconEvent = Simulator::Schedule(delay, &AdhocWifiMac::SendOneBeacon, this);
+}
+
+void
+AdhocWifiMac::CancelPendingBeacon()
+{
+    NS_LOG_FUNCTION(this);
+    if (m_beaconEvent.IsPending())
+    {
+        NS_LOG_DEBUG("Cancel remaining IBSS beacon random delay");
+        m_beaconEvent.Cancel();
+    }
+    if (m_beaconTxop && m_beaconTxop->GetWifiMacQueue()->GetNPackets() > 0)
+    {
+        NS_LOG_DEBUG("Flush pending IBSS Beacon frame");
+        m_beaconTxop->GetWifiMacQueue()->Flush();
+    }
+}
+
+void
+AdhocWifiMac::SendOneBeacon()
+{
+    NS_LOG_FUNCTION(this);
+
+    WifiMacHeader hdr;
+    hdr.SetType(WIFI_MAC_MGT_BEACON);
+    hdr.SetAddr1(Mac48Address::GetBroadcast());
+    hdr.SetAddr2(GetAddress());
+    hdr.SetAddr3(GetAddress());
+    hdr.SetDsNotFrom();
+    hdr.SetDsNotTo();
+
+    MgtBeaconHeader beacon;
+    beacon.Get<Ssid>() = GetSsid();
+    auto supportedRates = GetSupportedRates();
+    beacon.Get<SupportedRates>() = supportedRates.rates;
+    beacon.Get<ExtendedSupportedRatesIE>() = supportedRates.extendedRates;
+    beacon.m_beaconInterval = GetBeaconInterval().GetMicroSeconds();
+    beacon.m_capability = GetCapabilities();
+    if (GetDsssSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<DsssParameterSet>() = GetDsssParameterSet();
+    }
+    if (GetErpSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<ErpInformation>() = GetErpInformation();
+    }
+    if (GetQosSupported())
+    {
+        beacon.Get<EdcaParameterSet>() = GetEdcaParameterSet();
+    }
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<ExtendedCapabilities>() = GetExtendedCapabilities();
+        beacon.Get<HtCapabilities>() = GetHtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HtOperation>() = GetHtOperation();
+    }
+    if (GetVhtSupported(SINGLE_LINK_OP_ID))
+    {
+        beacon.Get<VhtCapabilities>() = GetVhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<VhtOperation>() = GetVhtOperation();
+    }
+    if (GetHeSupported())
+    {
+        beacon.Get<HeCapabilities>() = GetHeCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<HeOperation>() = GetHeOperation();
+        if (Is6GhzBand(SINGLE_LINK_OP_ID))
+        {
+            beacon.Get<He6GhzBandCapabilities>() = GetHe6GhzBandCapabilities(SINGLE_LINK_OP_ID);
+        }
+    }
+    if (GetEhtSupported())
+    {
+        beacon.Get<EhtCapabilities>() = GetEhtCapabilities(SINGLE_LINK_OP_ID);
+        beacon.Get<EhtOperation>() = GetEhtOperation();
+    }
+
+    auto packet = Create<Packet>();
+    packet->AddHeader(beacon);
+
+    NS_LOG_DEBUG("Generating beacon from " << GetAddress());
+    m_beaconTxop->Queue(Create<WifiMpdu>(packet, hdr));
+}
+
+void
 AdhocWifiMac::Receive(Ptr<const WifiMpdu> mpdu, uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << *mpdu << +linkId);
-    const WifiMacHeader* hdr = &mpdu->GetHeader();
-    NS_ASSERT(!hdr->IsCtl());
-    Mac48Address from = hdr->GetAddr2();
-    Mac48Address to = hdr->GetAddr1();
-    if (GetWifiRemoteStationManager()->IsBrandNew(from))
+    const auto& hdr = mpdu->GetHeader();
+    NS_ASSERT(!hdr.IsCtl());
+    const auto from = hdr.GetAddr2();
+    const auto to = hdr.GetAddr1();
+    auto packet = mpdu->GetPacket();
+    if (GetWifiRemoteStationManager()->IsBrandNew(from) && !m_enableBeaconGeneration)
     {
-        // In ad hoc mode, we assume that every destination supports all the rates we support.
-        if (GetHtSupported(SINGLE_LINK_OP_ID))
-        {
-            GetWifiRemoteStationManager()->AddAllSupportedMcs(from);
-            GetWifiRemoteStationManager()->AddStationHtCapabilities(
-                from,
-                GetHtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetVhtSupported(SINGLE_LINK_OP_ID))
-        {
-            GetWifiRemoteStationManager()->AddStationVhtCapabilities(
-                from,
-                GetVhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetHeSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationHeCapabilities(
-                from,
-                GetHeCapabilities(SINGLE_LINK_OP_ID));
-        }
-        if (GetEhtSupported())
-        {
-            GetWifiRemoteStationManager()->AddStationEhtCapabilities(
-                from,
-                GetEhtCapabilities(SINGLE_LINK_OP_ID));
-        }
-        GetWifiRemoteStationManager()->AddAllSupportedModes(from);
-        GetWifiRemoteStationManager()->RecordDisassociated(from);
+        SetAllCapabilities(from);
     }
-    if (hdr->IsData())
+    if (hdr.IsData())
     {
-        if (hdr->IsQosData() && hdr->IsQosAmsdu())
+        if (hdr.IsFromDs() || hdr.IsToDs())
+        {
+            NS_LOG_LOGIC("Received data frame not part of an ad-hoc network: ignore");
+            NotifyRxDrop(packet);
+            return;
+        }
+        if (hdr.IsQosData() && hdr.IsQosAmsdu())
         {
             NS_LOG_DEBUG("Received A-MSDU from" << from);
             DeaggregateAmsduAndForward(mpdu);
         }
         else
         {
-            ForwardUp(mpdu->GetPacket(), from, to);
+            ForwardUp(packet, from, to);
         }
         return;
     }
 
-    // Invoke the receive handler of our parent class to deal with any other frames
-    WifiMac::Receive(mpdu, linkId);
+    switch (hdr.GetType())
+    {
+    case WIFI_MAC_MGT_ASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_REASSOCIATION_REQUEST:
+    case WIFI_MAC_MGT_ASSOCIATION_RESPONSE:
+    case WIFI_MAC_MGT_REASSOCIATION_RESPONSE:
+        // This is a frame not aimed for IBSS, so we can safely ignore it.
+        NotifyRxDrop(packet);
+        break;
+
+    case WIFI_MAC_MGT_BEACON:
+        ReceiveBeacon(mpdu, linkId);
+        break;
+
+    case WIFI_MAC_MGT_PROBE_REQUEST:
+        ReceiveProbeRequest(mpdu, linkId);
+        break;
+
+    default:
+        // Invoke the receive handler of our parent class to deal with any
+        // other frames. Specifically, this will handle Block Ack-related
+        // Management Action frames.
+        WifiMac::Receive(mpdu, linkId);
+    }
+}
+
+void
+AdhocWifiMac::ReceiveBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+    const WifiMacHeader& hdr = mpdu->GetHeader();
+    NS_ASSERT(hdr.IsBeacon());
+
+    const auto from = hdr.GetAddr2();
+    NS_LOG_DEBUG("Beacon received from " << from);
+
+    MgtBeaconHeader beacon;
+    mpdu->GetPacket()->PeekHeader(beacon);
+
+    if (!beacon.m_capability.IsIbss())
+    {
+        NS_LOG_LOGIC("Received beacon not part of an ad-hoc network: ignore");
+        return;
+    }
+
+    if (const auto& ssid = beacon.Get<Ssid>();
+        m_enableBeaconGeneration && ssid && ssid->IsEqual(GetSsid()))
+    {
+        CancelPendingBeacon();
+    }
+
+    if (!GetWifiRemoteStationManager()->IsBrandNew(from))
+    {
+        // capabilities already learnt: nothing to do
+        return;
+    }
+
+    // store capabilities from received beacon
+    RecordCapabilities(beacon, from, linkId);
+
+    NS_LOG_INFO("Peer " << from << " changed from undiscovered to discovered");
+    GetWifiRemoteStationManager()->RecordAdhocPeer(from);
+}
+
+void
+AdhocWifiMac::ReceiveProbeRequest(Ptr<const WifiMpdu> mpdu, linkId_t linkId)
+{
+    NS_LOG_FUNCTION(this << *mpdu << linkId);
+    const WifiMacHeader& hdr = mpdu->GetHeader();
+    NS_ASSERT(hdr.IsProbeReq());
+
+    const auto from = hdr.GetAddr2();
+    NS_LOG_DEBUG("Probe request received from " << hdr.GetAddr2());
+
+    if (!GetWifiRemoteStationManager()->IsBrandNew(from))
+    {
+        // capabilities already learnt: nothing to do
+        return;
+    }
+
+    // store capabilities from probe request
+    MgtProbeRequestHeader probeReq;
+    mpdu->GetPacket()->PeekHeader(probeReq);
+    RecordCapabilities(probeReq, from, linkId);
+
+    NS_LOG_INFO("Peer " << from << " changed from undiscovered to discovered");
+    GetWifiRemoteStationManager()->RecordAdhocPeer(from);
+}
+
+AllSupportedRates
+AdhocWifiMac::GetSupportedRates() const
+{
+    AllSupportedRates rates;
+    for (const auto& mode : GetWifiPhy()->GetModeList())
+    {
+        uint64_t modeDataRate = mode.GetDataRate(GetWifiPhy()->GetChannelWidth());
+        NS_LOG_DEBUG("Adding supported rate of " << modeDataRate);
+        rates.AddSupportedRate(modeDataRate);
+    }
+    if (GetHtSupported(SINGLE_LINK_OP_ID))
+    {
+        for (const auto& selector : GetWifiPhy()->GetBssMembershipSelectorList())
+        {
+            rates.AddBssMembershipSelectorRate(selector);
+        }
+    }
+    return rates;
+}
+
+DsssParameterSet
+AdhocWifiMac::GetDsssParameterSet() const
+{
+    NS_ASSERT(GetDsssSupported(SINGLE_LINK_OP_ID));
+    DsssParameterSet dsssParameters;
+    dsssParameters.SetCurrentChannel(GetWifiPhy()->GetChannelNumber());
+    return dsssParameters;
+}
+
+CapabilityInformation
+AdhocWifiMac::GetCapabilities() const
+{
+    CapabilityInformation capabilities;
+    capabilities.SetShortPreamble(GetWifiPhy()->GetShortPhyPreambleSupported() ||
+                                  GetErpSupported(SINGLE_LINK_OP_ID));
+    capabilities.SetShortSlotTime(GetShortSlotTimeSupported() &&
+                                  GetErpSupported(SINGLE_LINK_OP_ID));
+    capabilities.SetIbss();
+    return capabilities;
+}
+
+ErpInformation
+AdhocWifiMac::GetErpInformation() const
+{
+    NS_ASSERT(GetErpSupported(SINGLE_LINK_OP_ID));
+    ErpInformation information;
+    return information;
+}
+
+EdcaParameterSet
+AdhocWifiMac::GetEdcaParameterSet() const
+{
+    NS_ASSERT(GetQosSupported());
+    EdcaParameterSet edcaParameters;
+
+    Ptr<QosTxop> edca;
+    Time txopLimit;
+
+    edca = GetQosTxop(AC_BE);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetBeAci(0);
+    edcaParameters.SetBeCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBeCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBeAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBeTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edca = GetQosTxop(AC_BK);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetBkAci(1);
+    edcaParameters.SetBkCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBkCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBkAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetBkTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edca = GetQosTxop(AC_VI);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetViAci(2);
+    edcaParameters.SetViCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetViCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetViAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetViTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edca = GetQosTxop(AC_VO);
+    txopLimit = edca->GetTxopLimit(SINGLE_LINK_OP_ID);
+    edcaParameters.SetVoAci(3);
+    edcaParameters.SetVoCWmin(edca->GetMinCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetVoCWmax(edca->GetMaxCw(SINGLE_LINK_OP_ID));
+    edcaParameters.SetVoAifsn(edca->GetAifsn(SINGLE_LINK_OP_ID));
+    edcaParameters.SetVoTxopLimit(static_cast<uint16_t>(txopLimit.GetMicroSeconds() / 32));
+
+    edcaParameters.SetQosInfo(0);
+
+    return edcaParameters;
+}
+
+HtOperation
+AdhocWifiMac::GetHtOperation() const
+{
+    NS_ASSERT(GetHtSupported(SINGLE_LINK_OP_ID));
+
+    HtOperation operation;
+
+    operation.SetPrimaryChannel(GetWifiPhy()->GetPrimaryChannelNumber(20));
+    if (GetWifiPhy()->GetChannelWidth() > 20)
+    {
+        operation.SetSecondaryChannelOffset(1);
+        operation.SetStaChannelWidth(1);
+    }
+    uint64_t maxSupportedRate = 0; // in bit/s
+    for (const auto& mcs : GetWifiPhy()->GetMcsList(WIFI_MOD_CLASS_HT))
+    {
+        uint8_t nss = (mcs.GetMcsValue() / 8) + 1;
+        NS_ASSERT(nss > 0 && nss < 5);
+        uint64_t dataRate =
+            mcs.GetDataRate(GetWifiPhy()->GetChannelWidth(),
+                            NanoSeconds(GetHtConfiguration()->m_sgiSupported ? 400 : 800),
+                            nss);
+        if (dataRate > maxSupportedRate)
+        {
+            maxSupportedRate = dataRate;
+            NS_LOG_DEBUG("Updating maxSupportedRate to " << maxSupportedRate);
+        }
+    }
+    operation.SetRxHighestSupportedDataRate(
+        static_cast<uint16_t>(maxSupportedRate / 1e6)); // in Mbit/s
+    operation.SetTxMcsSetDefined(!GetWifiPhy()->GetMcsList(WIFI_MOD_CLASS_HT).empty());
+    operation.SetTxMaxNSpatialStreams(GetWifiPhy()->GetMaxSupportedTxSpatialStreams());
+
+    return operation;
+}
+
+VhtOperation
+AdhocWifiMac::GetVhtOperation() const
+{
+    NS_ASSERT(GetVhtSupported(SINGLE_LINK_OP_ID));
+
+    VhtOperation operation;
+
+    const auto bssBandwidth = GetWifiPhy()->GetChannelWidth();
+    // Set to 0 for 20 MHz or 40 MHz BSS bandwidth.
+    // Set to 1 for 80 MHz, 160 MHz or 80+80 MHz BSS bandwidth.
+    operation.SetChannelWidth((bssBandwidth > 40) ? 1 : 0);
+    // For 20, 40, or 80 MHz BSS bandwidth, indicates the channel center frequency
+    // index for the 20, 40, or 80 MHz channel on which the VHT BSS operates.
+    // For 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+    // indicates the channel center frequency index of the 80 MHz channel
+    // segment that contains the primary channel.
+    operation.SetChannelCenterFrequencySegment0((bssBandwidth == 160)
+                                                    ? GetWifiPhy()->GetPrimaryChannelNumber(80)
+                                                    : GetWifiPhy()->GetChannelNumber());
+    // For a 20, 40, or 80 MHz BSS bandwidth, this subfield is set to 0.
+    // For a 160 MHz BSS bandwidth and the Channel Width subfield equal to 1,
+    // indicates the channel center frequency index of the 160 MHz channel on
+    // which the VHT BSS operates.
+    operation.SetChannelCenterFrequencySegment1(
+        (bssBandwidth == 160) ? GetWifiPhy()->GetChannelNumber() : 0);
+    for (uint8_t nss = 1; nss <= GetWifiPhy()->GetMaxSupportedRxSpatialStreams(); nss++)
+    {
+        uint8_t maxMcs =
+            9; // TBD: hardcode to 9 for now since we assume all MCS values are supported
+        operation.SetMaxVhtMcsPerNss(nss, maxMcs);
+    }
+
+    return operation;
+}
+
+HeOperation
+AdhocWifiMac::GetHeOperation() const
+{
+    NS_ASSERT(GetHeSupported());
+    HeOperation operation;
+
+    const auto maxSpatialStream = GetWifiPhy()->GetMaxSupportedRxSpatialStreams();
+    for (uint8_t nss = 1; nss <= maxSpatialStream; nss++)
+    {
+        operation.SetMaxHeMcsPerNss(
+            nss,
+            11); // TBD: hardcode to 11 for now since we assume all MCS values are supported
+    }
+    operation.m_bssColorInfo.m_bssColor = GetHeConfiguration()->m_bssColor;
+
+    if (GetWifiPhy()->GetPhyBand() == WIFI_PHY_BAND_6GHZ)
+    {
+        HeOperation::OpInfo6GHz op6Ghz;
+        const auto bw = GetWifiPhy()->GetChannelWidth();
+        const auto ch = GetWifiPhy()->GetOperatingChannel();
+        op6Ghz.m_chWid = (bw == 20) ? 0 : (bw == 40) ? 1 : (bw == 80) ? 2 : 3;
+        op6Ghz.m_primCh = ch.GetPrimaryChannelNumber(20, WIFI_STANDARD_80211ax);
+        op6Ghz.m_chCntrFreqSeg0 =
+            (bw == 160) ? ch.GetPrimaryChannelNumber(80, WIFI_STANDARD_80211ax) : ch.GetNumber();
+        // TODO: for 80+80 MHz channels, set this field to the secondary 80 MHz segment number
+        op6Ghz.m_chCntrFreqSeg1 = (bw == 160) ? ch.GetNumber() : 0;
+
+        operation.m_6GHzOpInfo = op6Ghz;
+    }
+
+    return operation;
+}
+
+EhtOperation
+AdhocWifiMac::GetEhtOperation() const
+{
+    NS_ASSERT(GetEhtSupported());
+
+    EhtOperation operation;
+
+    const auto maxSpatialStream = GetWifiPhy()->GetMaxSupportedRxSpatialStreams();
+    operation.SetMaxRxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+    operation.SetMaxTxNss(maxSpatialStream, 0, WIFI_EHT_MAX_MCS_INDEX);
+
+    return operation;
 }
 
 } // namespace ns3

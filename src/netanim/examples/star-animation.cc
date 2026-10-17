@@ -43,8 +43,8 @@ main(int argc, char* argv[])
     uint32_t nSpokes = 8;
     std::string animFile = "star-animation.xml";
     uint8_t useIpv6 = 0;
-    Ipv6Address ipv6AddressBase = Ipv6Address("2001::");
-    Ipv6Prefix ipv6AddressPrefix = Ipv6Prefix(64);
+    auto ipv6AddressBase = Ipv6Address("2001::");
+    auto ipv6AddressPrefix = Ipv6Prefix(64);
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("nSpokes", "Number of spoke nodes to place in the star", nSpokes);

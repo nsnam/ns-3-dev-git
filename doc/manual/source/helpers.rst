@@ -25,9 +25,9 @@ The helper API has a few goals:
    similar objects to which similar or identical operations can be performed.
 #. The helper API is not generic; it does not strive to maximize code reuse. So,
    programming constructs such as polymorphism and templates that achieve code
-   reuse are not as prevalent. For instance, there are separate CsmaNetDevice
-   helpers and PointToPointNetDevice helpers but they do not derive from a
-   common NetDevice base class.
+   reuse are not as prevalent. For instance, there are separate ``CsmaNetDevice``
+   helpers and ``PointToPointNetDevice`` helpers but they do not derive from a
+   common ``NetDevice`` base class.
 #. The helper API typically works with stack-allocated (vs. heap-allocated)
    objects. For some programs, |ns3| users may not need to worry about any low
    level Object Create or Ptr handling; they can make do with containers of

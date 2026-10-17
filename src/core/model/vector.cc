@@ -7,11 +7,9 @@
  */
 #include "vector.h"
 
-#include "fatal-error.h"
 #include "log.h"
 
 #include <cmath>
-#include <sstream>
 #include <tuple>
 
 /**
@@ -70,14 +68,14 @@ double
 Vector3D::GetLength() const
 {
     NS_LOG_FUNCTION(this);
-    return std::sqrt(x * x + y * y + z * z);
+    return std::hypot(x, y, z);
 }
 
 double
 Vector2D::GetLength() const
 {
     NS_LOG_FUNCTION(this);
-    return std::sqrt(x * x + y * y);
+    return std::hypot(x, y);
 }
 
 double
@@ -208,6 +206,12 @@ operator*(const Vector3D& a, const Vector3D& b)
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+Vector3D
+CrossProduct(const Vector3D& a, const Vector3D& b)
+{
+    return Vector3D(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+}
+
 std::ostream&
 operator<<(std::ostream& os, const Vector2D& vector)
 {
@@ -291,6 +295,12 @@ double
 operator*(const Vector2D& a, const Vector2D& b)
 {
     return a.x * b.x + a.y * b.y;
+}
+
+double
+CrossProduct(const Vector2D& a, const Vector2D& b)
+{
+    return (a.x * b.y) - (a.y * b.x);
 }
 
 } // namespace ns3

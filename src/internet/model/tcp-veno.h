@@ -128,7 +128,6 @@ class TcpVeno : public TcpNewReno
 
     Ptr<TcpCongestionOps> Fork() override;
 
-  protected:
   private:
     /**
      * @brief Enable Veno algorithm to start Veno sampling

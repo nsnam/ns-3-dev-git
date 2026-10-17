@@ -10,6 +10,7 @@
 #define TID_TO_LINK_MAPPING_H
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 #include "ns3/wifi-utils.h"
 
@@ -39,14 +40,14 @@ constexpr uint16_t WIFI_LINK_MAPPING_PRESENCE_IND_SIZE_B = 1;
  * IEEE 802.11be D3.1 9.4.2.314
  *
  */
-class TidToLinkMapping : public WifiInformationElement
+class WIFI_EXPORT TidToLinkMapping : public WifiInformationElement
 {
   public:
     /**
      * TID-to-Link Mapping Control subfield
      * IEEE 802.11be D3.1 Figure 9-1002ap
      */
-    struct Control
+    struct WIFI_EXPORT Control
     {
         friend class TidToLinkMapping;
 

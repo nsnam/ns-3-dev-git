@@ -12,6 +12,7 @@
 #include "wifi-protection.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <memory>
 
@@ -29,7 +30,7 @@ class WifiRemoteStationManager;
  * WifiProtectionManager is an abstract base class. Each subclass defines a logic
  * to select the protection method for a given frame.
  */
-class WifiProtectionManager : public Object
+class WIFI_EXPORT WifiProtectionManager : public Object
 {
   public:
     /**

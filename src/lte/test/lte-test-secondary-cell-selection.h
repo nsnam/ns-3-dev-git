@@ -28,7 +28,7 @@ using namespace ns3;
  * Checks that if multiple component carriers are defined for an eNB, that
  * UEs can connect to each of these component carriers, not just the primary
  *
- * \sa ns3::LteSecondaryCellSelectionTestCase
+ * @sa ns3::LteSecondaryCellSelectionTestCase
  */
 class LteSecondaryCellSelectionTestSuite : public TestSuite
 {

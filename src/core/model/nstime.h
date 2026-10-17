@@ -11,7 +11,6 @@
 #include "assert.h"
 #include "attribute-helper.h"
 #include "attribute.h"
-#include "event-id.h"
 #include "int64x64.h"
 #include "type-name.h"
 
@@ -98,7 +97,7 @@ class CORE_EXPORT Time
     /**
      * The unit to use to interpret a number representing time
      */
-    enum Unit
+    enum Unit : int
     {
         Y = 0,     //!< year, 365 days
         D = 1,     //!< day, 24 hours
@@ -391,6 +390,11 @@ class CORE_EXPORT Time
         return ToDouble(Time::MIN);
     }
 
+    /**
+     * @copydoc GetYears()
+     * @hidecaller
+     * @hideref
+     */
     inline double GetSeconds() const
     {
         return ToDouble(Time::S);
@@ -576,7 +580,15 @@ class CORE_EXPORT Time
         int64_t v = m_data;
         if (info->toMul)
         {
-            v *= info->factor;
+            // Perform the multiplication in unsigned arithmetic to avoid signed
+            // integer overflow (undefined behavior) when the converted value does
+            // not fit in int64_t. The wraparound result matches both the previous
+            // behavior on two's-complement platforms and the FromInteger() path,
+            // which already multiplies in unsigned arithmetic.
+            // If there is no overflow, static_cast<int64_t> recovers the correct
+            // signed result via two's-complement bit reinterpretation.
+            v = static_cast<int64_t>(static_cast<uint64_t>(v) *
+                                     static_cast<uint64_t>(info->factor));
         }
         else
         {
@@ -645,6 +657,8 @@ class CORE_EXPORT Time
      *
      * @param [in] unit The unit to use.
      * @return The Time with embedded unit.
+     * @hidecaller
+     * @hideref
      */
     TimeWithUnit As(const Unit unit = Time::AUTO) const;
 
@@ -758,10 +772,20 @@ class CORE_EXPORT Time
      *  The inline Time ctors need to check if g_markingTimes is allocated
      *  before calling Mark(). Likewise, the dtor also needs to check before
      *  calling Clear(). On Windows, attempting to access g_markingTimes
-     *  directly from outside the compilation unit is an access violation so
-     *  this method is provided to work around that limitation.
+     *  directly from outside the compilation unit is an access violation, so
+     *  on that platform we fall back to a non-inline function call. On other
+     *  platforms (Linux, macOS, BSD, ...) the static is directly accessible,
+     *  so the check is inlined, since it fires on every Time construction,
+     *  copy, move and destruction.
      */
+#ifdef _WIN32
     static bool MarkingTimes();
+#else
+    static bool MarkingTimes() noexcept
+    {
+        return g_markingTimes != nullptr;
+    }
+#endif
 
   public:
     /**
@@ -771,6 +795,37 @@ class CORE_EXPORT Time
      */
     static bool StaticInit();
 
+    /**
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * @param other Time to compare to this one
+     * @returns The result of the comparison.
+     */
+    constexpr std::strong_ordering operator<=>(const Time& other) const = default;
+
+#ifdef NS_MSVC
+    /**
+     * Equality operator. Normally redundant when operator<=> is defaulted, so do
+     * not delete it as such: it is intentional. Declaring operator== ourselves
+     * (instead of letting the defaulted operator<=> synthesize it) prevents MSVC
+     * 18 (2026) from treating Time as trivially equality-comparable. That trait
+     * would otherwise lead the MSVC STL to select its vectorized std::find path
+     * (e.g. in wifi), which fails to compile because Time is not trivially
+     * copyable.
+     *
+     * The guard is deliberately the broad NS_MSVC rather than a version check:
+     * the operator is semantically identical to the defaulted one, so emitting
+     * it on every MSVC build is harmless.
+     *
+     * @param other Time to compare to this one
+     * @returns \c true if both Time instances have the same number of ticks.
+     */
+    constexpr bool operator==(const Time& other) const
+    {
+        return m_data == other.m_data;
+    }
+#endif
   private:
     /**
      * @cond HIDE_FROM_DOXYGEN
@@ -804,21 +859,6 @@ class CORE_EXPORT Time
      *  @param [in] unit The Unit to convert existing Times to.
      */
     static void ConvertTimes(const Unit unit);
-
-    // Operator and related functions which need access
-
-    /**
-     * @name Comparison operators
-     * @{
-     */
-    friend bool operator==(const Time& lhs, const Time& rhs);
-    friend bool operator!=(const Time& lhs, const Time& rhs);
-    friend bool operator<=(const Time& lhs, const Time& rhs);
-    friend bool operator>=(const Time& lhs, const Time& rhs);
-    friend bool operator<(const Time& lhs, const Time& rhs);
-    friend bool operator>(const Time& lhs, const Time& rhs);
-    friend bool operator<(const Time& time, const EventId& event);
-    /**@}*/ // Comparison operators
 
     /**
      * @name Arithmetic operators
@@ -889,107 +929,6 @@ typedef void (*Time)(Time oldValue, Time newValue);
  * @relates Time
  */
 static bool g_TimeStaticInit [[maybe_unused]] = Time::StaticInit();
-
-/**
- * Equality operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the two input values are equal.
- */
-inline bool
-operator==(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data == rhs.m_data;
-}
-
-/**
- * Inequality operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the two input values not are equal.
- */
-inline bool
-operator!=(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data != rhs.m_data;
-}
-
-/**
- * Less than or equal operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is less than or equal to the second input value.
- */
-inline bool
-operator<=(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data <= rhs.m_data;
-}
-
-/**
- * Greater than or equal operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is greater than or equal to the second input value.
- */
-inline bool
-operator>=(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data >= rhs.m_data;
-}
-
-/**
- * Less than operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is less than the second input value.
- */
-inline bool
-operator<(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data < rhs.m_data;
-}
-
-/**
- * Greater than operator for Time.
- * @param [in] lhs The first value
- * @param [in] rhs The second value
- * @returns \c true if the first input value is greater than the second input value.
- */
-inline bool
-operator>(const Time& lhs, const Time& rhs)
-{
-    return lhs.m_data > rhs.m_data;
-}
-
-/**
- * Compare a Time to an EventId.
- *
- * This is useful when you have cached a previously scheduled event:
- *
- *     m_event = Schedule (...);
- *
- * and later you want to know the relationship between that event
- * and some other Time `when`:
- *
- *     if (when < m_event) ...
- *
- * @param [in] time The Time operand.
- * @param [in] event The EventId
- * @returns \c true if \p time is before (less than) the
- *          time stamp of the EventId.
- */
-inline bool
-operator<(const Time& time, const EventId& event)
-{
-    // Negative Time is less than any possible EventId, which are all >= 0.
-    if (time.m_data < 0)
-    {
-        return true;
-    }
-    // Time must be >= 0 so casting to unsigned is safe.
-    return static_cast<uint64_t>(time.m_data) < event.GetTs();
-}
 
 /**
  * Addition operator for Time.
@@ -1365,6 +1304,11 @@ Minutes(int64x64_t value)
     return Time::From(value, Time::MIN);
 }
 
+/**
+ * @copydoc Years()
+ * @hidecaller
+ * @hideref
+ */
 inline Time
 Seconds(double value)
 {
@@ -1377,6 +1321,11 @@ Seconds(int64x64_t value)
     return Time::From(value, Time::S);
 }
 
+/**
+ * @copydoc Years()
+ * @hidecaller
+ * @hideref
+ */
 inline Time
 MilliSeconds(uint64_t value)
 {
@@ -1389,6 +1338,11 @@ MilliSeconds(int64x64_t value)
     return Time::From(value, Time::MS);
 }
 
+/**
+ * @copydoc Years()
+ * @hidecaller
+ * @hideref
+ */
 inline Time
 MicroSeconds(uint64_t value)
 {
@@ -1401,6 +1355,11 @@ MicroSeconds(int64x64_t value)
     return Time::From(value, Time::US);
 }
 
+/**
+ * @copydoc Years()
+ * @hidecaller
+ * @hideref
+ */
 inline Time
 NanoSeconds(uint64_t value)
 {

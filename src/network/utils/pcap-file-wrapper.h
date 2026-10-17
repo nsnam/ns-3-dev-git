@@ -17,6 +17,8 @@
 #include <cstring>
 #include <fstream>
 #include <limits>
+#include <map>
+#include <string>
 
 namespace ns3
 {
@@ -71,6 +73,19 @@ class PcapFileWrapper : public Object
      * Close the underlying pcap file.
      */
     void Close();
+
+    /**
+     * @brief Find a wrapper that currently has the given file open.
+     *
+     * Two interfaces given the same explicit pcap filename would otherwise each
+     * open and truncate the file through an independent wrapper, clobbering each
+     * other's records (see @issueid{1150}). This lets PcapHelper::CreateFile() share the
+     * existing wrapper instead, so both trace sinks write to one coherent file.
+     *
+     * @param filename The pcap file name to look up.
+     * @return A wrapper that currently has @p filename open, or nullptr if none.
+     */
+    static Ptr<PcapFileWrapper> FindOpenFile(const std::string& filename);
 
     /**
      * Initialize the pcap file associated with this wrapper.  This file must have
@@ -211,9 +226,17 @@ class PcapFileWrapper : public Object
     uint32_t GetDataLinkType();
 
   private:
-    PcapFile m_file;    //!< Pcap file
-    uint32_t m_snapLen; //!< max length of saved packets
-    bool m_nanosecMode; //!< Timestamps in nanosecond mode
+    PcapFile m_file;        //!< Pcap file
+    uint32_t m_snapLen;     //!< max length of saved packets
+    bool m_nanosecMode;     //!< Timestamps in nanosecond mode
+    std::string m_filename; //!< Name of the open file, while registered in m_openFiles
+
+    /**
+     * Non-owning registry of the wrappers that currently have a file open,
+     * keyed by file name. Entries are added on Open() and removed on Close()
+     * (and destruction), so the map only ever references live, open wrappers.
+     */
+    static std::map<std::string, PcapFileWrapper*> m_openFiles;
 };
 
 } // namespace ns3

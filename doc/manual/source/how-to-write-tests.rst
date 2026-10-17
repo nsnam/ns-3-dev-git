@@ -114,7 +114,7 @@ use the ``ASSERT`` variants.
 How to add an example program to the test suite
 ***********************************************
 
-There are two methods for adding an example program to the the test
+There are two methods for adding an example program to the test
 suite.  Normally an example is added using only one of these methods
 to avoid running the example twice.
 

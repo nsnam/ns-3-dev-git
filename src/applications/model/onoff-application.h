@@ -26,7 +26,6 @@ namespace ns3
 {
 
 class RandomVariableStream;
-class Socket;
 
 /**
  * @ingroup applications
@@ -103,26 +102,12 @@ class OnOffApplication : public SourceApplication
      */
     void SetMaxBytes(uint64_t maxBytes);
 
-    /**
-     * @brief Return a pointer to associated socket.
-     * @return pointer to associated socket
-     */
-    Ptr<Socket> GetSocket() const;
-
     int64_t AssignStreams(int64_t stream) override;
 
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
-
-    // helpers
-    /**
-     * @brief Cancel all pending events.
-     */
-    void CancelEvents();
+    void DoStartApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     // Event handlers
     /**
@@ -137,37 +122,6 @@ class OnOffApplication : public SourceApplication
      * @brief Send a packet
      */
     void SendPacket();
-
-    Ptr<Socket> m_socket;                //!< Associated socket
-    bool m_connected;                    //!< True if connected
-    Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
-    Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
-    DataRate m_cbrRate;                  //!< Rate that data is generated
-    DataRate m_cbrRateFailSafe;          //!< Rate that data is generated (check copy)
-    uint32_t m_pktSize;                  //!< Size of packets
-    uint32_t m_residualBits;             //!< Number of generated, but not sent, bits
-    Time m_lastStartTime;                //!< Time last packet sent
-    uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
-    uint64_t m_totBytes;                 //!< Total bytes sent so far
-    EventId m_startStopEvent;            //!< Event id for next start or stop event
-    EventId m_sendEvent;                 //!< Event id of pending "send packet" event
-    TypeId m_tid;                        //!< Type of the socket used
-    uint32_t m_seq{0};                   //!< Sequence
-    Ptr<Packet> m_unsentPacket;          //!< Unsent packet cached for future attempt
-    bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the use of SeqTsSizeHeader
-
-    /// Traced Callback: transmitted packets.
-    TracedCallback<Ptr<const Packet>> m_txTrace;
-
-    /// Callbacks for tracing the packet Tx events, includes source and destination addresses
-    TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_txTraceWithAddresses;
-
-    /// Callback for tracing the packet Tx events, includes source, destination, the packet sent,
-    /// and header
-    TracedCallback<Ptr<const Packet>, const Address&, const Address&, const SeqTsSizeHeader&>
-        m_txTraceWithSeqTsSize;
-
-  private:
     /**
      * @brief Schedule the next packet transmission
      */
@@ -180,16 +134,29 @@ class OnOffApplication : public SourceApplication
      * @brief Schedule the next Off period start
      */
     void ScheduleStopEvent();
-    /**
-     * @brief Handle a Connection Succeed event
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-    /**
-     * @brief Handle a Connection Failed event
-     * @param socket the not connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
+
+    Ptr<RandomVariableStream> m_onTime;  //!< rng for On Time
+    Ptr<RandomVariableStream> m_offTime; //!< rng for Off Time
+    DataRate m_cbrRate;                  //!< Rate that data is generated
+    DataRate m_cbrRateFailSafe;          //!< Rate that data is generated (check copy)
+    uint32_t m_pktSize;                  //!< Size of packets
+    uint32_t m_residualBits{0};          //!< Number of generated, but not sent, bits
+    Time m_lastStartTime;                //!< Time last packet sent
+    uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
+    uint64_t m_totBytes{0};              //!< Total bytes sent so far
+    EventId m_startStopEvent;            //!< Event id for next start or stop event
+    EventId m_sendEvent;                 //!< Event id of pending "send packet" event
+    uint32_t m_seq{0};                   //!< Sequence
+    Ptr<Packet> m_unsentPacket;          //!< Unsent packet cached for future attempt
+    bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the use of SeqTsSizeHeader
+
+    /// Callbacks for tracing the packet Tx events, includes source and destination addresses
+    TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_txTraceWithAddresses;
+
+    /// Callback for tracing the packet Tx events, includes source, destination, the packet sent,
+    /// and header
+    TracedCallback<Ptr<const Packet>, const Address&, const Address&, const SeqTsSizeHeader&>
+        m_txTraceWithSeqTsSize;
 
     TracedValue<bool> m_state; //!< State of application (0-OFF, 1-ON)
 };

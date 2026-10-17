@@ -35,7 +35,7 @@ Ipv6AddressTestCase::~Ipv6AddressTestCase()
 void
 Ipv6AddressTestCase::DoRun()
 {
-    Ipv6Address ip = Ipv6Address("2001:db8::1");
+    auto ip = Ipv6Address("2001:db8::1");
     uint8_t ipBytes[16];
     ip.Serialize(ipBytes);
     NS_TEST_ASSERT_MSG_EQ(ipBytes[0], 0x20, "Failed string conversion");
@@ -80,6 +80,11 @@ Ipv6AddressTestCase::DoRun()
     NS_TEST_ASSERT_MSG_EQ(ipBytes[3], 0xb8, "Failed string conversion");
     NS_TEST_ASSERT_MSG_EQ(ipBytes[7], 0x01, "Failed string conversion");
     NS_TEST_ASSERT_MSG_EQ(ipBytes[15], 1, "Failed string conversion");
+
+    // This test checks that we're not comparing the optional member variable.
+    Ipv6Address addr = ip;
+    ip.GetHash();
+    NS_TEST_ASSERT_MSG_EQ(ip, addr, "Failed address comparison");
 
     // Please add more tests below
 }

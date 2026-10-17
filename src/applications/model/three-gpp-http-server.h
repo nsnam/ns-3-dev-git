@@ -27,7 +27,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 class ThreeGppHttpVariables;
 class ThreeGppHttpServerTxBuffer;
@@ -143,15 +142,15 @@ class ThreeGppHttpServer : public SinkApplication
     void DoDispose() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoStopApplication() override;
     void SetLocal(const Address& addr) override;
     void SetPort(uint32_t port) override;
 
     // SOCKET CALLBACK METHODS
 
     /**
-     * Invoked when #m_initialSocket receives a connection request.
+     * Invoked when #m_socket receives a connection request.
      * @param socket Pointer to the socket where the event originates from.
      * @param address The address of the remote client where the connection
      *                request comes from.
@@ -179,7 +178,7 @@ class ThreeGppHttpServer : public SinkApplication
      */
     void ErrorCloseCallback(Ptr<Socket> socket);
     /**
-     * Invoked when #m_initialSocket receives some packet data. It will check the
+     * Invoked when #m_socket receives some packet data. It will check the
      * packet for ThreeGppHttpHeader. It also fires the `Rx` trace source.
      *
      * Depending on the type of object requested, the method will trigger
@@ -250,9 +249,7 @@ class ThreeGppHttpServer : public SinkApplication
     void SwitchToState(State_t state);
 
     /// The current state of the client application. Begins with NOT_STARTED.
-    State_t m_state;
-    /// The listening socket, for receiving connection requests from clients.
-    Ptr<Socket> m_initialSocket;
+    State_t m_state{NOT_STARTED};
     /// Pointer to the transmission buffer.
     Ptr<ThreeGppHttpServerTxBuffer> m_txBuffer;
 
@@ -280,8 +277,6 @@ class ThreeGppHttpServer : public SinkApplication
     TracedCallback<uint32_t> m_embeddedObjectTrace;
     /// The `Tx` trace source.
     TracedCallback<Ptr<const Packet>> m_txTrace;
-    /// The `Rx` trace source.
-    TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
     /// The `Rx` trace source with the local address.
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
     /// The `RxDelay` trace source.

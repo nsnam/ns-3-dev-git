@@ -249,8 +249,8 @@ class QueueBase : public Object
  * value for the template template parameter, instead of queue.h in your .h file.
  * Then, include queue.h in the corresponding .cc file.
  *
- * @tparam Item \explicit Type of the objects stored within the queue
- * @tparam Container \explicit Type of the container that stores queue items
+ * @tparam Item @explicit Type of the objects stored within the queue
+ * @tparam Container @explicit Type of the container that stores queue items
  */
 template <typename Item, typename Container>
 class Queue : public QueueBase
@@ -328,7 +328,7 @@ class Queue : public QueueBase
      * Push an item in the queue
      * @param pos the position before which the item will be inserted
      * @param item the item to enqueue
-     * \param[out] ret an iterator pointing to the inserted value
+     * @param [out] ret an iterator pointing to the inserted value
      * @return true if success, false if the packet has been dropped.
      */
     bool DoEnqueue(ConstIterator pos, Ptr<Item> item, Iterator& ret);

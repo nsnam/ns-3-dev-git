@@ -125,8 +125,20 @@ sources:
 * A Dequeue operation source (see ns3::Queue::m_traceDequeue);
 * A Drop operation source (see ns3::Queue::m_traceDrop).
 
-The upper-level (MAC) trace hooks for the PointToPointNetDevice are, in fact,
-exactly these three trace sources on the single transmit queue of the device.
+These three trace sources on the single transmit queue of the device can be
+used to observe MAC-level queueing behavior.
+
+In addition, the PointToPointNetDevice provides the standard set of MAC-level
+NetDevice trace sources:
+
+* ``MacTx``: Trace source for packets handed down from upper layers;
+* ``MacTxDrop``: Trace source for packets dropped by the device before transmission;
+* ``MacRx``: Trace source for packets successfully received in non-promiscuous mode;
+* ``MacPromiscRx``: Trace source for packets received in promiscuous mode and fired
+  only when a promiscuous receive callback is installed via
+  ``SetPromiscReceiveCallback``;
+* ``Sniffer`` / ``PromiscSniffer``: Trace sources simulating non-promiscuous
+  and promiscuous packet sniffers.
 
 The m_traceEnqueue event is triggered when a packet is placed on the transmit
 queue. This happens at the time that ns3::PointtoPointNetDevice::Send or

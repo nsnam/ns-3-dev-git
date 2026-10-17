@@ -5,26 +5,27 @@
   extends: .base-build
   except:
     variables:
-      - $CPPYY == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
   image: archlinux
   before_script:
     - pacman-key --init
+    - pacman -Sy archlinux-keyring --noconfirm
     - pacman -Syu --noconfirm
       base-devel gcc clang libc++ cmake ninja ccache
       python
-      boost gsl gtk3 openmpi
+      boost gsl gtk3 openmpi eigen
       openssh git
 
 # Build stage
-per-commit-clang-optimized-libc++:
+per-commit-clang-release-libc++:
   extends: .base-per-commit-compile
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: clang++
     CXXFLAGS: -stdlib=libc++
+    EXTRA_OPTIONS: --disable-gtk
 
 per-commit-gcc-debug:
   extends: .base-per-commit-compile
@@ -32,6 +33,9 @@ per-commit-gcc-debug:
   variables:
     MODE: debug
     COMPILER: g++
+  # override the exceptions, so run the job also on weekly and daily pipelines.
+  # this is necessary for the doxygen job, which is using this job's artifacts.
+  except: null
 
 per-commit-gcc-default:
   extends: .base-per-commit-compile
@@ -40,11 +44,11 @@ per-commit-gcc-default:
     MODE: default
     COMPILER: g++
 
-per-commit-gcc-optimized:
+per-commit-gcc-release:
   extends: .base-per-commit-compile
   stage: build
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: g++
 
 per-commit-disabled-precompiled-headers:
@@ -61,7 +65,7 @@ per-commit-clang-disabled-asserts-logs:
   variables:
     MODE: debug
     COMPILER: clang++
-    EXTRA_OPTIONS: --disable-asserts --disable-logs
+    EXTRA_OPTIONS: --disable-asserts --disable-logs --disable-gtk
 
 # Test stage
 per-commit-gcc-default-test:
@@ -74,23 +78,24 @@ per-commit-gcc-default-test:
     MODE: default
     COMPILER: g++
 
-per-commit-gcc-optimized-test:
+per-commit-gcc-release-test:
   extends: .base-per-commit-compile
   stage: test
-  needs: ["per-commit-gcc-optimized"]
+  needs: ["per-commit-gcc-release"]
   dependencies:
-    - per-commit-gcc-optimized
+    - per-commit-gcc-release
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: g++
 
-per-commit-clang-optimized-libc++-test:
+per-commit-clang-release-libc++-test:
   extends: .base-per-commit-compile
   stage: test
-  needs: ["per-commit-clang-optimized-libc++"]
+  needs: ["per-commit-clang-release-libc++"]
   dependencies:
-    - per-commit-clang-optimized-libc++
+    - per-commit-clang-release-libc++
   variables:
-    MODE: optimized
+    MODE: release
     COMPILER: clang++
     CXXFLAGS: -stdlib=libc++
+    EXTRA_OPTIONS: --disable-gtk

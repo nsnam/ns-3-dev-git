@@ -45,7 +45,7 @@ namespace ns3
 class int64x64_t
 {
     /// uint128_t high bit (sign bit).
-    static const uint128_t HP128_MASK_HI_BIT = (((int128_t)1) << 127);
+    static const uint128_t HP128_MASK_HI_BIT = (static_cast<int128_t>(1) << 127);
     /// Mask for fraction part.
     static const uint64_t HP_MASK_LO = 0xffffffffffffffffULL;
 
@@ -87,7 +87,7 @@ class int64x64_t
      */
     inline int64x64_t(const double value)
     {
-        const int64x64_t tmp((long double)value);
+        const int64x64_t tmp(static_cast<long double>(value));
         _v = tmp._v;
     }
 
@@ -177,7 +177,7 @@ class int64x64_t
      */
     explicit inline int64x64_t(const int64_t hi, const uint64_t lo)
     {
-        _v = (int128_t)hi << 64;
+        _v = static_cast<int128_t>(hi) << 64;
         _v |= lo;
     }
 

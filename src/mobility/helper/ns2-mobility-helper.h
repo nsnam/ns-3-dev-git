@@ -30,7 +30,7 @@ class ConstantVelocityMobilityModel;
  * as described in http://www.isi.edu/nsnam/ns/doc/node172.html
  *
  * Valid trace files use the following ns2 statements:
- \verbatim
+ @verbatim
    $node set X_ x1
    $node set Y_ y1
    $node set Z_ z1
@@ -38,11 +38,11 @@ class ConstantVelocityMobilityModel;
    $ns at $time $node set X_ x1
    $ns at $time $node set Y_ Y1
    $ns at $time $node set Z_ Z1
- \endverbatim
+ @endverbatim
  *
  * Note that initial position statements may also appear at the end of
  * the mobility file like this:
- \verbatim
+ @verbatim
    $ns at $time $node setdest x2 y2 speed
    $ns at $time $node set X_ x1
    $ns at $time $node set Y_ Y1
@@ -50,7 +50,7 @@ class ConstantVelocityMobilityModel;
    $node set X_ x1
    $node set Y_ y1
    $node set Z_ z1
- \endverbatim
+ @endverbatim
  *
  * The following tools are known to support this format:
  *  - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/

@@ -9,6 +9,7 @@
 #ifndef HE_RU_H
 #define HE_RU_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-common.h"
 
 #include <cstdint>
@@ -22,7 +23,7 @@ namespace ns3
 /**
  * This class stores the subcarrier groups of all the available HE RUs.
  */
-class HeRu
+class WIFI_EXPORT HeRu
 {
   public:
     /**
@@ -33,7 +34,7 @@ class HeRu
      * of RUs of the given type in a channel of the considered width), so that this class
      * contains all the information needed to locate the RU in a 160 MHz channel.
      */
-    class RuSpec
+    class WIFI_EXPORT RuSpec
     {
       public:
         /**
@@ -77,26 +78,12 @@ class HeRu
         std::size_t GetPhyIndex(MHz_u bw, uint8_t p20Index) const;
 
         /**
-         * Compare this RU to the given RU.
+         * Default three-way comparison
          *
-         * @param other the given RU
-         * @return true if this RU compares equal to the given RU, false otherwise
+         * @param rhs right hand side
+         * @return deduced comparison type
          */
-        bool operator==(const RuSpec& other) const;
-        /**
-         * Compare this RU to the given RU.
-         *
-         * @param other the given RU
-         * @return true if this RU differs from the given RU, false otherwise
-         */
-        bool operator!=(const RuSpec& other) const;
-        /**
-         * Compare this RU to the given RU.
-         *
-         * @param other the given RU
-         * @return true if this RU is smaller than the given RU, false otherwise
-         */
-        bool operator<(const RuSpec& other) const;
+        auto operator<=>(const RuSpec& rhs) const = default;
 
       private:
         RuType m_ruType{};     //!< RU type
@@ -209,8 +196,8 @@ class HeRu
      * @param bandwidth the channel bandwidth
      * @param nStations the number of candidate stations. On return, it is set to
      *                  the number of stations that are assigned an RU
-     * \param[out] nCentral26TonesRus the number of additional 26-tone RUs that can be
-     *                                allocated if the returned RU size is greater than 26 tones
+     * @param [out] nCentral26TonesRus the number of additional 26-tone RUs that can be
+     *                                 allocated if the returned RU size is greater than 26 tones
      * @return the RU type
      */
     static RuType GetEqualSizedRusForStations(MHz_u bandwidth,
@@ -258,7 +245,7 @@ class HeRu
  * @param ru the RU
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const HeRu::RuSpec& ru);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const HeRu::RuSpec& ru);
 
 } // namespace ns3
 

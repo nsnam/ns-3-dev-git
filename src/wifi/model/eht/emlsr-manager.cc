@@ -181,7 +181,7 @@ EmlsrManager::SetWifiMac(Ptr<StaWifiMac> mac)
     m_staMac = mac;
 
     NS_ABORT_MSG_IF(!m_staMac->GetEhtConfiguration(), "EmlsrManager requires EHT support");
-    NS_ABORT_MSG_IF(!m_staMac->GetEhtConfiguration()->m_emlsrActivated,
+    NS_ABORT_MSG_IF(!m_staMac->GetEhtConfiguration()->GetEmlsrActivated(),
                     "EmlsrManager requires EMLSR to be activated");
     NS_ABORT_MSG_IF(m_staMac->GetTypeOfStation() != STA,
                     "EmlsrManager can only be installed on non-AP MLDs");
@@ -1227,7 +1227,8 @@ EmlsrManager::TxOk(Ptr<const WifiMpdu> mpdu)
             NS_ASSERT_MSG(m_emlsrTransitionTimeout, "No transition timeout received from AP");
             m_transitionTimeoutEvent = Simulator::Schedule(*m_emlsrTransitionTimeout,
                                                            &EmlsrManager::ChangeEmlsrMode,
-                                                           this);
+                                                           this,
+                                                           *mpdu->GetInFlightLinkIds().cbegin());
         }
     }
 }
@@ -1265,9 +1266,9 @@ EmlsrManager::TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu)
 }
 
 void
-EmlsrManager::ChangeEmlsrMode()
+EmlsrManager::ChangeEmlsrMode(uint8_t txLinkId)
 {
-    NS_LOG_FUNCTION(this);
+    NS_LOG_FUNCTION(this << txLinkId);
 
     // After the successful transmission of the EML Operating Mode Notification frame by the
     // non-AP STA affiliated with the non-AP MLD, the non-AP MLD shall operate in the EMLSR mode
@@ -1282,7 +1283,7 @@ EmlsrManager::ChangeEmlsrMode()
 
     // Make other non-AP STAs operating on the corresponding EMLSR links transition to
     // active mode or passive mode (depending on whether EMLSR mode has been enabled or disabled)
-    m_staMac->NotifyEmlsrModeChanged(m_emlsrLinks);
+    m_staMac->NotifyEmlsrModeChanged(txLinkId, m_emlsrLinks);
     // Enforce the limit on the max channel width supported by aux PHYs
     ApplyMaxChannelWidthAndModClassOnAuxPhys();
 

@@ -18,7 +18,6 @@ using namespace ns3;
  */
 class HistogramTestCase : public ns3::TestCase
 {
-  private:
   public:
     HistogramTestCase();
     void DoRun() override;

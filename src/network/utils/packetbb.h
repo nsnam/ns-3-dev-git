@@ -189,12 +189,6 @@ class PbbTlvBlock
      * @returns true if the blocks are equal
      */
     bool operator==(const PbbTlvBlock& other) const;
-    /**
-     * @brief Inequality operator for PbbTlvBlock
-     * @param other PbbTlvBlock to compare this one to
-     * @returns true if the blocks are not equal
-     */
-    bool operator!=(const PbbTlvBlock& other) const;
 
   private:
     std::list<Ptr<PbbTlv>> m_tlvList; //!< PbbTlv container
@@ -355,13 +349,6 @@ class PbbAddressTlvBlock
      * @returns true if PbbAddressTlvBlock are equal
      */
     bool operator==(const PbbAddressTlvBlock& other) const;
-
-    /**
-     * @brief Inequality operator for PbbAddressTlvBlock
-     * @param other PbbAddressTlvBlock to compare to this one
-     * @returns true if PbbAddressTlvBlock are not equal
-     */
-    bool operator!=(const PbbAddressTlvBlock& other) const;
 
   private:
     std::list<Ptr<PbbAddressTlv>> m_tlvList; //!< PbbAddressTlv container
@@ -666,14 +653,6 @@ class PbbPacket : public SimpleRefCount<PbbPacket, Header>
      */
     bool operator==(const PbbPacket& other) const;
 
-    /**
-     * @brief Inequality operator for PbbPacket
-     * @param other PbbPacket to compare to this one
-     * @returns true if PbbPacket are not equal
-     */
-    bool operator!=(const PbbPacket& other) const;
-
-  protected:
   private:
     PbbTlvBlock m_tlvList;                    //!< PbbTlv container
     std::list<Ptr<PbbMessage>> m_messageList; //!< PbbTlvBlock container
@@ -1056,12 +1035,6 @@ class PbbMessage : public SimpleRefCount<PbbMessage>
      * @returns true if PbbMessages are equal
      */
     bool operator==(const PbbMessage& other) const;
-    /**
-     * @brief Inequality operator for PbbMessage
-     * @param other PbbMessage to compare to this one
-     * @returns true if PbbMessages are not equal
-     */
-    bool operator!=(const PbbMessage& other) const;
 
   protected:
     /**
@@ -1546,13 +1519,6 @@ class PbbAddressBlock : public SimpleRefCount<PbbAddressBlock>
      */
     bool operator==(const PbbAddressBlock& other) const;
 
-    /**
-     * @brief Inequality operator for PbbAddressBlock
-     * @param other PbbAddressBlock to compare to this one
-     * @returns true if PbbAddressBlock are not equal
-     */
-    bool operator!=(const PbbAddressBlock& other) const;
-
   protected:
     /**
      * @brief Returns address length
@@ -1777,13 +1743,6 @@ class PbbTlv : public SimpleRefCount<PbbTlv>
      * @returns true if PbbTlv are equal
      */
     bool operator==(const PbbTlv& other) const;
-
-    /**
-     * @brief Inequality operator for PbbTlv
-     * @param other PbbTlv to compare to this one
-     * @returns true if PbbTlv are not equal
-     */
-    bool operator!=(const PbbTlv& other) const;
 
   protected:
     /**

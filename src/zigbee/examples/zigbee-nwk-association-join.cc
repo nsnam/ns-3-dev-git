@@ -163,7 +163,7 @@ main(int argc, char* argv[])
     //// Configure the Zigbee Stack and use only the NWK layer
 
     ZigbeeHelper zigbeeHelper;
-    zigbeeHelper.SetNwkLayerOnly();
+    zigbeeHelper.SetLayers(StackLayers::ONLY_NWK);
     ZigbeeStackContainer zigbeeStackContainer = zigbeeHelper.Install(lrwpanDevices);
 
     Ptr<ZigbeeStack> zstack0 = zigbeeStackContainer.Get(0)->GetObject<ZigbeeStack>();

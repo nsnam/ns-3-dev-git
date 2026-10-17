@@ -22,7 +22,6 @@
 
 #include <cmath>
 #include <ctime>
-#include <fstream>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_histogram.h>
 #include <gsl/gsl_randist.h>
@@ -55,11 +54,13 @@ class TestCaseBase : public TestCase
 {
   public:
     /** Number of bins for sampling the distributions. */
-    static const uint32_t N_BINS{50};
+    static constexpr uint32_t N_BINS{50};
     /** Number of samples to draw when populating the distributions. */
-    static const uint32_t N_MEASUREMENTS{1000000};
+    static constexpr uint32_t N_MEASUREMENTS{1000000};
     /** Number of retry attempts to pass a chi-square test. */
-    static const uint32_t N_RUNS{5};
+    static constexpr uint32_t N_RUNS{5};
+    /** Expected density for uniform distribution over N_BINS. */
+    static constexpr double EXPECTED_DENSITY{static_cast<double>(N_MEASUREMENTS) / N_BINS};
 
     /**
      * Constructor
@@ -290,7 +291,7 @@ class TestCaseBase : public TestCase
             double result = ChiSquaredTest(rng);
             sum += result;
         }
-        sum /= (double)nRuns;
+        sum /= nRuns;
         return sum;
     }
 
@@ -387,7 +388,7 @@ UniformTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
     // the default range for this distribution.
     gsl_histogram_set_ranges_uniform(h, 0., 1.);
 
-    std::vector<double> expected(N_BINS, ((double)N_MEASUREMENTS / (double)N_BINS));
+    std::vector<double> expected(N_BINS, EXPECTED_DENSITY);
 
     double chiSquared = ChiSquared(h, expected, rng);
     gsl_histogram_free(h);
@@ -509,7 +510,7 @@ UniformAntitheticTestCase::ChiSquaredTest(Ptr<RandomVariableStream> rng) const
     // the default range for this distribution.
     gsl_histogram_set_ranges_uniform(h, 0., 1.);
 
-    std::vector<double> expected(N_BINS, ((double)N_MEASUREMENTS / (double)N_BINS));
+    std::vector<double> expected(N_BINS, EXPECTED_DENSITY);
 
     double chiSquared = ChiSquared(h, expected, rng);
     gsl_histogram_free(h);
@@ -738,6 +739,23 @@ NormalTestCase::DoRun()
     // normally distributed random variable is equal to mean.
     double expectedMean = mean;
     double expectedRms = mean / std::sqrt(variance * N_MEASUREMENTS);
+
+    // Test that values have approximately the right mean value.
+    NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
+                              expectedMean,
+                              expectedRms * TOLERANCE,
+                              "Wrong mean value.");
+
+    // Repeat test when setting via stddev attribute instead of variance
+    x->SetStdDev(sqrt(variance));
+
+    // Calculate the mean of these values.
+    valueMean = Average(x);
+
+    // The expected value for the mean of the values returned by a
+    // normally distributed random variable is equal to mean.
+    expectedMean = mean;
+    expectedRms = mean / std::sqrt(variance * N_MEASUREMENTS);
 
     // Test that values have approximately the right mean value.
     NS_TEST_ASSERT_MSG_EQ_TOL(valueMean,
@@ -2888,7 +2906,7 @@ BinomialAntitheticTestCase::DoRun()
 }
 
 /**
- * @ingroup rng-test
+ * @ingroup rng-tests
  * @ingroup tests
  *
  * @brief Test the Shuffle function

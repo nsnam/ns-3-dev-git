@@ -153,6 +153,9 @@ operator<<(std::ostream& os, LteSpectrumPhy::State s)
     case LteSpectrumPhy::RX_DL_CTRL:
         os << "RX_DL_CTRL";
         break;
+    case LteSpectrumPhy::RX_UL_SRS:
+        os << "RX_UL_SRS";
+        break;
     case LteSpectrumPhy::TX_DATA:
         os << "TX_DATA";
         break;

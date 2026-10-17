@@ -20,7 +20,7 @@ NS_LOG_COMPONENT_DEFINE("Ipv6InterfaceAddress");
 
 Ipv6InterfaceAddress::Ipv6InterfaceAddress()
     : m_address(Ipv6Address()),
-      m_prefix(Ipv6Prefix()),
+      m_prefixLength(0),
       m_state(TENTATIVE_OPTIMISTIC),
       m_scope(HOST),
       m_onLink(true),
@@ -32,7 +32,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress()
 Ipv6InterfaceAddress::Ipv6InterfaceAddress(Ipv6Address address)
 {
     NS_LOG_FUNCTION(this << address);
-    m_prefix = Ipv6Prefix(64);
+    m_prefixLength = 64;
     SetAddress(address);
     SetState(TENTATIVE_OPTIMISTIC);
     m_onLink = true;
@@ -42,7 +42,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress(Ipv6Address address)
 Ipv6InterfaceAddress::Ipv6InterfaceAddress(Ipv6Address address, Ipv6Prefix prefix)
 {
     NS_LOG_FUNCTION(this << address << prefix);
-    m_prefix = prefix;
+    m_prefixLength = prefix.GetPrefixLength();
     SetAddress(address);
     SetState(TENTATIVE_OPTIMISTIC);
     m_onLink = true;
@@ -52,7 +52,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress(Ipv6Address address, Ipv6Prefix prefi
 Ipv6InterfaceAddress::Ipv6InterfaceAddress(Ipv6Address address, Ipv6Prefix prefix, bool onLink)
 {
     NS_LOG_FUNCTION(this << address << prefix << onLink);
-    m_prefix = prefix;
+    m_prefixLength = prefix.GetPrefixLength();
     SetAddress(address);
     SetState(TENTATIVE_OPTIMISTIC);
     m_onLink = onLink;
@@ -61,7 +61,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress(Ipv6Address address, Ipv6Prefix prefi
 
 Ipv6InterfaceAddress::Ipv6InterfaceAddress(const Ipv6InterfaceAddress& o)
     : m_address(o.m_address),
-      m_prefix(o.m_prefix),
+      m_prefixLength(o.m_prefixLength),
       m_state(o.m_state),
       m_scope(o.m_scope),
       m_onLink(o.m_onLink),
@@ -91,19 +91,19 @@ Ipv6InterfaceAddress::SetAddress(Ipv6Address address)
     {
         m_scope = HOST;
         /* localhost address is always /128 prefix */
-        m_prefix = Ipv6Prefix(128);
+        m_prefixLength = 128;
     }
     else if (address.IsLinkLocal())
     {
         m_scope = LINKLOCAL;
         /* link-local address is always /64 prefix */
-        m_prefix = Ipv6Prefix(64);
+        m_prefixLength = 64;
     }
     else if (address.IsLinkLocalMulticast())
     {
         m_scope = LINKLOCAL;
         /* link-local multicast address is always /16 prefix */
-        m_prefix = Ipv6Prefix(16);
+        m_prefixLength = 16;
     }
     else
     {
@@ -115,7 +115,14 @@ Ipv6Prefix
 Ipv6InterfaceAddress::GetPrefix() const
 {
     NS_LOG_FUNCTION(this);
-    return m_prefix;
+    return Ipv6Prefix(m_prefixLength);
+}
+
+uint8_t
+Ipv6InterfaceAddress::GetPrefixLength() const
+{
+    NS_LOG_FUNCTION(this);
+    return m_prefixLength;
 }
 
 void
@@ -151,10 +158,13 @@ Ipv6InterfaceAddress::IsInSameSubnet(Ipv6Address b) const
 {
     NS_LOG_FUNCTION(this);
 
+    Ipv6Prefix prefix(m_prefixLength);
+
     Ipv6Address aAddr = m_address;
-    aAddr = aAddr.CombinePrefix(m_prefix);
+    aAddr = aAddr.CombinePrefix(prefix);
+
     Ipv6Address bAddr = b;
-    bAddr = bAddr.CombinePrefix(m_prefix);
+    bAddr = bAddr.CombinePrefix(prefix);
 
     if (aAddr == bAddr)
     {

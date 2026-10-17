@@ -12,6 +12,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-utils.h"
 
 #include <list>
@@ -45,7 +46,7 @@ enum class WifiTidToLinkMappingNegSupport : uint8_t
  * @param [in] negsupport The WifiTidToLinkMappingNegSupport.
  * @return The reference to the output stream.
  */
-std::ostream& operator<<(std::ostream& os, WifiTidToLinkMappingNegSupport negsupport);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiTidToLinkMappingNegSupport negsupport);
 
 /**
  * @brief EHT configuration
@@ -55,7 +56,7 @@ std::ostream& operator<<(std::ostream& os, WifiTidToLinkMappingNegSupport negsup
  * AP or STA behavior and for constructing EHT-related information elements.
  *
  */
-class EhtConfiguration : public Object
+class WIFI_EXPORT EhtConfiguration : public Object
 {
   public:
     EhtConfiguration();
@@ -82,7 +83,13 @@ class EhtConfiguration : public Object
     void SetTidLinkMapping(WifiDirection dir,
                            const std::map<std::list<uint8_t>, std::list<uint8_t>>& mapping);
 
-    bool m_emlsrActivated;       //!< whether EMLSR option is activated
+    /**
+     * Get whether EMLSR option is activated
+     *
+     * @return true if EMLSR option is activated, false otherwise
+     */
+    bool GetEmlsrActivated() const;
+
     Time m_transitionTimeout;    //!< Transition timeout
     Time m_mediumSyncDuration;   //!< duration of the MediumSyncDelay timer
     int8_t m_msdOfdmEdThreshold; //!< MediumSyncDelay OFDM ED threshold
@@ -94,6 +101,9 @@ class EhtConfiguration : public Object
     std::map<std::list<uint64_t>, std::list<uint64_t>>
         m_linkMappingUl;                 //!< TIDs-indexed Link Mapping for uplink
     dB_u m_per20CcaSensitivityThreshold; //!< CCA threshold for Per 20MHz check
+
+  private:
+    bool m_emlsrActivated; //!< whether EMLSR option is activated
 };
 
 } // namespace ns3

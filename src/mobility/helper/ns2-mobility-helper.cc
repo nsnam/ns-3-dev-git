@@ -262,7 +262,7 @@ Ns2MobilityHelper::ConfigNodesMovements(const ObjectStore& store) const
     // Parse the file the first time to get the initial node positions.
     //*****************************************************************
 
-    // Look through the whole the file for the the initial node
+    // Look through the whole the file for the initial node
     // positions to make this helper robust to handle trace files with
     // the initial node positions at the end.
     std::ifstream file(m_filename, std::ios::in);
@@ -781,8 +781,8 @@ SetMovement(Ptr<ConstantVelocityMobilityModel> model,
     if (speed > 0)
     {
         // first calculate the time; time = distance / speed
-        double time = std::sqrt(std::pow(xFinalPosition - retval.m_finalPosition.x, 2) +
-                                std::pow(yFinalPosition - retval.m_finalPosition.y, 2)) /
+        double time = std::hypot(xFinalPosition - retval.m_finalPosition.x,
+                                 yFinalPosition - retval.m_finalPosition.y) /
                       speed;
         NS_LOG_DEBUG("at=" << at << " time=" << time);
         if (time == 0)

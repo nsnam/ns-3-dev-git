@@ -38,7 +38,7 @@ of Python, please keep the possibility of a virtualenv in mind if you run into P
 For a short guide on virtual environments, please see
 `this link <https://www.dataquest.io/blog/a-complete-guide-to-python-virtual-environments/>`_.
 
-Due to an `upstream limitation with Cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings do not work on macOS machines with Apple silicon (M1 and M2 processors).
+Due to an `upstream limitation with Cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings did not work with |ns3| versions older than ns-3.42, but they should work with more recent |ns3| releases.
 
 Requirements
 ************
@@ -118,8 +118,6 @@ Optional
 
 Please see below subsections for Python-related package requirements.
 
-For MacPorts packages we show the most recent package version available as of early 2023.
-
 +-----------------------------+----------------------------------+--------------------------+
 | **Feature**                 | **Homebrew packages**            | **MacPort packages**     |
 +=============================+==================================+==========================+
@@ -127,7 +125,7 @@ For MacPorts packages we show the most recent package version available as of ea
 +-----------------------------+----------------------------------+--------------------------+
 | Database support            | ``sqlite``                       | ``sqlite3``              |
 +-----------------------------+----------------------------------+--------------------------+
-| NetAnim animator            | ``qt@5``                         | ``qt513``                |
+| NetAnim animator            | ``qt@5``                         | ``qt59``                 |
 +-----------------------------+----------------------------------+--------------------------+
 | MPI-based distributed       |                                  | ``openmpi``              |
 | simulation                  | ``open-mpi``                     |                          |
@@ -142,7 +140,7 @@ For MacPorts packages we show the most recent package version available as of ea
 |                             |                                  | `XX`` the Python minor   |
 |                             |                                  | version such as `12`     |
 +-----------------------------+----------------------------------+--------------------------+
-| Eigen3                      | ``eigen``                        | ``eigen3``               |
+| Eigen3                      | ``eigen@3``                      | ``eigen3``               |
 +-----------------------------+----------------------------------+--------------------------+
 | GNU Scientific Library      | ``gsl``                          | ``gsl``                  |
 +-----------------------------+----------------------------------+--------------------------+

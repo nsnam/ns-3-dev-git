@@ -353,7 +353,7 @@ EhtPhy::GetPhyRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uin
 {
     const auto codeRate = GetCodeRate(mcsValue);
     const auto dataRate = GetDataRate(mcsValue, channelWidth, guardInterval, nss);
-    return HtPhy::CalculatePhyRate(codeRate, dataRate);
+    return HePhy::CalculatePhyRate(codeRate, dataRate);
 }
 
 uint64_t
@@ -387,8 +387,8 @@ EhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t staId /* 
 uint64_t
 EhtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT((gi == 800) || (gi == 1600) || (gi == 3200));
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211be),
+                  "Invalid EHT guard interval " << guardInterval.As(Time::NS));
     NS_ASSERT(nss <= 8);
     return HtPhy::CalculateDataRate(GetSymbolDuration(guardInterval),
                                     GetUsableSubcarriers(channelWidth),
@@ -426,6 +426,12 @@ EhtPhy::CalculateNonHtReferenceRate(WifiCodeRate codeRate, uint16_t constellatio
         dataRate = HePhy::CalculateNonHtReferenceRate(codeRate, constellationSize);
     }
     return dataRate;
+}
+
+uint32_t
+EhtPhy::GetMaxPsduSize() const
+{
+    return WIFI_PSDU_MAX_LENGTH_EHT;
 }
 
 dBm_u
@@ -527,7 +533,7 @@ EhtPhy::GetPer20MHzDurations(const Ptr<const WifiPpdu> ppdu)
          * aCCATime after the signal starts and shall continue to indicate the 20 MHz subchannel is
          * busy while the threshold continues to be exceeded.
          */
-        dBm_u ccaThreshold = -62;
+        dBm_u ccaThreshold = m_wifiPhy->GetCcaEdThreshold();
         auto delayUntilCcaEnd = GetDelayUntilCcaEnd(ccaThreshold, band);
 
         if (ppdu)

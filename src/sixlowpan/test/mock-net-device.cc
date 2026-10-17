@@ -120,6 +120,19 @@ MockNetDevice::GetMtu() const
     return m_mtu;
 }
 
+uint16_t
+MockNetDevice::GetPaddingThreshold() const
+{
+    return m_paddingThreshold;
+}
+
+void
+MockNetDevice::SetPaddingThreshold(uint16_t paddingThreshold)
+{
+    NS_LOG_FUNCTION(this << paddingThreshold);
+    m_paddingThreshold = paddingThreshold;
+}
+
 bool
 MockNetDevice::IsLinkUp() const
 {

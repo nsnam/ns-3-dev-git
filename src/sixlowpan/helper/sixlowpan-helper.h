@@ -9,8 +9,13 @@
 #ifndef SIXLOWPAN_HELPER_H
 #define SIXLOWPAN_HELPER_H
 
+#include "ns3/abort.h"
 #include "ns3/net-device-container.h"
+#include "ns3/nstime.h"
 #include "ns3/object-factory.h"
+#include "ns3/output-stream-wrapper.h"
+#include "ns3/ptr.h"
+#include "ns3/sixlowpan-mesh-under-routing.h"
 
 #include <string>
 
@@ -20,6 +25,8 @@ namespace ns3
 class Node;
 class AttributeValue;
 class Time;
+class Ipv6InterfaceContainer;
+class Icmpv6OptionSixLowPanCapabilityIndication;
 
 /**
  * @ingroup sixlowpan
@@ -41,6 +48,30 @@ class SixLowPanHelper
      * @param v1 [in] The value of the attribute to set.
      */
     void SetDeviceAttribute(std::string n1, const AttributeValue& v1);
+
+    /**
+     * @brief Select the mesh-under forwarding policy for installed devices.
+     *
+     * Each SixLowPanNetDevice created by a subsequent Install() call is
+     * given its own instance of the chosen policy (a subclass of
+     * SixLowPanMeshUnderRouting). If this method is never called, devices
+     * keep the default from the MeshUnderRouting attribute
+     * (SixLowPanSimpleFlooding).
+     *
+     * The policy governs the forwarding of received mesh-under frames.
+     * A device takes part in a mesh-under network when its UseMeshUnder
+     * attribute is enabled (MESH and BC0 headers on sent packets, received
+     * mesh frames decoded), and it relays received mesh frames only when
+     * ForwardMesh is also enabled. A device without UseMeshUnder receiving a
+     * mesh frame reports a misconfiguration and drops it.
+     *
+     * @tparam Args Name/AttributeValue argument pairs.
+     * @param [in] type The policy TypeId, e.g. "ns3::SixLowPanSimpleFlooding".
+     * @param [in] args Optional name/AttributeValue pairs forwarded to the
+     *                  policy's ObjectFactory.
+     */
+    template <typename... Args>
+    void SetMeshUnderRouting(std::string type, Args&&... args);
 
     /**
      * @brief Install the SixLoWPAN stack on top of an existing NetDevice.
@@ -130,9 +161,129 @@ class SixLowPanHelper
      */
     int64_t AssignStreams(NetDeviceContainer c, int64_t stream);
 
+    /**
+     * @brief Install the SixLoWPAN-ND stack, associate it with a NetDevice, and set it as a 6LBR.
+     *
+     * @note IPv6 stack must NOT be installed \a after this function, because it has been already
+     * set up.
+     *
+     * @param [in] c The NetDevice container.
+     * @param [in] baseAddr The prefix to be announced by the 6LBR.
+     * @return A container of the addresses assigned to the NetDevices.
+     */
+    Ipv6InterfaceContainer InstallSixLowPanNdBorderRouter(NetDeviceContainer c,
+                                                          Ipv6Address baseAddr);
+
+    /**
+     * @brief Install the SixLoWPAN-ND stack, associate it with a NetDevice, and set it as a 6LN.
+     * @note IPv6 stack must NOT be installed \a after this function, because it has been already
+     * set up.
+     *
+     * @param [in] c The NetDevice container.
+     * @return A container of the addresses assigned to the NetDevices.
+     */
+    Ipv6InterfaceContainer InstallSixLowPanNdNode(NetDeviceContainer c);
+
+    /**
+     * @brief Add a new prefix to be advertised by 6LoWPAN-ND.
+     * @param [in] nd The NetDevice.
+     * @param prefix announced IPv6 prefix
+     */
+    void SetAdvertisedPrefix(const Ptr<NetDevice> nd, Ipv6Prefix prefix);
+
+    /**
+     * @brief Add a new context to be advertised by 6LoWPAN-ND.
+     * @param [in] nd The NetDevice.
+     * @param context announced IPv6 context
+     */
+    void AddAdvertisedContext(const Ptr<NetDevice> nd, Ipv6Prefix context);
+
+    /**
+     * @brief Remove a context advertised by 6LoWPAN-ND.
+     * @param [in] nd The NetDevice.
+     * @param context announced IPv6 context
+     */
+    void RemoveAdvertisedContext(const Ptr<NetDevice> nd, Ipv6Prefix context);
+
+    /**
+     * @brief Add a Capability Indication to be advertised by 6LoWPAN-ND.
+     * @param [in] nd The NetDevice.
+     * @param capability announced Node capability
+     */
+    void SetCapabilityIndication(const Ptr<NetDevice> nd,
+                                 Icmpv6OptionSixLowPanCapabilityIndication capability);
+
+    /**
+     * @brief Print the binding table of all nodes at a specific time.
+     * @param printTime the time at which the binding table is printed.
+     * @param stream the output stream wrapper used for printing.
+     * @param unit the time unit to be used in the report.
+     */
+    static void PrintBindingTableAllAt(Time printTime,
+                                       Ptr<OutputStreamWrapper> stream,
+                                       Time::Unit unit = Time::S);
+
+    /**
+     * @brief Print the binding table of a node.
+     * @param node the node for which the binding table is printed.
+     * @param stream the output stream wrapper used for printing.
+     * @param unit the time unit to be used in the report.
+     */
+    static void PrintBindingTable(Ptr<Node> node,
+                                  Ptr<OutputStreamWrapper> stream,
+                                  Time::Unit unit = Time::S);
+
   private:
-    ObjectFactory m_deviceFactory; //!< Object factory.
+    /**
+     * @brief Install the SixLoWPAN-ND stack in the node and associates it with a NetDevice.
+     *
+     * @param [in] c The NetDevice container.
+     * @param [in] borderRouter Set the NetDevices to work as 6LBRs.
+     */
+    void InstallSixLowPanNd(NetDeviceContainer c, bool borderRouter);
+
+    /**
+     * @brief Initialize the ROVR for a node.
+     * @param [in] node The node to initialize the ROVR for.
+     */
+    void InitializeRovr(Ptr<Node> node);
+
+    /**
+     * @brief Convert a MAC address to a ROVR.
+     * @param mac The MAC address to convert.
+     * @return A vector of bytes representing the ROVR.
+     */
+    std::vector<uint8_t> ConvertMacToRovr(const Address& mac);
+
+    /**
+     * @brief Print a ROVR as a string.
+     * @param rovr The ROVR to print.
+     * @return A string representation of the ROVR.
+     */
+    std::string PrintRovr(const std::vector<uint8_t>& rovr);
+
+    ObjectFactory m_deviceFactory;            //!< Object factory.
+    ObjectFactory m_meshUnderRoutingFactory;  //!< Factory for the mesh-under forwarding policy.
+    bool m_meshUnderRoutingConfigured{false}; //!< True once SetMeshUnderRouting() has been called.
 };
+
+template <typename... Args>
+void
+SixLowPanHelper::SetMeshUnderRouting(std::string type, Args&&... args)
+{
+    TypeId tid;
+    NS_ABORT_MSG_UNLESS(TypeId::LookupByNameFailSafe(type, &tid),
+                        "SetMeshUnderRouting: unknown TypeId \"" << type << "\"");
+    NS_ABORT_MSG_UNLESS(tid.IsChildOf(SixLowPanMeshUnderRouting::GetTypeId()),
+                        "SetMeshUnderRouting: \"" << type
+                                                  << "\" is not a SixLowPanMeshUnderRouting");
+    m_meshUnderRoutingFactory.SetTypeId(tid);
+    if constexpr (sizeof...(args) > 0)
+    {
+        m_meshUnderRoutingFactory.Set(std::forward<Args>(args)...);
+    }
+    m_meshUnderRoutingConfigured = true;
+}
 
 } // namespace ns3
 

@@ -93,6 +93,9 @@ class LteNetDevice : public NetDevice
 
     TracedCallback<> m_linkChangeCallbacks; ///< link change callback
 
+    /// Trace fired when a received packet is dropped because no protocol handler consumed it.
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
+
     uint32_t m_ifIndex;     ///< interface index
     bool m_linkUp;          ///< link uo
     mutable uint16_t m_mtu; ///< MTU

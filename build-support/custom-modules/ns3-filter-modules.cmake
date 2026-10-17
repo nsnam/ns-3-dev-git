@@ -42,8 +42,6 @@ endfunction()
 function(filter_libraries cmakelists_contents libraries)
   string(REGEX MATCHALL "{lib[^}]*[^obj]}" matches "${cmakelists_content}")
   list(REMOVE_ITEM matches "{libraries_to_link}")
-  string(REPLACE "{lib\${name" "" matches "${matches}") # special case for
-  # src/test
   string(REPLACE "{lib" "" matches "${matches}")
   string(REPLACE "}" "" matches "${matches}")
   set(${libraries} ${matches} PARENT_SCOPE)
@@ -199,10 +197,6 @@ macro(
     # We can filter out disabled modules
     filter_modules(disabled_libs libs_to_build "NOT")
     filter_modules(disabled_libs contrib_libs_to_build "NOT")
-
-    if(core IN_LIST ${libs_to_build})
-      list(APPEND ${libs_to_build} test) # include test module
-    endif()
   endif()
 
   # Older CMake versions require this workaround for empty lists

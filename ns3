@@ -4,9 +4,11 @@ import argparse
 import atexit
 import functools
 import glob
+import json
 import os
 import re
 import shutil
+import site
 import subprocess
 import sys
 import textwrap
@@ -131,7 +133,10 @@ def parse_args(argv):
         default=[None, None],
         metavar="compile_or_die",
     )
-    parser_help = sub_parser.add_parser("help", help="Print a summary of available commands")
+    parser_help = sub_parser.add_parser(
+        "help", aliases=["hlp"], help="Print a summary of available commands"
+    )
+    parser_help.set_defaults(subparser="help")
 
     # parser.add_argument('--docset',
     #               help=(
@@ -142,12 +147,14 @@ def parse_args(argv):
 
     parser_build = sub_parser.add_parser(
         "build",
+        aliases=["bld"],
         help=(
             "Accepts a list of targets to build,"
             " or builds the entire project if no target is given"
         ),
         formatter_class=argparse.RawTextHelpFormatter,
     )
+    parser_build.set_defaults(subparser="build")
     parser_build.add_argument(
         "target",
         help=(
@@ -160,8 +167,11 @@ def parse_args(argv):
     )
 
     parser_configure = sub_parser.add_parser(
-        "configure", help='Try "./ns3 configure --help" for more configuration options'
+        "configure",
+        aliases=["cfg"],
+        help='Try "./ns3 configure --help" for more configuration options',
     )
+    parser_configure.set_defaults(subparser="configure")
     parser_configure.add_argument(
         "-d",
         "--build-profile",
@@ -206,6 +216,7 @@ def parse_args(argv):
         ),
         ("build-version", "embedding git changes as a build version during build"),
         ("clang-tidy", "clang-tidy static analysis"),
+        ("clang-tidy-fix", "clang-tidy static analysis and apply automatic fixes"),
         ("dpdk", "the fd-net-device DPDK features"),
         ("eigen", "Eigen3 library support"),
         ("examples", "the ns-3 examples"),
@@ -314,6 +325,9 @@ def parse_args(argv):
         "--prefix", help="Target output directory to install", action="store", default=None
     )
     parser_configure.add_argument(
+        "--preset", help="Target CMakePresets.json to load", action="store", default=None
+    )
+    parser_configure.add_argument(
         "--trace-performance",
         help="Generate a performance trace log for the CMake configuration",
         action="store_true",
@@ -321,21 +335,28 @@ def parse_args(argv):
         dest="trace_cmake_perf",
     )
 
-    parser_clean = sub_parser.add_parser("clean", help="Removes files created by ns3")
+    parser_clean = sub_parser.add_parser(
+        "clean", aliases=["cln"], help="Removes files created by ns3"
+    )
+    parser_clean.set_defaults(subparser="clean")
 
     parser_distclean = sub_parser.add_parser(
-        "distclean", help="Removes files created by ns3, tests and documentation"
+        "distclean", aliases=["dst"], help="Removes files created by ns3, tests and documentation"
     )
+    parser_distclean.set_defaults(subparser="distclean")
 
-    parser_install = sub_parser.add_parser("install", help="Install ns-3")
+    parser_install = sub_parser.add_parser("install", aliases=["ins"], help="Install ns-3")
+    parser_install.set_defaults(subparser="install")
 
-    parser_uninstall = sub_parser.add_parser("uninstall", help="Uninstall ns-3")
+    parser_uninstall = sub_parser.add_parser("uninstall", aliases=["uni"], help="Uninstall ns-3")
+    parser_uninstall.set_defaults(subparser="uninstall")
 
     parser_run = sub_parser.add_parser(
         "run",
         help='Try "./ns3 run --help" for more runtime options',
         formatter_class=argparse.RawTextHelpFormatter,
     )
+    parser_run.set_defaults(subparser="run")
     parser_run.add_argument(
         "target",
         help=(
@@ -422,12 +443,14 @@ def parse_args(argv):
     )
 
     parser_shell = sub_parser.add_parser(
-        "shell", help="Export necessary environment variables and open a shell"
+        "shell", aliases=["shl"], help="Export necessary environment variables and open a shell"
     )
+    parser_shell.set_defaults(subparser="shell")
 
     parser_docs = sub_parser.add_parser(
-        "docs", help='Try "./ns3 docs --help" for more documentation options'
+        "docs", aliases=["doc"], help='Try "./ns3 docs --help" for more documentation options'
     )
+    parser_docs.set_defaults(subparser="docs")
     parser_docs.add_argument(
         "target",
         help="Build project documentation",
@@ -448,8 +471,9 @@ def parse_args(argv):
     )
 
     parser_show = sub_parser.add_parser(
-        "show", help='Try "./ns3 show --help" for more show options'
+        "show", aliases=["shw"], help='Try "./ns3 show --help" for more show options'
     )
+    parser_show.set_defaults(subparser="show")
     parser_show_sub = parser_show.add_subparsers(dest="show")
 
     # Add subcommands for the "docs" command
@@ -461,15 +485,24 @@ def parse_args(argv):
         if choice == "typeid":
             parser_typeid = parser_show_sub.add_parser(
                 "typeid",
+                aliases=["tid"],
                 help="Show the introspected documentation for a TypeId",
             )
+            parser_typeid.set_defaults(show="typeid")
             parser_typeid.add_argument(
                 "tid",
                 help='Show the introspected documentation for TypeId "tid"',
                 type=str,
             )
         else:
-            parser_show_sub.add_parser(choice)
+            _show_aliases = {
+                "profile": ["prf"],
+                "version": ["ver"],
+                "config": ["cfg"],
+                "targets": ["tgt"],
+            }
+            _p = parser_show_sub.add_parser(choice, aliases=_show_aliases.get(choice, []))
+            _p.set_defaults(show=choice)
 
     parser_show.set_defaults(show="all")
 
@@ -542,7 +575,9 @@ def parse_args(argv):
         sub_parser_actions = list(
             filter(lambda x: isinstance(x, argparse._SubParsersAction), parser._actions)
         )
-        sub_parsers = list(sub_parser_actions[0].choices.keys())
+        sub_parsers = [
+            name for name, p in sub_parser_actions[0].choices.items() if p.prog.split()[-1] == name
+        ]
         if args.subparser in sub_parsers:
             sub_parsers.remove(args.subparser)
 
@@ -818,11 +853,9 @@ def search_cmake_cache(build_profile):
             if shutil.which(build_tool) and generator in supported_cmake_generators:
                 available_generators.append(generator)
 
-        # Select the first one
-        if len(available_generators) == 0:
-            raise Exception("No generator available.")
-
-        current_cmake_generator = available_generators[0]
+        # Select the first one; when there is none, the generator must be set with -G
+        if available_generators:
+            current_cmake_generator = available_generators[0]
 
     return current_cmake_cache_folder, current_cmake_generator
 
@@ -873,6 +906,8 @@ def configure_cmake(
         # Set generator if a previous cache doesn't exist
         if args.G is None:
             args.G = current_cmake_generator
+        if args.G is None:
+            raise Exception("No generator available.")
 
         # Get the current Python information to supply
         # CMake with the respective installation
@@ -974,6 +1009,9 @@ def configure_cmake(
 
     if args.prefix is not None:
         cmake_args.append("-DCMAKE_INSTALL_PREFIX=%s" % args.prefix)
+
+    if args.preset is not None:
+        cmake_args.append("--preset=%s" % args.preset)
 
     # Process enabled/disabled modules
     if args.enable_modules is not None:
@@ -1164,6 +1202,29 @@ def cmake_build(
     if jobs:
         cmake_args.extend(["-j", str(jobs)])
 
+    # Multi-config generators (VS, Xcode) ignore CMAKE_BUILD_TYPE at build time and
+    # always pick the first CMAKE_CONFIGURATION_TYPES entry unless --config is given.
+    # Read the cache to detect this case and pass the correct --config explicitly.
+    cmake_cache_path = os.path.join(current_cmake_cache_folder, "CMakeCache.txt")
+    if os.path.exists(cmake_cache_path):
+        with open(cmake_cache_path, "r", encoding="utf-8") as _f:
+            _cache = _f.read()
+        _gen = re.search(r"CMAKE_GENERATOR:.*=(.*)", _cache)
+        _btype = re.search(r"CMAKE_BUILD_TYPE:.*=(.*)", _cache)
+        if _gen and _btype:
+            _gen_name = _gen.group(1).strip()
+            _btype_val = _btype.group(1).strip().lower()
+            if "Visual Studio" in _gen_name or "Xcode" in _gen_name:
+                _config_map = {
+                    "debug": "Debug",
+                    "default": "RelWithDebInfo",
+                    "release": "Release",
+                    "optimized": "Release",
+                    "relwithdebinfo": "RelWithDebInfo",
+                    "minsizerel": "MinSizeRel",
+                }
+                cmake_args.extend(["--config", _config_map.get(_btype_val, "Release")])
+
     if target:
         cmake_args.extend(["--target", target])
 
@@ -1340,7 +1401,6 @@ def configuration_step(
 
 def build_step(
     args,
-    build_and_run,
     target_to_run,
     current_cmake_cache_folder,
     ns3_modules,
@@ -1348,8 +1408,8 @@ def build_step(
     build_profile,
     output,
 ):
-    # There is one scenario where we build everything: ./ns3 build
-    if "build" in args and len(args.build) == 0:
+    # There is one scenario where we build everything: ./ns3 build (no targets)
+    if len(args.build) == 0:
         cmake_build(
             current_cmake_cache_folder,
             jobs=args.jobs,
@@ -1357,66 +1417,54 @@ def build_step(
             dry_run=args.dry_run,
             build_verbose=args.verbose,
         )
+        return
 
-    # If we are building specific targets, we build them one by one
-    if "build" in args:
-        non_executable_targets = [
-            "assemble-introspected-command-line",
-            "check-version",
-            "cmake-format",
-            "cmake-format-check",
-            "coverage_cobertura",
-            "coverage_gcc",
-            "coverage_html",
-            "docs",
-            "doxygen",
-            "doxygen-no-build",
-            "installation",
-            "sphinx",
-            "manual",
-            "models",
-            "ninjaTrace",
-            "timeTraceReport",
-            "tutorial",
-            "contributing",
-            "install",
-            "uninstall",
-        ]
-        # Build targets in the list
-        for target in args.build:
-            if target in ns3_modules:
-                pass
-            elif target not in non_executable_targets:
-                target = get_target_to_build(target, ns3_version, build_profile)
-            else:
-                # Sphinx target should have the sphinx prefix
-                if target in ["contributing", "installation", "manual", "models", "tutorial"]:
-                    target = "sphinx_%s" % target
+    non_executable_targets = [
+        "assemble-introspected-command-line",
+        "check-version",
+        "cmake-format",
+        "cmake-format-check",
+        "coverage_cobertura",
+        "coverage_gcc",
+        "coverage_html",
+        "docs",
+        "doxygen",
+        "doxygen-no-build",
+        "installation",
+        "sphinx",
+        "manual",
+        "models",
+        "ninjaTrace",
+        "timeTraceReport",
+        "tutorial",
+        "contributing",
+        "install",
+        "uninstall",
+    ]
+    # Build targets in the list
+    for target in args.build:
+        if target in ns3_modules:
+            pass
+        elif target not in non_executable_targets:
+            target = get_target_to_build(target, ns3_version, build_profile)
+        else:
+            # Sphinx target should have the sphinx prefix
+            if target in ["contributing", "installation", "manual", "models", "tutorial"]:
+                target = "sphinx_%s" % target
 
-                # Docs should build both doxygen and sphinx based docs
-                if target == "docs":
-                    target = "sphinx"
-                    args.build.append("doxygen")
+            # Docs should build both doxygen and sphinx based docs
+            if target == "docs":
+                target = "sphinx"
+                args.build.append("doxygen")
 
-                if target == "check-version":
-                    global run_verbose
-                    run_verbose = False  # Do not print the equivalent cmake command
+            if target == "check-version":
+                global run_verbose
+                run_verbose = False  # Do not print the equivalent cmake command
 
-            cmake_build(
-                current_cmake_cache_folder,
-                jobs=args.jobs,
-                target=target,
-                output=output,
-                dry_run=args.dry_run,
-                build_verbose=args.verbose,
-            )
-
-    # The remaining case is when we want to build something to run
-    if build_and_run:
         cmake_build(
             current_cmake_cache_folder,
             jobs=args.jobs,
-            target=get_target_to_build(target_to_run, ns3_version, build_profile),
+            target=target,
             output=output,
             dry_run=args.dry_run,
             build_verbose=args.verbose,
@@ -1441,18 +1489,58 @@ def check_module_installed(module_name: str):
         exit(-1)
 
 
+def replace_penv_vars(text):
+    def replacer(match):
+        var_name = match.group(1)
+        return os.getenv(var_name, "")  # Empty string default if unset
+
+    return re.sub(r"\$penv\{([^}]+)\}", replacer, text).strip(path_sep)
+
+
+def load_preset_environment():
+    lock_dict = {}
+    exec(open(lock_file).read(), globals(), lock_dict)
+    cmake_preset = lock_dict["CMAKE_PRESET"]
+
+    # If a preset is present, we try to load it
+    if cmake_preset:
+        with open(f"{ns3_path}/CMakePresets.json", "r") as f:
+            cmake_presets = json.load(f)
+            cmake_presets = cmake_presets["configurePresets"]
+            cmake_presets = list(filter(lambda x: x["name"] == cmake_preset, cmake_presets))
+            if not cmake_presets:
+                print_and_buffer(
+                    f"Expected CMakePreset '{cmake_preset}' but it was not found in CMakePreset.json"
+                )
+                exit(1)
+            else:
+                # Now we have CMakePresent environment variables
+                cmake_presets = cmake_presets[0]["environment"].items()
+                # But they may have expansion macros that we need to manually handle
+                # Then, if they have $penv{} around, we remove and replace by os.getenv(name, "")
+                cmake_presets = [(key, replace_penv_vars(value)) for key, value in cmake_presets]
+                return cmake_presets
+    return []
+
+
 def run_step(args, target_to_run, target_args):
     libdir = "%s/lib" % out_dir
+    if not os.path.exists(libdir):
+        libdir += "64"
 
-    custom_env = {
-        "PATH": libdir,
-        "PYTHONPATH": "%s/bindings/python" % out_dir,
-    }
+    custom_env = [
+        ("PATH", libdir),
+        ("PYTHONPATH", f"{out_dir}/bindings/python"),
+        ("PYTHONPATH", path_sep.join(site.getsitepackages())),
+    ]
     if sys.platform != "win32":
-        custom_env["LD_LIBRARY_PATH"] = libdir
+        custom_env.append(("LD_LIBRARY_PATH", libdir))
+
+    # If a preset was configured, load associated environment variables
+    custom_env.extend(load_preset_environment())
 
     proc_env = os.environ.copy()
-    for key, value in custom_env.items():
+    for key, value in custom_env:
         if key in proc_env:
             proc_env[key] += path_sep + value
         else:
@@ -1531,10 +1619,15 @@ def run_step(args, target_to_run, target_args):
 
         # running with command template?
         if args.command_template:
-            commands = (args.command_template % target_to_run).split()
-            check_program_installed(commands[0])
-            target_to_run = commands[0]
-            target_args = commands[1:] + target_args
+            commands = args.command_template % f'"{target_to_run}"'
+            commands = list(re.findall(r'(?:".*?"|\S)+', commands))
+            # Keep quotes on remaining args so the dry-run/verbose output
+            # shows the substituted path quoted; they are stripped again
+            # before execution because execvp would pass them verbatim.
+            target_to_run = commands[0].replace('"', "")
+            commands = commands[1:]
+            check_program_installed(target_to_run)
+            target_args = commands + target_args
 
             # running mpi on the CI?
             if target_to_run in ["mpiexec", "mpirun"] and os.getenv("MPI_CI"):
@@ -1554,7 +1647,7 @@ def run_step(args, target_to_run, target_args):
 
     if run_verbose or args.dry_run:
         exported_variables = "export "
-        for variable, value in custom_env.items():
+        for variable, value in custom_env:
             if variable == "PATH":
                 value = path_variable + path_sep + libdir
             exported_variables += "%s=%s " % (variable, value)
@@ -1568,9 +1661,12 @@ def run_step(args, target_to_run, target_args):
         )
 
     if not args.dry_run:
+        # Strip literal quotes left in for the dry-run display: execvp
+        # would pass them as part of the argument, which Open MPI rejects.
+        exec_arguments = [arg.replace('"', "") for arg in program_arguments]
         try:
             subprocess.run(
-                program_arguments, env=proc_env, cwd=working_dir, shell=use_shell, check=True
+                exec_arguments, env=proc_env, cwd=working_dir, shell=use_shell, check=True
             )
         except subprocess.CalledProcessError as e:
             # Replace list of arguments with a single string
@@ -1988,6 +2084,20 @@ def main():
                 target_to_run = target_to_run[1:-1]
             target_to_run = target_to_run.split()
             target_to_run, target_args = target_to_run[0], target_to_run[1:]
+            # Remove version prefixes and build profile suffices if they exist
+            base_target = os.path.basename(target_to_run)
+            if base_target.startswith("ns3-dev") or base_target.startswith("ns3."):
+                pardir = os.path.dirname(target_to_run)
+                components = os.path.basename(target_to_run).split("-")
+                if "ns3" in components[0]:
+                    components.pop(0)
+                if "dev" == components[0]:
+                    components.pop(0)
+                if "rc" in components[0]:
+                    components.pop(0)
+                if components[-1] in ["debug", "relwithdebinfo", "default", "optimized"]:
+                    components.pop(-1)
+                target_to_run = f"{pardir}/{'-'.join(components)}"
         else:
             raise Exception("You need to specify a program to run")
 
@@ -2067,9 +2177,28 @@ def main():
     if run_only or build_and_run:
         if target_to_run in ns3_programs:
             target_to_run = check_ambiguous_target("Run", target_to_run, ns3_programs)
+            args.build = [target_to_run]
         elif ".py" in target_to_run and os.path.exists(target_to_run):
             # We let python scripts pass to be able to run ./utils/python-unit-tests.py
             pass
+        elif "clang-tidy" in target_to_run:
+            clang_tidy_versions = ["run-clang-tidy"]
+            clang_tidy_versions = list(map(lambda x: shutil.which(x), clang_tidy_versions))
+            clang_tidy_versions = list(filter(lambda x: x, clang_tidy_versions))
+            if not clang_tidy_versions:
+                raise Exception(
+                    "Clang-tidy not found; please install it, or modify the PATH environment variable"
+                )
+            target_to_run = clang_tidy_versions[-1]
+            target_args = [
+                "-p",
+                current_cmake_cache_folder,
+                "-quiet",
+                "-format",
+                "-warnings-as-errors=*",
+            ] + target_args
+            run_only = True
+            build_and_run = False
         else:
             raise Exception("Couldn't find the specified program: %s" % target_to_run)
 
@@ -2088,7 +2217,6 @@ def main():
     if not run_only:
         build_step(
             args,
-            build_and_run,
             target_to_run,
             current_cmake_cache_folder,
             ns3_modules,

@@ -23,7 +23,6 @@
 #include <functional>
 #include <initializer_list>
 #include <iomanip>
-#include <limits>
 #include <map>
 #include <sstream>
 #include <string>
@@ -303,6 +302,10 @@ class LengthTestCase : public TestCase
     void TestModReturnsNonZero();
     /** @} */
 
+    /**
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
+     */
     void DoRun() override;
 };
 

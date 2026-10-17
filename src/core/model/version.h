@@ -94,7 +94,7 @@ class Version
      * Returns the ns-3 version tag of the closest ancestor commit prefixed with ns-3.
      *
      * The format of the tag is
-     * @verbatim ns3-<major>.<minor>[.patch] \endverbatim
+     * @verbatim ns3-<major>.<minor>[.patch] @endverbatim
      *
      * The patch field is optional and may not be present.  The value of
      * patch defaults to 0 if the tag does not have a patch field.
@@ -118,7 +118,7 @@ class Version
      * Major component of the build version
      *
      * The format of the build version string is
-     * @verbatim ns-<major>.<minor>[.patch][-RC<digit>] \endverbatim
+     * @verbatim ns-<major>.<minor>[.patch][-RC<digit>] @endverbatim
      *
      * The major component is the number before the first period
      *
@@ -130,7 +130,7 @@ class Version
      * Minor component of the build version
      *
      * The format of the build version string is
-     * @verbatim ns-<major>.<minor>[.patch][-RC<digit>] \endverbatim
+     * @verbatim ns-<major>.<minor>[.patch][-RC<digit>] @endverbatim
      *
      * The minor component is the number after the first period
      *
@@ -142,7 +142,7 @@ class Version
      * Patch component of the build version
      *
      * A build version with a patch component will have the format
-     * @verbatim ns-<major>.<minor>.<patch> \endverbatim
+     * @verbatim ns-<major>.<minor>.<patch> @endverbatim
      *
      * The patch component is the number after the second period
      *
@@ -155,7 +155,7 @@ class Version
      * Release candidate component of the build version
      *
      * A build version with a release candidate will have the format
-     * @verbatim ns-<major>.<minor>[.patch]-RC<digit> \endverbatim
+     * @verbatim ns-<major>.<minor>[.patch]-RC<digit> @endverbatim
      *
      * The string returned by this function will have the format RC<digit>
      *
@@ -209,7 +209,7 @@ class Version
      * and indication of additional commits or dirty status.
      *
      * The format of the constructed string is
-     * @verbatim ns-<major>.<minor>[.patch][-rc]<flags> \endverbatim
+     * @verbatim ns-<major>.<minor>[.patch][-rc]<flags> @endverbatim
      *
      *   * [patch] is included when Patch() > 0.
      *   * [-rc] is included when ReleaseCandidate() contains a non-empty string

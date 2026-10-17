@@ -10,6 +10,7 @@
 #include "ns3/log.h"
 #include "ns3/nstime.h"
 #include "ns3/uinteger.h"
+#include "ns3/wifi-utils.h"
 
 namespace ns3
 {
@@ -168,8 +169,8 @@ void
 HeConfiguration::SetGuardInterval(Time guardInterval)
 {
     NS_LOG_FUNCTION(this << guardInterval);
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT((gi == 800) || (gi == 1600) || (gi == 3200));
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211ax),
+                  "Invalid HE guard interval " << guardInterval.As(Time::NS));
     m_guardInterval = guardInterval;
 }
 

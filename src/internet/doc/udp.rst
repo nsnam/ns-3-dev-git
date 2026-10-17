@@ -172,7 +172,7 @@ callback as well.
   Called when the ``Connect()`` succeeds and the remote address is validated.
 
 *NotifyConnectionFailed*: *SetConnectCallback*, 2nd argument
-  Called in ``Connect()`` when the the remote address validation fails.
+  Called in ``Connect()`` when the remote address validation fails.
 
 *NotifyDataSent*: *SetDataSentCallback*
   The socket notifies the application that some bytes have been transmitted at

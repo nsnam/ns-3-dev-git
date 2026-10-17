@@ -13,6 +13,7 @@
 
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/ethernet-header.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-raw-socket-impl.h"
@@ -28,8 +29,6 @@ namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("Ipv4L3ClickProtocol");
-
-const uint16_t Ipv4L3ClickProtocol::PROT_NUMBER = 0x0800;
 
 NS_OBJECT_ENSURE_REGISTERED(Ipv4L3ClickProtocol);
 
@@ -327,7 +326,7 @@ Ipv4L3ClickProtocol::SetupLoopback()
     uint32_t index = AddIpv4Interface(interface);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3ClickProtocol::Receive, this),
-                                  Ipv4L3ClickProtocol::PROT_NUMBER,
+                                  iana::ieee802numbers::IPV4,
                                   device);
     interface->SetUp();
     if (m_routingProtocol)
@@ -455,10 +454,7 @@ Ipv4L3ClickProtocol::SourceAddressSelection(uint32_t interfaceIdx, Ipv4Address d
         Ipv4InterfaceAddress test = GetAddress(interfaceIdx, i);
         if (test.GetLocal().CombineMask(test.GetMask()) == dest.CombineMask(test.GetMask()))
         {
-            if (!test.IsSecondary())
-            {
-                return test.GetLocal();
-            }
+            return test.GetLocal();
         }
     }
     return candidate;
@@ -481,10 +477,6 @@ Ipv4L3ClickProtocol::SelectSourceAddress(Ptr<const NetDevice> device,
         for (uint32_t j = 0; j < GetNAddresses(i); j++)
         {
             iaddr = GetAddress(i, j);
-            if (iaddr.IsSecondary())
-            {
-                continue;
-            }
             if (iaddr.GetScope() > scope)
             {
                 continue;
@@ -511,10 +503,6 @@ Ipv4L3ClickProtocol::SelectSourceAddress(Ptr<const NetDevice> device,
         for (uint32_t j = 0; j < GetNAddresses(i); j++)
         {
             iaddr = GetAddress(i, j);
-            if (iaddr.IsSecondary())
-            {
-                continue;
-            }
             if (iaddr.GetScope() != Ipv4InterfaceAddress::LINK && iaddr.GetScope() <= scope)
             {
                 return iaddr.GetLocal();
@@ -621,10 +609,10 @@ Ipv4L3ClickProtocol::AddInterface(Ptr<NetDevice> device)
     NS_LOG_FUNCTION(this << &device);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3ClickProtocol::Receive, this),
-                                  Ipv4L3ClickProtocol::PROT_NUMBER,
+                                  iana::ieee802numbers::IPV4,
                                   device);
     node->RegisterProtocolHandler(MakeCallback(&Ipv4L3ClickProtocol::Receive, this),
-                                  ArpL3Protocol::PROT_NUMBER,
+                                  iana::ieee802numbers::ARP,
                                   device);
 
     Ptr<Ipv4Interface> interface = CreateObject<Ipv4Interface>();
@@ -771,7 +759,7 @@ Ipv4L3ClickProtocol::Receive(Ptr<NetDevice> device,
     NS_LOG_LOGIC("Packet from " << from << " received on node " << m_node->GetId());
 
     // Forward packet to raw sockets, if any
-    if (protocol == Ipv4L3ClickProtocol::PROT_NUMBER && !m_sockets.empty())
+    if (protocol == iana::ieee802numbers::IPV4 && !m_sockets.empty())
     {
         Ptr<Packet> packetForRawSocket = p->Copy();
         int32_t interface = GetInterfaceForDevice(device);

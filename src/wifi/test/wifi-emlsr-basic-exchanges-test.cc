@@ -161,8 +161,9 @@ EmlsrDlTxopTest::DoSetup()
         m_apMac->GetWifiPhy(linkId)->SetPostReceptionErrorModel(m_errorModel);
     }
 
+    // the TXOP Limit must be large enough to transmit an MPDU to two clients in a DL MU PPDU
     m_apMac->GetQosTxop(AC_BE)->SetTxopLimits(
-        {MicroSeconds(3200), MicroSeconds(3200), MicroSeconds(3200)});
+        {MicroSeconds(3680), MicroSeconds(3680), MicroSeconds(3680)});
 
     if (m_nEmlsrStations + m_nNonEmlsrStations > 1)
     {
@@ -221,8 +222,10 @@ EmlsrDlTxopTest::StartTraffic()
         });
 
         Simulator::Schedule(m_fe2to3delay + MilliSeconds(5 * (m_nEmlsrStations + 1)), [=, this]() {
+            // the packet size should be large enough to avoid that all the generated MPDUs can be
+            // aggregated in an A-MPDU whose transmission fits in a single TXOP
             m_apMac->GetDevice()->GetNode()->AddApplication(
-                GetApplication(DOWNLINK, id, 8 / m_nEmlsrStations, 650));
+                GetApplication(DOWNLINK, id, 8 / m_nEmlsrStations, 1200));
         });
     }
 }
@@ -1639,9 +1642,12 @@ EmlsrDlTxopTest::CheckBlockAck(const WifiConstPsduMap& psduMap,
                                      " a SIFS after the end of fourth BlockAck");
             }
         });
-        // corrupt this BlockAck so that the AP MLD sends a BlockAckReq later on
+        // corrupt this BlockAck so that the AP MLD sends a BlockAckReq later on.
+        // Use the UID of the MPDU's payload (which is what the post-reception error model
+        // checks at the receiver), not WifiPsdu::GetPacket(), which returns a freshly built
+        // aggregate packet whose UID does not match the received MPDU.
         {
-            auto uid = psduMap.cbegin()->second->GetPacket()->GetUid();
+            auto uid = (*psduMap.cbegin()->second->begin())->GetPacket()->GetUid();
             m_errorModel->SetList({uid});
         }
         break;

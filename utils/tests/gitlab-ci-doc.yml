@@ -1,17 +1,19 @@
 # NS3 CI script for the documentation
 # For the moment we do not install the generated documentation
-#
+
 .doc:
   stage: documentation
   before_script:
     - pacman-key --init
+    - pacman -Sy archlinux-keyring --noconfirm
     - pacman -Syu --noconfirm
-      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh libxml2-legacy
-      graphviz imagemagick texlive-basic texlive-bin texlive-binextra texlive-latexextra
-      texlive-fontutils texlive-fontsrecommended texlive-mathscience python-sphinx wget
-      doxygen
+      python python-sphinx make libxml2-legacy
+      graphviz imagemagick libx264
+      texlive-basic texlive-bin texlive-binextra texlive-latexextra texlive-fontutils texlive-fontsrecommended texlive-mathscience
     # dia is archived
-    - pacman --noconfirm -U https://archive.archlinux.org/packages/d/dia/dia-0.97.3-9-x86_64.pkg.tar.zst
+    - pacman --noconfirm -U
+      https://archive.archlinux.org/packages/g/gtk2/gtk2-2.24.33-5-x86_64.pkg.tar.zst
+      https://archive.archlinux.org/packages/d/dia/dia-0.97.3-9-x86_64.pkg.tar.zst
     # no policy is a good policy.
     - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
     # - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
@@ -20,22 +22,25 @@
   timeout: 2h
   interruptible: true
   dependencies: []
-  # artifacts:
-  #   paths:
-  #     - public
 
-doxygen:
+doxygen-1.16:
   extends: .doc
   script:
+    # Install Doxygen and dependencies to build ns-3
+    - pacman -Syu --noconfirm
+      base-devel ninja cmake python ccache gsl gtk3 boost openmpi openssh inetutils clang22 git
+    - pacman --noconfirm -U https://archive.archlinux.org/packages/d/doxygen/doxygen-1.16.1-3-x86_64.pkg.tar.zst
+
+    # Build ns-3.
+    # Debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    # debug build is the fastest, and we do not need to actually execute anything, just the examples for introspection.
     - export MPI_CI=1
-    - CXX=$COMPILER ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-mpi
+    - CXX=g++ ./ns3 configure -d debug -GNinja --enable-examples --enable-tests --enable-asserts --enable-werror --enable-mpi
     - ./ns3 build
     - ./ns3 build assemble-introspected-command-line
-    # - mkdir -p public/doxygen
+
     # The following four lines were needed when ns-3 had warnings, and
     # it was necessary to have a filter to check only the files touched by a MR.
     # - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
@@ -43,13 +48,13 @@ doxygen:
     # - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
     # - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
     - doc/doxygen.warnings.report.sh
-    # Just need to check doc/introspected-command-line.h and doc/introspected-doxygen.h
-    - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h doc/introspected-command-line.h
+
+    # Clean the build directory
     - ./ns3 clean
-    # print the doxygen version - just to double check what has been used.
-    - doxygen -v
-    # - doxygen doc/doxygen.conf
-    # - mv doc/html/ public/doxygen
+    # Print the Doxygen version - just to double check what has been used.
+    - echo "Doxygen version $(doxygen -v)"
+    # Check the generated documentation files
+    - python3 utils/check-style-clang-format.py --no-formatting --no-tabs doc/introspected-doxygen.h doc/introspected-command-line.h
   cache:
     # Reuse the ccache from the per-commit-gcc-debug job
     key: "ccache-per-commit-gcc-debug"
@@ -58,14 +63,12 @@ doxygen:
     policy: pull
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
-    COMPILER: g++
   artifacts:
     paths:
       - doc/doxygen.warnings.log
     when: always
-  # tags:
-  #   - nsnam
-  #   - linux
+  dependencies:
+    - per-commit-gcc-debug
 
 .sphinx-doc:
   extends: .doc

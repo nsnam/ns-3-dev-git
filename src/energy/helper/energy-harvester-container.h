@@ -94,11 +94,10 @@ class EnergyHarvesterContainer : public Object
      * for-loop to run through the EnergyHarvesters.
      *
      * @code
-     *   EnergyHarvesterContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some EnergyHarvester method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some EnergyHarvester method
+     *   }
      * @endcode
      */
     Iterator Begin() const;
@@ -115,11 +114,10 @@ class EnergyHarvesterContainer : public Object
      * for-loop to run through the EnergyHarvesters.
      *
      * @code
-     *   EnergyHarvesterContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some EnergyHarvester method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some EnergyHarvester method
+     *   }
      * @endcode
      */
     Iterator End() const;

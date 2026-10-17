@@ -19,4 +19,5 @@ build_lib(
     test/olsr-header-test-suite.cc
     test/olsr-routing-protocol-test-suite.cc
     test/tc-regression-test.cc
+    test/olsr-traced-callback-typedef-test-suite.cc
 )

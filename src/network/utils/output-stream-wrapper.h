@@ -44,7 +44,7 @@ namespace ns3
  * the Ptr<>, we don't bother and just expect the user to Get a saved pointer
  * to an ostream and dereference it him or herself.  As in:
  *
- * \code{.cpp}
+ * @code{.cpp}
  * void
  * TraceSink(Ptr<OutputStreamWrapper> streamWrapper, Ptr<const Packet> packet)
  * {

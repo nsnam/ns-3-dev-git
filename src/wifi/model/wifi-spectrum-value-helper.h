@@ -14,7 +14,9 @@
 #include "wifi-units.h"
 
 #include "ns3/spectrum-value.h"
+#include "ns3/wifi-export.h"
 
+#include <span>
 #include <vector>
 
 namespace ns3
@@ -32,7 +34,7 @@ using WifiSpectrumBandIndices = std::pair<uint32_t, uint32_t>;
  *  Wi-Fi based on a a spectral model aligned with an OFDM subcarrier
  *  spacing of 312.5 KHz (model also reused for DSSS modulations)
  */
-class WifiSpectrumValueHelper
+class WIFI_EXPORT WifiSpectrumValueHelper
 {
   public:
     /**
@@ -217,7 +219,7 @@ class WifiSpectrumValueHelper
         MHz_u channelWidth,
         Watt_u txPower,
         MHz_u guardBandwidth,
-        const std::vector<WifiSpectrumBandIndices>& ru);
+        std::span<const WifiSpectrumBandIndices> ru);
 
     /**
      * Create a transmit power spectral density corresponding to OFDM
@@ -297,72 +299,8 @@ class WifiSpectrumValueHelper
      * @return band power
      */
     static Watt_u GetBandPowerW(Ptr<SpectrumValue> psd,
-                                const std::vector<WifiSpectrumBandIndices>& segments);
+                                std::span<const WifiSpectrumBandIndices> segments);
 };
-
-/**
- * @ingroup spectrum
- * Struct defining a frequency range between minFrequency and maxFrequency.
- */
-struct FrequencyRange
-{
-    MHz_u minFrequency{0}; ///< the minimum frequency
-    MHz_u maxFrequency{0}; ///< the maximum frequency
-};
-
-/**
- * Compare two FrequencyRange values
- *
- * @param lhs the FrequencyRange value on the left of operator
- * @param rhs the FrequencyRange value on the right of operator
- *
- * @return true if minFrequency of left is less than minFrequency of right, false otherwise
- */
-bool operator<(const FrequencyRange& lhs, const FrequencyRange& rhs);
-
-/**
- * Compare two FrequencyRange values
- *
- * @param lhs the FrequencyRange value on the left of operator
- * @param rhs the FrequencyRange value on the right of operator
- *
- * @return true if both minFrequency and maxFrequency of left are equal to minFrequency and
- * maxFrequency of right respectively, false otherwise
- */
-bool operator==(const FrequencyRange& lhs, const FrequencyRange& rhs);
-
-/**
- * Compare two FrequencyRange values
- *
- * @param lhs the FrequencyRange value on the left of operator
- * @param rhs the FrequencyRange value on the right of operator
- *
- * @return true if either minFrequency or maxFrequency of left different from minFrequency or
- * maxFrequency of right respectively, false otherwise
- */
-bool operator!=(const FrequencyRange& lhs, const FrequencyRange& rhs);
-
-/**
- * Serialize FrequencyRange values to ostream (human-readable).
- *
- * @param os the output stream
- * @param freqRange the FrequencyRange
- *
- * @return std::ostream
- */
-std::ostream& operator<<(std::ostream& os, const FrequencyRange& freqRange);
-
-/// Identifier for the frequency range covering the whole wifi spectrum
-constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {MHz_u{2401}, MHz_u{7125}};
-
-/// Identifier for the frequency range covering the wifi spectrum in the 2.4 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {MHz_u{2401}, MHz_u{2483}};
-
-/// Identifier for the frequency range covering the wifi spectrum in the 5 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {MHz_u{5170}, MHz_u{5915}};
-
-/// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
-constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {MHz_u{5945}, MHz_u{7125}};
 
 } // namespace ns3
 

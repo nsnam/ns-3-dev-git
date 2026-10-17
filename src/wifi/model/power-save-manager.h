@@ -1,0 +1,280 @@
+/*
+ * Copyright (c) 2024 Universita' degli Studi di Napoli Federico II
+ *
+ * SPDX-License-Identifier: GPL-2.0-only
+ *
+ * Author: Stefano Avallone <stavallo@unina.it>
+ */
+
+#ifndef POWER_SAVE_MANAGER_H
+#define POWER_SAVE_MANAGER_H
+
+#include "txop.h"
+#include "wifi-types.h"
+#include "wifi-utils.h"
+
+#include "ns3/nstime.h"
+#include "ns3/object.h"
+#include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
+
+#include <map>
+#include <optional>
+
+namespace ns3
+{
+
+class StaWifiMac;
+class MgtBeaconHeader;
+class WifiMpdu;
+enum WifiMacDropReason : uint8_t;
+enum WifiPowerManagementMode : uint8_t;
+
+/**
+ * @ingroup wifi
+ *
+ * PowerSaveManager is an abstract base class. Each subclass defines a logic
+ * to switch a STA in powersave mode between active state and doze state.
+ */
+class WIFI_EXPORT PowerSaveManager : public Object
+{
+  public:
+    /**
+     * @brief Get the type ID.
+     * @return the object TypeId
+     */
+    static TypeId GetTypeId();
+    ~PowerSaveManager() override;
+
+    /**
+     * Set the MAC which is using this Power Save Manager
+     *
+     * @param mac a pointer to the MAC
+     */
+    void SetWifiMac(Ptr<StaWifiMac> mac);
+
+    /**
+     * Enable or disable Power Save mode on a given set of links. If this object is not initialized
+     * yet, the settings are recorded and notified to the STA wifi MAC upon initialization.
+     *
+     * @param linkIdEnableMap a link ID-indexed map indicating whether to enable or not power save
+     *                        mode on the link with the given ID
+     */
+    void SetPowerSaveMode(const std::map<linkId_t, bool>& linkIdEnableMap);
+
+    /// @return the Listen interval
+    uint32_t GetListenInterval() const;
+
+    /**
+     * This function is normally used to notify the Beacon interval and timestamp included in the
+     * last Beacon frame advertised by the AP this device is going to associate with. The purpose is
+     * to be able to put the PHY operating on the given link to sleep (if needed) right after
+     * association is completed.
+     *
+     * @param beaconInterval the Beacon interval
+     * @param timestamp the timestamp included in the Beacon frame
+     * @param linkId the ID of the link on which the Beacon frame was sent
+     */
+    void NotifyBeaconIntervalAndTimestamp(const Time& beaconInterval,
+                                          const Time& timestamp,
+                                          linkId_t linkId);
+
+    /**
+     * @param linkId the ID of the given link
+     * @return the remaining time until the next Target Beacon Transmission Time (TBTT) on the given
+     *         link, if known
+     */
+    std::optional<Time> GetTimeUntilNextTbtt(linkId_t linkId) const;
+
+    /**
+     * Notify that the non-AP STA/MLD has completed association with an AP.
+     */
+    void NotifyAssocCompleted();
+
+    /**
+     * Notify that the non-AP STA/MLD has disassociated.
+     */
+    void NotifyDisassociation();
+
+    /**
+     * Notify that the Power Management mode of the non-AP STA operating on the given link
+     * has changed.
+     *
+     * @param pmMode the new PM mode
+     * @param linkId the ID of the given link
+     */
+    void NotifyPmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId);
+
+    /**
+     * Notify that a Beacon frame has been received from the associated AP on the given link.
+     *
+     * @param mpdu the MPDU carrying the Beacon frame
+     * @param linkId the ID of the given link
+     */
+    void NotifyReceivedBeacon(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
+
+    /**
+     * Notify the reception of a frame in response to a PS-Poll frame on the given link.
+     *
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the given link
+     */
+    void NotifyReceivedFrameAfterPsPoll(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
+
+    /**
+     * Notify the reception of a groupcast frame (possibly after a DTIM) on the given link.
+     *
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the given link
+     */
+    void NotifyReceivedGroupcast(Ptr<const WifiMpdu> mpdu, linkId_t linkId);
+
+    /**
+     * Notify that the given TXOP is requesting channel access on the given link.
+     *
+     * @param txop the DCF/EDCAF requesting channel access
+     * @param linkId the ID of the given link
+     */
+    void NotifyRequestAccess(Ptr<Txop> txop, linkId_t linkId);
+
+    /**
+     * Notify that the given TXOP has released the channel on the given link.
+     *
+     * @param txop the DCF/EDCAF releasing the channel
+     * @param linkId the ID of the given link
+     */
+    void NotifyChannelReleased(Ptr<Txop> txop, linkId_t linkId);
+
+    /**
+     * Notify that the given MPDU has been discarded for the given reason.
+     *
+     * @param reason the reason why the MPDU was dropped
+     * @param mpdu the dropped MPDU
+     */
+    void TxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu);
+
+  protected:
+    void DoInitialize() override;
+    void DoDispose() override;
+
+    /**
+     * Information about each STA operating on a given link.
+     */
+    struct WIFI_EXPORT StaInfo
+    {
+        Time beaconInterval{0};       ///< Beacon interval advertised by the AP
+        Time lastBeaconTimestamp{0};  ///< last time a Beacon was received from the AP
+        bool pendingUnicast{false};   ///< AP has buffered unicast frame(s) (set from last TIM and
+                                      ///< updated as frames are received from the AP)
+        bool pendingGroupcast{false}; ///< AP has buffered groupcast frame(s) (set from last TIM
+                                      ///< and updated as frames are received from the AP)
+    };
+
+    /**
+     * @return the MAC of the non-AP MLD managed by this Power Save Manager.
+     */
+    Ptr<StaWifiMac> GetStaMac() const;
+
+    /**
+     * Get the information about the STA operating on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return the information about the STA operating on the given link
+     */
+    StaInfo& GetStaInfo(linkId_t linkId);
+
+    /**
+     * Get whether any Access Category has requested (or gained) the channel on the given link.
+     *
+     * @param linkId the ID of the given link
+     * @return whether any AC has requested (or gained) the channel on the given link
+     */
+    bool HasRequestedOrGainedChannel(linkId_t linkId) const;
+
+    /**
+     * Notify subclasses that the non-AP STA/MLD has completed association with an AP.
+     */
+    virtual void DoNotifyAssocCompleted() = 0;
+
+    /**
+     * Notify subclasses that the non-AP STA/MLD has disassociated.
+     */
+    virtual void DoNotifyDisassociation() = 0;
+
+    /**
+     * Notify subclasses that the Power Management mode of the non-AP STA operating on the given
+     * link has changed.
+     *
+     * @param pmMode the new PM mode
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyPmModeChanged(WifiPowerManagementMode pmMode, linkId_t linkId) = 0;
+
+    /**
+     * Notify subclasses that a Beacon frame has been received from the associated AP on the given
+     * link.
+     *
+     * @param beacon the Beacon frame
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyReceivedBeacon(const MgtBeaconHeader& beacon, linkId_t linkId) = 0;
+
+    /**
+     * Notify subclasses of the reception of a frame in response to a PS-Poll frame on the given
+     * link. The notification is sent a SIFS after the reception of the frame.
+     *
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyReceivedFrameAfterPsPoll(Ptr<const WifiMpdu> mpdu, linkId_t linkId) = 0;
+
+    /**
+     * Notify subclasses of the reception of a groupcast frame (possibly after a DTIM) on the given
+     * link.
+     *
+     * @param mpdu the received MPDU
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyReceivedGroupcast(Ptr<const WifiMpdu> mpdu, linkId_t linkId) = 0;
+
+    /**
+     * Notify subclasses that the given TXOP is requesting channel access on the given link.
+     *
+     * @param txop the DCF/EDCAF requesting channel access
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyRequestAccess(Ptr<Txop> txop, linkId_t linkId) = 0;
+
+    /**
+     * Notify subclasses that the given TXOP is releasing the channel on the given link.
+     *
+     * @param txop the DCF/EDCAF releasing the channel
+     * @param linkId the ID of the given link
+     */
+    virtual void DoNotifyChannelReleased(Ptr<Txop> txop, linkId_t linkId) = 0;
+
+    /**
+     * Notify subclasses that the given MPDU has been discarded for the given reason.
+     *
+     * @param reason the reason why the MPDU was dropped
+     * @param mpdu the dropped MPDU
+     */
+    virtual void DoTxDropped(WifiMacDropReason reason, Ptr<const WifiMpdu> mpdu) = 0;
+
+  private:
+    Ptr<StaWifiMac> m_staMac;              //!< MAC which is using this Power Save Manager
+    std::map<linkId_t, StaInfo> m_staInfo; ///< link ID-indexed map of STA infos
+    std::map<linkId_t, bool>
+        m_linkIdEnableMap; ///< a link ID-indexed map indicating whether to enable or not power save
+                           ///< mode on the link with the given ID (used before initialization)
+    uint32_t m_listenInterval; ///< beacon listen interval
+    TracedCallback<linkId_t, WifiPowerManagementMode>
+        m_pmModeLogger; ///< link ID-indexed power management mode logger
+
+    /// TracedCallback signature for power management mode change events
+    using PmModeChangeCallback = void (*)(linkId_t, WifiPowerManagementMode);
+};
+
+} // namespace ns3
+
+#endif /* POWER_SAVE_MANAGER_H */

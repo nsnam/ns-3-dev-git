@@ -45,10 +45,6 @@ UdpServer::GetTypeId()
                           MakeUintegerAccessor(&UdpServer::GetPacketWindowSize,
                                                &UdpServer::SetPacketWindowSize),
                           MakeUintegerChecker<uint16_t>(8, 256))
-            .AddTraceSource("Rx",
-                            "A packet has been received",
-                            MakeTraceSourceAccessor(&UdpServer::m_rxTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("RxWithAddresses",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&UdpServer::m_rxTraceWithAddresses),
@@ -57,13 +53,10 @@ UdpServer::GetTypeId()
 }
 
 UdpServer::UdpServer()
-    : SinkApplication(DEFAULT_PORT),
-      m_socket{nullptr},
-      m_socket6{nullptr},
-      m_received{0},
-      m_lossCounter{0}
+    : SinkApplication(DEFAULT_PORT)
 {
     NS_LOG_FUNCTION(this);
+    m_protocolTid = TypeId::LookupByName("ns3::UdpSocketFactory");
 }
 
 UdpServer::~UdpServer()
@@ -74,7 +67,6 @@ UdpServer::~UdpServer()
 uint16_t
 UdpServer::GetPacketWindowSize() const
 {
-    NS_LOG_FUNCTION(this);
     return m_lossCounter.GetBitMapSize();
 }
 
@@ -88,81 +80,52 @@ UdpServer::SetPacketWindowSize(uint16_t size)
 uint32_t
 UdpServer::GetLost() const
 {
-    NS_LOG_FUNCTION(this);
     return m_lossCounter.GetLost();
 }
 
 uint64_t
 UdpServer::GetReceived() const
 {
-    NS_LOG_FUNCTION(this);
     return m_received;
 }
 
 void
-UdpServer::StartApplication()
+UdpServer::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (!m_socket)
+    auto local = m_local;
+    if (local.IsInvalid())
     {
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket = Socket::CreateSocket(GetNode(), tid);
-        auto local = m_local;
-        if (local.IsInvalid())
-        {
-            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
-            NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
-        }
-        else
-        {
-            if (InetSocketAddress::IsMatchingType(m_local))
-            {
-                const auto ipv4 = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-                NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
-                                 << ".");
-            }
-            else if (Ipv6Address::IsMatchingType(m_local))
-            {
-                const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
-                NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
-                                 << ".");
-            }
-        }
-        if (m_socket->Bind(local) == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-        m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
+        local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
+        NS_LOG_INFO(this << " Binding on port " << m_port << " / " << local << ".");
     }
-
-    if (m_local.IsInvalid() && !m_socket6)
+    else if (InetSocketAddress::IsMatchingType(m_local))
     {
-        // local address is not specified, so create another socket to also listen to all IPv6
-        // addresses
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket6 = Socket::CreateSocket(GetNode(), tid);
+        const auto ipv4 = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
+        NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
+                         << ".");
+    }
+    else if (Ipv6Address::IsMatchingType(m_local))
+    {
+        const auto ipv6 = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
+        NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
+                         << ".");
+    }
+    if (m_socket->Bind(local) == -1)
+    {
+        NS_FATAL_ERROR("Failed to bind socket");
+    }
+    m_socket->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
+
+    if (m_local.IsInvalid())
+    {
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {
             NS_FATAL_ERROR("Failed to bind socket");
         }
         m_socket6->SetRecvCallback(MakeCallback(&UdpServer::HandleRead, this));
-    }
-}
-
-void
-UdpServer::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (m_socket)
-    {
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    }
-    if (m_socket6)
-    {
-        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
     }
 }
 
@@ -175,7 +138,8 @@ UdpServer::HandleRead(Ptr<Socket> socket)
     {
         Address localAddress;
         socket->GetSockName(localAddress);
-        m_rxTrace(packet);
+        m_rxTraceWithoutAddress(packet);
+        m_rxTrace(packet, from);
         m_rxTraceWithAddresses(packet, from, localAddress);
         if (packet->GetSize() > 0)
         {

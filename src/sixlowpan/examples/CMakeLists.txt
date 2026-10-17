@@ -42,3 +42,14 @@ build_lib_example(
     ${libinternet-apps}
     ${libcsma}
 )
+
+build_lib_example(
+  NAME example-sixlowpan-nd-basic
+  SOURCE_FILES example-sixlowpan-nd-basic.cc
+  LIBRARIES_TO_LINK
+    ${libnetwork}
+    ${libsixlowpan}
+    ${libinternet}
+    ${liblr-wpan}
+    ${libinternet-apps}
+)

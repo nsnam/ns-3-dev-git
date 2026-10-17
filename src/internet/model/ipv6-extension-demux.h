@@ -69,6 +69,14 @@ class Ipv6ExtensionDemux : public Object
      */
     void Remove(Ptr<Ipv6Extension> extension);
 
+    /**
+     * Assigns stream numbers to the registered extensions of this IPv6 demux object
+     *
+     * @param stream the first stream number to assign
+     * @returns the number of assigned streams
+     */
+    int64_t AssignStreams(int64_t stream);
+
   protected:
     /**
      * @brief Dispose object.

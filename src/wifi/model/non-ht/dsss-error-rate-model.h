@@ -9,6 +9,8 @@
 #ifndef DSSS_ERROR_RATE_MODEL_H
 #define DSSS_ERROR_RATE_MODEL_H
 
+#include "ns3/wifi-export.h"
+
 #include <cstdint>
 
 namespace ns3
@@ -18,7 +20,7 @@ namespace ns3
 /**
  * Structure for integral function parameters
  */
-struct FunctionParameters
+struct WIFI_EXPORT FunctionParameters
 {
     double beta; ///< Beta parameter
     double n;    ///< n parameter
@@ -32,7 +34,7 @@ struct FunctionParameters
  *
  * @return the integral function
  */
-double IntegralFunction(double x, void* params);
+WIFI_EXPORT double IntegralFunction(double x, void* params);
 #endif
 
 /**
@@ -58,7 +60,7 @@ double IntegralFunction(double x, void* params);
  *  More detailed description and validation can be found in
  *      http://www.nsnam.org/~pei/80211b.pdf
  */
-class DsssErrorRateModel
+class WIFI_EXPORT DsssErrorRateModel
 {
   public:
     /**
@@ -110,13 +112,6 @@ class DsssErrorRateModel
 #ifdef HAVE_GSL
     static double SymbolErrorProb16Cck(double e2);  /// equation (18) in Pursley's paper
     static double SymbolErrorProb256Cck(double e1); /// equation (17) in Pursley's paper
-#else
-
-  protected:
-    /// WLAN perfect
-    static const double WLAN_SIR_PERFECT;
-    /// WLAN impossible
-    static const double WLAN_SIR_IMPOSSIBLE;
 #endif
 };
 

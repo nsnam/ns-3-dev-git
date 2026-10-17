@@ -574,13 +574,13 @@ PhyEntity::DoStartReceivePayload(Ptr<Event> event)
     ScheduleEndOfMpdus(event);
     const auto& txVector = event->GetPpdu()->GetTxVector();
     Time payloadDuration = ppdu->GetTxDuration() - CalculatePhyPreambleAndHeaderDuration(txVector);
-    m_wifiPhy->m_phyRxPayloadBeginTrace(
-        txVector,
-        payloadDuration); // this callback (equivalent to PHY-RXSTART primitive) is triggered only
-                          // if headers have been correctly decoded and that the mode within is
-                          // supported
     m_endRxPayloadEvents.push_back(
         Simulator::Schedule(payloadDuration, &PhyEntity::EndReceivePayload, this, event));
+    // this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been
+    // correctly decoded and that the mode within is supported. It must be called after scheduling
+    // the call to EndReceivePayload (above) because EndReceivePayload must be called before the
+    // expiration of the timer started by the MAC when receiving the RXSTART indication.
+    m_wifiPhy->m_phyRxPayloadBeginTrace(txVector, payloadDuration);
     return payloadDuration;
 }
 
@@ -715,8 +715,7 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
 {
     const auto ppdu = event->GetPpdu();
     const auto& txVector = ppdu->GetTxVector();
-    NS_LOG_FUNCTION(
-        this << *event << ppdu->GetTxDuration() - CalculatePhyPreambleAndHeaderDuration(txVector));
+    NS_LOG_FUNCTION(this << *event);
     NS_ASSERT(event->GetEndTime() == Simulator::Now());
     const auto staId = GetStaId(ppdu);
     const auto channelWidthAndBand = GetChannelWidthAndBand(txVector, staId);
@@ -738,7 +737,9 @@ PhyEntity::EndReceivePayload(Ptr<Event> event)
     RxSignalInfo rxSignalInfo;
     bool success;
 
-    if (std::count(statusPerMpdu.cbegin(), statusPerMpdu.cend(), true))
+    if (std::any_of(statusPerMpdu.cbegin(), statusPerMpdu.cend(), [](const auto status) {
+            return status;
+        }))
     {
         // At least one MPDU has been successfully received
         m_wifiPhy->NotifyMonitorSniffRx(psdu,
@@ -1326,23 +1327,34 @@ PhyEntity::GetDelayUntilCcaEnd(dBm_u threshold, const WifiSpectrumBandInfo& band
 void
 PhyEntity::SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu)
 {
-    // We are here because we have received the first bit of a packet and we are
-    // not going to be able to synchronize on it
-    // In this model, CCA becomes busy when the aggregation of all signals as
-    // tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
-    const auto ccaIndication = GetCcaIndication(ppdu);
-    if (ccaIndication.has_value())
+    if (const auto ccaIndication = GetCcaIndication(ppdu))
     {
-        NS_LOG_DEBUG("CCA busy for " << ccaIndication.value().second << " during "
-                                     << ccaIndication.value().first.As(Time::S));
+        NS_LOG_DEBUG("CCA indication for " << ccaIndication.value().second << " during "
+                                           << ccaIndication.value().first.As(Time::US));
         m_state->SwitchMaybeToCcaBusy(ccaIndication.value().first,
                                       ccaIndication.value().second,
                                       {});
+        if (m_wifiPhy->IsStateCcaBusy())
+        {
+            NS_LOG_DEBUG("CCA busy for " << m_state->GetDelayUntilIdle().As(Time::US));
+        }
         return;
     }
+
     if (ppdu)
     {
-        SwitchMaybeToCcaBusy(nullptr);
+        SwitchMaybeToCcaBusy();
+        return;
+    }
+
+    if (m_wifiPhy->IsStateCcaBusy())
+    {
+        NS_LOG_DEBUG("Update CCA indication");
+        m_state->SwitchMaybeToCcaBusy(Seconds(0), WIFI_CHANLIST_PRIMARY, {});
+        if (m_wifiPhy->IsStateIdle())
+        {
+            NS_LOG_DEBUG("CCA indication updated to IDLE");
+        }
     }
 }
 

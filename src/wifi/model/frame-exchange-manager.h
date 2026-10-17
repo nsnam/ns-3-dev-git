@@ -25,16 +25,18 @@
 #include "wifi-protection-manager.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <optional>
 
 #define WIFI_FEM_NS_LOG_APPEND_CONTEXT                                                             \
-    std::clog << "[link=" << +m_linkId << "][mac=" << m_self << "] "
+    ns3LogStream << "[link=" << +m_linkId << "][mac=" << m_self << "] "
 
 namespace ns3
 {
 
+class AdhocWifiMac;
 class ApWifiMac;
 class StaWifiMac;
 
@@ -56,7 +58,7 @@ struct WifiAcknowledgment;
  * retransmitted until it is either successfully transmitted or
  * it has been retransmitted up until the SSRC or SLRC thresholds.
  */
-class FrameExchangeManager : public Object
+class WIFI_EXPORT FrameExchangeManager : public Object
 {
   public:
     /**
@@ -103,14 +105,24 @@ class FrameExchangeManager : public Object
                  const std::vector<bool>& perMpduStatus);
 
     /**
-     * Information about the MPDU being received. The TXVECTOR is populated upon
-     * PHY-RXSTART indication; the MAC header is populated when notified by the PHY.
+     * Information about the MPDU(s) being received. In case of TB PPDUs, information about multiple
+     * MPDUs can be stored; otherwise, information about a single MPDU is stored. TXVECTORs are
+     * populated upon PHY-RXSTART indication; MAC headers are populated when notified by the PHY.
      */
-    struct OngoingRxInfo
+    struct WIFI_EXPORT OngoingRxInfo
     {
-        std::optional<WifiMacHeader> macHdr; //!< MAC header of the MPDU being received
-        WifiTxVector txVector;               //!< TXVECTOR of the MPDU being received
-        Time endOfPsduRx;                    //!< time when reception of PSDU ends
+        std::map<uint16_t, WifiMacHeader> macHdrs; ///< AID-indexed (SU_STA_ID if not a TB PPDU) map
+                                                   ///< of MAC headers of MPDUs being received
+        WifiTxVector txVector;                     ///< TXVECTOR of MPDUs being received
+        Time endOfPpduRx;                          ///< time when reception of PPDU ends
+
+        /// Reset the stored information
+        void Reset()
+        {
+            macHdrs.clear();
+            txVector = WifiTxVector{};
+            endOfPpduRx = Time{};
+        }
     };
 
     /**
@@ -121,11 +133,14 @@ class FrameExchangeManager : public Object
     std::optional<std::reference_wrapper<const OngoingRxInfo>> GetOngoingRxInfo() const;
 
     /**
+     * @param aid for TB PPDUs being received by an AP, the AID of a solicited STA; otherwise, this
+     *        parameter must be set to SU_STA_ID
      * @return the information about the MAC header of the MPDU being received by the PHY, if any.
      *         The MAC header is available from the time its reception is completed until the end
      *         of PSDU reception
      */
-    std::optional<std::reference_wrapper<const WifiMacHeader>> GetReceivedMacHdr() const;
+    std::optional<std::reference_wrapper<const WifiMacHeader>> GetReceivedMacHdr(
+        uint16_t aid = SU_STA_ID) const;
 
     /**
      * Set the ID of the link this Frame Exchange Manager is associated with.
@@ -315,6 +330,7 @@ class FrameExchangeManager : public Object
 
     /**
      * @return the remote station manager operating on our link
+     * @hidecaller
      */
     Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager() const;
 
@@ -328,6 +344,23 @@ class FrameExchangeManager : public Object
      * @return the first fragment if fragmentation is needed, the given MPDU otherwise
      */
     Ptr<WifiMpdu> GetFirstFragmentIfNeeded(Ptr<WifiMpdu> mpdu);
+
+    /**
+     * Set the sequence number, determine the transmission parameters and transmit the given MPDU,
+     * which has been likely peeked from a TXOP queue.
+     *
+     * @param peekedItem the MPDU to transmit
+     */
+    virtual void PrepareFrameToSend(Ptr<WifiMpdu> peekedItem);
+
+    /**
+     * Send a buffered unit to the given sender, if any. Note that the sender must be a STA in
+     * powersave mode.
+     *
+     * @param sender the (link) address of the sender
+     * @return true if a buffered unit is sent, false otherwise
+     */
+    virtual bool SendBufferedUnit(Mac48Address sender);
 
     /**
      * Send an MPDU with the given TX parameters (with the specified protection).
@@ -438,6 +471,12 @@ class FrameExchangeManager : public Object
     virtual void NotifyReceivedNormalAck(Ptr<WifiMpdu> mpdu);
 
     /**
+     * Take actions required when a frame is received from the associated AP after sending a
+     * PS-Poll frame.
+     */
+    void ReceiveFrameAfterPsPoll();
+
+    /**
      * Retransmit an MPDU that was not acknowledged.
      *
      * @param mpdu the MPDU to retransmit
@@ -515,21 +554,20 @@ class FrameExchangeManager : public Object
     virtual uint32_t GetPsduSize(Ptr<const WifiMpdu> mpdu, const WifiTxVector& txVector) const;
 
     /**
-     * Notify the given Txop that channel has been released.
-     *
-     * @param txop the given Txop
+     * Notify the Txop that gained channel access that channel has been released.
      */
-    virtual void NotifyChannelReleased(Ptr<Txop> txop);
+    virtual void NotifyChannelReleased();
 
-    Ptr<Txop> m_dcf;                                  //!< the DCF/EDCAF that gained channel access
-    WifiTxTimer m_txTimer;                            //!< the timer set upon frame transmission
-    EventId m_navResetEvent;                          //!< the event to reset the NAV after an RTS
-    EventId m_sendCtsEvent;                           //!< the event to send a CTS after an (MU-)RTS
-    Ptr<WifiMac> m_mac;                               //!< the MAC layer on this station
-    Ptr<ApWifiMac> m_apMac;                           //!< AP MAC layer pointer (null if not an AP)
-    Ptr<StaWifiMac> m_staMac;                         //!< STA MAC layer pointer (null if not a STA)
-    Ptr<MacTxMiddle> m_txMiddle;                      //!< the MAC TX Middle on this station
-    Ptr<MacRxMiddle> m_rxMiddle;                      //!< the MAC RX Middle on this station
+    Ptr<Txop> m_dcf;              //!< the DCF/EDCAF that gained channel access
+    WifiTxTimer m_txTimer;        //!< the timer set upon frame transmission
+    EventId m_navResetEvent;      //!< the event to reset the NAV after an RTS
+    EventId m_sendCtsEvent;       //!< the event to send a CTS after an (MU-)RTS
+    Ptr<WifiMac> m_mac;           //!< the MAC layer on this station
+    Ptr<ApWifiMac> m_apMac;       //!< AP MAC layer pointer (null if not an AP)
+    Ptr<StaWifiMac> m_staMac;     //!< STA MAC layer pointer (null if not a STA)
+    Ptr<AdhocWifiMac> m_adhocMac; //!< ADHOC MAC layer pointer (null if not ADHOC)
+    Ptr<MacTxMiddle> m_txMiddle;  //!< the MAC TX Middle on this station
+    Ptr<MacRxMiddle> m_rxMiddle;  //!< the MAC RX Middle on this station
     Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
     Ptr<WifiPhy> m_phy;                               //!< the PHY layer on this station
     Mac48Address m_self;                              //!< the MAC address of this device

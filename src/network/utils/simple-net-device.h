@@ -151,6 +151,14 @@ class SimpleNetDevice : public NetDevice
     TracedCallback<Ptr<const Packet>> m_phyRxDropTrace;
 
     /**
+     * The trace source fired when the device drops a received packet because no
+     * protocol handler consumed it.
+     *
+     * @see class CallBackTraceSource
+     */
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
+
+    /**
      * The StartTransmission method is used internally to start the process
      * of sending a packet out on the channel, by scheduling the
      * FinishTransmission method at a time corresponding to the transmission

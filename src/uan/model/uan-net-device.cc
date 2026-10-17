@@ -123,7 +123,11 @@ UanNetDevice::GetTypeId()
             .AddTraceSource("Tx",
                             "Send payload to the MAC layer.",
                             MakeTraceSourceAccessor(&UanNetDevice::m_txLogger),
-                            "ns3::UanNetDevice::RxTxTracedCallback");
+                            "ns3::UanNetDevice::RxTxTracedCallback")
+            .AddTraceSource("MacRxDrop",
+                            "A packet has been dropped because no protocol handler consumed it.",
+                            MakeTraceSourceAccessor(&UanNetDevice::m_macRxDropTrace),
+                            "ns3::Packet::TracedCallback");
     return tid;
 }
 
@@ -343,7 +347,11 @@ UanNetDevice::ForwardUp(Ptr<Packet> pkt, uint16_t protocolNumber, const Mac8Addr
 {
     NS_LOG_DEBUG("Forwarding packet up to application");
     m_rxLogger(pkt, src);
-    m_forwardUp(this, pkt, protocolNumber, src);
+    if (!m_forwardUp(this, pkt, protocolNumber, src))
+    {
+        NS_LOG_INFO("Drop packet due to no protocol handler");
+        m_macRxDropTrace(pkt);
+    }
 }
 
 Ptr<UanTransducer>

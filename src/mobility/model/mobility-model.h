@@ -59,7 +59,7 @@ class MOBILITY_EXPORT MobilityModel : public Object
      *
      * @param referencePosition reference position to consider
      * @return the current position based on the provided referencePosition
-     * \sa ns3::MobilityModel::DoGetPositionWithReference
+     * @sa ns3::MobilityModel::DoGetPositionWithReference
      */
     Vector GetPositionWithReference(const Vector& referencePosition) const;
     /**

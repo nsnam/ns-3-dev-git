@@ -47,8 +47,8 @@ class HeaderSerializationTestCase : public TestCase
      * deserializing from the buffer and serialize the new header into a new buffer.
      * Verify that the two buffers have the same size and the same content.
      *
-     * @tparam T \deduced Type of the given header
-     * @tparam Args \deduced Type of arguments to pass to the constructor of the header
+     * @tparam T @deduced Type of the given header
+     * @tparam Args @deduced Type of arguments to pass to the constructor of the header
      * @param [in] hdr the header to test
      * @param [in] args the arguments to construct the new header
      */

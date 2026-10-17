@@ -421,7 +421,7 @@ Ipv6AddressGeneratorImpl::NextAddress(const Ipv6Prefix prefix)
     {
         ad[j] |= m_netTable[index].addr[j];
     }
-    Ipv6Address addr = Ipv6Address(ad);
+    auto addr = Ipv6Address(ad);
 
     for (int32_t j = 15; j >= 0; j--)
     {
@@ -601,8 +601,8 @@ Ipv6AddressGeneratorImpl::IsNetworkAllocated(const Ipv6Address address, const Ip
     {
         NS_LOG_LOGIC("examine entry: " << Ipv6Address((*i).addrLow) << " to "
                                        << Ipv6Address((*i).addrHigh));
-        Ipv6Address low = Ipv6Address((*i).addrLow);
-        Ipv6Address high = Ipv6Address((*i).addrHigh);
+        auto low = Ipv6Address((*i).addrLow);
+        auto high = Ipv6Address((*i).addrHigh);
 
         if (address == low.CombinePrefix(prefix) || address == high.CombinePrefix(prefix))
         {

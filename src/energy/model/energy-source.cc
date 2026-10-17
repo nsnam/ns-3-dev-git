@@ -70,8 +70,7 @@ EnergySource::FindDeviceEnergyModels(TypeId tid)
 {
     NS_LOG_FUNCTION(this << tid);
     DeviceEnergyModelContainer container;
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         if ((*i)->GetInstanceTypeId() == tid)
         {
@@ -86,8 +85,7 @@ EnergySource::FindDeviceEnergyModels(std::string name)
 {
     NS_LOG_FUNCTION(this << name);
     DeviceEnergyModelContainer container;
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         if ((*i)->GetInstanceTypeId().GetName() == name)
         {
@@ -105,8 +103,7 @@ EnergySource::InitializeDeviceModels()
      * Device models are not aggregated to the node, hence we have to manually
      * call dispose method here.
      */
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         (*i)->Initialize();
     }
@@ -120,8 +117,7 @@ EnergySource::DisposeDeviceModels()
      * Device models are not aggregated to the node, hence we have to manually
      * call dispose method here.
      */
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         (*i)->Dispose();
     }
@@ -155,8 +151,7 @@ EnergySource::CalculateTotalCurrent()
 {
     NS_LOG_FUNCTION(this);
     double totalCurrentA = 0.0;
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         totalCurrentA += (*i)->GetCurrentA();
     }
@@ -190,8 +185,7 @@ EnergySource::NotifyEnergyDrained()
 {
     NS_LOG_FUNCTION(this);
     // notify all device energy models installed on node
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         (*i)->HandleEnergyDepletion();
     }
@@ -202,8 +196,7 @@ EnergySource::NotifyEnergyRecharged()
 {
     NS_LOG_FUNCTION(this);
     // notify all device energy models installed on node
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         (*i)->HandleEnergyRecharged();
     }
@@ -214,8 +207,7 @@ EnergySource::NotifyEnergyChanged()
 {
     NS_LOG_FUNCTION(this);
     // notify all device energy models installed on node
-    DeviceEnergyModelContainer::Iterator i;
-    for (i = m_models.Begin(); i != m_models.End(); i++)
+    for (auto i = m_models.Begin(); i != m_models.End(); i++)
     {
         (*i)->HandleEnergyChanged();
     }

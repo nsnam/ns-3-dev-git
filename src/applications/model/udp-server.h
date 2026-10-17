@@ -75,8 +75,7 @@ class UdpServer : public SinkApplication
     void SetPacketWindowSize(uint16_t size);
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
 
     /**
      * @brief Handle a packet reception.
@@ -87,13 +86,8 @@ class UdpServer : public SinkApplication
      */
     void HandleRead(Ptr<Socket> socket);
 
-    Ptr<Socket> m_socket;            //!< Socket
-    Ptr<Socket> m_socket6;           //!< IPv6 Socket (used if only port is specified)
-    uint64_t m_received;             //!< Number of received packets
-    PacketLossCounter m_lossCounter; //!< Lost packet counter
-
-    /// Callbacks for tracing the packet Rx events
-    TracedCallback<Ptr<const Packet>> m_rxTrace;
+    uint64_t m_received{0};             //!< Number of received packets
+    PacketLossCounter m_lossCounter{0}; //!< Lost packet counter
 
     /// Callbacks for tracing the packet Rx events, includes source and destination addresses
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;

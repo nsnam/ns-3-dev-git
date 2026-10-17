@@ -12,10 +12,12 @@
 #include "block-ack-type.h"
 #include "wifi-spectrum-value-helper.h"
 #include "wifi-standard-constants.h"
+#include "wifi-standards.h"
 #include "wifi-types.h"
 
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <map>
@@ -83,7 +85,7 @@ using WifiTidLinkMapping = std::map<tid_t, std::set<linkId_t>>;
  *
  * @return the equivalent Watts for the given dBm
  */
-Watt_u DbmToW(dBm_u val);
+WIFI_EXPORT Watt_u DbmToW(dBm_u val);
 /**
  * Convert from dB to ratio.
  *
@@ -91,7 +93,7 @@ Watt_u DbmToW(dBm_u val);
  *
  * @return ratio in linear scale
  */
-double DbToRatio(dB_u val);
+WIFI_EXPORT double DbToRatio(dB_u val);
 /**
  * Convert from Watts to dBm.
  *
@@ -99,7 +101,7 @@ double DbToRatio(dB_u val);
  *
  * @return the equivalent dBm for the given Watts
  */
-dBm_u WToDbm(Watt_u val);
+WIFI_EXPORT dBm_u WToDbm(Watt_u val);
 /**
  * Convert from ratio to dB.
  *
@@ -107,7 +109,7 @@ dBm_u WToDbm(Watt_u val);
  *
  * @return the value in dB
  */
-dB_u RatioToDb(double ratio);
+WIFI_EXPORT dB_u RatioToDb(double ratio);
 
 /**
  * Convert from MHz to Hz.
@@ -171,21 +173,21 @@ Count20MHzSubchannels(MHz_u lower, MHz_u upper)
  *
  * @return the total Ack size in bytes
  */
-uint32_t GetAckSize();
+WIFI_EXPORT uint32_t GetAckSize();
 /**
  * Return the total BlockAck size (including FCS trailer).
  *
  * @param type the BlockAck type
  * @return the total BlockAck size in bytes
  */
-uint32_t GetBlockAckSize(BlockAckType type);
+WIFI_EXPORT uint32_t GetBlockAckSize(BlockAckType type);
 /**
  * Return the total BlockAckRequest size (including FCS trailer).
  *
  * @param type the BlockAckRequest type
  * @return the total BlockAckRequest size in bytes
  */
-uint32_t GetBlockAckRequestSize(BlockAckReqType type);
+WIFI_EXPORT uint32_t GetBlockAckRequestSize(BlockAckReqType type);
 /**
  * Return the total MU-BAR size (including FCS trailer).
  *
@@ -202,19 +204,19 @@ uint32_t GetMuBarSize(TriggerFrameVariant variant,
  *
  * @return the total RTS size in bytes
  */
-uint32_t GetRtsSize();
+WIFI_EXPORT uint32_t GetRtsSize();
 /**
  * Return the total CTS size (including FCS trailer).
  *
  * @return the total CTS size in bytes
  */
-uint32_t GetCtsSize();
+WIFI_EXPORT uint32_t GetCtsSize();
 
 /**
  * @param txVector the TXVECTOR used to transmit a frame whose reception failed
  * @return the estimated Ack TX time, based on Table 10-8 of IEEE 802.11REVme D7.0
  */
-Time GetEstimatedAckTxTime(const WifiTxVector& txVector);
+WIFI_EXPORT Time GetEstimatedAckTxTime(const WifiTxVector& txVector);
 
 /**
  * @param seq MPDU sequence number
@@ -224,13 +226,13 @@ Time GetEstimatedAckTxTime(const WifiTxVector& txVector);
  *
  * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
  */
-bool IsInWindow(uint16_t seq, uint16_t winstart, uint16_t winsize);
+WIFI_EXPORT bool IsInWindow(uint16_t seq, uint16_t winstart, uint16_t winsize);
 /**
  * Add FCS trailer to a packet.
  *
  * @param packet the packet to add a trailer to
  */
-void AddWifiMacTrailer(Ptr<Packet> packet);
+WIFI_EXPORT void AddWifiMacTrailer(Ptr<Packet> packet);
 /**
  * Return the total size of the packet after WifiMacHeader and FCS trailer
  * have been added.
@@ -240,7 +242,16 @@ void AddWifiMacTrailer(Ptr<Packet> packet);
  * @param isAmpdu whether packet is part of an A-MPDU
  * @return the total packet size
  */
-uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu);
+WIFI_EXPORT uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpdu);
+
+/**
+ * Check whether a guard interval duration is valid for a given standard.
+ *
+ * @param gi the guard interval duration
+ * @param standard the standard
+ * @return true if the guard interval duration is valid for the given standard, false otherwise
+ */
+bool IsValidGuardInterval(Time gi, WifiStandard standard);
 
 /**
  * Check if the given TID-to-Link Mappings are valid for a negotiation type of 1. Specifically,
@@ -250,8 +261,8 @@ uint32_t GetSize(Ptr<const Packet> packet, const WifiMacHeader* hdr, bool isAmpd
  * @param ulLinkMapping the given TID-to-Link Mapping for Uplink
  * @return whether the given TID-to-Link Mappings are valid for a negotiation type of 1
  */
-bool TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
-                                      const WifiTidLinkMapping& ulLinkMapping);
+WIFI_EXPORT bool TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
+                                                  const WifiTidLinkMapping& ulLinkMapping);
 
 /**
  * Check whether a MAC destination address corresponds to a groupcast transmission.
@@ -259,7 +270,7 @@ bool TidToLinkMappingValidForNegType1(const WifiTidLinkMapping& dlLinkMapping,
  * @param adr the MAC address
  * @return true if the MAC address is a group address that is not a broadcast address
  */
-bool IsGroupcast(const Mac48Address& adr);
+WIFI_EXPORT bool IsGroupcast(const Mac48Address& adr);
 
 /**
  * Return whether a given packet is transmitted using the GCR service.
@@ -268,7 +279,7 @@ bool IsGroupcast(const Mac48Address& adr);
  * @param hdr the MAC header of the packet to check
  * @return true if the packet is transmitted using the GCR service, false otherwise
  */
-bool IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
+WIFI_EXPORT bool IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
 
 /**
  * Get the MAC address of the individually addressed recipient to use for a given packet.
@@ -280,7 +291,8 @@ bool IsGcr(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
  * @param hdr the MAC header of the packet to check
  * @return the MAC address of the individually addressed recipient to use
  */
-Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHeader& hdr);
+WIFI_EXPORT Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac,
+                                                           const WifiMacHeader& hdr);
 
 /**
  * Get the frequency range corresponding to the given PHY band.
@@ -288,7 +300,7 @@ Mac48Address GetIndividuallyAddressedRecipient(Ptr<WifiMac> mac, const WifiMacHe
  * @param band the given PHY band
  * @return the frequency range corresponding to the given PHY band
  */
-FrequencyRange GetFrequencyRange(WifiPhyBand band);
+WIFI_EXPORT FrequencyRange GetFrequencyRange(WifiPhyBand band);
 
 /// Link ID for single link operations (helps tracking places where correct link
 /// ID is to be used to support multi-link operations)

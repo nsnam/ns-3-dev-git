@@ -10,13 +10,10 @@
 
 #include "ns3/log.h"
 
-#include <algorithm>
 #include <cctype>
 #include <fstream>
-#include <iterator>
 #include <limits>
 #include <sstream>
-#include <vector>
 
 /**
  * @file

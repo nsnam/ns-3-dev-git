@@ -11,6 +11,7 @@ This chapter covers some additional features provided by ns-3 which can be usefu
 
    random-variables
    hash-functions
+   json
    tracing
    data-collection
    statistics

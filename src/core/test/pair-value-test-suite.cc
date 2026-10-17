@@ -16,8 +16,6 @@
 #include "ns3/test.h"
 #include "ns3/type-id.h"
 
-#include <algorithm>
-#include <iterator>
 #include <sstream>
 #include <utility>
 

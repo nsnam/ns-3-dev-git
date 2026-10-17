@@ -252,7 +252,7 @@ main(int argc, char* argv[])
     Ptr<LrWpanNetDevice> dev4 = lrwpanDevices.Get(4)->GetObject<LrWpanNetDevice>();
 
     // Device must ALWAYS have IEEE Address (Extended address) assigned.
-    // Network address (short address) are assigned by the the JOIN mechanism
+    // Network address (short address) are assigned by the JOIN mechanism
     dev0->GetMac()->SetExtendedAddress("00:00:00:00:00:00:CA:FE");
     dev1->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:01");
     dev2->GetMac()->SetExtendedAddress("00:00:00:00:00:00:00:02");
@@ -278,7 +278,7 @@ main(int argc, char* argv[])
     // Configure the Zigbee stack and use only the NWK layer.
 
     ZigbeeHelper zigbeeHelper;
-    zigbeeHelper.SetNwkLayerOnly();
+    zigbeeHelper.SetLayers(StackLayers::ONLY_NWK);
     ZigbeeStackContainer zigbeeStackContainer = zigbeeHelper.Install(lrwpanDevices);
 
     Ptr<ZigbeeStack> zstack0 = zigbeeStackContainer.Get(0)->GetObject<ZigbeeStack>();

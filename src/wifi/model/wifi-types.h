@@ -14,6 +14,7 @@
 #include "wifi-units.h"
 
 #include "ns3/fatal-error.h"
+#include "ns3/wifi-export.h"
 
 #include <compare>
 #include <list>
@@ -66,38 +67,83 @@ enum MpduType
 };
 
 /// SignalNoiseDbm structure
-struct SignalNoiseDbm
+struct WIFI_EXPORT SignalNoiseDbm
 {
     dBm_u signal; ///< signal strength
     dBm_u noise;  ///< noise power
 };
 
 /// MpduInfo structure
-struct MpduInfo
+struct WIFI_EXPORT MpduInfo
 {
     MpduType type;          ///< type of MPDU
     uint32_t mpduRefNumber; ///< MPDU ref number
 };
 
 /// RxSignalInfo structure containing info on the received signal
-struct RxSignalInfo
+struct WIFI_EXPORT RxSignalInfo
 {
     double snr; ///< SNR in linear scale
     dBm_u rssi; ///< RSSI
 };
 
 /**
+ * Struct defining a frequency range between minFrequency (MHz) and maxFrequency (MHz).
+ */
+struct WIFI_EXPORT FrequencyRange
+{
+    MHz_u minFrequency{0.0}; ///< the minimum frequency
+    MHz_u maxFrequency{0.0}; ///< the maximum frequency
+
+    /**
+     * @brief spaceship operator.
+     *
+     * @param range the frequency range
+     * @returns -1 if the provided range is located at a lower minimum frequency, 0 if the provided
+     * range is identical or 1 if the provided range is located at a higher minimum frequency
+     */
+    auto operator<=>(const FrequencyRange& range) const = default;
+};
+
+/**
+ * Serialize FrequencyRange values to ostream (human-readable).
+ *
+ * @param os the output stream
+ * @param freqRange the FrequencyRange
+ *
+ * @return std::ostream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, const FrequencyRange& freqRange)
+{
+    os << "[" << freqRange.minFrequency << " MHz - " << freqRange.maxFrequency << " MHz]";
+    return os;
+}
+
+/// Identifier for the frequency range covering the whole wifi spectrum
+constexpr FrequencyRange WHOLE_WIFI_SPECTRUM = {2401, 7125};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 2.4 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_2_4_GHZ = {2401, 2483};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 5 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_5_GHZ = {5170, 5915};
+
+/// Identifier for the frequency range covering the wifi spectrum in the 6 GHz band
+constexpr FrequencyRange WIFI_SPECTRUM_6_GHZ = {5945, 7125};
+
+/**
  * Struct defining the configuration of a wifi channel, which can be made of one or multiple
  * channel segments.
  */
-struct WifiChannelConfig
+struct WIFI_EXPORT WifiChannelConfig
 {
     /// a channel segment, as a struct without units for channel width (to be deprecated when using
     /// strong types)
-    struct SegmentWithoutUnits
+    struct WIFI_EXPORT SegmentWithoutUnits
     {
         uint8_t number{};                            ///< channel number
-        double width{};                              ///< channel width in MHz
+        MHz_u width{};                               ///< channel width in MHz
         WifiPhyBand band{WIFI_PHY_BAND_UNSPECIFIED}; ///< PHY band
         uint8_t p20Index{};                          ///< primary20 index
 
@@ -109,7 +155,7 @@ struct WifiChannelConfig
          * @param b the PHY band
          * @param i the primary20 index
          */
-        SegmentWithoutUnits(uint8_t n, double w, WifiPhyBand b, uint8_t i)
+        SegmentWithoutUnits(uint8_t n, MHz_u w, WifiPhyBand b, uint8_t i)
             : number(n),
               width(w),
               band(b),
@@ -119,7 +165,7 @@ struct WifiChannelConfig
     };
 
     /// a channel segment, as a struct with units for channel width
-    struct Segment
+    struct WIFI_EXPORT Segment
     {
         uint8_t number{};                            ///< channel number
         MHz_u width{};                               ///< channel width
@@ -302,6 +348,16 @@ using BwTonesPair = std::pair<MHz_u, RuType>;
 
 /// map (bandwidth, number of tones) pairs to the group of subcarrier ranges
 using SubcarrierGroups = std::map<BwTonesPair, std::vector<SubcarrierGroup>>;
+
+/**
+ * Enumeration for channel access status
+ */
+enum class WifiChannelAccessStatus : uint8_t
+{
+    NOT_REQUESTED = 0,
+    REQUESTED,
+    GRANTED
+};
 
 } // namespace ns3
 

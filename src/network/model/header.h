@@ -28,6 +28,9 @@ namespace ns3
  *
  * Sample code which shows how to create a new type of Header, and how to use it,
  * is shown in the sample file samples/main-packet-header.cc
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 class Header : public Chunk
 {

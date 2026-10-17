@@ -1,0 +1,82 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "Test",
+      "cacheVariables": {
+          "NS3_ASSERT": "ON",
+          "NS3_EXAMPLES": "ON",
+          "NS3_LOG": "ON",
+          "NS3_TESTS": "ON",
+          "NS3_CMAKE_PRESET": "Test"
+      }
+    },
+    {
+      "name": "Optimized",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "optimized",
+        "NS3_ASSERT": "OFF",
+        "NS3_LOG": "OFF",
+        "NS3_LINK_TIME_OPTIMIZATION": "ON",
+        "NS3_NATIVE_OPTIMIZATIONS": "ON",
+        "NS3_CMAKE_PRESET": "Optimized"
+      }
+    },
+    {
+      "name": "LteDeveloper",
+      "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "debug",
+          "NS3_ASSERT": "ON",
+          "NS3_EXAMPLES": "ON",
+          "NS3_LOG": "ON",
+          "NS3_TESTS": "ON",
+          "NS3_SANITIZE": "ON",
+          "NS3_FILTER_MODULE_EXAMPLES_AND_TESTS": "lte",
+          "NS3_CMAKE_PRESET": "LteDeveloper"
+      }
+    },
+    {
+      "name": "PythonBindings",
+      "cacheVariables": {
+          "NS3_ASSERT": "ON",
+          "NS3_EXAMPLES": "ON",
+          "NS3_PYTHON_BINDINGS": "ON",
+          "NS3_CMAKE_PRESET": "PythonBindings"
+      }
+    },
+    {
+      "name": "MacHomebrewSionna",
+      "environment": {
+          "DYLD_FALLBACK_LIBRARY_PATH": "/opt/homebrew/lib:$penv{DYLD_FALLBACK_LIBRARY_PATH}",
+          "DRJIT_LIBLLVM_PATH": "/opt/homebrew/opt/llvm@17/lib/libLLVM.dylib"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "/opt/homebrew",
+        "NS3_PYTHON_BINDINGS": "ON",
+        "NS3_CMAKE_PRESET": "MacHomebrewSionna"
+      }
+    },
+    {
+      "name": "MacCondaSionna",
+      "environment": {
+        "DRJIT_LIBLLVM_PATH": "$penv{CONDA_PREFIX}/lib/libLLVM-17.dylib"
+      },
+      "cacheVariables": {
+        "NS3_PYTHON_BINDINGS": "ON",
+        "NS3_CMAKE_PRESET": "MacCondaSionna"
+      }
+    },
+    {
+      "name": "MacPortsSionna",
+      "environment": {
+        "DYLD_FALLBACK_LIBRARY_PATH": "/opt/local/lib:$penv{DYLD_FALLBACK_LIBRARY_PATH}",
+        "DRJIT_LIBLLVM_PATH": "/opt/local/libexec/llvm-17/lib/libLLVM.dylib"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "/opt/local",
+        "NS3_PYTHON_BINDINGS": "ON",
+        "NS3_CMAKE_PRESET": "MacPortsSionna"
+      }
+    }
+  ]
+}

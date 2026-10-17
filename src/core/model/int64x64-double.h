@@ -175,7 +175,7 @@ class int64x64_t
      */
     inline double GetDouble() const
     {
-        return (double)_v;
+        return static_cast<double>(_v);
     }
 
   private:

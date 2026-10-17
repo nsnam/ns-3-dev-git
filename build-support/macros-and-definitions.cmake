@@ -15,10 +15,20 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/build-support/3rd-party")
 
 macro(disable_cmake_warnings)
   set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 1 CACHE BOOL "" FORCE)
+  # Starting with CMake 4.4, --warn-uninitialized warnings are no longer
+  # suppressed by CMAKE_SUPPRESS_DEVELOPER_WARNINGS. Macros get their own
+  # diagnostic stack entry, so cmake_diagnostic(PUSH/POP) cannot span them.
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.4.0")
+    cmake_diagnostic(GET CMD_UNINITIALIZED ns3_uninitialized_diagnostic)
+    cmake_diagnostic(SET CMD_UNINITIALIZED IGNORE)
+  endif()
 endmacro()
 
 macro(enable_cmake_warnings)
   set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS 0 CACHE BOOL "" FORCE)
+  if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "4.4.0")
+    cmake_diagnostic(SET CMD_UNINITIALIZED ${ns3_uninitialized_diagnostic})
+  endif()
 endmacro()
 
 # Set options that are not really meant to be changed
@@ -182,8 +192,6 @@ macro(process_options)
     set(ENABLE_TESTS ON)
     # CTest creates a TEST target that conflicts with ns-3 test library
     # enable_testing()
-  else()
-    list(REMOVE_ITEM libs_to_build test)
   endif()
 
   set(profiles_without_suffixes release)
@@ -256,23 +264,39 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_CLANG_TIDY})
+  if(${NS3_CLANG_TIDY} OR ${NS3_CLANG_TIDY_FIX})
     find_program(
       CLANG_TIDY
-      NAMES clang-tidy
-            clang-tidy-15
-            clang-tidy-16
-            clang-tidy-17
-            clang-tidy-18
-            clang-tidy-19
+      NAMES clang-tidy-22
+            clang-tidy-21
             clang-tidy-20
+            clang-tidy-19
+            clang-tidy-18
+            clang-tidy-17
+            clang-tidy
     )
     if("${CLANG_TIDY}" STREQUAL "CLANG_TIDY-NOTFOUND")
       message(FATAL_ERROR "Clang-tidy was not found")
     else()
-      set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY}
-                               -config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
-      ) # --fix)
+      if(${NS3_CLANG_TIDY})
+        set(CMAKE_CXX_CLANG_TIDY
+            ${CLANG_TIDY} --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+            --format-style=file -p ${CMAKE_BINARY_DIR}
+        )
+      else()
+        set(CMAKE_CXX_CLANG_TIDY
+            ${CLANG_TIDY}
+            --config-file=${CMAKE_SOURCE_DIR}/.clang-tidy
+            --fix
+            --fix-errors
+            --fix-notes
+            --format-style=file
+            --warnings-as-errors=*
+            --quiet
+            -p
+            ${CMAKE_BINARY_DIR}
+        )
+      endif()
     endif()
   else()
     unset(CMAKE_CXX_CLANG_TIDY)
@@ -394,9 +418,25 @@ macro(process_options)
   endif()
 
   if(${NS3_SANITIZE})
-    set(CMAKE_CXX_FLAGS
-        "${CMAKE_CXX_FLAGS} -fsanitize=address,leak,undefined -fno-sanitize-recover=all"
-    )
+    set(SANITIZERS "address" "undefined" "leak")
+    set(AVAILABLE_SANITIZERS)
+    foreach(flag ${SANITIZERS})
+      set(CMAKE_REQUIRED_FLAGS "-fsanitize=${flag}")
+      check_cxx_source_compiles("int main() { return 0; }" HAS_FLAG_${flag})
+      if(HAS_FLAG_${flag})
+        list(APPEND AVAILABLE_SANITIZERS ${flag})
+      endif()
+    endforeach()
+    unset(CMAKE_REQUIRED_FLAGS)
+    string(REPLACE ";" "," SANITIZERS_FLAGS "${AVAILABLE_SANITIZERS}")
+    if(AVAILABLE_SANITIZERS)
+      message(STATUS "Sanitizers: found ${SANITIZERS_FLAGS}")
+      set(CMAKE_CXX_FLAGS
+          "${CMAKE_CXX_FLAGS} -fsanitize=${SANITIZERS_FLAGS} -fno-sanitize-recover=all"
+      )
+    else()
+      message(WARNING "Sanitizers: no sanitizers available")
+    endif()
   endif()
 
   if(${NS3_SANITIZE_MEMORY})
@@ -425,7 +465,13 @@ macro(process_options)
     endif()
   endif()
 
-  if(${NS3_NATIVE_OPTIMIZATIONS} AND ${GCC})
+  if(${NS3_NATIVE_OPTIMIZATIONS} AND (${GCC} OR ${CLANG}))
+    # -march=native / -mtune=native work for GCC, Clang on Linux/macOS, and
+    # ClangCL on Windows. ClangCL accepts the flag directly (it is a clang
+    # driver flag, not an MSVC /arch: flag) and enables AVX2/FMA/etc. just as it
+    # does on Linux. Previously only GCC was listed here, so ClangCL builds
+    # never got native CPU features, contributing to the large runtime gap
+    # between ClangCL and MinGW.
     add_compile_options(-march=native -mtune=native)
   endif()
 
@@ -489,6 +535,27 @@ macro(process_options)
   # Set common include folder (./build/include, where we find ns3/core-module.h)
   include_directories(${CMAKE_OUTPUT_DIRECTORY}/include)
 
+  # Vendored third-party header-only libraries (e.g. nlohmann/json).
+  #
+  # Rather than placing the generic third-party/ directory on the global include
+  # path -- which would assume that every vendored library is header-only and
+  # follows the same <library>/header layout -- copy the specific vendored
+  # library into the build-tree include directory (build/include, already added
+  # to the include path above). Consumers then use the upstream include path,
+  # e.g. #include <nlohmann/json.hpp>. Re-run CMake after updating the vendored
+  # copy under third-party/nlohmann/ to refresh it.
+  file(COPY ${PROJECT_SOURCE_DIR}/third-party/nlohmann
+       DESTINATION ${CMAKE_OUTPUT_DIRECTORY}/include
+  )
+
+  # Install the vendored header alongside the ns-3 public headers. This keeps an
+  # installed ns-3 self-contained should the library ever be included from an
+  # installed ns-3 header (a public header that includes <nlohmann/json.hpp>
+  # would otherwise fail to compile for downstream users).
+  install(DIRECTORY ${CMAKE_OUTPUT_DIRECTORY}/include/nlohmann
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  )
+
   # Include our package managers
   # cmake-format: off
   # Starting with a custom cmake file that provides a Hunter-like interface to vcpkg
@@ -542,7 +609,7 @@ macro(process_options)
       set(ENABLE_SQLITE True)
       add_definitions(-DHAVE_SQLITE3)
       if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-        include_directories(${SQLite3_INCLUDE_DIRS})
+        include_directories(SYSTEM ${SQLite3_INCLUDE_DIRS})
       endif()
     endif()
   endif()
@@ -553,12 +620,15 @@ macro(process_options)
     find_package(Eigen3 QUIET)
     enable_cmake_warnings()
 
-    if(${EIGEN3_FOUND})
+    if(${Eigen3_FOUND})
       set(ENABLE_EIGEN True)
       add_definitions(-DHAVE_EIGEN3)
       add_definitions(-DEIGEN_MPL2_ONLY)
       if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-        include_directories(${EIGEN3_INCLUDE_DIR})
+        get_target_property(
+          EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES
+        )
+        include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
       endif()
     else()
       set(ENABLE_EIGEN_REASON "Eigen was not found")
@@ -588,7 +658,9 @@ macro(process_options)
           )
         else()
           if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-            include_directories(${GTK3_INCLUDE_DIRS} ${HarfBuzz_INCLUDE_DIRS})
+            include_directories(
+              SYSTEM ${GTK3_INCLUDE_DIRS} ${HarfBuzz_INCLUDE_DIRS}
+            )
           endif()
         endif()
       endif()
@@ -617,7 +689,7 @@ macro(process_options)
     else()
       add_definitions(-DHAVE_LIBXML2)
       if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-        include_directories(${LIBXML2_INCLUDE_DIR})
+        include_directories(SYSTEM ${LIBXML2_INCLUDE_DIR})
       endif()
     endif()
   endif()
@@ -625,7 +697,7 @@ macro(process_options)
   set(THREADS_PREFER_PTHREAD_FLAG)
   find_package(Threads QUIET)
   if(NOT ${Threads_FOUND})
-    message(FATAL_ERROR Threads are required by ns-3)
+    message(FATAL_ERROR "Threads are required by ns-3")
   endif()
 
   set(Python3_LIBRARIES)
@@ -662,7 +734,7 @@ macro(process_options)
         endif()
       endif()
       if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-        include_directories(${Python3_INCLUDE_DIRS})
+        include_directories(SYSTEM ${Python3_INCLUDE_DIRS})
       endif()
     else()
       message(${HIGHLIGHTED_STATUS}
@@ -849,7 +921,7 @@ macro(process_options)
   find_package(Boost QUIET)
   if(${Boost_FOUND})
     if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-      include_directories(${Boost_INCLUDE_DIRS})
+      include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
     endif()
     set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS})
   else()
@@ -865,7 +937,7 @@ macro(process_options)
       message(STATUS "GSL was found.")
       add_definitions(-DHAVE_GSL)
       if(NOT ${NS3_FORCE_LOCAL_DEPENDENCIES})
-        include_directories(${GSL_INCLUDE_DIRS})
+        include_directories(SYSTEM ${GSL_INCLUDE_DIRS})
       endif()
     endif()
   endif()
@@ -942,8 +1014,10 @@ macro(process_options)
       )
       add_custom_target(
         run-introspected-command-line
-        COMMAND ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
-                ${Python3_EXECUTABLE} ./test.py --no-build --constrain=example
+        COMMAND
+          ${CMAKE_COMMAND} -E env NS_COMMANDLINE_INTROSPECTION=..
+          ${Python3_EXECUTABLE} ./test.py --no-build --retain
+          --constrain=example
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
         DEPENDS all-test-targets # all-test-targets only exists if ENABLE_TESTS
                                  # is set to ON
@@ -951,11 +1025,15 @@ macro(process_options)
 
       file(
         WRITE ${CMAKE_BINARY_DIR}/introspected-command-line-preamble.h
-        "/* This file is automatically generated by
-  CommandLine::PrintDoxygenUsage() from the CommandLine configuration
-  in various example programs.  Do not edit this file!  Edit the
-  CommandLine configuration in those files instead.
-  */\n"
+        "/**
+ * @file
+ * @ingroup utils
+ * Doxygen docs generated from the ns3::CommandLine options for each example.
+ * @note This file is automatically generated by
+ * ns3::CommandLine::PrintDoxygenUsage() from the ns3::CommandLine configuration
+ * in various example programs.  Do not edit this file!  Edit the
+ * ns3::CommandLine configuration in those files instead.
+ */\n"
       )
       add_custom_target(
         assemble-introspected-command-line
@@ -1101,8 +1179,8 @@ macro(process_options)
     # WSLv1 has a long double issue that will result in a few tests failing
     # https://github.com/microsoft/WSL/issues/830
     include(CheckTypeSize)
-    check_type_size("double" SIZEOF_DOUBLE)
-    check_type_size("long double" SIZEOF_LONG_DOUBLE)
+    check_type_size("double" SIZEOF_DOUBLE LANGUAGE CXX)
+    check_type_size("long double" SIZEOF_LONG_DOUBLE LANGUAGE CXX)
 
     if(${SIZEOF_LONG_DOUBLE} EQUAL ${SIZEOF_DOUBLE})
       message(
@@ -1263,6 +1341,15 @@ macro(process_options)
       # correctly
       # https://github.com/ccache/ccache/issues/539#issuecomment-664198545
       add_definitions(-Xclang -fno-pch-timestamp)
+      if(MSVC)
+        # ClangCL validates that the preprocessor macros used to build the
+        # shared stdlib PCH match those of each translation unit that reuses it.
+        # They intentionally differ by the per-module <module>_EXPORTS define
+        # (added by CMake to every shared-library object). The PCH only contains
+        # standard-library headers, which do not depend on that macro, so the
+        # mismatch is harmless; silence the otherwise -Werror diagnostic.
+        add_compile_options(-Wno-clang-cl-pch)
+      endif()
     endif()
     if(${XCODE})
       # XCode is weird and messes up with the PCH, requiring this flag

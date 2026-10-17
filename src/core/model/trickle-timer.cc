@@ -85,22 +85,18 @@ TrickleTimer::SetParameters(Time minInterval, uint8_t doublings, uint16_t redund
 Time
 TrickleTimer::GetMinInterval() const
 {
-    NS_LOG_FUNCTION(this);
     return m_minInterval;
 }
 
 Time
 TrickleTimer::GetMaxInterval() const
 {
-    NS_LOG_FUNCTION(this);
     return m_maxInterval;
 }
 
 uint8_t
 TrickleTimer::GetDoublings() const
 {
-    NS_LOG_FUNCTION(this);
-
     if (m_ticks == 0)
     {
         return 0;
@@ -112,15 +108,12 @@ TrickleTimer::GetDoublings() const
 uint16_t
 TrickleTimer::GetRedundancy() const
 {
-    NS_LOG_FUNCTION(this);
     return m_redundancy;
 }
 
 Time
 TrickleTimer::GetDelayLeft() const
 {
-    NS_LOG_FUNCTION(this);
-
     if (m_timerExpiration.IsPending())
     {
         return Simulator::GetDelayLeft(m_timerExpiration);
@@ -132,14 +125,20 @@ TrickleTimer::GetDelayLeft() const
 Time
 TrickleTimer::GetIntervalLeft() const
 {
-    NS_LOG_FUNCTION(this);
-
     if (m_intervalExpiration.IsPending())
     {
         return Simulator::GetDelayLeft(m_intervalExpiration);
     }
 
     return TimeStep(0);
+}
+
+bool
+TrickleTimer::IsRunning() const
+{
+    // m_intervalExpiration always contains a pending event, unless the timer
+    // is not running.
+    return m_intervalExpiration.IsPending();
 }
 
 void
@@ -165,8 +164,8 @@ TrickleTimer::Enable()
 
     m_counter = 0;
 
-    Time timerExpitation = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
-    m_timerExpiration = Simulator::Schedule(timerExpitation, &TrickleTimer::TimerExpire, this);
+    Time timerExpiration = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
+    m_timerExpiration = Simulator::Schedule(timerExpiration, &TrickleTimer::TimerExpire, this);
 }
 
 void
@@ -200,8 +199,8 @@ TrickleTimer::Reset()
 
     m_counter = 0;
 
-    Time timerExpitation = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
-    m_timerExpiration = Simulator::Schedule(timerExpitation, &TrickleTimer::TimerExpire, this);
+    Time timerExpiration = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
+    m_timerExpiration = Simulator::Schedule(timerExpiration, &TrickleTimer::TimerExpire, this);
 }
 
 void
@@ -231,6 +230,15 @@ TrickleTimer::IntervalExpire()
 {
     NS_LOG_FUNCTION(this);
 
+    // The in-interval transmit event can be scheduled at the very end of the
+    // interval; if the interval expiration runs first, force the transmit
+    // decision now, while the counter still holds the closing interval's value.
+    if (m_timerExpiration.IsPending())
+    {
+        m_timerExpiration.Cancel();
+        TimerExpire();
+    }
+
     m_currentInterval = m_currentInterval * 2;
     if (m_currentInterval > m_maxInterval)
     {
@@ -242,8 +250,8 @@ TrickleTimer::IntervalExpire()
 
     m_counter = 0;
 
-    Time timerExpitation = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
-    m_timerExpiration = Simulator::Schedule(timerExpitation, &TrickleTimer::TimerExpire, this);
+    Time timerExpiration = m_uniRand->GetValue(0.5, 1) * m_currentInterval;
+    m_timerExpiration = Simulator::Schedule(timerExpiration, &TrickleTimer::TimerExpire, this);
 }
 
 } // namespace ns3

@@ -13,6 +13,7 @@
 #include "wifi-mac-queue-container.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <bitset>
 #include <optional>
@@ -22,6 +23,7 @@ namespace ns3
 
 class WifiMpdu;
 class WifiMac;
+class WifiMacQueue;
 
 /**
  * @ingroup wifi
@@ -32,9 +34,12 @@ enum class WifiQueueBlockedReason : uint8_t
 {
     WAITING_ADDBA_RESP = 0,
     POWER_SAVE_MODE,
+    DISASSOCIATION,
     USING_OTHER_EMLSR_LINK,
     WAITING_EMLSR_TRANSITION_DELAY,
     TID_NOT_MAPPED,
+    WAIT_UNTIL_DTIM,
+    TX_GROUP_AFTER_DTIM,
     REASONS_COUNT
 };
 
@@ -54,12 +59,18 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
         return (os << "WAITING_ADDBA_RESP");
     case WifiQueueBlockedReason::POWER_SAVE_MODE:
         return (os << "POWER_SAVE_MODE");
+    case WifiQueueBlockedReason::DISASSOCIATION:
+        return (os << "DISASSOCIATION");
     case WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK:
         return (os << "USING_OTHER_EMLSR_LINK");
     case WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY:
         return (os << "WAITING_EMLSR_TRANSITION_DELAY");
     case WifiQueueBlockedReason::TID_NOT_MAPPED:
         return (os << "TID_NOT_MAPPED");
+    case WifiQueueBlockedReason::WAIT_UNTIL_DTIM:
+        return (os << "WAIT_UNTIL_DTIM");
+    case WifiQueueBlockedReason::TX_GROUP_AFTER_DTIM:
+        return (os << "TX_GROUP_AFTER_DTIM");
     case WifiQueueBlockedReason::REASONS_COUNT:
         return (os << "REASONS_COUNT");
     default:
@@ -74,7 +85,7 @@ operator<<(std::ostream& os, WifiQueueBlockedReason reason)
  * WifiMacQueueScheduler is an abstract base class defining the public interface
  * for a wifi MAC queue scheduler.
  */
-class WifiMacQueueScheduler : public Object
+class WIFI_EXPORT WifiMacQueueScheduler : public Object
 {
   public:
     /**
@@ -89,6 +100,14 @@ class WifiMacQueueScheduler : public Object
      * @param mac the wifi MAC
      */
     virtual void SetWifiMac(Ptr<WifiMac> mac);
+
+    /**
+     * Set the Wifi MAC queue associated with the given Access Category.
+     *
+     * @param ac the Access Category
+     * @param queue the Wifi MAC queue
+     */
+    virtual void SetWifiMacQueue(AcIndex ac, Ptr<WifiMacQueue> queue);
 
     /**
      * Get the next queue to serve, which is guaranteed to contain at least an MPDU whose lifetime
@@ -182,33 +201,42 @@ class WifiMacQueueScheduler : public Object
                                const std::set<uint8_t>& linkIds = {}) = 0;
 
     /**
-     * Block the given set of links for all the container queues for the given reason.
+     * Block the given set of links for all the container queues of the given receiver
+     * address types for the given reason.
      *
      * @param reason the reason for blocking the queues
      * @param linkIds set of links to block (empty to block all setup links)
+     * @param addrTypes set of receiver address types (empty to block all types)
      */
     virtual void BlockAllQueues(WifiQueueBlockedReason reason,
-                                const std::set<uint8_t>& linkIds = {}) = 0;
+                                const std::set<uint8_t>& linkIds = {},
+                                const std::set<WifiRcvAddr>& addrTypes = {}) = 0;
 
     /**
-     * Unblock the given set of links for all the container queues for the given reason.
+     * Unblock the given set of links for all the container queues of the given receiver
+     * address types for the given reason.
      *
      * @param reason the reason for unblocking the queues
      * @param linkIds set of links to unblock (empty to unblock all setup links)
+     * @param addrTypes set of receiver address types (empty to unblock all types)
      */
     virtual void UnblockAllQueues(WifiQueueBlockedReason reason,
-                                  const std::set<uint8_t>& linkIds = {}) = 0;
+                                  const std::set<uint8_t>& linkIds = {},
+                                  const std::set<WifiRcvAddr>& addrTypes = {}) = 0;
 
     /**
-     * Return whether all the container queues are blocked for the given link for the given
-     * reason, if different than REASONS_COUNT, or for any reason, otherwise.
+     * Return whether all the container queues of the given receiver address type (if different
+     * than COUNT, or of any receiver address type, otherwise) are blocked for the given link for
+     * the given reason (if different than REASONS_COUNT, or for any reason, otherwise).
      *
      * @param linkId the ID of the given link
+     * @param addrType receiver address types (empty to block all types)
      * @param reason the reason to check (if different than REASONS_COUNT)
      * @return whether all the container queues are blocked for the given link
      */
     virtual bool GetAllQueuesBlockedOnLink(
         uint8_t linkId,
+        WifiRcvAddr addrType = WifiRcvAddr::COUNT,
         WifiQueueBlockedReason reason = WifiQueueBlockedReason::REASONS_COUNT) = 0;
 
     /// Bitset identifying the reasons to block individual links for a container queue
@@ -227,6 +255,29 @@ class WifiMacQueueScheduler : public Object
     virtual std::optional<Mask> GetQueueLinkMask(AcIndex ac,
                                                  const WifiContainerQueueId& queueId,
                                                  uint8_t linkId) = 0;
+
+    /**
+     * If a container queue having the given ID exists, reset the information that indicates which
+     * links can be used to transmit the packets stored in the container queue and for which reason
+     * (if any) transmission on each such links is blocked. Otherwise, do nothing.
+     *
+     * @param ac the Access Category
+     * @param queueId the container queue ID
+     */
+    virtual void ResetQueueInfo(AcIndex ac, const WifiContainerQueueId& queueId) = 0;
+
+    /**
+     * Change the addresses that are part of the given queue ID with the given addresses.
+     *
+     * @param ac the Access Category
+     * @param queueId the given queue ID
+     * @param addr1 the address to write in the Address 1 field (if given)
+     * @param addr2 the address to write in the Address 2 field (if given)
+     */
+    virtual void ChangeQueueIdAddress(AcIndex ac,
+                                      const WifiContainerQueueId& queueId,
+                                      std::optional<Mac48Address> addr1,
+                                      std::optional<Mac48Address> addr2) = 0;
 
     /**
      * Check whether an MPDU has to be dropped before enqueuing the given MPDU.

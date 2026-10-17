@@ -7,14 +7,13 @@
  */
 #include "object-base.h"
 
-#include "assert.h"
+#include "abort.h"
 #include "attribute-construction-list.h"
 #include "environment-variable.h"
+#include "fatal-error.h"
 #include "log.h"
 #include "string.h"
 #include "trace-source-accessor.h"
-
-#include "ns3/core-config.h"
 
 /**
  * @file
@@ -30,7 +29,7 @@ namespace ns3
  * @ingroup callback
  * Explicit instantiation for ObjectBase
  * @return A wrapper Callback
- * \sa ns3::MakeCallback
+ * @sa ns3::MakeCallback
  */
 template Callback<ObjectBase*> MakeCallback<ObjectBase*>(ObjectBase* (*)());
 template Callback<ObjectBase*>::Callback();

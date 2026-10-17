@@ -7,11 +7,6 @@ import sys
 from pathlib import Path
 
 CMAKELISTS_TEMPLATE = """\
-check_include_file_cxx(stdint.h HAVE_STDINT_H)
-if(HAVE_STDINT_H)
-    add_definitions(-DHAVE_STDINT_H)
-endif()
-
 set(examples_as_tests_sources)
 if(${{ENABLE_EXAMPLES}})
     set(examples_as_tests_sources

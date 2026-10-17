@@ -60,5 +60,6 @@ from the ``doc/`` directory of each module.  Source file column width is 100 col
    topology
    traffic-control
    uan
+   virtual-net-device
    wifi
    zigbee

@@ -37,11 +37,20 @@ PcapHelper::~PcapHelper()
 Ptr<PcapFileWrapper>
 PcapHelper::CreateFile(std::string filename,
                        std::ios::openmode filemode,
-                       DataLinkType dataLinkType,
+                       uint16_t dataLinkType,
                        uint32_t snapLen,
                        int32_t tzCorrection)
 {
     NS_LOG_FUNCTION(filename << filemode << dataLinkType << snapLen << tzCorrection);
+
+    // If another interface was already given this filename, share its
+    // wrapper instead of reopening (and truncating) the file, which would
+    // corrupt it by clobbering the first interface's records (see @issueid{1150}).
+    if (Ptr<PcapFileWrapper> existing = PcapFileWrapper::FindOpenFile(filename))
+    {
+        NS_LOG_DEBUG("Reusing already-open pcap file " << filename);
+        return existing;
+    }
 
     Ptr<PcapFileWrapper> file = CreateObject<PcapFileWrapper>();
     file->Open(filename, filemode);
@@ -166,6 +175,12 @@ PcapHelper::SinkWithHeader(Ptr<PcapFileWrapper> file, const Header& header, Ptr<
 {
     NS_LOG_FUNCTION(file << p);
     file->Write(Simulator::Now(), header, p);
+}
+
+CallbackBase
+PcapHelper::MakeSinkCallback(Ptr<PcapFileWrapper> file)
+{
+    return MakeBoundCallback(&DefaultSink, file);
 }
 
 AsciiTraceHelper::AsciiTraceHelper()
@@ -403,6 +418,23 @@ AsciiTraceHelper::DefaultReceiveSinkWithContext(Ptr<OutputStreamWrapper> stream,
     NS_LOG_FUNCTION(stream << p);
     *stream->GetStream() << "r " << Simulator::Now().GetSeconds() << " " << context << " " << *p
                          << std::endl;
+}
+
+CallbackBase
+AsciiTraceHelper::MakeSinkWithoutContextCallback(void (*sink)(Ptr<OutputStreamWrapper>,
+                                                              Ptr<const Packet>),
+                                                 Ptr<OutputStreamWrapper> stream)
+{
+    return MakeBoundCallback(sink, stream);
+}
+
+CallbackBase
+AsciiTraceHelper::MakeSinkWithContextCallback(void (*sink)(Ptr<OutputStreamWrapper>,
+                                                           std::string,
+                                                           Ptr<const Packet>),
+                                              Ptr<OutputStreamWrapper> stream)
+{
+    return MakeBoundCallback(sink, stream);
 }
 
 void

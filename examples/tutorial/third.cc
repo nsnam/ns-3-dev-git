@@ -126,6 +126,11 @@ main(int argc, char* argv[])
     mobility.Install(wifiApNode);
 
     InternetStackHelper stack;
+
+    // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+    // Note: Normal networks typically have both IPv4 and IPv6 enabled.
+    stack.SetIpv6StackInstall(false);
+
     stack.Install(csmaNodes);
     stack.Install(wifiApNode);
     stack.Install(wifiStaNodes);

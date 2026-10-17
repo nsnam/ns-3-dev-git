@@ -11,6 +11,9 @@
 #include "ipv4-header.h"
 
 #include "ns3/address.h"
+#include "ns3/deprecated.h"
+#include "ns3/iana-ieee802-numbers.h"
+#include "ns3/internet-export.h"
 #include "ns3/net-device.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable-stream.h"
@@ -41,7 +44,7 @@ class TrafficControlLayer;
  * @ingroup arp
  * @brief An implementation of the ARP protocol.
  */
-class ArpL3Protocol : public Object
+class INTERNET_EXPORT ArpL3Protocol : public Object
 {
   public:
     /**
@@ -49,7 +52,9 @@ class ArpL3Protocol : public Object
      * @return the object TypeId
      */
     static TypeId GetTypeId();
-    static const uint16_t PROT_NUMBER; //!< ARP protocol number (0x0806)
+
+    NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
+    static constexpr uint16_t PROT_NUMBER = iana::ieee802numbers::ARP; //!< ARP protocol number
 
     ArpL3Protocol();
     ~ArpL3Protocol() override;

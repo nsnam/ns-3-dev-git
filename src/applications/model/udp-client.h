@@ -24,7 +24,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 
 /**
@@ -63,8 +62,8 @@ class UdpClient : public SourceApplication
     uint64_t GetTotalTx() const;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void CancelEvents() override;
 
     /**
      * @brief Send a packet
@@ -89,9 +88,6 @@ class UdpClient : public SourceApplication
      */
     Address GetRemote() const;
 
-    /// Traced Callback: transmitted packets.
-    TracedCallback<Ptr<const Packet>> m_txTrace;
-
     /// Callbacks for tracing the packet Tx events, includes source and destination addresses
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_txTraceWithAddresses;
 
@@ -99,9 +95,8 @@ class UdpClient : public SourceApplication
     Time m_interval;  //!< Packet inter-send time
     uint32_t m_size;  //!< Size of the sent packet (including the SeqTsHeader)
 
-    uint32_t m_sent;                    //!< Counter for sent packets
-    uint64_t m_totalTx;                 //!< Total bytes sent
-    Ptr<Socket> m_socket;               //!< Socket
+    uint32_t m_sent{0};                 //!< Counter for sent packets
+    uint64_t m_totalTx{0};              //!< Total bytes sent
     std::optional<uint16_t> m_peerPort; //!< Remote peer port (deprecated) // NS_DEPRECATED_3_44
     EventId m_sendEvent;                //!< Event to send the next packet
 

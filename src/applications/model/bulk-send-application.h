@@ -19,7 +19,6 @@
 namespace ns3
 {
 
-class Socket;
 class TcpHeader;
 class TcpSocketBase;
 
@@ -89,18 +88,10 @@ class BulkSendApplication : public SourceApplication
      */
     void SetMaxBytes(uint64_t maxBytes);
 
-    /**
-     * @brief Get the socket this application is attached to.
-     * @return pointer to associated socket
-     */
-    Ptr<Socket> GetSocket() const;
-
-  protected:
-    void DoDispose() override;
-
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * @brief Send data until the L4 transmission buffer is full.
@@ -109,18 +100,12 @@ class BulkSendApplication : public SourceApplication
      */
     void SendData(const Address& from, const Address& to);
 
-    Ptr<Socket> m_socket;                //!< Associated socket
-    bool m_connected;                    //!< True if connected
     uint32_t m_sendSize;                 //!< Size of data to send each time
     uint64_t m_maxBytes;                 //!< Limit total number of bytes sent
-    uint64_t m_totBytes;                 //!< Total bytes sent so far
-    TypeId m_tid;                        //!< The type of protocol to use.
+    uint64_t m_totBytes{0};              //!< Total bytes sent so far
     uint32_t m_seq{0};                   //!< Sequence
     Ptr<Packet> m_unsentPacket;          //!< Variable to cache unsent packet
     bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the SeqTsSizeHeader
-
-    /// Traced Callback: sent packets
-    TracedCallback<Ptr<const Packet>> m_txTrace;
 
     /// Traced Callback: retransmitted packets
     TracedCallback<Ptr<const Packet>,
@@ -135,17 +120,6 @@ class BulkSendApplication : public SourceApplication
     TracedCallback<Ptr<const Packet>, const Address&, const Address&, const SeqTsSizeHeader&>
         m_txTraceWithSeqTsSize;
 
-  private:
-    /**
-     * @brief Connection Succeeded (called by Socket through a callback)
-     * @param socket the connected socket
-     */
-    void ConnectionSucceeded(Ptr<Socket> socket);
-    /**
-     * @brief Connection Failed (called by Socket through a callback)
-     * @param socket the connected socket
-     */
-    void ConnectionFailed(Ptr<Socket> socket);
     /**
      * @brief Send more data as soon as some has been transmitted.
      *

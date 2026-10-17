@@ -37,7 +37,7 @@ using namespace ns3;
               __________
              /          \
     nSrc -- nA -- nB -- nC -- nDst
-   \endverbatim
+   @endverbatim
  *
  * Following are the tests in this test case:
  * - Test the routing from nSrc to nDst.

@@ -12,6 +12,7 @@
 #define DSSS_PHY_H
 
 #include "ns3/phy-entity.h"
+#include "ns3/wifi-export.h"
 
 #include <vector>
 
@@ -32,7 +33,7 @@ namespace ns3
  * Note that DSSS rates (clause 15) are a subset
  * of HR/DSSS rates.
  */
-class DsssPhy : public PhyEntity
+class WIFI_EXPORT DsssPhy : public PhyEntity
 {
   public:
     /**
@@ -73,26 +74,18 @@ class DsssPhy : public PhyEntity
      */
     static WifiMode GetDsssRate(uint64_t rate);
     /**
-     * Return a WifiMode for DSSS at 1 Mbps.
-     *
      * @return a WifiMode for DSSS at 1 Mbps
      */
     static WifiMode GetDsssRate1Mbps();
     /**
-     * Return a WifiMode for DSSS at 2 Mbps.
-     *
      * @return a WifiMode for DSSS at 2 Mbps
      */
     static WifiMode GetDsssRate2Mbps();
     /**
-     * Return a WifiMode for HR/DSSS at 5.5 Mbps.
-     *
      * @return a WifiMode for HR/DSSS at 5.5 Mbps
      */
     static WifiMode GetDsssRate5_5Mbps();
     /**
-     * Return a WifiMode for HR/DSSS at 11 Mbps.
-     *
      * @return a WifiMode for HR/DSSS at 11 Mbps
      */
     static WifiMode GetDsssRate11Mbps();

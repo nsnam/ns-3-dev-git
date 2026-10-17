@@ -739,13 +739,18 @@ TcpTxBuffer::DiscardUpTo(const SequenceNumber32& seq, const Callback<void, TcpTx
         {
             NS_ASSERT(!head->m_lost);
             // It is not possible to have the UNA sacked; otherwise, it would
-            // have been ACKed. This is, most likely, our wrong guessing
+            // have been ACKed. This is, most likely, incorrect guessing
             // when adding Reno dupacks in the count.
             head->m_sacked = false;
             m_sackedOut -= head->m_packet->GetSize();
             NS_LOG_INFO("Moving the SACK flag from the HEAD to another segment");
             AddRenoSack();
-            MarkHeadAsLost();
+            // Without SACK, the socket decides whether the head is lost,
+            // because that depends on the congestion state
+            if (m_sackEnabled)
+            {
+                MarkHeadAsLost();
+            }
         }
 
         NS_ASSERT_MSG(head->m_startSeq == seq,
@@ -774,6 +779,7 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
     NS_LOG_INFO("Updating scoreboard, got " << list.size() << " blocks to analyze");
 
     uint32_t bytesSacked = 0;
+    Time newestSackedSentTime = Time::Min();
 
     for (auto option_it = list.begin(); option_it != list.end(); ++option_it)
     {
@@ -813,9 +819,21 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
                         m_lostOut -= (*item_it)->m_packet->GetSize();
                     }
 
+                    if ((*item_it)->m_retrans)
+                    {
+                        // The retransmission of this segment has been SACKed, so
+                        // it is no longer in flight as a retransmit. Clear the
+                        // retransmit accounting, otherwise m_retrans keeps
+                        // counting it and BytesInFlight() over-estimates the pipe
+                        // until the cumulative ACK arrives (@issueid{1190}).
+                        (*item_it)->m_retrans = false;
+                        m_retrans -= (*item_it)->m_packet->GetSize();
+                    }
+
                     (*item_it)->m_sacked = true;
                     m_sackedOut += (*item_it)->m_packet->GetSize();
                     bytesSacked += (*item_it)->m_packet->GetSize();
+                    newestSackedSentTime = std::max(newestSackedSentTime, (*item_it)->m_lastSent);
 
                     if (m_highestSack.first == m_sentList.end() ||
                         m_highestSack.second <= beginOfCurrentPacket + pktSize)
@@ -851,6 +869,7 @@ TcpTxBuffer::Update(const TcpOptionSack::SackList& list, const Callback<void, Tc
     if (bytesSacked > 0)
     {
         NS_ASSERT_MSG(m_highestSack.first != m_sentList.end(), "Buffer status: " << *this);
+        MarkRetransmittedSegmentsLost(newestSackedSentTime);
         UpdateLostCount();
     }
 
@@ -908,6 +927,35 @@ TcpTxBuffer::UpdateLostCount()
         }
     }
     NS_LOG_INFO("Status after the update: " << *this);
+    ConsistencyCheck();
+}
+
+void
+TcpTxBuffer::MarkRetransmittedSegmentsLost(const Time& sackedSentTime)
+{
+    NS_LOG_FUNCTION(this << sackedSentTime);
+
+    SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
+    for (auto it = m_sentList.begin(); it != m_sentList.end(); ++it)
+    {
+        TcpTxItem* item = *it;
+        if (beginOfCurrentPacket >= m_highestSack.second)
+        {
+            break;
+        }
+        if (item->m_retrans && !item->m_sacked && item->m_lastSent < sackedSentTime)
+        {
+            item->m_retrans = false;
+            m_retrans -= item->m_packet->GetSize();
+            if (!item->m_lost)
+            {
+                item->m_lost = true;
+                m_lostOut += item->m_packet->GetSize();
+            }
+            NS_LOG_INFO("Retransmission of segment " << *item << " deemed lost");
+        }
+        beginOfCurrentPacket += item->m_packet->GetSize();
+    }
     ConsistencyCheck();
 }
 

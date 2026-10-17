@@ -105,6 +105,8 @@ void
 HwmpReactiveRegressionTest::CreateDevices()
 {
     int64_t streamsUsed = 0;
+    int64_t streamNumber = 0;
+    int64_t streamIncrement = 1000;
     // 1. setup WiFi
     YansWifiPhyHelper wifiPhy;
     // This test suite output was originally based on YansErrorRateModel
@@ -118,19 +120,22 @@ HwmpReactiveRegressionTest::CreateDevices()
     // 2. setup mesh
     MeshHelper mesh = MeshHelper::Default();
     mesh.SetStackInstaller("ns3::Dot11sStack");
-    mesh.SetMacType("RandomStart", TimeValue(Seconds(0.1)));
+    mesh.SetMacType("RandomStart", TimeValue(MilliSeconds(100)));
     mesh.SetNumberOfInterfaces(1);
     NetDeviceContainer meshDevices = mesh.Install(wifiPhy, *m_nodes);
     // Six devices, 10 streams per device
-    streamsUsed += mesh.AssignStreams(meshDevices, streamsUsed);
+    streamsUsed = mesh.AssignStreams(meshDevices, streamNumber);
+    streamNumber += streamIncrement;
     NS_TEST_EXPECT_MSG_EQ(streamsUsed, (meshDevices.GetN() * 10), "Stream assignment mismatch");
-    streamsUsed += wifiChannel.AssignStreams(chan, streamsUsed);
-    NS_TEST_EXPECT_MSG_EQ(streamsUsed, (meshDevices.GetN() * 10), "Stream assignment mismatch");
+    streamsUsed = wifiChannel.AssignStreams(chan, streamNumber);
+    streamNumber += streamIncrement;
+    NS_TEST_EXPECT_MSG_EQ(streamsUsed, 0, "No stream assignments expected for WifiChannel");
 
     // 3. setup TCP/IP
     InternetStackHelper internetStack;
+    internetStack.SetIpv6StackInstall(false);
     internetStack.Install(*m_nodes);
-    streamsUsed += internetStack.AssignStreams(*m_nodes, streamsUsed);
+    internetStack.AssignStreams(*m_nodes, streamNumber);
     Ipv4AddressHelper address;
     address.SetBase("10.1.1.0", "255.255.255.0");
     m_interfaces = address.Assign(meshDevices);
@@ -167,7 +172,7 @@ HwmpReactiveRegressionTest::SendData(Ptr<Socket> socket)
         socket->Send(Create<Packet>(20));
         m_sentPktsCounter++;
         Simulator::ScheduleWithContext(socket->GetNode()->GetId(),
-                                       Seconds(0.5),
+                                       MilliSeconds(500),
                                        &HwmpReactiveRegressionTest::SendData,
                                        this,
                                        socket);

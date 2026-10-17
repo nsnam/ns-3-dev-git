@@ -369,8 +369,8 @@ Time
 HtPhy::GetSymbolDuration(const WifiTxVector& txVector) const
 {
     const auto guardInterval = txVector.GetGuardInterval();
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT(gi == 400 || gi == 800);
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211n),
+                  "Invalid HT guard interval " << guardInterval.As(Time::NS));
     return GetSymbolDuration(guardInterval);
 }
 
@@ -459,7 +459,6 @@ Ptr<SpectrumValue>
 HtPhy::GetTxPowerSpectralDensity(Watt_u txPower, Ptr<const WifiPpdu> ppdu) const
 {
     const auto& centerFrequencies = ppdu->GetTxCenterFreqs();
-    NS_ASSERT(centerFrequencies.size() == 1);
     const auto& txVector = ppdu->GetTxVector();
     const auto channelWidth = txVector.GetChannelWidth();
     NS_LOG_FUNCTION(this << centerFrequencies.front() << channelWidth << txPower);
@@ -692,8 +691,8 @@ HtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId *
 uint64_t
 HtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT((gi == 800) || (gi == 400));
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211n),
+                  "Invalid HT guard interval " << guardInterval.As(Time::NS));
     NS_ASSERT(nss <= 4);
     return CalculateDataRate(GetSymbolDuration(guardInterval),
                              GetUsableSubcarriers(channelWidth),
@@ -816,7 +815,7 @@ HtPhy::IsAllowed(const WifiTxVector& /*txVector*/)
 uint32_t
 HtPhy::GetMaxPsduSize() const
 {
-    return 65535;
+    return WIFI_PSDU_MAX_LENGTH_HT;
 }
 
 const std::map<MHz_u, WifiChannelListType>&

@@ -10,6 +10,7 @@
 #define CARA_WIFI_MANAGER_H
 
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3
@@ -30,7 +31,7 @@ namespace ns3
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */
-class CaraWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT CaraWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

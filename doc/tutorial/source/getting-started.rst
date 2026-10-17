@@ -61,15 +61,15 @@ the project provides an installation guide
 for various systems, available at
 https://www.nsnam.org/docs/installation/html/index.html.
 
-As of the most recent |ns3| release (ns-3.44), the following tools
+As of the most recent |ns3| release (ns-3.47), the following tools
 are needed to get started with |ns3|:
 
 ============  ===========================================================
 Prerequisite  Package/version
 ============  ===========================================================
-C++ compiler  ``clang++`` or ``g++`` (g++ version 9 or greater)
-Python        ``python3`` version >=3.8
-CMake         ``cmake`` version >=3.13
+C++ compiler  ``clang++`` (version 17 or greater) or ``g++`` (version 11.1 or greater)
+Python        ``python3`` version >=3.10
+CMake         ``cmake`` version >=3.25
 Build system  ``make``, ``ninja``, ``xcodebuild`` (XCode)
 Git           any recent version (to access |ns3| from `GitLab.com <https://gitlab.com/nsnam/ns-3-dev/>`_)
 tar           any recent version (to unpack an `ns-3 release <https://www.nsnam.org/releases/>`_)

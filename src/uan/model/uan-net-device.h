@@ -191,6 +191,8 @@ class UanNetDevice : public NetDevice
     TracedCallback<Ptr<const Packet>, Mac8Address> m_rxLogger;
     /** Trace source triggered when sending to the MAC layer */
     TracedCallback<Ptr<const Packet>, Mac8Address> m_txLogger;
+    /// Trace fired when a received packet is dropped because no protocol handler consumed it.
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
 
     /** Flag when we've been cleared. */
     bool m_cleared;

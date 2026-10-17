@@ -84,6 +84,9 @@ class TcpLinuxReno : public TcpCongestionOps
     // tcp_reno_cong_avoid()
     bool m_suppressIncreaseIfCwndLimited{
         true}; //!< Suppress window increase if TCP is not cwnd limited
+
+    double m_betaLoss; //!< Beta for Linux-Reno multiplicative decrease
+    double m_betaEcn;  //!< Beta for Linux-Reno multiplicative decrease with ABE
 };
 
 } // namespace ns3

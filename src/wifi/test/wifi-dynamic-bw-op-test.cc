@@ -483,7 +483,7 @@ WifiDynamicBwOpTestSuite::WifiDynamicBwOpTestSuite()
      *                                            primary20
      */
     AddTestCase(
-        new WifiUseAvailBwTest({"{31, 320, BAND_6GHZ, 10}", "{15, 160, BAND_6GHZ, 7}"}, 160),
+        new WifiUseAvailBwTest({"{31, 320, BAND_6GHZ, 10}", "{15, 160, BAND_6GHZ, 7}"}, MHz_u{160}),
         TestCase::Duration::QUICK);
 }
 

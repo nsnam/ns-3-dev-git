@@ -12,6 +12,7 @@
 #include "wifi-mode.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -21,7 +22,7 @@ namespace ns3
  * @brief the interface for Wifi's error models
  *
  */
-class ErrorRateModel : public Object
+class WIFI_EXPORT ErrorRateModel : public Object
 {
   public:
     /**

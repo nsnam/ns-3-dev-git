@@ -75,6 +75,13 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
      */
     bool IsO2iLowPenetrationLoss(Ptr<const ChannelCondition> cond) const;
 
+    /**
+     * @brief Clear cached O2I Building Penetration loss.
+     *        Triggers a recomputation of losses.
+     *        Used for testing.
+     */
+    void ClearO2iLossCacheMap();
+
   private:
     /**
      * Computes the received power by applying the pathloss model described in
@@ -88,8 +95,6 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     double DoCalcRxPower(double txPowerDbm,
                          Ptr<MobilityModel> a,
                          Ptr<MobilityModel> b) const override;
-
-    int64_t DoAssignStreams(int64_t stream) override;
 
     /**
      * @brief Computes the pathloss between a and b
@@ -138,6 +143,22 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
      *        independent realization and stores it in the map, otherwise it calculates
      *        a new value as defined in 3GPP TR 38.901 7.4.3.1.
      *
+     *
+     * @param a tx mobility model (used for the key calculation)
+     * @param b rx mobility model (used for the key calculation)
+     * @param cond the LOS/NLOS channel condition
+     * @return o2iLoss
+     */
+    double GetO2iSub6GhzPenetrationLoss(Ptr<MobilityModel> a,
+                                        Ptr<MobilityModel> b,
+                                        ChannelCondition::LosConditionValue cond) const;
+
+    /**
+     * @brief Retrieves the o2i building penetration loss value by looking at m_o2iLossMap.
+     *        If not found or if the channel condition changed it generates a new
+     *        independent realization and stores it in the map, otherwise it calculates
+     *        a new value as defined in 3GPP TR 38.901 7.4.3.1.
+     *
      *        Note that all child classes should implement this function to support
      *        low losses calculation. As such, this function should be purely virtual.
      *
@@ -168,6 +189,20 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
                                              Ptr<MobilityModel> b,
                                              ChannelCondition::LosConditionValue cond) const;
 
+    /**
+     * @brief Computes the o2i vehicular penetration loss by looking at m_o2iVehicularUtLossMap.
+     *        The loss is composed by the sum of losses for each UT, if vehicles,
+     *        as implied by their speed (30-120 km/h).
+     *        The loss for each UT is defined in 3GPP TR 38.901 7.4.3.2.
+     *
+     * @param a tx mobility model (used for the key calculation)
+     * @param b rx mobility model (used for the key calculation)
+     * @param cond the O2I channel condition (O2I, O2O)
+     * @return vehicular o2iLoss
+     */
+    double GetO2iVehicularLoss(Ptr<MobilityModel> a,
+                               Ptr<MobilityModel> b,
+                               ChannelCondition::O2iConditionValue cond) const;
     /**
      * @brief Indicates the condition of the o2i building penetration loss
      *        (defined in 3GPP TR 38.901 7.4.3.1).
@@ -208,6 +243,23 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
                         ChannelCondition::LosConditionValue cond) const;
 
     /**
+     * @brief Sample the SpatialGaussianField of shadow fading owned by a
+     *        (site, condition slot) pair, see the InterUeSpatialConsistency
+     *        attribute.
+     *
+     * @param siteNodeId Node id of the site endpoint owning the field.
+     * @param condSlot Channel condition slot (0 = LOS, 1 = NLOS, 2 = O2I).
+     * @param position Sampling position (only x and y are used).
+     * @param corrDist Correlation distance in meters; non-positive values
+     *        degrade to a single deterministic draw at the position.
+     * @return A sample of the field with N(0,1) marginal distribution.
+     */
+    double SampleSpatiallyCorrelatedNormal(uint32_t siteNodeId,
+                                           uint8_t condSlot,
+                                           const Vector& position,
+                                           double corrDist) const;
+
+    /**
      * @brief Returns the shadow fading standard deviation
      * @param a tx mobility model
      * @param b rx mobility model
@@ -225,6 +277,14 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
      */
     virtual double GetShadowingCorrelationDistance(
         ChannelCondition::LosConditionValue cond) const = 0;
+
+    /**
+     * @brief Returns the shadow fading correlation distance of O2I links (3GPP
+     *        TR 38.901 Table 7.5-6, O2I column); scenarios without an O2I
+     *        column reuse the NLOS distance.
+     * @return shadowing correlation distance in meters
+     */
+    virtual double GetO2iShadowingCorrelationDistance() const;
 
     /**
      * @brief Returns an unique key for the channel between a and b.
@@ -253,6 +313,36 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
 
   protected:
     void DoDispose() override;
+    void NotifyConstructionCompleted() override;
+    /**
+     * @brief Returns a a single, link-specific, uniformly distributed variable
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    virtual double GetO2iDistance2dInSub6Ghz() const;
+
+    /**
+     * @brief Returns the upper bound of the uniform variables of the O2I 2D-in
+     *        distance of GetO2iDistance2dIn(), i.e., 25 m for UMa and
+     *        UMi-Street Canyon and 10 m for RMa. The base implementation
+     *        returns 0 (no indoor distance).
+     * @return The upper bound in meters.
+     */
+    virtual double GetO2iDistance2dInMax() const;
+
+    /**
+     * @brief Returns the upper bound of the uniform variable of the O2I 2D-in
+     *        distance of GetO2iDistance2dInSub6Ghz(), i.e., 25 m for UMa and
+     *        UMi-Street Canyon. The base implementation returns 0 (no indoor
+     *        distance).
+     * @return The upper bound in meters.
+     */
+    virtual double GetO2iDistance2dInSub6GhzMax() const;
 
     /**
      * @brief Computes the 2D distance between two 3D vectors
@@ -265,8 +355,9 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     Ptr<ChannelConditionModel> m_channelConditionModel; //!< pointer to the channel condition model
     double m_frequency;                                 //!< operating frequency in Hz
     bool m_shadowingEnabled;                            //!< enable/disable shadowing
-    bool m_enforceRanges;                           //!< strictly enforce TR 38.901 parameter ranges
-    bool m_buildingPenLossesEnabled;                //!< enable/disable building penetration losses
+    bool m_enforceRanges;            //!< strictly enforce TR 38.901 parameter ranges
+    bool m_buildingPenLossesEnabled; //!< enable/disable building penetration losses
+    double m_meanVehicleO2iLoss; //!< normal cars (9dB), cars with metal coated glass panels (20dB)
     Ptr<NormalRandomVariable> m_normRandomVariable; //!< normal random variable
 
     /** Define a struct for the m_shadowingMap entries */
@@ -290,6 +381,11 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     mutable std::unordered_map<uint32_t, O2iLossMapItem>
         m_o2iLossMap; //!< map to store the o2i Loss values
 
+    mutable std::unordered_map<uint32_t, double>
+        m_o2iVehicularUtLossMap; //!< vehicular O2I loss for each individual UT with speed x, such
+                                 //!< that 30 < x <= 120 km/h.
+                                 //!< UT is addressed by NodeId
+
     Ptr<UniformRandomVariable> m_randomO2iVar1; //!< a uniform random variable for the calculation
                                                 //!< of the indoor loss, see TR38.901 Table 7.4.3-2
     Ptr<UniformRandomVariable> m_randomO2iVar2; //!< a uniform random variable for the calculation
@@ -300,6 +396,11 @@ class ThreeGppPropagationLossModel : public PropagationLossModel
     Ptr<NormalRandomVariable>
         m_normalO2iHighLossVar; //!< a normal random variable for the calculation of 02i high loss,
                                 //!< see TR38.901 Table 7.4.3-2
+
+    Ptr<NormalRandomVariable>
+        m_normalO2iVehicularLossVar; //!< a normal random variable for the calculation of
+                                     //!< penetration loss for vehicles see TR38.901 section 7.4.3.2
+    int64_t DoAssignStreams(int64_t stream) override;
 };
 
 /**
@@ -354,6 +455,7 @@ class ThreeGppRmaPropagationLossModel : public ThreeGppPropagationLossModel
      * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
      */
     double GetO2iDistance2dIn() const override;
+    double GetO2iDistance2dInMax() const override;
 
     /**
      * @brief Indicates the condition of the o2i building penetration loss
@@ -389,6 +491,7 @@ class ThreeGppRmaPropagationLossModel : public ThreeGppPropagationLossModel
      * @return shadowing correlation distance in meters
      */
     double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+    double GetO2iShadowingCorrelationDistance() const override;
 
     /**
      * @brief Computes the PL1 formula for the RMa scenario
@@ -469,6 +572,20 @@ class ThreeGppUmaPropagationLossModel : public ThreeGppPropagationLossModel
     double GetO2iDistance2dIn() const override;
 
     /**
+     * @brief Returns a a single, link-specific, uniformly distributed variable
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    double GetO2iDistance2dInSub6Ghz() const override;
+    double GetO2iDistance2dInMax() const override;
+    double GetO2iDistance2dInSub6GhzMax() const override;
+
+    /**
      * @brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed.
      * @param a tx mobility model
@@ -494,6 +611,7 @@ class ThreeGppUmaPropagationLossModel : public ThreeGppPropagationLossModel
      * @return shadowing correlation distance in meters
      */
     double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+    double GetO2iShadowingCorrelationDistance() const override;
 
     /**
      * @brief Computes the breakpoint distance
@@ -564,6 +682,20 @@ class ThreeGppUmiStreetCanyonPropagationLossModel : public ThreeGppPropagationLo
     double GetO2iDistance2dIn() const override;
 
     /**
+     * @brief Returns a a single, link-specific, uniformly distributed variable
+     *        value depending on the specific 3GPP scenario (UMa, UMi-Street Canyon, RMa),
+     *        i.e., between 0 and 25 m for UMa and UMi-Street Canyon.
+     *        According to 3GPP TR 38.901 this 2D−in distance shall be UT-specifically
+     *        generated. 2D−in distance is used for the O2I penetration losses
+     *        calculation according to 3GPP TR 38.901 7.4.3.
+     *        See GetO2iLowPenetrationLoss/GetO2iHighPenetrationLoss functions.
+     * @return Returns 02i 2D distance (in meters) used to calculate low/high losses.
+     */
+    double GetO2iDistance2dInSub6Ghz() const override;
+    double GetO2iDistance2dInMax() const override;
+    double GetO2iDistance2dInSub6GhzMax() const override;
+
+    /**
      * @brief Computes the pathloss between a and b considering that the line of
      *        sight is obstructed.
      * @param a tx mobility model
@@ -589,6 +721,7 @@ class ThreeGppUmiStreetCanyonPropagationLossModel : public ThreeGppPropagationLo
      * @return shadowing correlation distance in meters
      */
     double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+    double GetO2iShadowingCorrelationDistance() const override;
 
     /**
      * @brief Computes the breakpoint distance
@@ -686,10 +819,63 @@ class ThreeGppIndoorOfficePropagationLossModel : public ThreeGppPropagationLossM
 /**
  * @ingroup propagation
  *
- * @brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ * @brief Base class for the NTN pathloss models defined in 3GPP TR 38.811.
+ *
+ * This class holds the path loss computations common to all NTN scenarios.
+ * The scenario subclasses provide the scenario-specific channel condition
+ * model, shadow fading and clutter loss table, and shadowing correlation
+ * distances.
+ *
+ * The model is defined for satellite-to-ground links with elevation angles
+ * between 10 and 90 degrees. For links outside this domain, i.e., with a
+ * non-positive elevation angle (such as between two ground terminals, or
+ * with the satellite below the horizon) or an undefined elevation angle
+ * (coincident positions), the elevation-dependent terms are not evaluated
+ * and a fixed loss of 500 dB is returned instead.
+ */
+class ThreeGppNTNPropagationLossModel : public ThreeGppPropagationLossModel
+{
+  public:
+    /**
+     * @brief Get the type ID.
+     * @return the object TypeId
+     */
+    static TypeId GetTypeId();
+
+    /**
+     * @copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
+     *  Does nothing in NTN scenarios.
+     */
+    double GetO2iDistance2dIn() const override;
+
+  protected:
+    /**
+     * @brief The nested map containing the Shadow Fading and Clutter Loss
+     *        values for the scenario, set by the subclass constructor
+     */
+    const std::map<int, std::vector<float>>* m_SFCL{nullptr};
+    double m_shadowingCorrDistanceLos{0};  //!< shadowing correlation distance for LOS, in meters
+    double m_shadowingCorrDistanceNlos{0}; //!< shadowing correlation distance for NLOS, in meters
+    bool m_ionoScintLossEnabled{true};  //!< whether the ionospheric scintillation loss is applied
+    bool m_tropoScintLossEnabled{true}; //!< whether the tropospheric scintillation loss is applied
+
+  private:
+    // Inherited
+    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
+    double GetShadowingStd(Ptr<MobilityModel> a,
+                           Ptr<MobilityModel> b,
+                           ChannelCondition::LosConditionValue cond) const override;
+    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
+};
+
+/**
+ * @ingroup propagation
+ *
+ * @brief Implements the pathloss model defined in 3GPP TR 38.811, Sec. 6.6.2,
  *        for the NTN Dense Urban scenario.
  */
-class ThreeGppNTNDenseUrbanPropagationLossModel : public ThreeGppPropagationLossModel
+class ThreeGppNTNDenseUrbanPropagationLossModel : public ThreeGppNTNPropagationLossModel
 {
   public:
     /**
@@ -709,12 +895,6 @@ class ThreeGppNTNDenseUrbanPropagationLossModel : public ThreeGppPropagationLoss
     ~ThreeGppNTNDenseUrbanPropagationLossModel() override;
 
     /**
-     * @copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
-     *  Does nothing in NTN scenarios.
-     */
-    double GetO2iDistance2dIn() const override;
-
-    /**
      * @brief Copy constructor
      *
      * Deleted in base class
@@ -730,30 +910,15 @@ class ThreeGppNTNDenseUrbanPropagationLossModel : public ThreeGppPropagationLoss
      */
     ThreeGppNTNDenseUrbanPropagationLossModel& operator=(
         const ThreeGppNTNDenseUrbanPropagationLossModel&) = delete;
-
-  private:
-    // Inherited
-    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetShadowingStd(Ptr<MobilityModel> a,
-                           Ptr<MobilityModel> b,
-                           ChannelCondition::LosConditionValue cond) const override;
-    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
-
-    /**
-     * @brief The nested map containing the Shadow Fading and
-     *        Clutter Loss values for the NTN Dense Urban scenario
-     */
-    const std::map<int, std::vector<float>>* m_SFCL_DenseUrban;
 };
 
 /**
  * @ingroup propagation
  *
- * @brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ * @brief Implements the pathloss model defined in 3GPP TR 38.811, Sec. 6.6.2,
  *        for the NTN Urban scenario.
  */
-class ThreeGppNTNUrbanPropagationLossModel : public ThreeGppPropagationLossModel
+class ThreeGppNTNUrbanPropagationLossModel : public ThreeGppNTNPropagationLossModel
 {
   public:
     /**
@@ -773,12 +938,6 @@ class ThreeGppNTNUrbanPropagationLossModel : public ThreeGppPropagationLossModel
     ~ThreeGppNTNUrbanPropagationLossModel() override;
 
     /**
-     * @copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
-     *  Does nothing in NTN scenarios.
-     */
-    double GetO2iDistance2dIn() const override;
-
-    /**
      * @brief Copy constructor
      *
      * Deleted in base class
@@ -793,30 +952,15 @@ class ThreeGppNTNUrbanPropagationLossModel : public ThreeGppPropagationLossModel
      */
     ThreeGppNTNUrbanPropagationLossModel& operator=(const ThreeGppNTNUrbanPropagationLossModel&) =
         delete;
-
-  private:
-    // Inherited
-    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetShadowingStd(Ptr<MobilityModel> a,
-                           Ptr<MobilityModel> b,
-                           ChannelCondition::LosConditionValue cond) const override;
-    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
-
-    /**
-     * @brief The nested map containing the Shadow Fading and
-     *        Clutter Loss values for the NTN Urban scenario
-     */
-    const std::map<int, std::vector<float>>* m_SFCL_Urban;
 };
 
 /**
  * @ingroup propagation
  *
- * @brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ * @brief Implements the pathloss model defined in 3GPP TR 38.811, Sec. 6.6.2,
  *        for the NTN Suburban scenario.
  */
-class ThreeGppNTNSuburbanPropagationLossModel : public ThreeGppPropagationLossModel
+class ThreeGppNTNSuburbanPropagationLossModel : public ThreeGppNTNPropagationLossModel
 {
   public:
     /**
@@ -836,12 +980,6 @@ class ThreeGppNTNSuburbanPropagationLossModel : public ThreeGppPropagationLossMo
     ~ThreeGppNTNSuburbanPropagationLossModel() override;
 
     /**
-     * @copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
-     *  Does nothing in NTN scenarios.
-     */
-    double GetO2iDistance2dIn() const override;
-
-    /**
      * @brief Copy constructor
      *
      * Deleted in base class
@@ -857,30 +995,15 @@ class ThreeGppNTNSuburbanPropagationLossModel : public ThreeGppPropagationLossMo
      */
     ThreeGppNTNSuburbanPropagationLossModel& operator=(
         const ThreeGppNTNSuburbanPropagationLossModel&) = delete;
-
-  private:
-    // Inherited
-    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetShadowingStd(Ptr<MobilityModel> a,
-                           Ptr<MobilityModel> b,
-                           ChannelCondition::LosConditionValue cond) const override;
-    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
-
-    /**
-     * @brief The nested map containing the Shadow Fading and
-     *        Clutter Loss values for the NTN Suburban and Rural scenario
-     */
-    const std::map<int, std::vector<float>>* m_SFCL_SuburbanRural;
 };
 
 /**
  * @ingroup propagation
  *
- * @brief Implements the pathloss model defined in 3GPP TR 38.811, Table ????
+ * @brief Implements the pathloss model defined in 3GPP TR 38.811, Sec. 6.6.2,
  *        for the NTN Rural scenario.
  */
-class ThreeGppNTNRuralPropagationLossModel : public ThreeGppPropagationLossModel
+class ThreeGppNTNRuralPropagationLossModel : public ThreeGppNTNPropagationLossModel
 {
   public:
     /**
@@ -900,12 +1023,6 @@ class ThreeGppNTNRuralPropagationLossModel : public ThreeGppPropagationLossModel
     ~ThreeGppNTNRuralPropagationLossModel() override;
 
     /**
-     * @copydoc ThreeGppPropagationLossModel::GetO2iDistance2dIn
-     *  Does nothing in NTN scenarios.
-     */
-    double GetO2iDistance2dIn() const override;
-
-    /**
      * @brief Copy constructor
      *
      * Deleted in base class
@@ -920,21 +1037,6 @@ class ThreeGppNTNRuralPropagationLossModel : public ThreeGppPropagationLossModel
      */
     ThreeGppNTNRuralPropagationLossModel& operator=(const ThreeGppNTNRuralPropagationLossModel&) =
         delete;
-
-  private:
-    // Inherited
-    double GetLossLos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetLossNlos(Ptr<MobilityModel> a, Ptr<MobilityModel> b) const override;
-    double GetShadowingStd(Ptr<MobilityModel> a,
-                           Ptr<MobilityModel> b,
-                           ChannelCondition::LosConditionValue cond) const override;
-    double GetShadowingCorrelationDistance(ChannelCondition::LosConditionValue cond) const override;
-
-    /**
-     * @brief The nested map containing the Shadow Fading and
-     *        Clutter Loss values for the NTN Suburban and Rural scenario
-     */
-    const std::map<int, std::vector<float>>* m_SFCL_SuburbanRural;
 };
 
 } // namespace ns3

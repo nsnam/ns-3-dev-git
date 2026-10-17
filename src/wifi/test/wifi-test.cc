@@ -58,30 +58,16 @@ static void
 AssignWifiRandomStreams(Ptr<WifiMac> mac, int64_t stream)
 {
     int64_t currentStream = stream;
-    PointerValue ptr;
     if (!mac->GetQosSupported())
     {
-        mac->GetAttribute("Txop", ptr);
-        Ptr<Txop> txop = ptr.Get<Txop>();
-        currentStream += txop->AssignStreams(currentStream);
+        currentStream += mac->GetTxop()->AssignStreams(currentStream);
     }
     else
     {
-        mac->GetAttribute("VO_Txop", ptr);
-        Ptr<QosTxop> vo_txop = ptr.Get<QosTxop>();
-        currentStream += vo_txop->AssignStreams(currentStream);
-
-        mac->GetAttribute("VI_Txop", ptr);
-        Ptr<QosTxop> vi_txop = ptr.Get<QosTxop>();
-        currentStream += vi_txop->AssignStreams(currentStream);
-
-        mac->GetAttribute("BE_Txop", ptr);
-        Ptr<QosTxop> be_txop = ptr.Get<QosTxop>();
-        currentStream += be_txop->AssignStreams(currentStream);
-
-        mac->GetAttribute("BK_Txop", ptr);
-        Ptr<QosTxop> bk_txop = ptr.Get<QosTxop>();
-        bk_txop->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_VO)->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_VI)->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_BE)->AssignStreams(currentStream);
+        currentStream += mac->GetQosTxop(AC_BK)->AssignStreams(currentStream);
     }
 }
 
@@ -887,9 +873,7 @@ QosFragmentationTestCase::DoRun()
     Ptr<WifiNetDevice> sta_device = DynamicCast<WifiNetDevice>(staDevices.Get(0));
 
     // set the TXOP limit on BE AC
-    PointerValue ptr;
-    sta_device->GetMac()->GetAttribute("BE_Txop", ptr);
-    ptr.Get<QosTxop>()->SetTxopLimit(MicroSeconds(3008));
+    sta_device->GetMac()->GetQosTxop(AC_BE)->SetTxopLimit(MicroSeconds(3008));
 
     PacketSocketAddress socket;
     socket.SetSingleDevice(sta_device->GetIfIndex());
@@ -2260,6 +2244,7 @@ class Bug2470TestCase : public TestCase
     uint16_t
         m_addbaNoReplyCount;    ///< Count number of times ADDBA state machine is in no_reply state
     uint16_t m_addbaResetCount; ///< Count number of times ADDBA state machine is in reset state
+    Time m_2ndPktSetStart;      ///< time the second set of packets is generated
 };
 
 Bug2470TestCase::Bug2470TestCase()
@@ -2271,7 +2256,8 @@ Bug2470TestCase::Bug2470TestCase()
       m_addbaPendingCount(0),
       m_addbaRejectedCount(0),
       m_addbaNoReplyCount(0),
-      m_addbaResetCount(0)
+      m_addbaResetCount(0),
+      m_2ndPktSetStart(Seconds(0.85))
 {
 }
 
@@ -2318,7 +2304,7 @@ Bug2470TestCase::TxCallback(Ptr<ListErrorModel> rxErrorModel,
     // The sender is transmitting an ADDBA_REQUEST or ADDBA_RESPONSE frame. If this is
     // the first attempt at establishing a BA agreement (i.e., before the second set of packets
     // is generated), make the reception of the frame fail at the receiver.
-    if (psdu->GetHeader(0).GetType() == WIFI_MAC_MGT_ACTION && Simulator::Now() < Seconds(0.8))
+    if (psdu->GetHeader(0).GetType() == WIFI_MAC_MGT_ACTION && Simulator::Now() < m_2ndPktSetStart)
     {
         auto uid = psdu->GetPayload(0)->GetUid();
         rxErrorModel->SetList({uid});
@@ -2461,13 +2447,13 @@ Bug2470TestCase::RunSubtest(TypeOfStation rcvErrorType)
                         4,
                         apDevice.Get(0),
                         staDevice.Get(0)->GetAddress());
-    Simulator::Schedule(Seconds(0.8),
+    Simulator::Schedule(m_2ndPktSetStart,
                         &Bug2470TestCase::SendPacketBurst,
                         this,
                         1,
                         apDevice.Get(0),
                         staDevice.Get(0)->GetAddress());
-    Simulator::Schedule(Seconds(0.8) + MicroSeconds(5),
+    Simulator::Schedule(m_2ndPktSetStart + MicroSeconds(5),
                         &Bug2470TestCase::SendPacketBurst,
                         this,
                         4,
@@ -2721,9 +2707,8 @@ Issue40TestCase::RunOne(bool useAmpdu)
         // Disable use of BAR that are sent with the lowest modulation so that we can also reproduce
         // the problem with A-MPDU, i.e. the lack of feedback about SNR change
         Ptr<WifiNetDevice> ap_device = DynamicCast<WifiNetDevice>(apDevice.Get(0));
-        PointerValue ptr;
-        ap_device->GetMac()->GetAttribute("BE_Txop", ptr);
-        ptr.Get<QosTxop>()->SetAttribute("UseExplicitBarAfterMissedBlockAck", BooleanValue(false));
+        ap_device->GetMac()->GetQosTxop(AC_BE)->SetAttribute("UseExplicitBarAfterMissedBlockAck",
+                                                             BooleanValue(false));
     }
 
     // Transmit a first data packet before the station moves: it should be sent with a high
@@ -3616,7 +3601,7 @@ HeRuMcsDataRateTestCase::CheckDataRate(RuType ruType,
 {
     uint8_t staId = 1;
     auto txVector = WifiTxVector(HePhy::GetHeMcs(0),
-                                 0,
+                                 WIFI_MIN_TX_PWR_LEVEL,
                                  WIFI_PREAMBLE_HE_MU,
                                  guardInterval,
                                  1,

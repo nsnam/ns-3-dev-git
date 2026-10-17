@@ -28,7 +28,7 @@ namespace ns3
  * Custom classes should add a template specialization of this function
  * using the macro \c TYPENAMEGET_DEFINE(T).
  *
- * @tparam T \explicit The type.
+ * @tparam T @explicit The type.
  * @returns The type name as a string.
  */
 template <typename T>

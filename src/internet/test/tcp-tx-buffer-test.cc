@@ -37,11 +37,16 @@ class TcpTxBufferTestCase : public TestCase
     void TestNewBlock();
     /** @brief Test the generation of a previously sent block */
     void TestTransmittedBlock();
+    /** @brief Test that a guessed (Reno) SACK on the new head is not a loss (see @issueid{1107}) */
+    void TestRenoSackDiscard();
     /** @brief Test the generation of the "next" block */
     void TestNextSeg();
     /** @brief Test the logic of merging items in GetTransmittedSegment()
      * which is triggered by CopyFromSequence()*/
     void TestMergeItemsWhenGetTransmittedSegment();
+    /** @brief Test that the retransmit accounting is cleared when a
+     * retransmitted segment is SACKed (@issueid{1190}) */
+    void TestRetransmittedSegmentSacked();
     /**
      * @brief Callback to provide a value of receiver window
      * @returns the receiver window size
@@ -77,6 +82,7 @@ TcpTxBufferTestCase::DoRun()
      */
     Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestTransmittedBlock, this);
     Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestNextSeg, this);
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestRenoSackDiscard, this);
 
     /*
      * Case for transmitted block:
@@ -89,6 +95,8 @@ TcpTxBufferTestCase::DoRun()
                         &TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment,
                         this);
 
+    Simulator::Schedule(Seconds(0), &TcpTxBufferTestCase::TestRetransmittedSegmentSacked, this);
+
     Simulator::Run();
     Simulator::Destroy();
 }
@@ -100,7 +108,6 @@ TcpTxBufferTestCase::TestIsLost()
     txBuf->SetRWndCallback(MakeCallback(&TcpTxBufferTestCase::GetRWnd, this));
     SequenceNumber32 head(1);
     txBuf->SetHeadSequence(head);
-    SequenceNumber32 ret;
     Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack>();
     txBuf->SetSegmentSize(1000);
     txBuf->SetDupAckThresh(3);
@@ -314,6 +321,57 @@ TcpTxBufferTestCase::TestNextSeg()
 }
 
 void
+TcpTxBufferTestCase::TestRenoSackDiscard()
+{
+    // With SACK disabled, each dupack is accounted for by guessing a SACKed
+    // segment (AddRenoSack). When a cumulative ACK makes a guessed segment
+    // the head, the guess moves to a later segment, but the buffer must not
+    // mark the head as lost; whether it is lost is decided by the socket
+    const uint32_t segmentSize = 100;
+    const uint32_t dupAckThresh = 3;
+
+    for (uint32_t guesses = 1; guesses <= dupAckThresh; ++guesses)
+    {
+        Ptr<TcpTxBuffer> txBuf = CreateObject<TcpTxBuffer>();
+        txBuf->SetRWndCallback(MakeCallback(&TcpTxBufferTestCase::GetRWnd, this));
+        txBuf->SetHeadSequence(SequenceNumber32(1));
+        txBuf->SetSegmentSize(segmentSize);
+        txBuf->SetSackEnabled(false);
+        txBuf->SetDupAckThresh(dupAckThresh);
+
+        txBuf->Add(Create<Packet>(segmentSize * 8));
+        for (uint32_t i = 0; i < 8; ++i)
+        {
+            txBuf->CopyFromSequence(segmentSize, SequenceNumber32(1 + i * segmentSize));
+        }
+
+        for (uint32_t i = 0; i < guesses; ++i)
+        {
+            txBuf->AddRenoSack();
+        }
+        NS_TEST_ASSERT_MSG_EQ(txBuf->GetSacked(),
+                              guesses * segmentSize,
+                              "Reno SACKs not accounted for");
+
+        // The cumulative ACK acknowledges the first segment, so a segment
+        // which was guessed as SACKed becomes the head of the buffer
+        txBuf->DiscardUpTo(SequenceNumber32(1 + segmentSize));
+        NS_TEST_ASSERT_MSG_EQ(txBuf->GetSacked(),
+                              guesses * segmentSize,
+                              "Guessed SACK not moved with " << guesses << " guessed SACKs");
+        NS_TEST_ASSERT_MSG_EQ(txBuf->GetLost(),
+                              0,
+                              "A segment was marked as lost with " << guesses << " guessed SACKs");
+        NS_TEST_ASSERT_MSG_EQ(txBuf->IsLost(SequenceNumber32(1 + segmentSize)),
+                              false,
+                              "New head marked as lost with " << guesses << " guessed SACKs");
+
+        txBuf->ResetRenoSack();
+        NS_TEST_ASSERT_MSG_EQ(txBuf->GetSacked(), 0, "Guessed SACKs not reset");
+    }
+}
+
+void
 TcpTxBufferTestCase::TestNewBlock()
 {
     // Manually recreating all the conditions
@@ -407,6 +465,61 @@ TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment()
     // GetTransmittedSegment() will be called and handle the case that two items
     // have different m_lost value.
     txBuf.CopyFromSequence(2000, SequenceNumber32(1));
+}
+
+void
+TcpTxBufferTestCase::TestRetransmittedSegmentSacked()
+{
+    // @issueid{1190}: when a retransmitted segment is SACKed (before its cumulative
+    // ACK), the retransmit byte counter must be decremented; otherwise
+    // BytesInFlight() keeps over-counting that segment.
+    const uint32_t segmentSize = 1000;
+    Ptr<TcpTxBuffer> txBuf = CreateObject<TcpTxBuffer>();
+    txBuf->SetRWndCallback(MakeCallback(&TcpTxBufferTestCase::GetRWnd, this));
+    txBuf->SetHeadSequence(SequenceNumber32(1));
+    txBuf->SetSegmentSize(segmentSize);
+    txBuf->SetDupAckThresh(3);
+
+    // Send 10 segments (seq 1..10000).
+    txBuf->Add(Create<Packet>(10 * segmentSize));
+    for (uint8_t i = 0; i < 10; ++i)
+    {
+        txBuf->CopyFromSequence(segmentSize, SequenceNumber32((i * segmentSize) + 1));
+    }
+    NS_TEST_ASSERT_MSG_EQ(txBuf->GetRetransmitsCount(), 0, "No retransmits yet");
+    NS_TEST_ASSERT_MSG_EQ(txBuf->BytesInFlight(), 10 * segmentSize, "All segments in flight");
+
+    // SACK segments 6, 7 and 8 so that the earlier segments (including seg 2) are
+    // declared lost while the head (seq 1) remains unacknowledged. The head is
+    // never SACKed: it advances only via cumulative ACK.
+    Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack>();
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(5001), SequenceNumber32(6001)));
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(6001), SequenceNumber32(7001)));
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(7001), SequenceNumber32(8001)));
+    txBuf->Update(sack->GetSackList());
+    NS_TEST_ASSERT_MSG_EQ(txBuf->IsLost(SequenceNumber32(1001)), true, "Segment 2 should be lost");
+
+    // Retransmit segment 2 (a non-head segment): it is now accounted as a
+    // retransmission.
+    txBuf->CopyFromSequence(segmentSize, SequenceNumber32(1001));
+    NS_TEST_ASSERT_MSG_EQ(txBuf->GetRetransmitsCount(),
+                          segmentSize,
+                          "Retransmitted segment must be counted in m_retrans");
+
+    // The retransmitted segment is now SACKed. Its retransmit accounting must be
+    // cleared, and it must no longer be counted as bytes in flight.
+    sack->AddSackBlock(TcpOptionSack::SackBlock(SequenceNumber32(1001), SequenceNumber32(2001)));
+    txBuf->Update(sack->GetSackList());
+    NS_TEST_ASSERT_MSG_EQ(txBuf->GetRetransmitsCount(),
+                          0,
+                          "m_retrans must be cleared when the retransmitted segment is SACKed");
+    // Of the 10 segments: 4 are SACKed (2, 6, 7, 8) and 4 are lost (1, 3, 4, 5),
+    // leaving 2 genuinely in flight (9, 10). With the retransmit accounting
+    // correctly cleared this is 2 * segmentSize; the bug left it inflated by the
+    // stale retransmit (one extra segment).
+    NS_TEST_ASSERT_MSG_EQ(txBuf->BytesInFlight(),
+                          2 * segmentSize,
+                          "SACKed retransmitted segment must not inflate BytesInFlight");
 }
 
 void

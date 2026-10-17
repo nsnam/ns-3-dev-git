@@ -83,9 +83,6 @@ from .base import (
     transform_point_simulation_to_canvas,
 )
 
-PI_OVER_2 = math.pi / 2
-PI_TIMES_2 = math.pi * 2
-
 
 ## Node class
 class Node(PyVizObject):
@@ -262,9 +259,9 @@ class Node(PyVizObject):
 
             self.emit("query-extra-tooltip-info", lines)
 
-            mob = ns3_node.GetObject[ns.MobilityModel]()
-            if mob:
-                mobility_model_name = mob.__deref__().GetInstanceTypeId().GetName()
+            mobility = ns3_node.__deref__().GetObject[ns.MobilityModel]()
+            if mobility:
+                mobility_model_name = mobility.__deref__().GetInstanceTypeId().GetName()
                 lines.append("  <b>Mobility Model</b>: %s" % mobility_model_name)
 
             for devI in range(ns3_node.GetNDevices()):
@@ -277,33 +274,51 @@ class Node(PyVizObject):
                 devname = dev.GetInstanceTypeId().GetName()
                 lines.append("    <b>Type:</b> %s" % devname)
 
-                if ipv4 is not None:
+                # Lr-Wpan devices have both 16 bit (short) and 64 bit (extended) addresses unlike other
+                # NetDevices. These are extracted directed from the MAC layer.
+                if devname == "ns3::lrwpan::LrWpanNetDevice":
+                    lines.append(
+                        "    <b>MAC short address:</b> %s" % (dev.GetMac().GetShortAddress(),)
+                    )
+                    lines.append(
+                        "    <b>MAC extended address:</b> %s" % (dev.GetMac().GetExtendedAddress(),)
+                    )
+                elif devname == "ns3::SixLowPanNetDevice":
+                    mac48Addr = ns.Mac48Address.ConvertFrom(dev.GetAddress())
+                    lines.append("    <b>MAC Address:</b> %s (Generated)" % (mac48Addr,))
+                else:
+                    mac48Addr = ns.Mac48Address.ConvertFrom(dev.GetAddress())
+                    lines.append("    <b>MAC Address:</b> %s" % (mac48Addr,))
+
+                if ipv4:
                     ipv4_idx = ipv4.GetInterfaceForDevice(dev)
                     if ipv4_idx != -1:
                         addresses = [
-                            "%s/%s"
-                            % (
+                            "%s/%s (Subnet Mask: %s)"
+                            % (  # Note, Mask and prefix functions names might change. See !2645
                                 ipv4.GetAddress(ipv4_idx, i).GetLocal(),
+                                ipv4.GetAddress(ipv4_idx, i).GetMask().GetPrefixLength(),
                                 ipv4.GetAddress(ipv4_idx, i).GetMask(),
                             )
                             for i in range(ipv4.GetNAddresses(ipv4_idx))
                         ]
                         lines.append("    <b>IPv4 Addresses:</b> %s" % "; ".join(addresses))
-
-                if ipv6 is not None:
+                if ipv6:
                     ipv6_idx = ipv6.GetInterfaceForDevice(dev)
                     if ipv6_idx != -1:
-                        addresses = [
-                            "%s/%s"
-                            % (
-                                ipv6.GetAddress(ipv6_idx, i).GetAddress(),
-                                ipv6.GetAddress(ipv6_idx, i).GetPrefix(),
-                            )
-                            for i in range(ipv6.GetNAddresses(ipv6_idx))
-                        ]
-                        lines.append("    <b>IPv6 Addresses:</b> %s" % "; ".join(addresses))
+                        n = ipv6.GetNAddresses(ipv6_idx)
 
-                lines.append("    <b>MAC Address:</b> %s" % (dev.GetAddress(),))
+                        if n > 0:
+                            # First address on the same line as title
+                            entry = ipv6.GetAddress(ipv6_idx, 0)
+                            first_addr = "%s%s" % (entry.GetAddress(), entry.GetPrefix())
+                            lines.append("    <b>IPv6 Addresses:</b> %s" % first_addr)
+
+                        # Remaining addresses aligned under the first address
+                        for i in range(1, n):
+                            entry = ipv6.GetAddress(ipv6_idx, i)
+                            addr = "%s%s" % (entry.GetAddress(), entry.GetPrefix())
+                            lines.append("                                     %s" % addr)
 
             tooltip.set_markup("\n".join(lines))
         finally:
@@ -460,7 +475,7 @@ class Node(PyVizObject):
         try:
             bounds = self.visualizer.canvas.get_bounds()
 
-            (min_x, min_y, max_x, max_y) = bounds
+            min_x, min_y, max_x, max_y = bounds
 
             min_x = min(x, min_x)
             min_y = min(y, min_y)
@@ -678,7 +693,7 @@ class SimulationThread(threading.Thread):
         self.go.clear()
         self.target_time = 0  # in seconds
         self.quit = False
-        self.sim_helper = ns.PyViz()
+        self.sim_helper = ns.visualizer.PyViz()
         self.pause_messages = []
 
     def set_nodes_of_interest(self, nodes):
@@ -703,30 +718,45 @@ class SimulationThread(threading.Thread):
         @return none
         """
         while not self.quit:
-            # print "sim: Wait for go"
-            self.go.wait()  # wait until the main (view) thread gives us the go signal
-            self.go.clear()
-            if self.quit:
-                break
-            # self.go.clear()
-            # print "sim: Acquire lock"
-            self.lock.acquire()
             try:
-                if 0:
-                    if ns3.Simulator.IsFinished():
-                        self.viz.play_button.set_sensitive(False)
+                # Wait until the GUI gives the go signal
+                self.go.wait()
+                self.go.clear()
+
+                if self.quit:
+                    break
+
+                # Check once whether GUI main loop is alive
+                gui_active = Gtk.main_level() > 0
+
+                # Thread-safe region (original code)
+                self.lock.acquire()
+                try:
+                    # Advance simulator to the requested target time
+                    self.sim_helper.SimulatorRunUntil(ns.Seconds(self.target_time))
+
+                    # Collect pause messages
+                    self.pause_messages.extend(self.sim_helper.GetPauseMessages())
+
+                    # Schedule GUI update — but only if GUI still exists
+                    if gui_active:
+                        GLib.idle_add(self.viz.update_model, priority=PRIORITY_UPDATE_MODEL)
+
+                    # Check stop condition
+                    if (
+                        ns.Simulator.Now().GetSeconds()
+                        >= self.sim_helper.GetSimulatorStopTime().GetSeconds()
+                    ):
+                        if gui_active:
+                            GLib.idle_add(self.viz._on_simulation_finished)
                         break
-                # print "sim: Current time is %f; Run until: %f" % (ns3.Simulator.Now ().GetSeconds (), self.target_time)
-                # if ns3.Simulator.Now ().GetSeconds () > self.target_time:
-                #    print "skipping, model is ahead of view!"
-                self.sim_helper.SimulatorRunUntil(ns.Seconds(self.target_time))
-                # print "sim: Run until ended at current time: ", ns3.Simulator.Now ().GetSeconds ()
-                self.pause_messages.extend(self.sim_helper.GetPauseMessages())
-                GLib.idle_add(self.viz.update_model, priority=PRIORITY_UPDATE_MODEL)
-                # print "sim: Run until: ", self.target_time, ": finished."
-            finally:
-                self.lock.release()
-            # print "sim: Release lock, loop."
+
+                finally:
+                    self.lock.release()
+
+            except Exception:
+                # Happens if GUI is already shutting down and idle_add crashes internally
+                break
 
 
 ## ShowTransmissionsMode
@@ -1039,6 +1069,7 @@ class Visualizer(GObject.GObject):
 
     def create_gui(self):
         self.window = Gtk.Window()
+        self.window.set_title(sys.argv[0])
         vbox = Gtk.VBox()
         vbox.show()
         self.window.add(vbox)
@@ -1373,7 +1404,7 @@ class Visualizer(GObject.GObject):
         bounds_x2, bounds_y2 = self.canvas.convert_from_pixels(
             hadj.get_value() + hadj.get_page_size(), vadj.get_value() + vadj.get_page_size()
         )
-        ns.PyViz.LineClipping(
+        ns.visualizer.PyViz.LineClipping(
             bounds_x1, bounds_y1, bounds_x2, bounds_y2, pos1_x, pos1_y, pos2_x, pos2_y
         )
         return (pos1_x.value + pos2_x.value) / 2, (pos1_y.value + pos2_y.value) / 2
@@ -1435,10 +1466,16 @@ class Visualizer(GObject.GObject):
                 visibility_threshold=0.5,
                 font=("Sans Serif %f" % int(1 + BITRATE_FONT_SIZE * k)),
             )
+
             angle = math.atan2((pos2_y - pos1_y), (pos2_x - pos1_x))
-            if -PI_OVER_2 <= angle <= PI_OVER_2:
+            if angle > math.pi / 2 or angle < -math.pi / 2:
+                # Normalize the angle, in essence, adjust the angle to keep
+                # it from rotating beyond +/- 90 degrees. In this way, the
+                # direction of the label remain always readable regardless of
+                # the angle.
+                angle += math.pi
                 label.set_properties(
-                    text=("%.2f kbit/s →" % (kbps,)),
+                    text=("← %.2f kbit/s" % (kbps,)),
                     alignment=Pango.Alignment.CENTER,
                     anchor=GooCanvas.CanvasAnchorType.S,
                     x=0,
@@ -1446,7 +1483,7 @@ class Visualizer(GObject.GObject):
                 )
             else:
                 label.set_properties(
-                    text=("← %.2f kbit/s" % (kbps,)),
+                    text=("%.2f kbit/s →" % (kbps,)),
                     alignment=Pango.Alignment.CENTER,
                     anchor=GooCanvas.CanvasAnchorType.N,
                     x=0,
@@ -1544,6 +1581,20 @@ class Visualizer(GObject.GObject):
 
         self._drop_arrows = new_arrows + old_arrows
 
+    def _on_simulation_finished(self):
+        print("Simulation finished.")
+        if self._update_timeout_id is not None:
+            idExists = GLib.MainContext.default().find_source_by_id(self._update_timeout_id)
+            if idExists:
+                try:
+                    GLib.Source.remove(self._update_timeout_id)
+                except Exception:
+                    pass
+                finally:
+                    self._update_timeout_id = None
+        self.play_button.set_active(False)
+        self.play_button.set_sensitive(False)
+
     def update_view_timeout(self):
         # print "view: update_view_timeout called at real time ", time.time()
 
@@ -1585,7 +1636,14 @@ class Visualizer(GObject.GObject):
 
     def _start_update_timer(self):
         if self._update_timeout_id is not None:
-            GLib.source_remove(self._update_timeout_id)
+            idExists = GLib.MainContext.default().find_source_by_id(self._update_timeout_id)
+            if idExists:
+                try:
+                    GLib.Source.remove(self._update_timeout_id)
+                except Exception:
+                    pass
+                finally:
+                    self._update_timeout_id = None
         # print "start_update_timer"
         self._update_timeout_id = GLib.timeout_add(
             int(SAMPLE_PERIOD / min(self.speed, 1) * 1e3),
@@ -1598,12 +1656,26 @@ class Visualizer(GObject.GObject):
             self._start_update_timer()
         else:
             if self._update_timeout_id is not None:
-                GLib.source_remove(self._update_timeout_id)
+                idExists = GLib.MainContext.default().find_source_by_id(self._update_timeout_id)
+                if idExists:
+                    try:
+                        GLib.Source.remove(self._update_timeout_id)
+                    except Exception:
+                        pass
+                    finally:
+                        self._update_timeout_id = None
 
     def _quit(self, *dummy_args):
         if self._update_timeout_id is not None:
-            GLib.source_remove(self._update_timeout_id)
-            self._update_timeout_id = None
+            idExists = GLib.MainContext.default().find_source_by_id(self._update_timeout_id)
+            if idExists:
+                try:
+                    GLib.Source.remove(self._update_timeout_id)
+                except Exception:
+                    pass
+                finally:
+                    self._update_timeout_id = None
+        ns.Simulator.Stop()
         self.simulation.quit = True
         self.simulation.go.set()
         self.simulation.join()
@@ -1718,12 +1790,12 @@ class Visualizer(GObject.GObject):
         self.simulation.lock.acquire()
         try:
             ns3_node = ns.NodeList.GetNode(node.node_index)
-            mob = ns3_node.GetObject[ns.MobilityModel]()
-            if not mob:
+            mobility = ns3_node.GetObject[ns.MobilityModel]()
+            if not mobility:
                 return
             if self.node_drag_state is not None:
                 return
-            pos = ns3_node.GetObject[ns.MobilityModel]().__deref__().GetPosition()
+            pos = mobility.__deref__().GetPosition()
         finally:
             self.simulation.lock.release()
         devpos = self.canvas.get_window().get_device_position(event.device)
@@ -1737,8 +1809,8 @@ class Visualizer(GObject.GObject):
         self.simulation.lock.acquire()
         try:
             ns3_node = ns.NodeList.GetNode(node.node_index)
-            mob = ns3_node.GetObject[ns.MobilityModel]()
-            if not mob:
+            mobility = ns3_node.GetObject[ns.MobilityModel]()
+            if not mobility:
                 return False
             if self.node_drag_state is None:
                 return False
@@ -1746,11 +1818,11 @@ class Visualizer(GObject.GObject):
             canvas_x, canvas_y = self.canvas.convert_from_pixels(devpos.x, devpos.y)
             dx = canvas_x - self.node_drag_state.canvas_x0
             dy = canvas_y - self.node_drag_state.canvas_y0
-            pos = mob.GetPosition()
+            pos = mobility.GetPosition()
             pos.x = self.node_drag_state.sim_x0 + transform_distance_canvas_to_simulation(dx)
             pos.y = self.node_drag_state.sim_y0 + transform_distance_canvas_to_simulation(dy)
             # print "SetPosition(%G, %G)" % (pos.x, pos.y)
-            mob.SetPosition(pos)
+            mobility.SetPosition(pos)
             node.set_position(*transform_point_simulation_to_canvas(pos.x, pos.y))
         finally:
             self.simulation.lock.release()

@@ -66,8 +66,7 @@ except ModuleNotFoundError:
 #   std::cout << " start="<<start<<" duration="<<duration<<std::endl;
 # }
 
-ns.cppyy.cppdef(
-    """
+ns.cppyy.cppdef("""
     using namespace ns3;
     void AdvancePosition(Ptr<Node> node){
         Ptr<MobilityModel> mob = node->GetObject<MobilityModel>();
@@ -77,8 +76,7 @@ ns.cppyy.cppdef(
             return;
         mob->SetPosition(pos);
         Simulator::Schedule(Seconds(1), AdvancePosition, node);
-    }"""
-)
+    }""")
 
 
 def main(argv):

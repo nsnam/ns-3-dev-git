@@ -21,7 +21,7 @@ using namespace ns3::lrwpan;
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
-    std::clog << "[" << m_nwkNetworkAddress << " | " << m_nwkIeeeAddress << "] ";
+    ns3LogStream << "[" << m_nwkNetworkAddress << " | " << m_nwkIeeeAddress << "] ";
 
 namespace ns3
 {
@@ -202,6 +202,7 @@ ZigbeeNwk::DoDispose()
     m_rreqRetryTable.Dispose();
     m_panIdTable.Dispose();
     m_btt.Dispose();
+    m_nwkAddressMap.Dispose();
 
     DisposeTxPktBuffer();
     DisposePendingTx();
@@ -677,7 +678,7 @@ ZigbeeNwk::ReceiveRREP(Mac16Address macSrcAddr,
                     }
                 }
 
-                Ptr<PendingTxPkt> pendingTxPkt = Create<PendingTxPkt>();
+                auto pendingTxPkt = std::make_shared<PendingTxPkt>();
                 if (!m_pendingTxQueue.empty() &&
                     DequeuePendingTx(payload.GetRespAddr(), pendingTxPkt))
                 {
@@ -1232,7 +1233,7 @@ ZigbeeNwk::SendDataBcst(Ptr<Packet> packet, uint8_t nwkHandle)
 void
 ZigbeeNwk::McpsDataConfirm(McpsDataConfirmParams params)
 {
-    Ptr<TxPkt> bufferedElement;
+    std::shared_ptr<TxPkt> bufferedElement;
     if (RetrieveTxPkt(params.m_msduHandle, bufferedElement))
     {
         ZigbeeNwkHeader nwkHeader;
@@ -1282,7 +1283,7 @@ ZigbeeNwk::McpsDataConfirm(McpsDataConfirmParams params)
             if (!m_nldeDataConfirmCallback.IsNull())
             {
                 // Zigbee Specification r22.1.0, End of Section 3.2.1.1.3
-                // Report the the results of a request to a transmission of a packet
+                // Report the results of a request to a transmission of a packet
                 NldeDataConfirmParams nldeDataConfirmParams;
                 // nldeDataConfirmParams.m_status =
                 // static_cast<ZigbeeNwkStatus>(params.m_status);
@@ -1564,6 +1565,10 @@ ZigbeeNwk::MlmeAssociateConfirm(MlmeAssociateConfirmParams params)
             m_nwkExtendedPanId = m_joinParams.m_extendedPanId;
             m_nwkPanId = m_associateParams.m_coordPanId;
 
+            // Update the device own mapping of 16-bit - 64 bit address
+            // in its nwkAddressMap
+            m_nwkAddressMap.Update(m_nwkIeeeAddress, params.m_assocShortAddr);
+
             // Update relationship
             if (m_associateParams.m_coordAddrMode == lrwpan::AddressMode::EXT_ADDR)
             {
@@ -1660,6 +1665,12 @@ ZigbeeNwk::MlmeStartConfirm(MlmeStartConfirmParams params)
         m_nwkExtendedPanId = 0xffffffffffffffed;
         m_nwkNetworkAddress = Mac16Address("ff:ff");
         m_nwkPanId = 0xffff;
+    }
+    else
+    {
+        // Update the coordinator or router device nwkAddressMap
+        // with its own addresses information
+        m_nwkAddressMap.Update(m_nwkIeeeAddress, m_nwkNetworkAddress);
     }
 
     if (m_pendPrimitiveNwk == NLME_NETWORK_FORMATION)
@@ -2161,6 +2172,10 @@ ZigbeeNwk::MlmeAssociateIndication(MlmeAssociateIndicationParams params)
         // Optional parameters
         newEntry->SetExtPanId(m_nwkExtendedPanId);
 
+        // Update the network address map in the router or coordinator
+        // accepting the association.
+        m_nwkAddressMap.Update(params.m_extDevAddr, allocatedAddr);
+
         MlmeAssociateResponseParams responseParams;
         responseParams.m_extDevAddr = params.m_extDevAddr;
 
@@ -2345,6 +2360,15 @@ ZigbeeNwk::NldeDataRequest(NldeDataRequestParams params, Ptr<Packet> packet)
         if (IsBroadcastAddress(params.m_dstAddr))
         {
             // The destination is BROADCAST (See 3.6.5)
+            // Record the originated broadcast in the Broadcast Transaction Table (BTT)
+            // so that copies rebroadcast back by neighbors are suppressed and not
+            // delivered again to the next higher layer.
+            Ptr<BroadcastTransactionRecord> btr = Create<BroadcastTransactionRecord>(
+                nwkHeader.GetSrcAddr(),
+                nwkHeader.GetSeqNum(),
+                Simulator::Now() + m_nwkNetworkBroadcastDeliveryTime);
+            m_btt.AddEntry(btr);
+
             SendDataBcst(packet, params.m_nsduHandle);
         }
         else
@@ -2941,6 +2965,24 @@ ZigbeeNwk::NlmeStartRouterRequest(NlmeStartRouterRequestParams params)
     }
 }
 
+bool
+ZigbeeNwk::GetNwkAddrByIeeeAddr(Mac64Address ieeeAddr, Mac16Address& nwkAddr)
+{
+    return m_nwkAddressMap.LookupNwkAddress(ieeeAddr, nwkAddr);
+}
+
+bool
+ZigbeeNwk::GetIeeeAddrByNwkAddr(Mac16Address nwkAddr, Mac64Address& ieeeAddr)
+{
+    return m_nwkAddressMap.LookupIeeeAddress(nwkAddr, ieeeAddr);
+}
+
+void
+ZigbeeNwk::UpdateNwkAddrMap(Mac16Address nwkAddr, Mac64Address ieeeAddr)
+{
+    m_nwkAddressMap.Update(ieeeAddr, nwkAddr);
+}
+
 void
 ZigbeeNwk::SetNldeDataIndicationCallback(NldeDataIndicationCallback c)
 {
@@ -3004,7 +3046,7 @@ ZigbeeNwk::EnqueuePendingTx(Ptr<Packet> p, uint8_t nsduHandle)
         ZigbeeNwkHeader peekedNwkHeader;
         p->PeekHeader(peekedNwkHeader);
 
-        Ptr<PendingTxPkt> pendingTxPkt = Create<PendingTxPkt>();
+        auto pendingTxPkt = std::make_shared<PendingTxPkt>();
         pendingTxPkt->dstAddr = peekedNwkHeader.GetDstAddr();
         pendingTxPkt->nsduHandle = nsduHandle;
         pendingTxPkt->txPkt = p;
@@ -3019,7 +3061,7 @@ ZigbeeNwk::EnqueuePendingTx(Ptr<Packet> p, uint8_t nsduHandle)
 }
 
 bool
-ZigbeeNwk::DequeuePendingTx(Mac16Address dst, Ptr<PendingTxPkt> entry)
+ZigbeeNwk::DequeuePendingTx(Mac16Address dst, std::shared_ptr<PendingTxPkt> entry)
 {
     // TODO : PurgeTxQueue();
 
@@ -3055,7 +3097,7 @@ ZigbeeNwk::BufferTxPkt(Ptr<Packet> p, uint8_t macHandle, uint8_t nwkHandle)
 {
     if (m_txBuffer.size() < m_txBufferMaxSize)
     {
-        Ptr<TxPkt> txPkt = Create<TxPkt>();
+        auto txPkt = std::make_shared<TxPkt>();
         txPkt->macHandle = macHandle;
         txPkt->nwkHandle = nwkHandle;
         txPkt->txPkt = p;
@@ -3069,16 +3111,17 @@ ZigbeeNwk::BufferTxPkt(Ptr<Packet> p, uint8_t macHandle, uint8_t nwkHandle)
 }
 
 bool
-ZigbeeNwk::RetrieveTxPkt(uint8_t macHandle, Ptr<TxPkt>& txPkt)
+ZigbeeNwk::RetrieveTxPkt(uint8_t macHandle, std::shared_ptr<TxPkt>& txPkt)
 {
-    for (auto bufferedPkt : m_txBuffer)
+    for (const auto& bufferedPkt : m_txBuffer)
     {
         if (bufferedPkt->macHandle == macHandle)
         {
             txPkt = bufferedPkt;
 
-            std::erase_if(m_txBuffer,
-                          [&macHandle](Ptr<TxPkt> pkt) { return pkt->macHandle == macHandle; });
+            std::erase_if(m_txBuffer, [&macHandle](std::shared_ptr<TxPkt> pkt) {
+                return pkt->macHandle == macHandle;
+            });
 
             return true;
         }

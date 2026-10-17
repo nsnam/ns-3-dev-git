@@ -16,6 +16,7 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <algorithm>
 #include <map>
@@ -75,7 +76,7 @@ enum class WifiExpectedAccessReason : uint8_t
  * access to the medium and the other Txop suffers a "internal"
  * collision.
  */
-class ChannelAccessManager : public Object
+class WIFI_EXPORT ChannelAccessManager : public Object
 {
     /// Allow test cases to access private members
     friend class ::EmlsrUlTxopTest;
@@ -511,7 +512,7 @@ class ChannelAccessManager : public Object
     /**
      * Structure defining start time and end time for a given state.
      */
-    struct Timespan
+    struct WIFI_EXPORT Timespan
     {
         Time start{0}; //!< start time
         Time end{0};   //!< end time
@@ -553,7 +554,7 @@ class ChannelAccessManager : public Object
                                   //!< threshold, the backoff on that link is reset
 
     /// Information associated with each PHY that is going to operate on another EMLSR link
-    struct EmlsrLinkSwitchInfo
+    struct WIFI_EXPORT EmlsrLinkSwitchInfo
     {
         WifiPhyOperatingChannel channel; //!< new operating channel
         uint8_t linkId; //!< ID of the EMLSR link on which the PHY is going to operate
@@ -600,7 +601,7 @@ class ChannelAccessManager : public Object
  * @param reason the expected access reason
  * @return a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiExpectedAccessReason& reason);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiExpectedAccessReason& reason);
 
 } // namespace ns3
 

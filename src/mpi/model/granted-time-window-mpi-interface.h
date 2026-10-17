@@ -105,7 +105,7 @@ class GrantedTimeWindowMpiInterface : public ParallelCommunicationInterface, Obj
      * collaborators are private to restrict use.
      * It is not intended for state to be shared.
      */
-    friend ns3::DistributedSimulatorImpl;
+    friend class ns3::DistributedSimulatorImpl;
 
     /**
      * Check for received messages complete

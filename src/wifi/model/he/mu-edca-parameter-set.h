@@ -10,6 +10,7 @@
 #define MU_EDCA_PARAMETER_SET_H
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 #include <array>
@@ -23,7 +24,7 @@ namespace ns3
  *
  * The 802.11ax MU EDCA Parameter Set.
  */
-class MuEdcaParameterSet : public WifiInformationElement
+class WIFI_EXPORT MuEdcaParameterSet : public WifiInformationElement
 {
   public:
     MuEdcaParameterSet();
@@ -125,7 +126,7 @@ class MuEdcaParameterSet : public WifiInformationElement
     /**
      * MU AC Parameter Record type
      */
-    struct ParameterRecord
+    struct WIFI_EXPORT ParameterRecord
     {
         uint8_t aifsnField;  ///< the ACI/AIFSN field
         uint8_t cwMinMax;    ///< the ECWmin/ECWmax field

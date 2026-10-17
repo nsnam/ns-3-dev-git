@@ -10,7 +10,7 @@
 
 #include "ns3/config.h"
 #include "ns3/eht-configuration.h"
-#include "ns3/ht-frame-exchange-manager.h"
+#include "ns3/eht-frame-exchange-manager.h"
 #include "ns3/log.h"
 #include "ns3/mgt-action-headers.h"
 #include "ns3/mgt-headers.h"
@@ -31,6 +31,7 @@
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-protection.h"
+#include "ns3/wifi-static-setup-helper.h"
 
 #include <algorithm>
 #include <array>
@@ -41,6 +42,32 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("WifiMloTest");
+
+namespace
+{
+/**
+ * @param scenario the CtrlAndMgmtFramesWithTtlmTest scenario to test
+ * @returns a string identifying the scenario to test
+ */
+std::string
+GetScenarioStr(CtrlAndMgmtFramesWithTtlmTest::Scenario scenario)
+{
+    using enum CtrlAndMgmtFramesWithTtlmTest::Scenario;
+    switch (scenario)
+    {
+    case TTLM_LINK_TID_NOT_MAPPED_DL:
+        return "TTLM_LINK_TID_NOT_MAPPED_DL";
+    case TTLM_LINK_TID_NOT_MAPPED_UL:
+        return "TTLM_LINK_TID_NOT_MAPPED_UL";
+    case TTLM_LINK_DISABLED:
+        return "TTLM_LINK_DISABLED";
+    default:
+        NS_ABORT_MSG("Unexpected value " << static_cast<uint16_t>(scenario));
+        return "";
+    }
+}
+
+} // namespace
 
 GetRnrLinkInfoTest::GetRnrLinkInfoTest()
     : TestCase("Check the implementation of WifiAssocManager::GetNextAffiliatedAp()")
@@ -364,8 +391,8 @@ AidAssignmentTest::DoSetup()
             MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
     }
 
-    auto apMac = StaticCast<ApWifiMac>(StaticCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
-    m_expectedAid = m_startAid = apMac->GetNextAssociationId();
+    m_apMac = StaticCast<ApWifiMac>(StaticCast<WifiNetDevice>(apDevice.Get(0))->GetMac());
+    m_expectedAid = m_startAid = m_apMac->GetNextAssociationId();
 }
 
 void
@@ -381,7 +408,10 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
     NS_LOG_INFO("STA " << staMac->GetAddress() << " associated with AID " << aid << " links "
                        << linksStr.str());
 
-    NS_TEST_EXPECT_MSG_EQ(aid, m_expectedAid, "Unexpected AID for STA " << staMac->GetAddress());
+    NS_TEST_EXPECT_MSG_EQ(aid,
+                          m_expectedAid,
+                          "Unexpected AID for STA " << staMac->GetAddress() << " at time "
+                                                    << Simulator::Now().GetTimeStep());
 
     // if ML setup is performed, check that the requested links have been setup; otherwise, link 0
     // only is setup
@@ -393,6 +423,14 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
                           true,
                           "Unexpected set of setup links " << linksStr.str());
 
+    // this function is a callback called within the for loop of the operator() of the "Assoc"
+    // traced callback, so disconnecting this callback now would change the list of callbacks over
+    // which the for loop is iterating
+    Simulator::ScheduleNow(&StaWifiMac::TraceDisconnectWithoutContext,
+                           staMac,
+                           "Assoc",
+                           MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(staMac));
+
     if (++index < m_staDevices.GetN())
     {
         // let the next STA associate with the AP
@@ -401,7 +439,146 @@ AidAssignmentTest::SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */)
     }
     else
     {
-        Simulator::Stop(MilliSeconds(5)); // allow sending Ack response to Association Response
+        // wait 5ms to allow sending Ack response to Association Response
+        Simulator::Schedule(MilliSeconds(5),
+                            &AidAssignmentTest::SwitchToPsModeAndDisassociate,
+                            this,
+                            true);
+    }
+}
+
+void
+AidAssignmentTest::SwitchToPsModeAndDisassociate(bool multiLink)
+{
+    // find an associated non-AP MLD, if multiLink is true, or non-AP STA, otherwise
+    Ptr<StaWifiMac> staMac;
+
+    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
+    {
+        auto mac = StaticCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac();
+        if ((mac->GetNLinks() > 1) == multiLink)
+        {
+            staMac = DynamicCast<StaWifiMac>(mac);
+            break;
+        }
+    }
+
+    NS_TEST_ASSERT_MSG_NE(staMac,
+                          nullptr,
+                          "Did not find a " << (multiLink ? "multi-link" : "single-link")
+                                            << " station");
+
+    const auto aid = staMac->GetAssociationId();
+    const auto staLinkId = *staMac->GetSetupLinkIds().cbegin();
+    const auto staAddress = staMac->GetFrameExchangeManager(staLinkId)->GetAddress();
+    const auto apLinkId =
+        m_assocType == WifiAssocType::ML_SETUP
+            ? staLinkId
+            : m_apMac->GetLinkIdByAddress(m_apMac->GetLocalAddress(staAddress)).value();
+
+    staMac->SetPowerSaveMode({true, staLinkId});
+
+    // after 5ms, check that the STA is in powersave mode and have it disassociate
+    Simulator::Schedule(MilliSeconds(5), [=, this]() {
+        NS_TEST_EXPECT_MSG_EQ(
+            m_apMac->GetWifiRemoteStationManager(apLinkId)->IsInPsMode(staAddress),
+            true,
+            "Expected STA with address " << staAddress << " to be in PS mode");
+
+        NS_LOG_INFO("STA " << staAddress << " disassociating");
+        staMac->ForceDisassociation(true);
+
+        // be notified when the STA disassociates
+        staMac->TraceConnectWithoutContext(
+            "DeAssoc",
+            MakeCallback(&AidAssignmentTest::CheckDisassociation, this).Bind(aid, staMac));
+    });
+}
+
+void
+AidAssignmentTest::CheckDisassociation(uint16_t aid,
+                                       Ptr<StaWifiMac> staMac,
+                                       Mac48Address /* apAddress */)
+{
+    // check disassociation on STA side
+    NS_TEST_EXPECT_MSG_EQ(staMac->IsAssociated(),
+                          false,
+                          "Expected STA " << staMac->GetAddress() << " to be disassociated");
+
+    // check disassociation on AP side
+    NS_TEST_EXPECT_MSG_EQ(m_apMac->IsAssociated(staMac->GetAddress()).has_value(),
+                          false,
+                          "Expected STA with address " << staMac->GetAddress()
+                                                       << " to be disassociated");
+    NS_TEST_EXPECT_MSG_EQ(m_apMac->GetNextAssociationId(),
+                          aid,
+                          "Expected that AID " << aid << " had been released");
+    for (uint8_t id = 0; id < m_apMac->GetNLinks(); ++id)
+    {
+        NS_TEST_EXPECT_MSG_EQ(m_apMac->GetStaList(id).contains(aid),
+                              false,
+                              "AID " << aid << " should no longer be in STA list on link " << +id);
+    }
+
+    NS_TEST_EXPECT_MSG_EQ(m_apMac->GetMldOrLinkAddressByAid(aid).has_value(),
+                          false,
+                          "AID " << aid << " should have been released by the AP");
+
+    // this function is a callback called within the for loop of the operator() of the "DeAssoc"
+    // traced callback, so disconnecting this callback now would change the list of callbacks over
+    // which the for loop is iterating
+    Simulator::ScheduleNow(
+        &StaWifiMac::TraceDisconnectWithoutContext,
+        staMac,
+        "DeAssoc",
+        MakeCallback(&AidAssignmentTest::CheckDisassociation, this).Bind(aid, staMac));
+
+    // when the STA associates again, we want the CheckReassociation function to be called
+    staMac->TraceConnectWithoutContext(
+        "Assoc",
+        MakeCallback(&AidAssignmentTest::CheckReassociation, this).Bind(aid, staMac));
+}
+
+void
+AidAssignmentTest::CheckReassociation(uint16_t aid,
+                                      Ptr<StaWifiMac> staMac,
+                                      Mac48Address /* apAddress */)
+{
+    ++m_nReassociations;
+
+    NS_TEST_EXPECT_MSG_EQ(staMac->GetAssociationId(),
+                          aid,
+                          "Unexpected AID for STA " << staMac->GetAddress() << " at time "
+                                                    << Simulator::Now().GetTimeStep());
+
+    std::stringstream linksStr;
+    const auto setupLinks = staMac->GetSetupLinkIds();
+    std::copy(setupLinks.cbegin(), setupLinks.cend(), std::ostream_iterator<int>(linksStr, " "));
+
+    NS_LOG_INFO("STA " << staMac->GetAddress() << " associated with AID " << aid << " links "
+                       << linksStr.str());
+
+    // this function is a callback called within the for loop of the operator() of the "Assoc"
+    // traced callback, so disconnecting this callback now would change the list of callbacks over
+    // which the for loop is iterating
+    Simulator::ScheduleNow(
+        &StaWifiMac::TraceDisconnectWithoutContext,
+        staMac,
+        "Assoc",
+        MakeCallback(&AidAssignmentTest::CheckReassociation, this).Bind(aid, staMac));
+
+    if (staMac->GetNLinks() > 1)
+    {
+        // let's now test disassociation of a single-link device (after waiting 5ms to allow sending
+        // Ack response to Association Response)
+        Simulator::Schedule(MilliSeconds(5),
+                            &AidAssignmentTest::SwitchToPsModeAndDisassociate,
+                            this,
+                            false);
+    }
+    else
+    {
+        Simulator::Stop(Time{0}); // we're done
     }
 }
 
@@ -415,13 +592,7 @@ AidAssignmentTest::DoRun()
                           m_startAid + m_staDevices.GetN() - 1,
                           "Not all STAs completed association");
 
-    for (uint32_t i = 0; i < m_staDevices.GetN(); ++i)
-    {
-        auto mac = StaticCast<WifiNetDevice>(m_staDevices.Get(i))->GetMac();
-        mac->TraceDisconnectWithoutContext(
-            "Assoc",
-            MakeCallback(&AidAssignmentTest::SetSsid, this).Bind(DynamicCast<StaWifiMac>(mac)));
-    }
+    NS_TEST_EXPECT_MSG_EQ(m_nReassociations, 2, "Unexpected number of reassociations");
 
     Simulator::Destroy();
 }
@@ -847,7 +1018,8 @@ MultiLinkSetupTest::MultiLinkSetupTest(const BaseParams& baseParams,
       m_apNegSupport(apNegSupport),
       m_dlTidLinkMappingStr(dlTidToLinkMapping),
       m_ulTidLinkMappingStr(ulTidToLinkMapping),
-      m_support160MHzOp(support160MHzOp)
+      m_support160MHzOp(support160MHzOp),
+      m_assocCompleted(false)
 {
     NS_TEST_ASSERT_MSG_EQ(m_setupLinks.size(),
                           m_staSetupLinks.size(),
@@ -965,6 +1137,9 @@ MultiLinkSetupTest::DoSetup()
             staMac->GetWifiPhy(linkId++)->SetAttribute("ChannelSettings", StringValue(str));
         }
     }
+
+    m_apMac->TraceConnectWithoutContext("AssociatedSta",
+                                        MakeCallback(&MultiLinkSetupTest::CheckPmMode, this));
 }
 
 void
@@ -1563,6 +1738,31 @@ MultiLinkSetupTest::CheckMlSetup()
 }
 
 void
+MultiLinkSetupTest::CheckPmMode(uint16_t aid, Mac48Address staAddr)
+{
+    // this callback is fired for every STA affiliated with the non-AP MLD that has completed
+    // association; the first STA is the one operating on the link used for association.
+    // Checks are scheduled now because this callback is fired by the AP before setting the PM mode.
+    Simulator::ScheduleNow([=, this, isAssocLink = !m_assocCompleted] {
+        // AP MLD side
+        const auto apLinkId = m_apMac->IsAssociated(staAddr);
+        NS_TEST_ASSERT_MSG_EQ(apLinkId.has_value(), true, staAddr << " is not associated");
+        NS_TEST_EXPECT_MSG_EQ(m_apMac->GetWifiRemoteStationManager(*apLinkId)->IsInPsMode(staAddr),
+                              !isAssocLink,
+                              "Unexpected PM mode for " << staAddr << " (AP MLD side)");
+        // non-AP MLD side
+        const auto staLinkId = m_staMacs[0]->GetLinkIdByAddress(staAddr);
+        NS_TEST_ASSERT_MSG_EQ(staLinkId.has_value(),
+                              true,
+                              staAddr << " is not a link address of the non-AP MLD");
+        NS_TEST_EXPECT_MSG_EQ(m_staMacs[0]->GetPmMode(*staLinkId),
+                              (isAssocLink ? WIFI_PM_ACTIVE : WIFI_PM_SWITCHING_TO_ACTIVE),
+                              "Unexpected PM mode for " << staAddr << " (non-AP MLD side)");
+    });
+    m_assocCompleted = true;
+}
+
+void
 MultiLinkSetupTest::CheckDisabledLinks()
 {
     const auto legacyAssoc = (m_assocType == WifiAssocType::LEGACY || m_apMac->GetNLinks() == 1);
@@ -1581,7 +1781,7 @@ MultiLinkSetupTest::CheckDisabledLinks()
             (legacyAssoc
                  ? m_staMacs[0]->GetFrameExchangeManager(m_staSetupLinks.front())->GetAddress()
                  : m_staMacs[0]->GetAddress());
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, addr, 0);
+        const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, addr, 0);
 
         // the queue on the AP should have a mask if and only if the link has been setup
         auto mask = m_apMac->GetMacQueueScheduler()->GetQueueLinkMask(AC_BE, queueId, linkId);
@@ -1816,7 +2016,7 @@ MultiLinkTxTest::Transmit(Ptr<WifiMac> mac,
         {
             // corrupt all management action frames (ADDBA Request frames) to prevent
             // the establishment of a BA agreement
-            m_uidList.push_front(psdu->GetPacket()->GetUid());
+            m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
             m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
             NS_LOG_INFO("CORRUPTED");
         }
@@ -1892,7 +2092,7 @@ MultiLinkTxTest::Transmit(Ptr<WifiMac> mac,
         if (m_blockAckCount == 2)
         {
             // corrupt the second BlockAck frame to simulate a missed BlockAck
-            m_uidList.push_front(psdu->GetPacket()->GetUid());
+            m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
             NS_LOG_INFO("CORRUPTED");
             m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
         }
@@ -2007,7 +2207,7 @@ MultiLinkTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
                 });
 
                 nQueuedPkt++;
-                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), item);
+                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), std::nullopt, item);
             }
             // Each MPDU contains an A-MSDU consisting of two MSDUs
             NS_TEST_EXPECT_MSG_EQ(nQueuedPkt, m_nPackets / 2, "Unexpected number of queued MPDUs");
@@ -2351,7 +2551,7 @@ MultiLinkMuTxTest::Transmit(Ptr<WifiMac> mac,
             if (m_blockAckCount == 5)
             {
                 // corrupt the third BlockAck frame to simulate a missed BlockAck
-                m_uidList.push_front(psdu->GetPacket()->GetUid());
+                m_uidList.push_front((*psdu->begin())->GetPacket()->GetUid());
                 NS_LOG_INFO("CORRUPTED");
                 m_errorModels.at(psdu->GetAddr1())->SetList(m_uidList);
             }
@@ -2543,7 +2743,7 @@ MultiLinkMuTxTest::CheckBlockAck(Ptr<const WifiPsdu> psdu,
                 });
 
                 nQueuedPkt++;
-                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), item);
+                item = queue->PeekByTidAndAddress(0, rcvMac->GetAddress(), std::nullopt, item);
             }
             // Each MPDU contains an A-MSDU consisting of two MSDUs
             NS_TEST_EXPECT_MSG_EQ(nQueuedPkt, m_nPackets / 2, "Unexpected number of queued MPDUs");
@@ -2796,7 +2996,7 @@ ReleaseSeqNoAfterCtsTimeoutTest::Transmit(Ptr<WifiMac> mac,
 
     if (psdu->GetHeader(0).IsRts() && !m_rtsCorrupted)
     {
-        m_errorModel->SetList({psdu->GetPacket()->GetUid()});
+        m_errorModel->SetList({(*psdu->begin())->GetPacket()->GetUid()});
         m_rtsCorrupted = true;
         // generate other packets when the first RTS is transmitted
         m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(m_sockAddr, 4, 1000));
@@ -2993,10 +3193,13 @@ StartSeqNoUpdateAfterAddBaTimeoutTest::Transmit(Ptr<WifiMac> mac,
     }
     else if (hdr.IsQosData())
     {
-        // corrupt the reception of the data frame the first time it is sent
+        // corrupt the reception of the data frame the first time it is sent.
+        // Use the UID of the MPDU's payload (which is what the post-reception error model
+        // checks at the receiver), not WifiPsdu::GetPacket(), which returns a freshly built
+        // aggregate packet whose UID does not match the received MPDU.
         if (m_nQosDataCount++ == 0)
         {
-            m_staErrorModel->SetList({psdu->GetPacket()->GetUid()});
+            m_staErrorModel->SetList({(*psdu->begin())->GetPacket()->GetUid()});
         }
         else
         {
@@ -3216,6 +3419,196 @@ BarAfterDroppedMpduTest::InsertEvents()
 void
 BarAfterDroppedMpduTest::DoRun()
 {
+    Simulator::Stop(m_duration);
+    Simulator::Run();
+
+    NS_TEST_EXPECT_MSG_EQ(m_events.empty(), true, "Not all events took place");
+
+    Simulator::Destroy();
+}
+
+CtrlAndMgmtFramesWithTtlmTest::CtrlAndMgmtFramesWithTtlmTest(Scenario scenario)
+    : MultiLinkOperationsTestBase("Check transmission of control and management frames when a "
+                                  "TID-to-Link Mapping is setup, scenario " +
+                                      GetScenarioStr(scenario),
+                                  1,
+                                  BaseParams{{"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                                             {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+                                             {},
+                                             WifiAssocType::ML_SETUP}),
+      m_scenario(scenario)
+{
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::DoSetup()
+{
+    MultiLinkOperationsTestBase::DoSetup();
+
+    auto staEhtConfig = m_staMacs[0]->GetEhtConfiguration();
+    staEhtConfig->m_tidLinkMappingSupport = WifiTidToLinkMappingNegSupport::ANY_LINK_SET;
+
+    switch (m_scenario)
+    {
+    case TTLM_LINK_TID_NOT_MAPPED_DL:
+        // TIDs 0, 6 and 7 mapped to link 0 only, other TIDs mapped to both links
+        staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue("0,6,7 0; 1,2,3,4,5 0,1"));
+        break;
+    case TTLM_LINK_TID_NOT_MAPPED_UL:
+        // TIDs 0, 6 and 7 mapped to link 0 only, other TIDs mapped to both links
+        staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue("0,6,7 0; 1,2,3,4,5 0,1"));
+        break;
+    case TTLM_LINK_DISABLED:
+        // all TIDs mapped to link 0, link 1 is disabled
+        staEhtConfig->SetAttribute("TidToLinkMappingDl", StringValue("0,1,2,3,4,5,6,7 0"));
+        staEhtConfig->SetAttribute("TidToLinkMappingUl", StringValue("0,1,2,3,4,5,6,7 0"));
+        break;
+    default:
+        NS_ABORT_MSG("Unknown scenario: " << static_cast<uint16_t>(m_scenario));
+    }
+
+    // static setup
+    m_apMac->SetAttribute("BeaconGeneration", BooleanValue(false));
+    m_apMac->TraceDisconnectWithoutContext(
+        "AssociatedSta",
+        MakeCallback(&CtrlAndMgmtFramesWithTtlmTest::SetSsid, this));
+
+    WifiStaticSetupHelper::SetStaticAssociation(m_apMac->GetDevice(), m_staMacs[0]->GetDevice());
+    WifiStaticSetupHelper::SetStaticBlockAck(m_apMac->GetDevice(),
+                                             NetDeviceContainer(m_staMacs[0]->GetDevice()),
+                                             {0});
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::Transmit(Ptr<WifiMac> mac,
+                                        uint8_t phyId,
+                                        WifiConstPsduMap psduMap,
+                                        WifiTxVector txVector,
+                                        double txPowerW)
+{
+    MultiLinkOperationsTestBase::Transmit(mac, phyId, psduMap, txVector, txPowerW);
+
+    const auto psdu = psduMap.cbegin()->second;
+    const auto& hdr = psdu->GetHeader(0);
+
+    auto linkId = mac->GetLinkForPhy(phyId);
+    NS_TEST_ASSERT_MSG_EQ(linkId.has_value(),
+                          true,
+                          "PHY " << +phyId << " is not operating on any link");
+
+    NS_TEST_ASSERT_MSG_EQ(m_events.empty(),
+                          false,
+                          "Received " << hdr.GetTypeString() << ", no more frames expected");
+
+    // check that the expected frame is being transmitted
+    NS_TEST_EXPECT_MSG_EQ(WifiMacHeader(m_events.front().hdrType).GetTypeString(),
+                          std::string(hdr.GetTypeString()),
+                          "Unexpected MAC header type for frame #" << ++m_processedEvents);
+    // perform actions/checks, if any
+    if (m_events.front().func)
+    {
+        m_events.front().func(psdu, txVector, linkId.value());
+    }
+
+    m_events.pop_front();
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::InsertEvents()
+{
+    PacketSocketAddress sockAddr;
+    sockAddr.SetSingleDevice(m_apMac->GetDevice()->GetIfIndex());
+    sockAddr.SetPhysicalAddress(m_staMacs[0]->GetAddress());
+    sockAddr.SetProtocol(1);
+
+    if (m_scenario == TTLM_LINK_TID_NOT_MAPPED_UL)
+    {
+        // in this scenario, DL data frames can be sent on both link 0 and 1; for the purpose of
+        // this test, we want the DL data frame to be sent on link 0, thus we block transmission
+        // of DL data frames on link 1 for whatever reason
+        m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::WAITING_ADDBA_RESP,
+                                                     AC_BE,
+                                                     {WIFI_QOSDATA_QUEUE},
+                                                     m_staMacs[0]->GetAddress(),
+                                                     m_apMac->GetAddress(),
+                                                     {0},
+                                                     {1});
+    }
+
+    // install client application generating 2 packets of 1000 bytes on the AP MLD
+    m_apMac->GetDevice()->GetNode()->AddApplication(GetApplication(sockAddr, m_nPackets, 1000));
+
+    m_events.emplace_back(
+        WIFI_MAC_QOSDATA,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetAddr1(),
+                                  m_staMacs[0]->GetFrameExchangeManager(linkId)->GetAddress(),
+                                  "Unexpected RA for the data frame sent by the AP MLD");
+            NS_TEST_EXPECT_MSG_EQ(psdu->GetNMpdus(), m_nPackets, "Expected to transmit an A-MPDU");
+            NS_TEST_EXPECT_MSG_EQ(+linkId, 0, "QoS data frame sent on unexpected link");
+
+            // enqueue a BAR
+            auto acBe = m_apMac->GetQosTxop(AC_BE);
+            auto [reqHdr, hdr] = acBe->PrepareBlockAckRequest(m_staMacs[0]->GetAddress(), 0);
+            acBe->GetBaManager()->ScheduleBar(reqHdr, hdr);
+
+            // enqueue a management frame to be sent on link 1
+            auto ehtFem = StaticCast<EhtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(1));
+            ehtFem->SendEmlOmn(m_staMacs[0]->GetFrameExchangeManager(1)->GetAddress(), MgtEmlOmn{});
+
+            Simulator::ScheduleNow([=, this] {
+                // request channel access on link 1 (channel access is granted on link 0), but the
+                // BAR cannot be sent on link 1
+                acBe->StartAccessAfterEvent(1,
+                                            Txop::DIDNT_HAVE_FRAMES_TO_TRANSMIT,
+                                            Txop::CHECK_MEDIUM_BUSY);
+                // check that a BAR is queued in the AC BE queue
+                auto mpdu = acBe->GetWifiMacQueue()->PeekByQueueId(
+                    MakeWifiUnicastQueueId(WIFI_CTL_QUEUE, m_staMacs[0]->GetAddress()));
+                NS_TEST_ASSERT_MSG_NE(mpdu, nullptr, "Expected a control frame in the AC BE queue");
+                NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().IsBlockAckReq(),
+                                      true,
+                                      "Expected a BAR in the AC BE queue");
+                // check that the BAR cannot be transmitted on link 1
+                auto htFem =
+                    StaticCast<HtFrameExchangeManager>(m_apMac->GetFrameExchangeManager(1));
+                NS_TEST_EXPECT_MSG_EQ(htFem->GetBar(AC_BE),
+                                      nullptr,
+                                      "Expected no BAR can be transmitted on link 1");
+            });
+        });
+
+    if (m_scenario != TTLM_LINK_DISABLED)
+    {
+        // the management frame is sent on link 1, which is blocked for data frames and BARs
+        m_events.emplace_back(
+            WIFI_MAC_MGT_ACTION,
+            [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+                NS_TEST_EXPECT_MSG_EQ(+linkId, 1, "Management frame sent on unexpected link");
+            });
+
+        m_events.emplace_back(WIFI_MAC_CTL_ACK);
+        m_events.emplace_back(WIFI_MAC_CTL_END);
+    }
+
+    // the BAR cannot be sent on link 1, hence it is transmitted on link 0 after the ongoing
+    // frame exchange
+    m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
+
+    m_events.emplace_back(
+        WIFI_MAC_CTL_BACKREQ,
+        [=, this](Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, linkId_t linkId) {
+            NS_TEST_EXPECT_MSG_EQ(+linkId, 0, "BlockAckReq frame sent on unexpected link");
+        });
+
+    m_events.emplace_back(WIFI_MAC_CTL_BACKRESP);
+}
+
+void
+CtrlAndMgmtFramesWithTtlmTest::DoRun()
+{
+    Simulator::ScheduleNow(&CtrlAndMgmtFramesWithTtlmTest::InsertEvents, this);
+
     Simulator::Stop(m_duration);
     Simulator::Run();
 
@@ -3494,6 +3887,16 @@ WifiMultiLinkOperationsTestSuite::WifiMultiLinkOperationsTestSuite()
     AddTestCase(new StartSeqNoUpdateAfterAddBaTimeoutTest(), TestCase::Duration::QUICK);
     AddTestCase(new BarAfterDroppedMpduTest(WifiAssocType::ML_SETUP), TestCase::Duration::QUICK);
     AddTestCase(new BarAfterDroppedMpduTest(WifiAssocType::LEGACY), TestCase::Duration::QUICK);
+
+    AddTestCase(new CtrlAndMgmtFramesWithTtlmTest(
+                    CtrlAndMgmtFramesWithTtlmTest::TTLM_LINK_TID_NOT_MAPPED_DL),
+                TestCase::Duration::QUICK);
+    AddTestCase(new CtrlAndMgmtFramesWithTtlmTest(
+                    CtrlAndMgmtFramesWithTtlmTest::TTLM_LINK_TID_NOT_MAPPED_UL),
+                TestCase::Duration::QUICK);
+    AddTestCase(
+        new CtrlAndMgmtFramesWithTtlmTest(CtrlAndMgmtFramesWithTtlmTest::TTLM_LINK_DISABLED),
+        TestCase::Duration::QUICK);
 }
 
 static WifiMultiLinkOperationsTestSuite g_wifiMultiLinkOperationsTestSuite; ///< the test suite

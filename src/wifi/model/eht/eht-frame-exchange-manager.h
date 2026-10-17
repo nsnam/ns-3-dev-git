@@ -11,6 +11,7 @@
 
 #include "ns3/he-frame-exchange-manager.h"
 #include "ns3/mgt-headers.h"
+#include "ns3/wifi-export.h"
 
 #include <unordered_map>
 
@@ -66,7 +67,7 @@ operator<<(std::ostream& os, WifiIcfDrop reason)
  * EhtFrameExchangeManager handles the frame exchange sequences
  * for EHT stations.
  */
-class EhtFrameExchangeManager : public HeFrameExchangeManager
+class WIFI_EXPORT EhtFrameExchangeManager : public HeFrameExchangeManager
 {
   public:
     /**
@@ -79,7 +80,7 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
 
     void SetLinkId(uint8_t linkId) override;
     Ptr<WifiMpdu> CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const override;
-    bool StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth) override;
+    bool CanTransmitBarTo(Mac48Address recipient, tid_t tid) const override;
 
     /**
      * Send an EML Operating Mode Notification frame to the given station.
@@ -180,9 +181,10 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void SendCtsAfterMuRts(const WifiMacHeader& muRtsHdr,
                            const CtrlTriggerHeader& trigger,
                            double muRtsSnr) override;
+    bool StartFrameExchange() override;
     void TransmissionSucceeded() override;
     void TransmissionFailed(bool forceCurrentCw = false) override;
-    void NotifyChannelReleased(Ptr<Txop> txop) override;
+    void NotifyChannelReleased() override;
     void PreProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void PostProcessFrame(Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
@@ -201,6 +203,22 @@ class EhtFrameExchangeManager : public HeFrameExchangeManager
     void TbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
     void BlockAcksInTbPpduTimeout(WifiPsduMap* psduMap, std::size_t nSolicitedStations) override;
     void ProtectionCompleted() override;
+    void PrepareFrameToSend(Ptr<WifiMpdu> peekedItem) override;
+
+    /**
+     * This function is expected to be called when the AP is starting a frame exchange and checks
+     * that transmissions to EMLSR clients involved in a TXOP on another link are blocked for this
+     * link.
+     */
+    void ApCheckTxBlocked();
+
+    /**
+     * This function is expected to be called when an EMLSR client gains channel access to determine
+     * whether the TXOP can be started.
+     *
+     * @return whether the TXOP can be started
+     */
+    bool GetEmlsrClientCanStartTxop();
 
     /**
      * @return whether this is an EMLSR client that cannot respond to an ICF received a SIFS before

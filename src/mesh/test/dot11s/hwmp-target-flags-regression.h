@@ -6,6 +6,9 @@
  * Authors: Kirill Andreev  <andreev@iitp.ru>
  */
 
+#ifndef HWMP_TARGET_FLAGS_REGRESSION_H
+#define HWMP_TARGET_FLAGS_REGRESSION_H
+
 #include "ns3/ipv4-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/nstime.h"
@@ -22,7 +25,7 @@ using namespace ns3;
  */
 // clang-format off
 /**
- * \verbatim
+ * @verbatim
    <-----------|----------->   Broadcast frame
                |----------->|  Unicast frame
    (Node ID)   0            1            2            3
@@ -55,7 +58,7 @@ using namespace ns3;
                |----------->|            |            |             PREP
                |            |----------->|            |             PREP
                |            |            |----------->|             PREP
-   \endverbatim
+   @endverbatim
  */
 // clang-format on
 
@@ -139,3 +142,5 @@ class HwmpDoRfRegressionTest : public TestCase
      */
     void HandleReadClient(Ptr<Socket> socket);
 };
+
+#endif // HWMP_TARGET_FLAGS_REGRESSION_H

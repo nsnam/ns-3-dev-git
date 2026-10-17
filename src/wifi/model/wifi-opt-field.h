@@ -23,6 +23,13 @@ namespace ns3
  * around std::optional (most of its functions are exposed, more can be added if needed) that
  * additionally sets the Presence Indicator flag appropriately when operations like reset or
  * assignment of a value are performed on the optional field.
+ *
+ * Any class declaring a member of type OptFieldWithPresenceInd must provide a copy constructor and
+ * a copy assignment operator (and a move constructor and a move assignment operator, if needed)
+ * that correctly bind the Presence Indicator flag of the OptFieldWithPresenceInd member(s). The
+ * copy/move constructors and copy/move assignment operators of this class are deleted, so that the
+ * compiler will signal the need of adding copy/move constructors and/or copy/move assignment
+ * operators in the owner class.
  */
 template <typename T>
 class OptFieldWithPresenceInd
@@ -31,6 +38,12 @@ class OptFieldWithPresenceInd
     /// @brief constructor
     /// @param presenceFlag the Presence Indicator flag
     OptFieldWithPresenceInd(bool& presenceFlag);
+
+    // Delete copy/move constructors and copy/move assignment operators to signal rebind issues
+    OptFieldWithPresenceInd(const OptFieldWithPresenceInd&) = delete;
+    OptFieldWithPresenceInd(OptFieldWithPresenceInd&&) = delete;
+    OptFieldWithPresenceInd& operator=(const OptFieldWithPresenceInd&) = delete;
+    OptFieldWithPresenceInd& operator=(OptFieldWithPresenceInd&&) = delete;
 
     /// @brief Destroy the value (if any) contained in the optional field.
     /// @return a reference to this object
@@ -53,6 +66,19 @@ class OptFieldWithPresenceInd
     /// @brief Check whether this object contains a value
     /// @return whether this object contains a value
     constexpr bool has_value() const;
+
+    /// This is a helper function commonly used in the copy/move constructors and copy/move
+    /// assignment operators of the owner class to assign a member of OptFieldWithPresenceInd type.
+    ///
+    /// @code
+    ///   OwnerClass::OwnerClass(const OwnerClass& other)
+    ///   {
+    ///       m_optField = other.m_optField.ToOptional();
+    ///   }
+    /// @endcode
+    ///
+    /// @return the contained value wrapped in std::optional, if any
+    constexpr std::optional<T> ToOptional() const;
 
     /// @return a pointer to the contained value
     constexpr const T* operator->() const;
@@ -124,8 +150,12 @@ OptFieldWithPresenceInd<T>::operator=(std::optional<T>&& other)
     return *this;
 }
 
+// Clang-format guard required for versions <= 20
+// clang-format off
 template <typename T>
-constexpr OptFieldWithPresenceInd<T>::operator bool() const
+constexpr OptFieldWithPresenceInd<T>::
+operator bool() const
+// clang-format on
 {
     return m_field.has_value();
 }
@@ -135,6 +165,13 @@ constexpr bool
 OptFieldWithPresenceInd<T>::has_value() const
 {
     return m_field.has_value();
+}
+
+template <typename T>
+constexpr std::optional<T>
+OptFieldWithPresenceInd<T>::ToOptional() const
+{
+    return m_field;
 }
 
 template <typename T>

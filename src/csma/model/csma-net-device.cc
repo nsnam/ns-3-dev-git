@@ -97,7 +97,9 @@ CsmaNetDevice::GetTypeId()
                             "A packet has been received by this device, "
                             "has been passed up from the physical layer "
                             "and is being forwarded up the local protocol stack.  "
-                            "This is a promiscuous trace,",
+                            "This is a promiscuous trace, and it is only fired "
+                            "when a promiscuous receive callback has been "
+                            "installed via SetPromiscReceiveCallback.",
                             MakeTraceSourceAccessor(&CsmaNetDevice::m_macPromiscRxTrace),
                             "ns3::Packet::TracedCallback")
             .AddTraceSource("MacRx",
@@ -197,14 +199,14 @@ CsmaNetDevice::CsmaNetDevice()
 
 CsmaNetDevice::~CsmaNetDevice()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     m_queue = nullptr;
 }
 
 void
 CsmaNetDevice::DoDispose()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     m_channel = nullptr;
     m_node = nullptr;
     m_queue = nullptr;
@@ -225,7 +227,7 @@ CsmaNetDevice::SetEncapsulationMode(EncapsulationMode mode)
 CsmaNetDevice::EncapsulationMode
 CsmaNetDevice::GetEncapsulationMode()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_encapMode;
 }
 
@@ -244,8 +246,22 @@ CsmaNetDevice::SetMtu(uint16_t mtu)
 uint16_t
 CsmaNetDevice::GetMtu() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_mtu;
+}
+
+uint16_t
+CsmaNetDevice::GetPaddingThreshold() const
+{
+    // AddHeader pads the data field to 46 octets in both modes to meet
+    // the 64-octet minimum frame size.
+    if (m_encapMode == LLC)
+    {
+        // The 802.3 length field lets the receiver strip the padding.
+        return 0;
+    }
+    // With DIX framing the receiver cannot remove the padding.
+    return 46;
 }
 
 void
@@ -265,14 +281,14 @@ CsmaNetDevice::SetReceiveEnable(bool receiveEnable)
 bool
 CsmaNetDevice::IsSendEnabled() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_sendEnable;
 }
 
 bool
 CsmaNetDevice::IsReceiveEnabled() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_receiveEnable;
 }
 
@@ -434,7 +450,7 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 void
 CsmaNetDevice::TransmitStart()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
 
     //
     // This function is called to start the process of transmitting a packet.  We
@@ -527,7 +543,7 @@ CsmaNetDevice::TransmitStart()
 void
 CsmaNetDevice::TransmitAbort()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
 
     //
     // When we started the process of transmitting the current packet, it was
@@ -574,7 +590,7 @@ CsmaNetDevice::TransmitAbort()
 void
 CsmaNetDevice::TransmitCompleteEvent()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
 
     //
     // This function is called to finish the  process of transmitting a packet.
@@ -607,7 +623,7 @@ CsmaNetDevice::TransmitCompleteEvent()
 void
 CsmaNetDevice::TransmitReadyEvent()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
 
     //
     // This function is called to enable the transmitter after the interframe
@@ -822,22 +838,34 @@ CsmaNetDevice::Receive(Ptr<const Packet> packet, Ptr<CsmaNetDevice> senderDevice
     {
         m_snifferTrace(packet);
         m_macRxTrace(packet);
-        m_rxCallback(this, pktCopy, protocol, header.GetSource());
+        if (!m_rxCallback(this, pktCopy, protocol, header.GetSource()))
+        {
+            NS_LOG_INFO("Drop packet due to no protocol handler");
+            m_macRxDropTrace(packet);
+        }
     }
 }
 
 Ptr<Queue<Packet>>
 CsmaNetDevice::GetQueue() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_queue;
 }
 
 void
 CsmaNetDevice::NotifyLinkUp()
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     m_linkUp = true;
+    m_linkChangeCallbacks();
+}
+
+void
+CsmaNetDevice::NotifyLinkDown()
+{
+    NS_LOG_FUNCTION(this);
+    m_linkUp = false;
     m_linkChangeCallbacks();
 }
 
@@ -851,35 +879,35 @@ CsmaNetDevice::SetIfIndex(const uint32_t index)
 uint32_t
 CsmaNetDevice::GetIfIndex() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_ifIndex;
 }
 
 Ptr<Channel>
 CsmaNetDevice::GetChannel() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_channel;
 }
 
 void
 CsmaNetDevice::SetAddress(Address address)
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     m_address = Mac48Address::ConvertFrom(address);
 }
 
 Address
 CsmaNetDevice::GetAddress() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_address;
 }
 
 bool
 CsmaNetDevice::IsLinkUp() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_linkUp;
 }
 
@@ -893,21 +921,21 @@ CsmaNetDevice::AddLinkChangeCallback(Callback<void> callback)
 bool
 CsmaNetDevice::IsBroadcast() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return true;
 }
 
 Address
 CsmaNetDevice::GetBroadcast() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return Mac48Address::GetBroadcast();
 }
 
 bool
 CsmaNetDevice::IsMulticast() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return true;
 }
 
@@ -931,14 +959,14 @@ CsmaNetDevice::GetMulticast(Ipv4Address multicastGroup) const
 bool
 CsmaNetDevice::IsPointToPoint() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return false;
 }
 
 bool
 CsmaNetDevice::IsBridge() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return false;
 }
 
@@ -1010,7 +1038,7 @@ CsmaNetDevice::SendFrom(Ptr<Packet> packet,
 Ptr<Node>
 CsmaNetDevice::GetNode() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return m_node;
 }
 
@@ -1025,7 +1053,7 @@ CsmaNetDevice::SetNode(Ptr<Node> node)
 bool
 CsmaNetDevice::NeedsArp() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return true;
 }
 
@@ -1055,7 +1083,7 @@ CsmaNetDevice::SetPromiscReceiveCallback(NetDevice::PromiscReceiveCallback cb)
 bool
 CsmaNetDevice::SupportsSendFrom() const
 {
-    NS_LOG_FUNCTION_NOARGS();
+    NS_LOG_FUNCTION(this);
     return true;
 }
 

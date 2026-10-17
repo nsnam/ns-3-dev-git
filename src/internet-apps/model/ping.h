@@ -148,8 +148,8 @@ class Ping : public Application
      *
      * Least significant byte of data is at lowest buffer address
      *
-     * \param[out] buffer the buffer to write to
-     * \param[in] data the data to write
+     * @param [out] buffer the buffer to write to
+     * @param [in] data the data to write
      */
     void Write64(uint8_t* buffer, const uint64_t data);
 

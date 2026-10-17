@@ -13,6 +13,7 @@
 #include "ipv4-interface.h"
 #include "ipv4-l3-protocol.h"
 
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
@@ -27,8 +28,6 @@ namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("ArpL3Protocol");
-
-const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
 NS_OBJECT_ENSURE_REGISTERED(ArpL3Protocol);
 
@@ -403,7 +402,9 @@ ArpL3Protocol::SendArpRequest(Ptr<const ArpCache> cache, Ipv4Address to)
                  << " || dst: " << device->GetBroadcast() << " / " << to);
     arp.SetRequest(device->GetAddress(), source, device->GetBroadcast(), to);
     NS_ASSERT(m_tc);
-    m_tc->Send(device, Create<ArpQueueDiscItem>(packet, device->GetBroadcast(), PROT_NUMBER, arp));
+    m_tc->Send(
+        device,
+        Create<ArpQueueDiscItem>(packet, device->GetBroadcast(), iana::ieee802numbers::ARP, arp));
 }
 
 void
@@ -414,13 +415,14 @@ ArpL3Protocol::SendArpReply(Ptr<const ArpCache> cache,
 {
     NS_LOG_FUNCTION(this << cache << myIp << toIp << toMac);
     ArpHeader arp;
-    NS_LOG_LOGIC("ARP: sending reply from node "
-                 << m_node->GetId() << "|| src: " << cache->GetDevice()->GetAddress() << " / "
-                 << myIp << " || dst: " << toMac << " / " << toIp);
-    arp.SetReply(cache->GetDevice()->GetAddress(), myIp, toMac, toIp);
-    Ptr<Packet> packet = Create<Packet>();
+    const auto myMac = cache->GetDevice()->GetAddressFor(toMac);
+    NS_LOG_LOGIC("ARP: sending reply from node " << m_node->GetId() << "|| src: " << myMac << " / "
+                                                 << myIp << " || dst: " << toMac << " / " << toIp);
+    arp.SetReply(myMac, myIp, toMac, toIp);
+    auto packet = Create<Packet>();
     NS_ASSERT(m_tc);
-    m_tc->Send(cache->GetDevice(), Create<ArpQueueDiscItem>(packet, toMac, PROT_NUMBER, arp));
+    m_tc->Send(cache->GetDevice(),
+               Create<ArpQueueDiscItem>(packet, toMac, iana::ieee802numbers::ARP, arp));
 }
 
 } // namespace ns3

@@ -6,8 +6,8 @@
 
 #include "openflow-switch-net-device.h"
 
-#include "ns3/tcp-l4-protocol.h"
-#include "ns3/udp-l4-protocol.h"
+#include "ns3/iana-ieee802-numbers.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 
 namespace ns3
 {
@@ -480,11 +480,11 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
     eth_header* eth_h = (eth_header*)buffer->l2;
     dst.CopyTo(eth_h->eth_dst); // Destination Mac Address
     src.CopyTo(eth_h->eth_src); // Source Mac Address
-    if (protocol == ArpL3Protocol::PROT_NUMBER)
+    if (protocol == iana::ieee802numbers::ARP)
     {
         eth_h->eth_type = htons(ETH_TYPE_ARP); // Ether Type
     }
-    else if (protocol == Ipv4L3Protocol::PROT_NUMBER)
+    else if (protocol == iana::ieee802numbers::IPV4)
     {
         eth_h->eth_type = htons(ETH_TYPE_IP); // Ether Type
     }
@@ -498,7 +498,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
 
     // We have to wrap this because PeekHeader has an assert fail if we check for an Ipv4Header that
     // isn't there.
-    if (protocol == Ipv4L3Protocol::PROT_NUMBER)
+    if (protocol == iana::ieee802numbers::IPV4)
     {
         Ipv4Header ip_hd;
         if (packet->PeekHeader(ip_hd))
@@ -547,10 +547,10 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
         }
     }
 
-    if (protocol == Ipv4L3Protocol::PROT_NUMBER)
+    if (protocol == iana::ieee802numbers::IPV4)
     {
         ip_header* ip_h = (ip_header*)buffer->l3;
-        if (ip_h->ip_proto == TcpL4Protocol::PROT_NUMBER)
+        if (ip_h->ip_proto == iana::internetprotocolnumbers::TCP)
         {
             TcpHeader tcp_hd;
             if (packet->PeekHeader(tcp_hd))
@@ -571,7 +571,7 @@ OpenFlowSwitchNetDevice::BufferFromPacket(Ptr<const Packet> constPacket,
                 l4_length = TCP_HEADER_LEN;
             }
         }
-        else if (ip_h->ip_proto == UdpL4Protocol::PROT_NUMBER)
+        else if (ip_h->ip_proto == iana::internetprotocolnumbers::UDP)
         {
             UdpHeader udp_hd;
             if (packet->PeekHeader(udp_hd))

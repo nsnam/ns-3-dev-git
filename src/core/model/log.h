@@ -14,7 +14,14 @@
 #include "node-printer.h"
 #include "time-printer.h"
 
+#include "ns3/core-export.h"
+
+#include <cstddef>
 #include <iostream>
+#include <list>
+#include <map>
+#include <optional>
+#include <set>
 #include <stdint.h>
 #include <string>
 #include <type_traits>
@@ -25,6 +32,9 @@
  * @file
  * @ingroup logging
  * Debug message logging
+ *
+ * Included by graph was not generated because of its size.
+ * @hideincludedbygraph
  */
 
 /**
@@ -86,20 +96,20 @@ enum LogLevel
     LOG_ERROR = 0x00000001,       //!< Serious error messages only.
     LOG_LEVEL_ERROR = 0x00000001, //!< LOG_ERROR and above.
 
-    LOG_WARN = 0x00000002,       //!< Warning messages.
+    LOG_WARN = 0x00000002,       //!< Non-fatal warnings such as atypical configuration or state.
     LOG_LEVEL_WARN = 0x00000003, //!< LOG_WARN and above.
 
-    LOG_INFO = 0x00000004,       //!< Something happened to change state.
+    LOG_INFO = 0x00000004,       //!< State changes and other coarse-grained progress.
     LOG_LEVEL_INFO = 0x00000007, //!< LOG_INFO and above.
 
-    LOG_FUNCTION = 0x00000008,       //!< Function tracing for non-trivial function calls.
-    LOG_LEVEL_FUNCTION = 0x0000000f, //!< LOG_FUNCTION and above.
+    LOG_LOGIC = 0x00000008,       //!< Key decision points and conditional branches in a function.
+    LOG_LEVEL_LOGIC = 0x0000000f, //!< LOG_LOGIC and above.
 
-    LOG_LOGIC = 0x00000010,       //!< Debugging logs for key branches and decisions in a function.
-    LOG_LEVEL_LOGIC = 0x0000001f, //!< LOG_LOGIC and above.
+    LOG_DEBUG = 0x00000010,       //!< Fine-grained diagnostic detail not covered by other levels.
+    LOG_LEVEL_DEBUG = 0x0000001f, //!< LOG_DEBUG and above.
 
-    LOG_DEBUG = 0x00000020,       //!< Full voluminous logging to support debugging.
-    LOG_LEVEL_DEBUG = 0x0000003f, //!< LOG_DEBUG and above.
+    LOG_FUNCTION = 0x00000020,       //!< Function entry for non-trivial, non-getter methods.
+    LOG_LEVEL_FUNCTION = 0x0000003f, //!< LOG_FUNCTION and above.
 
     LOG_ALL = 0x0fffffff,    //!< Print everything.
     LOG_LEVEL_ALL = LOG_ALL, //!< Print everything.
@@ -431,6 +441,56 @@ class LogComponent
 LogComponent& GetLogComponent(const std::string name);
 
 /**
+ * @ingroup logging
+ * Begin assembling a log line in a reusable, thread-local memory buffer.
+ * @internal
+ * The returned stream (named `ns3LogStream` inside the NS_LOG_* macros)
+ * collects the whole log line (prefixes, context and user message) in
+ * memory; LogLineCommit() then emits it to `std::clog` with a single write
+ * operation.  The buffer keeps its capacity between log lines, so
+ * steady-state logging performs no memory allocations.
+ *
+ * @return The stream in which to assemble the log line.
+ */
+std::ostream& LogLineBegin();
+
+/**
+ * @ingroup logging
+ * Terminate a log line started with LogLineBegin().
+ * @internal
+ * Append a newline and write the assembled line to `std::clog` with a
+ * single write operation.
+ *
+ * @param [in,out] os The stream returned by LogLineBegin().
+ */
+void LogLineCommit(std::ostream& os);
+
+/**
+ * @ingroup logging
+ * Emit the log line this thread is currently assembling, if any, without
+ * waiting for LogLineCommit().
+ * @internal
+ * Called from ns3::FatalImpl::FlushStreams() so that a log line interrupted
+ * by a fatal error, an assertion failure or a signal is not lost with the
+ * buffer it is being assembled in.  The emitted line is truncated wherever
+ * the failure occurred, and is terminated by a newline.
+ */
+void LogLineFlushPartial();
+
+/**
+ * @ingroup logging
+ * Emit the log line this thread is currently assembling, if any, from a
+ * signal handler.
+ * @internal
+ * Unlike LogLineFlushPartial(), this writes the line to the standard error
+ * file descriptor directly, since the C++ streams are not async-signal-safe.
+ * It is a best effort: the line is emitted as it stood when the signal was
+ * delivered, which may be mid-append if the signal interrupted logging
+ * itself.
+ */
+void LogLineFlushPartialFromSignal();
+
+/**
  * Insert `, ` when streaming function arguments.
  */
 class ParameterLogger
@@ -444,6 +504,18 @@ class ParameterLogger
     ParameterLogger(std::ostream& os);
 
     /**
+     * Set the maximum number of elements to print for a container.
+     *
+     * @param max the maximum number of elements to print for a container
+     */
+    void SetMaxLoggedContainerElements(std::size_t max);
+
+    /**
+     * @return the maximum number of elements to print for a container
+     */
+    std::size_t GetMaxLoggedContainerElements() const;
+
+    /**
      * Write a function parameter on the output stream,
      * separating parameters after the first by `,` strings.
      *
@@ -454,7 +526,10 @@ class ParameterLogger
     ParameterLogger& operator<<(const T& param);
 
     /**
-     * Overload for vectors, to print each element.
+     * Overload for vectors, to print up to @ref m_maxLoggedContainerElements elements in the
+     * format:
+     *
+     *     vector:[a, b, c]
      *
      * @param [in] vector The vector of parameters
      * @return This ParameterLogger, so it's chainable.
@@ -462,12 +537,67 @@ class ParameterLogger
     template <typename T>
     ParameterLogger& operator<<(const std::vector<T>& vector);
 
+    /**
+     * Overload for lists, to print up to @ref m_maxLoggedContainerElements elements in the format:
+     *
+     *     list:[a, b, c]
+     *
+     * @param [in] list The list of parameters
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename T>
+    ParameterLogger& operator<<(const std::list<T>& list);
+
+    /**
+     * Overload for sets, to print up to @ref m_maxLoggedContainerElements elements in the format:
+     *
+     *     set:[a, b, c]
+     *
+     * @param [in] set The set of parameters
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename T>
+    ParameterLogger& operator<<(const std::set<T>& set);
+
+    /**
+     * Overload for maps, to print up to @ref m_maxLoggedContainerElements (key, value) pairs in the
+     * format:
+     *
+     *     map:[k1: v1, k2: v2, k3: v3]
+     *
+     * @param [in] map The map parameter
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename K, typename T>
+    ParameterLogger& operator<<(const std::map<K, T>& map);
+
+    /**
+     * Overload for optional values, to print the stored value (if any).
+     *
+     * @param [in] optValue The optional value
+     * @return This ParameterLogger, so it's chainable.
+     */
+    template <typename T>
+    ParameterLogger& operator<<(const std::optional<T>& optValue);
+
   private:
     /** Add `, ` before every parameter after the first. */
     void CommaRest();
 
+    /**
+     * Write the elements of a container, up to @ref m_maxLoggedContainerElements.
+     *
+     * @tparam C The container type
+     * @param [in] container The container to write
+     */
+    template <typename C>
+    void ContainerLogger(const C& container);
+
     bool m_first{true}; //!< First argument flag, doesn't get `, `.
     std::ostream& m_os; //!< Underlying output stream.
+
+    /// Maximum number of elements to print for a container.
+    CORE_EXPORT static std::size_t m_maxLoggedContainerElements;
 
     // end of class ParameterLogger
 };
@@ -487,9 +617,13 @@ ParameterLogger::operator<<(const T& param)
         // Use + unary operator to cast uint8_t / int8_t to uint32_t / int32_t, respectively
         m_os << +param;
     }
-    else if constexpr (std::is_pointer_v<T>)
+    else if constexpr (std::is_pointer_v<T> && !std::is_function_v<std::remove_pointer_t<T>>)
     {
-        m_os << static_cast<const void*>(&param);
+        m_os << static_cast<const void*>(param);
+    }
+    else if constexpr (std::is_function_v<std::remove_pointer_t<T>>)
+    {
+        m_os << reinterpret_cast<const void*>(param);
     }
     else
     {
@@ -499,13 +633,101 @@ ParameterLogger::operator<<(const T& param)
     return *this;
 }
 
+template <typename C>
+void
+ParameterLogger::ContainerLogger(const C& container)
+{
+    m_os << ":[";
+    m_first = true; // suppress ", " before first element
+    std::size_t count = 0;
+    for (const auto& element : container)
+    {
+        if (count >= m_maxLoggedContainerElements)
+        {
+            break;
+        }
+        if constexpr (requires { typename C::mapped_type; })
+        {
+            const auto& [key, value] = element;
+            *this << key;
+            m_os << ": ";
+            m_first = true; // suppress ", " before value
+            *this << value;
+        }
+        else
+        {
+            *this << element;
+        }
+        ++count;
+    }
+    if (container.size() > m_maxLoggedContainerElements)
+    {
+        CommaRest();
+        m_os << "...";
+    }
+    m_os << "]";
+    m_first = false;
+}
+
 template <typename T>
 ParameterLogger&
 ParameterLogger::operator<<(const std::vector<T>& vector)
 {
-    for (const auto& i : vector)
+    CommaRest();
+
+    m_os << "vector";
+    ContainerLogger(vector);
+
+    return *this;
+}
+
+template <typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::list<T>& list)
+{
+    CommaRest();
+
+    m_os << "list";
+    ContainerLogger(list);
+
+    return *this;
+}
+
+template <typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::set<T>& set)
+{
+    CommaRest();
+
+    m_os << "set";
+    ContainerLogger(set);
+
+    return *this;
+}
+
+template <typename K, typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::map<K, T>& map)
+{
+    CommaRest();
+
+    m_os << "map";
+    ContainerLogger(map);
+
+    return *this;
+}
+
+template <typename T>
+ParameterLogger&
+ParameterLogger::operator<<(const std::optional<T>& optValue)
+{
+    if (optValue.has_value())
     {
-        *this << i;
+        *this << optValue.value();
+    }
+    else
+    {
+        *this << "";
     }
     return *this;
 }

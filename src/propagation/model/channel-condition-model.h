@@ -14,12 +14,15 @@
 #include "ns3/vector.h"
 
 #include <map>
+#include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace ns3
 {
 
 class MobilityModel;
+class Node;
 
 /**
  * @ingroup propagation
@@ -266,6 +269,55 @@ class ChannelConditionModel : public Object
      * @return the number of stream indices assigned by this model
      */
     virtual int64_t AssignStreams(int64_t stream) = 0;
+
+    /**
+     * @brief Check whether inter-UE (drop-based) spatial consistency is enabled.
+     *
+     * This is the single switch of the feature: the 3GPP channel condition,
+     * propagation loss and channel models all consult the channel condition
+     * model they are configured with.
+     *
+     * @return The value of the InterUeSpatialConsistency attribute.
+     */
+    bool IsInterUeSpatialConsistencyEnabled() const;
+
+    /**
+     * @brief Identify the site and the terminal endpoints of a link.
+     *
+     * The spatially consistent random fields are owned by the site endpoint of
+     * a link and sampled at the position of the terminal endpoint. A site is a
+     * node with a net device of one of the types listed in the
+     * SiteNetDeviceTypes attribute (e.g. an LTE eNB or an NR gNB). Links with
+     * both or neither endpoints being sites (e.g. backhaul, sidelink, or nodes
+     * without such devices) take the endpoint with the lower node id as the
+     * site.
+     *
+     * @param a mobility model of one endpoint
+     * @param b mobility model of the other endpoint
+     * @return The (site, terminal) pair of mobility models.
+     */
+    std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel>> GetSiteAndTerminal(
+        Ptr<const MobilityModel> a,
+        Ptr<const MobilityModel> b) const;
+
+  private:
+    /**
+     * @brief Check whether a node is a site, i.e., whether it holds a net
+     *        device of one of the SiteNetDeviceTypes. The result is cached per
+     *        node, as devices are installed before the channel is evaluated.
+     *
+     * @param node The node.
+     * @return True if the node is a site.
+     */
+    bool IsSiteNode(Ptr<const Node> node) const;
+
+    /// enables inter-UE (drop-based) spatial consistency, see the InterUeSpatialConsistency
+    /// attribute
+    bool m_interUeSpatialConsistency{false};
+    /// comma-separated TypeId names of the net devices identifying a site
+    std::string m_siteNetDeviceTypes;
+    /// whether each node queried so far is a site, keyed by node id
+    mutable std::unordered_map<uint32_t, bool> m_isSiteNodeCache;
 };
 
 /**
@@ -510,6 +562,22 @@ class ThreeGppChannelConditionModel : public ChannelConditionModel
 
     Ptr<UniformRandomVariable> m_uniformVar; //!< uniform random variable
 
+    /**
+     * @brief Correlation distance of the LOS/NLOS state (TR 38.901 Table
+     *        7.6.3.1-2) used by the InterUeSpatialConsistency attribute; the
+     *        base implementation returns the UMa distance.
+     * @return The correlation distance in meters.
+     */
+    virtual double GetLosNlosStateCorrelationDistance() const;
+
+    /**
+     * @brief Correlation distance of the indoor/outdoor state (TR 38.901 Table
+     *        7.6.3.1-2) used by the InterUeSpatialConsistency attribute; the
+     *        base implementation returns the 50 m of RMa, UMi and UMa.
+     * @return The correlation distance in meters.
+     */
+    virtual double GetIndoorStateCorrelationDistance() const;
+
   private:
     /**
      * This method computes the channel condition based on a probabilistic model
@@ -612,6 +680,8 @@ class ThreeGppRmaChannelConditionModel : public ThreeGppChannelConditionModel
      * Destructor for the ThreeGppRmaChannelConditionModel class
      */
     ~ThreeGppRmaChannelConditionModel() override;
+
+    double GetLosNlosStateCorrelationDistance() const override;
 
   private:
     /**
@@ -733,6 +803,8 @@ class ThreeGppIndoorMixedOfficeChannelConditionModel : public ThreeGppChannelCon
      */
     ~ThreeGppIndoorMixedOfficeChannelConditionModel() override;
 
+    double GetLosNlosStateCorrelationDistance() const override;
+
   private:
     /**
      * Compute the LOS probability as specified in Table 7.4.2-1 of 3GPP TR 38.901
@@ -772,6 +844,8 @@ class ThreeGppIndoorOpenOfficeChannelConditionModel : public ThreeGppChannelCond
      * Destructor for the ThreeGppIndoorOpenOfficeChannelConditionModel class
      */
     ~ThreeGppIndoorOpenOfficeChannelConditionModel() override;
+
+    double GetLosNlosStateCorrelationDistance() const override;
 
   private:
     /**

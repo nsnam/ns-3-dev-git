@@ -11,6 +11,8 @@
 
 #include "emlsr-manager.h"
 
+#include "ns3/wifi-export.h"
+
 #include <optional>
 
 namespace ns3
@@ -21,7 +23,7 @@ namespace ns3
  *
  * DefaultEmlsrManager is the default EMLSR manager.
  */
-class DefaultEmlsrManager : public EmlsrManager
+class WIFI_EXPORT DefaultEmlsrManager : public EmlsrManager
 {
   public:
     /**

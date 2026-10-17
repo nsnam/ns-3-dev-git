@@ -56,6 +56,23 @@ build_lib_example(
     ${libspectrum}
 )
 
+if("${sionna_deps}"
+   STREQUAL
+   ""
+   AND (NOT
+        WIN32)
+)
+  build_lib_example(
+    NAME sionna-rt-channel-example
+    SOURCE_FILES sionna-rt-channel-example.cc
+    LIBRARIES_TO_LINK
+      ${libcore}
+      ${liblte}
+      ${libmobility}
+      ${libspectrum}
+  )
+endif()
+
 build_lib_example(
   NAME three-gpp-two-ray-channel-calibration
   SOURCE_FILES three-gpp-two-ray-channel-calibration.cc
@@ -72,5 +89,29 @@ build_lib_example(
   LIBRARIES_TO_LINK
     ${libcore}
     ${libmobility}
+    ${libspectrum}
+)
+
+build_lib_example(
+  NAME three-gpp-inter-ue-spatial-consistency-example
+  SOURCE_FILES three-gpp-inter-ue-spatial-consistency-example.cc
+  LIBRARIES_TO_LINK
+    ${libantenna}
+    ${libcore}
+    ${libnetwork}
+    ${libmobility}
+    ${libpropagation}
+    ${libspectrum}
+)
+
+build_lib_example(
+  NAME three-gpp-spatiotemporal-channel-consistency-example
+  SOURCE_FILES three-gpp-spatiotemporal-channel-consistency-example.cc
+  LIBRARIES_TO_LINK
+    ${libantenna}
+    ${libbuildings}
+    ${libcore}
+    ${libmobility}
+    ${libpropagation}
     ${libspectrum}
 )

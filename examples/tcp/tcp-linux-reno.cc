@@ -118,7 +118,7 @@ main(int argc, char* argv[])
     uint32_t delAckCount = 1;
     std::string recovery = "ns3::TcpClassicRecovery";
 
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.AddValue("tcpTypeId",
                  "TCP variant to use (e.g., ns3::TcpNewReno, ns3::TcpLinuxReno, etc.)",
                  tcpTypeId);

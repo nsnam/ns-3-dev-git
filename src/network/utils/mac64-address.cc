@@ -30,7 +30,7 @@ Mac64Address::Mac64Address(const char* str)
     NS_LOG_FUNCTION(this << str);
     NS_ASSERT_MSG(strlen(str) <= 23, "Mac64Address: illegal string (too long) " << str);
 
-    unsigned int bytes[8];
+    unsigned int bytes[ADDRESS_LENGTH];
     int charsRead = 0;
 
     int i = sscanf(str,
@@ -44,7 +44,7 @@ Mac64Address::Mac64Address(const char* str)
                    bytes + 6,
                    bytes + 7,
                    &charsRead);
-    NS_ASSERT_MSG(i == 8 && !str[charsRead], "Mac64Address: illegal string " << str);
+    NS_ASSERT_MSG(i == ADDRESS_LENGTH && !str[charsRead], "Mac64Address: illegal string " << str);
 
     std::copy(std::begin(bytes), std::end(bytes), std::begin(m_address));
 }
@@ -63,24 +63,24 @@ Mac64Address::Mac64Address(uint64_t addr)
 }
 
 void
-Mac64Address::CopyFrom(const uint8_t buffer[8])
+Mac64Address::CopyFrom(const uint8_t buffer[ADDRESS_LENGTH])
 {
     NS_LOG_FUNCTION(this << &buffer);
-    std::memcpy(m_address, buffer, 8);
+    std::copy(buffer, buffer + ADDRESS_LENGTH, m_address.begin());
 }
 
 void
-Mac64Address::CopyTo(uint8_t buffer[8]) const
+Mac64Address::CopyTo(uint8_t buffer[ADDRESS_LENGTH]) const
 {
     NS_LOG_FUNCTION(this << &buffer);
-    std::memcpy(buffer, m_address, 8);
+    std::copy(m_address.begin(), m_address.end(), buffer);
 }
 
 bool
 Mac64Address::IsMatchingType(const Address& address)
 {
     NS_LOG_FUNCTION(&address);
-    return address.CheckCompatible(GetType(), 8);
+    return address.CheckCompatible(GetType(), ADDRESS_LENGTH);
 }
 
 Mac64Address::
@@ -93,9 +93,9 @@ Mac64Address
 Mac64Address::ConvertFrom(const Address& address)
 {
     NS_LOG_FUNCTION(address);
-    NS_ASSERT(address.CheckCompatible(GetType(), 8));
+    NS_ASSERT(address.CheckCompatible(GetType(), ADDRESS_LENGTH));
     Mac64Address retval;
-    address.CopyTo(retval.m_address);
+    address.CopyTo(retval.m_address.data());
     return retval;
 }
 
@@ -103,7 +103,7 @@ Address
 Mac64Address::ConvertTo() const
 {
     NS_LOG_FUNCTION(this);
-    return Address(GetType(), m_address, 8);
+    return Address(GetType(), m_address.data(), ADDRESS_LENGTH);
 }
 
 uint64_t
@@ -157,26 +157,29 @@ uint8_t
 Mac64Address::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", ADDRESS_LENGTH);
     return type;
 }
 
 std::ostream&
 operator<<(std::ostream& os, const Mac64Address& address)
 {
-    uint8_t ad[8];
-    address.CopyTo(ad);
-
+    std::ios_base::fmtflags ff = os.flags();
     os.setf(std::ios::hex, std::ios::basefield);
-    os.fill('0');
-    for (uint8_t i = 0; i < 7; i++)
-    {
-        os << std::setw(2) << (uint32_t)ad[i] << ":";
-    }
-    // Final byte not suffixed by ":"
-    os << std::setw(2) << (uint32_t)ad[7];
-    os.setf(std::ios::dec, std::ios::basefield);
-    os.fill(' ');
+    auto fill = os.fill('0');
+
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[0]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[1]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[2]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[3]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[4]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[5]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[6]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[7]);
+
+    os.flags(ff); // Restore stream flags
+    os.fill(fill);
+
     return os;
 }
 
@@ -187,7 +190,7 @@ operator>>(std::istream& is, Mac64Address& address)
     is >> v;
 
     std::string::size_type col = 0;
-    for (uint8_t i = 0; i < 8; ++i)
+    for (uint8_t i = 0; i < Mac64Address::ADDRESS_LENGTH; ++i)
     {
         std::string tmp;
         std::string::size_type next;

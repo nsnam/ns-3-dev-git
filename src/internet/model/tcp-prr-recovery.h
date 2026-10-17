@@ -55,7 +55,8 @@ class TcpPrrRecovery : public TcpClassicRecovery
     void EnterRecovery(Ptr<TcpSocketState> tcb,
                        uint32_t dupAckCount,
                        uint32_t unAckDataCount,
-                       uint32_t deliveredBytes) override;
+                       uint32_t deliveredBytes,
+                       uint32_t bytesSacked) override;
 
     void DoRecovery(Ptr<TcpSocketState> tcb, uint32_t deliveredBytes, bool isDupAck) override;
 
@@ -68,7 +69,8 @@ class TcpPrrRecovery : public TcpClassicRecovery
   private:
     uint32_t m_prrDelivered{0};       //!< total bytes delivered during recovery phase
     uint32_t m_prrOut{0};             //!< total bytes sent during recovery phase
-    uint32_t m_recoveryFlightSize{0}; //!< value of bytesInFlight at the start of recovery phase
+    uint32_t m_recoveryFlightSize{0}; //!< FlightSize (SND.NXT - SND.UNA) at the start of recovery
+                                      //!< phase (RFC 9937 RecoverFS)
 };
 } // namespace ns3
 

@@ -9,6 +9,8 @@
 #ifndef BLOCK_ACK_WINDOW_H
 #define BLOCK_ACK_WINDOW_H
 
+#include "ns3/wifi-export.h"
+
 #include <cstdint>
 #include <vector>
 
@@ -43,7 +45,7 @@ namespace ns3
  *                            |
  *                           HEAD
  */
-class BlockAckWindow
+class WIFI_EXPORT BlockAckWindow
 {
   public:
     /**

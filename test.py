@@ -220,6 +220,9 @@ def parse_examples_to_run_file(
         # Add all of the C++ examples that were built, i.e. found
         # in the directory, to the list of C++ examples to run.
         if os.path.exists(example_path):
+            # Handle paths with empty spaces
+            example_path = '"%s"' % example_path
+
             # Add any arguments to the path.
             if len(example_name_parts) != 1:
                 example_path = "%s %s" % (example_path, example_arguments)
@@ -322,7 +325,7 @@ def read_test(test):
 # expected that this output will be fine for developers looking for problems.
 #
 def node_to_text(test, f, test_type="Suite"):
-    (result, name, reason, time_real) = read_test(test)
+    result, name, reason, time_real = read_test(test)
     if reason:
         reason = " (%s)" % reason
 
@@ -390,7 +393,7 @@ def translate_to_html(results_file, html_file):
             #
             # For each test suite, get its name, result and execution time info
             #
-            (result, name, reason, time) = read_test(suite)
+            result, name, reason, time = read_test(suite)
 
             #
             # Print a level three header with the result, name and time.  If the
@@ -470,7 +473,7 @@ def translate_to_html(results_file, html_file):
                 # Get the name, result and timing information from xml to use in
                 # printing table below.
                 #
-                (result, name, reason, time) = read_test(case)
+                result, name, reason, time = read_test(case)
 
                 #
                 # If the test case failed, we iterate through possibly multiple
@@ -583,7 +586,7 @@ def translate_to_html(results_file, html_file):
             #
             # Get the result and name of the example in question
             #
-            (result, name, reason, time) = read_test(example)
+            result, name, reason, time = read_test(example)
 
             #
             # If the example either failed or crashed, print its result status
@@ -867,15 +870,29 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
     if is_python:
         path_cmd = PYTHON[0] + " " + os.path.join(NS3_BASEDIR, shell_command)
     else:
+
+        # Here we handle paths with empty spaces.
+        # To do that, we need to separate program from arguments, then quote the absolute program path with spaces.
+        shell_args = re.findall(r'(?:".*?"|\S)+', shell_command)
+
+        program = shell_args[0].strip('"')
+
         if len(build_path):
-            path_cmd = os.path.join(build_path, shell_command)
+            # Programs are looked up in the user-provided build directory,
+            # which requires re-rooting the ones already resolved against
+            # the configured build directory.
+            if os.path.isabs(program):
+                program = os.path.relpath(program, NS3_BUILDDIR)
+            path_cmd = os.path.join(os.path.abspath(build_path), program)
         else:
-            path_cmd = os.path.join(NS3_BUILDDIR, shell_command)
+            path_cmd = program if NS3_BUILDDIR in program else os.path.join(NS3_BUILDDIR, program)
+
+        path_cmd = f'"{path_cmd}" {" ".join(shell_args[1:])}'
 
     if valgrind:
         if VALGRIND_SUPPRESSIONS_FILE:
             cmd = (
-                "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s"
+                'valgrind --suppressions="%s" --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s'
                 % (suppressions_path, path_cmd)
             )
         else:
@@ -1193,7 +1210,7 @@ def load_previously_successful_tests():
         exit(-1)
 
     for test_type in ["Test", "Example"]:
-        if previous_run_results.find(test_type):
+        if previous_run_results.find(test_type) is not None:
             temp = list(
                 map(
                     lambda x: (x.find("Name").text, x.find("Result").text),
@@ -1372,7 +1389,7 @@ def run_tests():
     #
     if args.kinds:
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-type-list")
-        (rc, standard_out, standard_err, et) = run_job_synchronously(
+        rc, standard_out, standard_err, et = run_job_synchronously(
             path_cmd, os.getcwd(), False, False
         )
         print(standard_out)
@@ -1390,7 +1407,7 @@ def run_tests():
                 path_cmd = os.path.join(
                     "utils", test_runner_name + " --print-test-name-list --print-test-types"
                 )
-            (rc, standard_out, standard_err, et) = run_job_synchronously(
+            rc, standard_out, standard_err, et = run_job_synchronously(
                 path_cmd, os.getcwd(), False, False
             )
             if rc != 0:
@@ -1419,7 +1436,7 @@ def run_tests():
             examples_sorted.sort()
         if ENABLE_PYTHON_BINDINGS:
             python_examples_sorted = []
-            for x, y in python_tests:
+            for x, y, _ in python_tests:
                 if y == "True":
                     python_examples_sorted.append(x)
             python_examples_sorted.sort()
@@ -1508,7 +1525,7 @@ def run_tests():
     if len(args.suite):
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
-        (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+        rc, suites, standard_err, et = run_job_synchronously(path_cmd, os.getcwd(), False, False)
 
         if isinstance(suites, bytes):
             suites = suites.decode()
@@ -1533,12 +1550,12 @@ def run_tests():
                 "utils",
                 test_runner_name + " --print-test-name-list --test-type=%s" % args.constrain,
             )
-            (rc, suites, standard_err, et) = run_job_synchronously(
+            rc, suites, standard_err, et = run_job_synchronously(
                 path_cmd, os.getcwd(), False, False
             )
         else:
             path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
-            (rc, suites, standard_err, et) = run_job_synchronously(
+            rc, suites, standard_err, et = run_job_synchronously(
                 path_cmd, os.getcwd(), False, False
             )
     else:
@@ -1566,7 +1583,7 @@ def run_tests():
         path_cmd = os.path.join(
             "utils", test_runner_name + " --print-test-name-list --test-type=%s" % "performance"
         )
-        (rc, performance_tests, standard_err, et) = run_job_synchronously(
+        rc, performance_tests, standard_err, et = run_job_synchronously(
             path_cmd, os.getcwd(), False, False
         )
         if isinstance(performance_tests, bytes):
@@ -1762,7 +1779,7 @@ def run_tests():
 
                 for name, test, do_run, do_valgrind_run, fullness in example_tests:
                     # Remove any arguments and directory names from test.
-                    test_name = test.split(" ", 1)[0]
+                    test_name = re.findall(r'(?:".*?"|\S)+', test)[0].strip('"')
                     test_name = os.path.basename(test_name)
                     test_name = test_name[:-4] if sys.platform == "win32" else test_name
 
@@ -2233,7 +2250,7 @@ def run_tests():
     # directories, which will probably surprise the user.
     #
     if not args.retain:
-        shutil.rmtree(testpy_output_dir)
+        shutil.rmtree(TMP_OUTPUT_DIR)
 
     if passed_tests + skipped_tests == total_tests:
         return 0  # success

@@ -115,6 +115,10 @@ std::ostream&
 operator<<(std::ostream& os, const WifiProtection* protection)
 {
     protection->Print(os);
+    if (protection->protectionTime)
+    {
+        os << ", protection time: " << protection->protectionTime.value().As(Time::US);
+    }
     return os;
 }
 

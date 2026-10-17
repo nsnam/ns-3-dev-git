@@ -12,6 +12,7 @@
 #include "ns3/buffer.h"
 #include "ns3/mac48-address.h"
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <cstdint>
 #include <optional>
@@ -23,12 +24,12 @@ namespace ns3
  * Common Info field of the Basic Multi-Link element.
  * See Sec. 9.4.2.312.2.2 of 802.11be D1.5
  */
-struct CommonInfoBasicMle
+struct WIFI_EXPORT CommonInfoBasicMle
 {
     /**
      * Medium Synchronization Delay Information subfield
      */
-    struct MediumSyncDelayInfo
+    struct WIFI_EXPORT MediumSyncDelayInfo
     {
         uint8_t mediumSyncDuration;            //!< Medium Synchronization Duration
         uint8_t mediumSyncOfdmEdThreshold : 4; //!< Medium Synchronization OFDM ED Threshold
@@ -38,7 +39,7 @@ struct CommonInfoBasicMle
     /**
      * EML Capabilities subfield
      */
-    struct EmlCapabilities
+    struct WIFI_EXPORT EmlCapabilities
     {
         uint8_t emlsrSupport : 1;         //!< EMLSR Support
         uint8_t emlsrPaddingDelay : 3;    //!< EMLSR Padding Delay
@@ -51,7 +52,7 @@ struct CommonInfoBasicMle
     /**
      * MLD Capabilities subfield
      */
-    struct MldCapabilities
+    struct WIFI_EXPORT MldCapabilities
     {
         uint8_t maxNSimultaneousLinks : 4;   //!< Max number of simultaneous links
         uint8_t srsSupport : 1;              //!< SRS Support
@@ -63,7 +64,7 @@ struct CommonInfoBasicMle
     /**
      * Extended MLD Capabilities and Operations subfield
      */
-    struct ExtMldCapabilities
+    struct WIFI_EXPORT ExtMldCapabilities
     {
         uint8_t opParamUpdateSupp : 1;    ///< Operation Parameter Update Support
         uint8_t recommMaxSimulLinks : 4;  ///< Recommended Max Simultaneous Links

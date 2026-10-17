@@ -17,6 +17,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
@@ -89,14 +90,14 @@ uint16_t
 Icmpv4L4Protocol::GetStaticProtocolNumber()
 {
     NS_LOG_FUNCTION_NOARGS();
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::ICMP;
 }
 
 int
 Icmpv4L4Protocol::GetProtocolNumber() const
 {
     NS_LOG_FUNCTION(this);
-    return PROT_NUMBER;
+    return iana::internetprotocolnumbers::ICMP;
 }
 
 void
@@ -108,7 +109,7 @@ Icmpv4L4Protocol::SendMessage(Ptr<Packet> packet, Ipv4Address dest, uint8_t type
     NS_ASSERT(ipv4 && ipv4->GetRoutingProtocol());
     Ipv4Header header;
     header.SetDestination(dest);
-    header.SetProtocol(PROT_NUMBER);
+    header.SetProtocol(iana::internetprotocolnumbers::ICMP);
     Socket::SocketErrno errno_;
     Ptr<Ipv4Route> route;
     Ptr<NetDevice> oif(nullptr); // specify non-zero if bound to a source address
@@ -144,7 +145,7 @@ Icmpv4L4Protocol::SendMessage(Ptr<Packet> packet,
     }
     packet->AddHeader(icmp);
 
-    m_downTarget(packet, source, dest, PROT_NUMBER, route);
+    m_downTarget(packet, source, dest, iana::internetprotocolnumbers::ICMP, route);
 }
 
 void
@@ -161,6 +162,13 @@ Icmpv4L4Protocol::SendDestUnreachPort(Ipv4Header header, Ptr<const Packet> orgDa
 {
     NS_LOG_FUNCTION(this << header << *orgData);
     SendDestUnreach(header, orgData, Icmpv4DestinationUnreachable::ICMPV4_PORT_UNREACHABLE, 0);
+}
+
+void
+Icmpv4L4Protocol::SendDestUnreachNetwork(Ipv4Header header, Ptr<const Packet> orgData)
+{
+    NS_LOG_FUNCTION(this << header << *orgData);
+    SendDestUnreach(header, orgData, Icmpv4DestinationUnreachable::ICMPV4_NET_UNREACHABLE, 0);
 }
 
 void
@@ -288,7 +296,21 @@ Icmpv4L4Protocol::Receive(Ptr<Packet> p,
     NS_LOG_FUNCTION(this << p << header << incomingInterface);
 
     Icmpv4Header icmp;
+    if (Node::ChecksumEnabled())
+    {
+        icmp.EnableChecksum();
+    }
     p->RemoveHeader(icmp);
+
+    // RFC 792: an ICMP message with an invalid checksum is discarded. Only
+    // verify when checksum computation is enabled for the simulation
+    // (consistent with UDP and TCP).
+    if (!icmp.IsChecksumOk())
+    {
+        NS_LOG_LOGIC("Bad checksum, dropping ICMPv4 packet");
+        return IpL4Protocol::RX_CSUM_FAILED;
+    }
+
     switch (icmp.GetType())
     {
     case Icmpv4Header::ICMPV4_ECHO: {

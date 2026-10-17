@@ -41,7 +41,7 @@ using namespace ns3;
  */
 // clang-format off
 /**
- * \verbatim
+ * @verbatim
    Expected packets time diagram.
 
            1       2       3       4       5
@@ -146,7 +146,7 @@ using namespace ns3;
    <-------|------>|       |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=0, ID=4, org_seqno=3) src = 10.1.1.1
            |<------|-->    |       |       |        RREQ (orig 10.1.1.1, dst 10.1.1.5, G=1, hop=1, ID=4, org_seqno=3) src = 10.1.1.2
    .................................................
-   \endverbatim
+   @endverbatim
  */
 //clang-format on
 class ChainRegressionTest : public TestCase

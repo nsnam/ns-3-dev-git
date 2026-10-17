@@ -12,6 +12,7 @@
 #include "wifi-units.h"
 
 #include "ns3/channel.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -33,7 +34,7 @@ class WifiPpdu;
  * ns3::PropagationDelayModel.  By default, no propagation models are set;
  * it is the caller's responsibility to set them before using the channel.
  */
-class YansWifiChannel : public Channel
+class WIFI_EXPORT YansWifiChannel : public Channel
 {
   public:
     /**

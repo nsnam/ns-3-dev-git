@@ -42,7 +42,7 @@ class SystemWallClockMsPrivate
     int64_t GetElapsedSystem() const;
 
   private:
-    std::chrono::system_clock::time_point m_startTime; //!< The wall clock start time.
+    std::chrono::steady_clock::time_point m_startTime; //!< The wall clock start time.
     int64_t m_elapsedReal;                             //!< Elapsed real time, in ms.
     int64_t m_elapsedUser;                             //!< Elapsed user time, in ms.
     int64_t m_elapsedSystem;                           //!< Elapsed system time, in ms.
@@ -52,7 +52,7 @@ void
 SystemWallClockMsPrivate::Start()
 {
     NS_LOG_FUNCTION(this);
-    m_startTime = std::chrono::system_clock::now();
+    m_startTime = std::chrono::steady_clock::now();
 }
 
 int64_t
@@ -86,7 +86,7 @@ SystemWallClockMsPrivate::End()
     //
     NS_LOG_FUNCTION(this);
 
-    auto endTime = std::chrono::system_clock::now();
+    auto endTime = std::chrono::steady_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = endTime - m_startTime;
     m_elapsedReal = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_seconds).count();

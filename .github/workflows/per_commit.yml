@@ -7,7 +7,7 @@ jobs:
     outputs:
       cache_misses: ${{ env.cache_misses }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install required packages
         run: |
           sudo apt-get update
@@ -52,7 +52,7 @@ jobs:
     needs: Ubuntu
     if: needs.Ubuntu.outputs.cache_misses != '0'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install required packages
         run: |
           sudo apt-get update
@@ -103,24 +103,26 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: msys2/setup-msys2@v2
-      - name: Install required msys2/mingw64 packages
+        with:
+          msystem: UCRT64
+      - name: Install required msys2/ucrt64 packages
         run: |
           pacman -S --noconfirm \
           unzip \
           tar \
-          mingw-w64-x86_64-curl \
-          mingw-w64-x86_64-binutils \
-          mingw-w64-x86_64-cmake \
-          mingw-w64-x86_64-gcc \
-          mingw-w64-x86_64-ninja \
-          mingw-w64-x86_64-python \
-          mingw-w64-x86_64-ccache \
-          mingw-w64-x86_64-gsl \
-          mingw-w64-x86_64-libxml2 \
-          mingw-w64-x86_64-lld \
-          mingw-w64-x86_64-sed
+          mingw-w64-ucrt-x86_64-curl \
+          mingw-w64-ucrt-x86_64-binutils \
+          mingw-w64-ucrt-x86_64-cmake \
+          mingw-w64-ucrt-x86_64-gcc \
+          mingw-w64-ucrt-x86_64-ninja \
+          mingw-w64-ucrt-x86_64-python \
+          mingw-w64-ucrt-x86_64-ccache \
+          mingw-w64-ucrt-x86_64-gsl \
+          mingw-w64-ucrt-x86_64-libxml2 \
+          mingw-w64-ucrt-x86_64-lld \
+          mingw-w64-ucrt-x86_64-sed
           pacman --noconfirm -Scc
       - name: Get timestamp
         id: time
@@ -157,9 +159,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ macos-latest, macos-14 ]
+        os: [ macos-latest, macos-15 ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install required packages
         run: |
           brew uninstall cmake ninja
@@ -203,12 +205,12 @@ jobs:
       run:
         shell: cmd
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6.2.0
       - name: Configure CMake
         run: |
           %comspec% /k ""C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat""
-          python ns3 configure --enable-tests --enable-examples --enable-asserts -d release -- -G"Visual Studio 17 2022" -A x64 -T ClangCL
+          python ns3 configure --enable-tests --enable-examples --enable-asserts -d release -- -G"Visual Studio 18 2026" -A x64 -T ClangCL
       - name: Build ns-3
         run: |
           %comspec% /k ""C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat""

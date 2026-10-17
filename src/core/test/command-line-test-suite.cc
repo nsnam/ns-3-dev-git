@@ -7,6 +7,7 @@
  */
 #include "ns3/command-line.h"
 #include "ns3/config.h"
+#include "ns3/example-as-test.h"
 #include "ns3/global-value.h"
 #include "ns3/log.h"
 #include "ns3/string.h"
@@ -15,7 +16,6 @@
 #include "ns3/type-id.h"
 
 #include <cstdarg>
-#include <cstdlib>
 #include <sstream>
 
 /**
@@ -342,11 +342,13 @@ CommandLineStringTestCase::DoRun()
     CommandLine cmd;
     uint32_t myUint32 = 10;
     std::string myStr = "MyStr";
+    std::string mySpacedStr = "My Spaced Str";
 
     cmd.AddValue("my-uint32", "help", myUint32);
     cmd.AddValue("my-str", "help", myStr);
+    cmd.AddValue("my-spaced-str", "help", mySpacedStr);
 
-    Parse(cmd, 2, "--my-uint32=9", "--my-str=XX");
+    Parse(cmd, 3, "--my-uint32=9", "--my-str=XX", "--my-spaced-str=Hello World Issue Id 1181");
 
     NS_TEST_ASSERT_MSG_EQ(myUint32,
                           9,
@@ -354,6 +356,11 @@ CommandLineStringTestCase::DoRun()
     NS_TEST_ASSERT_MSG_EQ(myStr,
                           "XX",
                           "CommandLine did not correctly set a string value to \"XX\"");
+    // Regression test for issue #1181: a string value containing spaces must be
+    // captured in full, not truncated at the first whitespace.
+    NS_TEST_ASSERT_MSG_EQ(mySpacedStr,
+                          "Hello World Issue Id 1181",
+                          "CommandLine did not capture a string value containing spaces");
 }
 
 /**
@@ -564,6 +571,16 @@ CommandLineTestSuite::CommandLineTestSuite()
     AddTestCase(new CommandLineInvalidTestCase);
     AddTestCase(new CommandLineNonOptionTestCase);
     AddTestCase(new CommandLineCharStarTestCase);
+    AddTestCase(new ExampleAsTestCase("core-fatal-command-line-duplicate-option",
+                                      "fatal-command-line-duplicate-option-example",
+                                      NS_TEST_SOURCEDIR,
+                                      "",
+                                      false));
+    AddTestCase(new ExampleAsTestCase("core-fatal-command-line-duplicate-non-option",
+                                      "fatal-command-line-duplicate-non-option-example",
+                                      NS_TEST_SOURCEDIR,
+                                      "",
+                                      false));
 }
 
 /**

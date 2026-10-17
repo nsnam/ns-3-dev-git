@@ -19,6 +19,7 @@
 #include "ns3/erp-ofdm-phy.h"
 #include "ns3/log.h"
 
+#include <algorithm>
 #include <type_traits>
 
 namespace ns3
@@ -73,12 +74,19 @@ WifiDefaultProtectionManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu, const WifiTxP
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams);
 
+    const auto& hdr = mpdu->GetHeader();
+
+    if (hdr.IsPsPoll())
+    {
+        NS_ASSERT(!txParams.m_protection);
+        return std::make_unique<WifiNoProtection>();
+    }
+
     // Call a separate method that handles MU-RTS/CTS protection in case of DL MU PPDU containing
     // more than one PSDU or in case the MPDU being added is addressed to an EMLSR client or in
     // case the protection method is already MU-RTS/CTS.
     const auto& psduInfoMap = txParams.GetPsduInfoMap();
     auto dlMuPpdu = txParams.m_txVector.IsDlMu() && psduInfoMap.size() > 1;
-    const auto& hdr = mpdu->GetHeader();
     auto isEmlsrDestination = GetWifiRemoteStationManager()->GetEmlsrEnabled(hdr.GetAddr1());
 
     if (dlMuPpdu || isEmlsrDestination ||
@@ -215,7 +223,8 @@ WifiDefaultProtectionManager::GetPsduProtection(const WifiMacHeader& hdr,
     if (GetWifiRemoteStationManager()->NeedCtsToSelf(txParams.m_txVector, hdr))
     {
         auto protection = std::make_unique<WifiCtsToSelfProtection>();
-        protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector();
+        protection->ctsTxVector = GetWifiRemoteStationManager()->GetCtsToSelfTxVector(
+            txParams.m_txVector.GetChannelWidth());
         return protection;
     }
 
@@ -238,9 +247,15 @@ WifiDefaultProtectionManager::TryAddMpduToMuPpdu(Ptr<const WifiMpdu> mpdu,
 
     const auto& protectedStas = m_mac->GetFrameExchangeManager(m_linkId)->GetProtectedStas();
     const auto isProtected = protectedStas.contains(receiver);
-    bool needMuRts =
+    // an MU-RTS protects the DL MU PPDU as a whole, hence it is needed if any receiver of the
+    // PPDU is not yet protected, regardless of which receiver the MPDU being added is for
+    const auto anyUnprotected =
+        std::any_of(psduInfoMap.cbegin(), psduInfoMap.cend(), [&protectedStas](const auto& info) {
+            return !protectedStas.contains(info.first);
+        });
+    const auto needMuRts =
         (txParams.m_protection && txParams.m_protection->method == WifiProtection::MU_RTS_CTS) ||
-        (dlMuPpdu && m_sendMuRts && !isProtected &&
+        (dlMuPpdu && m_sendMuRts && anyUnprotected &&
          (!m_singleRtsPerTxop || protectedStas.empty())) ||
         (isEmlsrDestination && !isProtected);
 

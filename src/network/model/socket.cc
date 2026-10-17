@@ -593,6 +593,7 @@ void
 SocketIpTtlTag::SetTtl(uint8_t ttl)
 {
     NS_LOG_FUNCTION(this << static_cast<uint32_t>(ttl));
+    NS_ASSERT_MSG(ttl > 0, "TTL value cannot be zero");
     m_ttl = ttl;
 }
 
@@ -656,6 +657,7 @@ SocketIpv6HopLimitTag::SocketIpv6HopLimitTag()
 void
 SocketIpv6HopLimitTag::SetHopLimit(uint8_t hopLimit)
 {
+    NS_ASSERT_MSG(hopLimit > 0, "HopLimit value cannot be zero");
     m_hopLimit = hopLimit;
 }
 

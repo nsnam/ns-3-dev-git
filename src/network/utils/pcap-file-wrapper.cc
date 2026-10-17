@@ -19,6 +19,8 @@ NS_LOG_COMPONENT_DEFINE("PcapFileWrapper");
 
 NS_OBJECT_ENSURE_REGISTERED(PcapFileWrapper);
 
+std::map<std::string, PcapFileWrapper*> PcapFileWrapper::m_openFiles;
+
 TypeId
 PcapFileWrapper::GetTypeId()
 {
@@ -78,6 +80,16 @@ PcapFileWrapper::Close()
 {
     NS_LOG_FUNCTION(this);
     m_file.Close();
+    // Deregister from the open-file registry (only if we are the registered
+    // owner of this name), so the map keeps tracking only live, open wrappers.
+    if (!m_filename.empty())
+    {
+        if (auto it = m_openFiles.find(m_filename); it != m_openFiles.end() && it->second == this)
+        {
+            m_openFiles.erase(it);
+        }
+        m_filename.clear();
+    }
 }
 
 void
@@ -85,6 +97,26 @@ PcapFileWrapper::Open(const std::string& filename, std::ios::openmode mode)
 {
     NS_LOG_FUNCTION(this << filename << mode);
     m_file.Open(filename, mode);
+    // Register this wrapper as the holder of an open file by this name, so that
+    // a second request for the same explicit filename shares this wrapper
+    // instead of opening (and truncating) the file again (see @issueid{1150}).
+    if (!m_file.Fail())
+    {
+        m_filename = filename;
+        m_openFiles[filename] = this;
+    }
+}
+
+Ptr<PcapFileWrapper>
+PcapFileWrapper::FindOpenFile(const std::string& filename)
+{
+    if (auto it = m_openFiles.find(filename); it != m_openFiles.end())
+    {
+        // Wrap the non-owning raw pointer in a Ptr (takes a reference), keeping
+        // the shared wrapper alive for the new caller.
+        return Ptr<PcapFileWrapper>(it->second);
+    }
+    return nullptr;
 }
 
 void

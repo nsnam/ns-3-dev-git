@@ -12,6 +12,7 @@
 #include "mu-snr-tag.h"
 
 #include "ns3/vht-frame-exchange-manager.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <unordered_map>
@@ -27,14 +28,14 @@ class CtrlTriggerHeader;
  * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame
  */
-bool IsTrigger(const WifiPsduMap& psduMap);
+WIFI_EXPORT bool IsTrigger(const WifiPsduMap& psduMap);
 
 /**
  * @param psduMap a PSDU map
  * @return true if the given PSDU map contains a single PSDU including a single MPDU
  *         that carries a Trigger Frame
  */
-bool IsTrigger(const WifiConstPsduMap& psduMap);
+WIFI_EXPORT bool IsTrigger(const WifiConstPsduMap& psduMap);
 
 /**
  * @ingroup wifi
@@ -42,7 +43,7 @@ bool IsTrigger(const WifiConstPsduMap& psduMap);
  * HeFrameExchangeManager handles the frame exchange sequences
  * for HE stations.
  */
-class HeFrameExchangeManager : public VhtFrameExchangeManager
+class WIFI_EXPORT HeFrameExchangeManager : public VhtFrameExchangeManager
 {
   public:
     /**
@@ -53,7 +54,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     HeFrameExchangeManager();
     ~HeFrameExchangeManager() override;
 
-    bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
+    bool StartFrameExchange() override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
     void CalculateProtectionTime(WifiProtection* protection) const override;
     std::optional<Mac48Address> FindTxopHolder(const WifiMacHeader& hdr,
@@ -151,6 +152,7 @@ class HeFrameExchangeManager : public VhtFrameExchangeManager
     void StartProtection(const WifiTxParameters& txParams) override;
     void ProtectionCompleted() override;
     void TransmissionSucceeded() override;
+    WifiTxVector GetBlockAckReqTxVector(Mac48Address to) const override;
 
     /**
      * Clear the TXOP holder if the intra-BSS NAV counted down to zero (includes the case

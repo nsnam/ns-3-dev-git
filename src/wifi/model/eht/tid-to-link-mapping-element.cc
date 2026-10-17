@@ -208,7 +208,7 @@ TidToLinkMapping::SerializeInformationField(Buffer::Iterator start) const
     m_control.Serialize(start);
     if (m_control.mappingSwitchTimePresent)
     {
-        start.WriteHtolsbU16(*m_mappingSwitchTime);
+        start.WriteU16(*m_mappingSwitchTime);
     }
     if (m_control.expectedDurationPresent)
     {
@@ -228,7 +228,7 @@ TidToLinkMapping::SerializeInformationField(Buffer::Iterator start) const
         }
         else
         {
-            start.WriteHtolsbU16(linkMapping);
+            start.WriteU16(linkMapping);
         }
     }
 }
@@ -244,7 +244,7 @@ TidToLinkMapping::DeserializeInformationField(Buffer::Iterator start, uint16_t l
     count += nCtrlOctets;
     if (m_control.mappingSwitchTimePresent)
     {
-        m_mappingSwitchTime = i.ReadLsbtohU16();
+        m_mappingSwitchTime = i.ReadU16();
         count += 2;
     }
     if (m_control.expectedDurationPresent)
@@ -276,7 +276,7 @@ TidToLinkMapping::DeserializeInformationField(Buffer::Iterator start, uint16_t l
                 }
                 else
                 {
-                    m_linkMapping[tid] = i.ReadLsbtohU16();
+                    m_linkMapping[tid] = i.ReadU16();
                     count += 2;
                 }
             }

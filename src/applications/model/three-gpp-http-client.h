@@ -21,7 +21,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 class ThreeGppHttpVariables;
 
@@ -113,12 +112,6 @@ class ThreeGppHttpClient : public SourceApplication
      */
     static TypeId GetTypeId();
 
-    /**
-     * Returns a pointer to the associated socket.
-     * @return Pointer to the associated socket.
-     */
-    Ptr<Socket> GetSocket() const;
-
     /// The possible states of the application.
     enum State_t
     {
@@ -183,8 +176,11 @@ class ThreeGppHttpClient : public SourceApplication
     void DoDispose() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoStopApplication() override;
+    void DoConnectionSucceeded(Ptr<Socket> socket) override;
+    void DoConnectionFailed(Ptr<Socket> socket) override;
+    void CancelEvents() override;
 
     /**
      * @brief set the remote port (temporary function until deprecated attributes are removed)
@@ -193,19 +189,6 @@ class ThreeGppHttpClient : public SourceApplication
     void SetPort(uint16_t port);
 
     // SOCKET CALLBACK METHODS
-
-    /**
-     * Invoked when a connection is established successfully on #m_socket. This
-     * triggers a request for a main object.
-     * @param socket Pointer to the socket where the event originates from.
-     */
-    void ConnectionSucceededCallback(Ptr<Socket> socket);
-    /**
-     * Invoked when #m_socket cannot establish a connection with the web server.
-     * Simulation will stop and error will be raised.
-     * @param socket Pointer to the socket where the event originates from.
-     */
-    void ConnectionFailedCallback(Ptr<Socket> socket);
     /**
      * Invoked when connection between #m_socket and the web sever is terminated.
      * Error will be logged, but simulation continues.
@@ -341,12 +324,6 @@ class ThreeGppHttpClient : public SourceApplication
      * The method is invoked after a complete web page has been received.
      */
     void EnterReadingTime();
-    /**
-     * Cancels #m_eventRequestMainObject, #m_eventRequestEmbeddedObject, and
-     * #m_eventParseMainObject. Invoked by StopApplication() and when connection
-     * has been terminated.
-     */
-    void CancelAllPendingEvents();
 
     /**
      * Change the state of the client. Fires the `StateTransition` trace source.
@@ -361,11 +338,9 @@ class ThreeGppHttpClient : public SourceApplication
     void FinishReceivingPage();
 
     /// The current state of the client application. Begins with NOT_STARTED.
-    State_t m_state;
-    /// The socket for sending and receiving packets to/from the web server.
-    Ptr<Socket> m_socket;
+    State_t m_state{NOT_STARTED};
     /// According to the content length specified by the ThreeGppHttpHeader.
-    uint32_t m_objectBytesToBeReceived;
+    uint32_t m_objectBytesToBeReceived{0};
     /// The packet constructed of one or more parts with ThreeGppHttpHeader.
     Ptr<Packet> m_constructedPacket;
     /// The client time stamp of the ThreeGppHttpHeader from the last received packet.
@@ -373,13 +348,13 @@ class ThreeGppHttpClient : public SourceApplication
     /// The server time stamp of the ThreeGppHttpHeader from the last received packet.
     Time m_objectServerTs;
     /// Determined after parsing the main object.
-    uint32_t m_embeddedObjectsToBeRequested;
+    uint32_t m_embeddedObjectsToBeRequested{0};
     /// The time stamp when the page started loading.
     Time m_pageLoadStartTs;
     /// Number of embedded objects to requested in the current page.
-    uint32_t m_numberEmbeddedObjectsRequested;
+    uint32_t m_numberEmbeddedObjectsRequested{0};
     /// Number of bytes received for the current page.
-    uint32_t m_numberBytesPage;
+    uint32_t m_numberBytesPage{0};
 
     // ATTRIBUTES
 
@@ -397,8 +372,6 @@ class ThreeGppHttpClient : public SourceApplication
     ns3::TracedCallback<Ptr<const ThreeGppHttpClient>> m_connectionEstablishedTrace;
     /// The `ConnectionClosed` trace source.
     ns3::TracedCallback<Ptr<const ThreeGppHttpClient>> m_connectionClosedTrace;
-    /// The `Tx` trace source.
-    ns3::TracedCallback<Ptr<const Packet>> m_txTrace;
     /// The `TxMainObjectRequest` trace source.
     ns3::TracedCallback<Ptr<const Packet>> m_txMainObjectRequestTrace;
     /// The `TxEmbeddedObjectRequest` trace source.

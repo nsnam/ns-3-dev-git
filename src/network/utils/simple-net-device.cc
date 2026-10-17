@@ -206,6 +206,11 @@ SimpleNetDevice::GetTypeId()
                             "Trace source indicating a packet has been dropped "
                             "by the device during reception",
                             MakeTraceSourceAccessor(&SimpleNetDevice::m_phyRxDropTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("MacRxDrop",
+                            "Trace source indicating a packet was dropped "
+                            "because no protocol handler consumed it",
+                            MakeTraceSourceAccessor(&SimpleNetDevice::m_macRxDropTrace),
                             "ns3::Packet::TracedCallback");
     return tid;
 }
@@ -251,7 +256,13 @@ SimpleNetDevice::Receive(Ptr<Packet> packet, uint16_t protocol, Mac48Address to,
 
     if (packetType != NetDevice::PACKET_OTHERHOST)
     {
-        m_rxCallback(this, packet, protocol, from);
+        // The receive callback (Node::NonPromiscReceiveFromDevice) returns false
+        // when no protocol handler consumed the packet (see @issueid{370}).
+        if (!m_rxCallback(this, packet, protocol, from))
+        {
+            NS_LOG_INFO("Drop packet due to no protocol handler");
+            m_macRxDropTrace(packet);
+        }
     }
 
     if (!m_promiscCallback.IsNull())

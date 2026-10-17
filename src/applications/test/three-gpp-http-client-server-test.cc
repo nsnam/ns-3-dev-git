@@ -89,8 +89,8 @@ class ThreeGppHttpObjectTestCase : public TestCase
      * Creates a Node, complete with a TCP/IP stack.
      * #m_tcpType determines the TCP algorithm installed at the TCP stack.
      *
-     * \param[in] channel Pointer to a channel which the node's device will be
-     *                    attached to.
+     * @param [in] channel Pointer to a channel which the node's device will be
+     *                     attached to.
      * @return Pointer to the newly created node.
      */
     Ptr<Node> CreateSimpleInternetNode(Ptr<SimpleChannel> channel);
@@ -99,8 +99,8 @@ class ThreeGppHttpObjectTestCase : public TestCase
      * Assign a socket address for a device.
      * #m_useIpv6 determines whether to use IPv4 addressing or IPv6 addressing.
      *
-     * \param[in] dev Pointer to the device.
-     * \param[in] port the port to use for the socket address.
+     * @param [in] dev Pointer to the device.
+     * @param [in] port the port to use for the socket address.
      * @return The resulting socket address.
      */
     Address AssignSocketAddress(Ptr<NetDevice> dev, uint16_t port);
@@ -108,8 +108,8 @@ class ThreeGppHttpObjectTestCase : public TestCase
     /**
      * Assign an IPv4 address to a device.
      *
-     * \param[in] dev Pointer to the device to assign an address to.
-     * \param[in] logging flag to indicate whether to log the assigned address.
+     * @param [in] dev Pointer to the device to assign an address to.
+     * @param [in] logging flag to indicate whether to log the assigned address.
      * @return The resulting IPv4 address of the device.
      */
     Ipv4Address AssignIpv4Address(Ptr<NetDevice> dev, bool logging = true);
@@ -117,8 +117,8 @@ class ThreeGppHttpObjectTestCase : public TestCase
     /**
      * Assign an IPv6 address to a device.
      *
-     * \param[in] dev Pointer to the device to assign an address to.
-     * \param[in] logging flag to indicate whether to log the assigned address.
+     * @param [in] dev Pointer to the device to assign an address to.
+     * @param [in] logging flag to indicate whether to log the assigned address.
      * @return The resulting IPv6 address of the device.
      */
     Ipv6Address AssignIpv6Address(Ptr<NetDevice> dev, bool logging = true);
@@ -152,9 +152,9 @@ class ThreeGppHttpObjectTestCase : public TestCase
         /**
          * Shall be invoked after all parts of a complete object have been
          * received.
-         * \param[out] txSize Size of the whole object (in bytes) when it was
-         *                    transmitted.
-         * \param[out] rxSize Size of the whole object (in bytes) received.
+         * @param [out] txSize Size of the whole object (in bytes) when it was
+         *                     transmitted.
+         * @param [out] rxSize Size of the whole object (in bytes) received.
          * @return True if this receive operation has a matching transmission
          *         operation (ObjectSent()), otherwise false. Both arguments are
          *         guaranteed to be replaced with initialized values if the return

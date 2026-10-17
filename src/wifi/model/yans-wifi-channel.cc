@@ -135,10 +135,13 @@ YansWifiChannel::Receive(Ptr<YansWifiPhy> phy, Ptr<const WifiPpdu> ppdu, dBm_u r
         return;
     }
     RxPowerWattPerChannelBand rxPowerW;
-
     rxPowerW.insert(
         {{{{0, 0}}, {{Hz_u{0}, Hz_u{0}}}}, (DbmToW(totalRxPower))}); // dummy band for YANS
-    phy->StartReceivePreamble(ppdu, rxPowerW, ppdu->GetTxDuration());
+    // Use ScheduleNow so StartReceivePreamble runs after all cleanup callbacks
+    // Capture by value to avoid dangling references after this function returns
+    Simulator::ScheduleNow([phy, ppdu, rxPowerW]() mutable {
+        phy->StartReceivePreamble(ppdu, rxPowerW, ppdu->GetTxDuration());
+    });
 }
 
 std::size_t

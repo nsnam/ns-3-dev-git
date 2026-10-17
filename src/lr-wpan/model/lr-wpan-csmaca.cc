@@ -21,7 +21,7 @@
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                                                                      \
-    std::clog << "[" << m_mac->GetShortAddress() << " | " << m_mac->GetExtendedAddress() << "] ";
+    ns3LogStream << "[" << m_mac->GetShortAddress() << " | " << m_mac->GetExtendedAddress() << "] ";
 
 namespace ns3
 {
@@ -192,7 +192,7 @@ LrWpanCsmaCa::GetTimeToNextSlot() const
         elapsedSuperframe = currentTime - m_mac->m_macBeaconTxTime;
     }
 
-    // get a close value to the the boundary in symbols
+    // get a close value to the boundary in symbols
     elapsedSuperframeSymbols = elapsedSuperframe.GetSeconds() * symbolRate;
     symbolsToBoundary = lrwpan::aUnitBackoffPeriod -
                         std::fmod((double)elapsedSuperframeSymbols, lrwpan::aUnitBackoffPeriod);

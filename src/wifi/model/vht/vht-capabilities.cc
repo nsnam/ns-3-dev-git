@@ -71,16 +71,16 @@ void
 VhtCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     // write the corresponding value for each bit
-    start.WriteHtolsbU32(GetVhtCapabilitiesInfo());
-    start.WriteHtolsbU64(GetSupportedMcsAndNssSet());
+    start.WriteU32(GetVhtCapabilitiesInfo());
+    start.WriteU64(GetSupportedMcsAndNssSet());
 }
 
 uint16_t
 VhtCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
     Buffer::Iterator i = start;
-    uint32_t vhtinfo = i.ReadLsbtohU32();
-    uint64_t mcsset = i.ReadLsbtohU64();
+    uint32_t vhtinfo = i.ReadU32();
+    uint64_t mcsset = i.ReadU64();
     SetVhtCapabilitiesInfo(vhtinfo);
     SetSupportedMcsAndNssSet(mcsset);
     return length;

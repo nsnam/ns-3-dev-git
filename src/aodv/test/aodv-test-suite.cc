@@ -7,9 +7,12 @@
  */
 #include "ns3/aodv-neighbor.h"
 #include "ns3/aodv-packet.h"
+#include "ns3/aodv-routing-protocol.h"
 #include "ns3/aodv-rqueue.h"
 #include "ns3/aodv-rtable.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/node.h"
+#include "ns3/simulator.h"
 #include "ns3/test.h"
 
 namespace ns3
@@ -721,6 +724,37 @@ struct AodvRtableTest : public TestCase
 
 /**
  * @ingroup aodv-test
+ * @brief Test case for AODV parameter validation guardrails and defaults.
+ */
+class AodvParameterValidationTestCase : public TestCase
+{
+  public:
+    AodvParameterValidationTestCase()
+        : TestCase("AODV Parameter Validation Check")
+    {
+    }
+
+    ~AodvParameterValidationTestCase() override
+    {
+    }
+
+  private:
+    void DoRun() override
+    {
+        // Test B: Default Configuration -> Must Initialize Safely Without Aborts
+        Ptr<Node> nodeB = CreateObject<Node>();
+        Ptr<RoutingProtocol> aodvB = CreateObject<RoutingProtocol>();
+        nodeB->AggregateObject(aodvB);
+
+        // A standard default configuration must execute safely without triggering aborts
+        nodeB->Initialize();
+
+        Simulator::Destroy();
+    }
+};
+
+/**
+ * @ingroup aodv-test
  *
  * @brief AODV test suite
  */
@@ -740,6 +774,7 @@ class AodvTestSuite : public TestSuite
         AddTestCase(new AodvRqueueTest, TestCase::Duration::QUICK);
         AddTestCase(new AodvRtableEntryTest, TestCase::Duration::QUICK);
         AddTestCase(new AodvRtableTest, TestCase::Duration::QUICK);
+        AddTestCase(new AodvParameterValidationTestCase, TestCase::Duration::QUICK);
     }
 } g_aodvTestSuite; ///< the test suite
 

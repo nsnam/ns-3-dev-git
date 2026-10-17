@@ -79,7 +79,7 @@ ClassicRecoveryTest::DoRun()
                           "TcpClassicRecovery",
                           "The name of recovery used should be TcpClassicRecovery");
 
-    recovery->EnterRecovery(m_state, m_dupAckCount, 1000, 0);
+    recovery->EnterRecovery(m_state, m_dupAckCount, 1000, 0, 0);
     NS_TEST_ASSERT_MSG_EQ(m_state->m_cWnd,
                           m_state->m_ssThresh,
                           "cWnd should be set to ssThresh on entering recovery");

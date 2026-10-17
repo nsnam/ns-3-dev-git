@@ -41,7 +41,7 @@
     n2 (left)  IP: 10.1.2.2
     n2 (right) IP: 10.1.3.1, 10.2.3.1
     n3 (left)  IP: 10.1.3.2, 10.2.3.2
-   \endverbatim
+   @endverbatim
  *
  * Cases considered:
  * 1. For UDP Echo Application:
@@ -56,7 +56,7 @@
    At time +2.01106s server received 1024 bytes from 10.1.1.1 port 49153
    At time +2.01106s server sent 1024 bytes to 10.1.1.1 port 49153
    At time +2.02212s client received 1024 bytes from 10.1.3.2 port 9
-  \endverbatim
+  @endverbatim
  *
  * Output in nix-simple-multi-address.routes:
  * @verbatim
@@ -115,7 +115,7 @@
   10.1.1.1                 (Node 0)  ---->   10.1.1.2                 (Node 1)
   10.1.2.1                 (Node 1)  ---->   10.1.2.2                 (Node 2)
   10.1.3.1                 (Node 2)  ---->   10.2.3.2                 (Node 3)
- \endverbatim
+ @endverbatim
  */
 
 using namespace ns3;

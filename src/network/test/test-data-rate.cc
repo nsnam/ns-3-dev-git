@@ -343,6 +343,34 @@ DataRateTupleSetGetTestCase::DoRun()
  * @ingroup network-test
  * @ingroup tests
  *
+ * @brief Test the DataRate(bits, span) constructor (@issueid{413})
+ */
+class DataRateBitsPerTimeTestCase : public DataRateTestCase
+{
+  public:
+    DataRateBitsPerTimeTestCase()
+        : DataRateTestCase("Construct a DataRate from bits over a time span")
+    {
+    }
+
+  private:
+    void DoRun() override
+    {
+        // 1000 bits over 1 ms == 1 Mb/s
+        CheckDataRateEqual(DataRate(1000.0, MilliSeconds(1)),
+                           DataRate("1Mb/s"),
+                           "1000 bits / 1 ms should be 1 Mb/s");
+        // 8000 bits over 1 s == 8000 b/s
+        CheckDataRateEqual(DataRate(8000.0, Seconds(1)),
+                           DataRate(8000),
+                           "8000 bits / 1 s should be 8000 b/s");
+    }
+};
+
+/**
+ * @ingroup network-test
+ * @ingroup tests
+ *
  * @brief DataRate TestSuite
  */
 class DataRateTestSuite : public TestSuite
@@ -357,6 +385,7 @@ DataRateTestSuite::DataRateTestSuite()
     AddTestCase(new DataRateTestCase1(), TestCase::Duration::QUICK);
     AddTestCase(new DataRateTestCase2(), TestCase::Duration::QUICK);
     AddTestCase(new DataRateTupleSetGetTestCase(), TestCase::Duration::QUICK);
+    AddTestCase(new DataRateBitsPerTimeTestCase(), TestCase::Duration::QUICK);
 }
 
 static DataRateTestSuite sDataRateTestSuite; //!< Static variable for test initialization

@@ -41,6 +41,7 @@ class Icmpv4L4Protocol : public IpL4Protocol
      */
     static TypeId GetTypeId();
 
+    NS_DEPRECATED_3_49("Use the numbers in iana-intenernet-protocols-numbers.h instead")
     static constexpr uint8_t PROT_NUMBER = 1; //!< ICMP protocol number (see \RFC{792})
 
     Icmpv4L4Protocol();
@@ -110,6 +111,16 @@ class Icmpv4L4Protocol : public IpL4Protocol
      * @param orgData the original packet
      */
     void SendDestUnreachPort(Ipv4Header header, Ptr<const Packet> orgData);
+
+    /**
+     * @brief Send a Destination Unreachable (network unreachable) ICMP error.
+     *
+     * Used when a router has no route to forward a datagram (see @issueid{825}).
+     *
+     * @param header the original IP header
+     * @param orgData the original packet
+     */
+    void SendDestUnreachNetwork(Ipv4Header header, Ptr<const Packet> orgData);
 
     // From IpL4Protocol
     void SetDownTarget(IpL4Protocol::DownTargetCallback cb) override;

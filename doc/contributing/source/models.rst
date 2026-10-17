@@ -370,3 +370,41 @@ This rule might pose limitations to the authoring of tests. In such a case,
 ask a maintainer for suggestions, or check existing tests to find solutions.
 Sometimes tests that involve adding additional dependencies are placed into
 the ``src/test`` subdirectory.
+
+Vendored third-party code
+-------------------------
+
+In exceptional cases, the |ns3| mainline includes a copy of (or "vendors")
+an externally maintained library in the ``third-party/`` directory.  This
+is done sparingly, because each vendored library adds a long-term
+maintenance obligation for the project.  A library is only considered for
+vendoring if it is extensively used across the |ns3| codebase, or if it
+provides a crucial capability that is better imported than reimplemented
+for |ns3|.  The nlohmann/json library is an example that meets this bar;
+do not assume that other libraries will be accepted.  Contributors must
+ask the |ns3| maintainers (for example, by opening a GitLab.com issue or
+by asking on the ns-developers mailing list) before proposing to vendor
+any new library.
+
+If maintainers agree to vendor a library, the following conventions apply:
+
+* Import an unmodified copy of a specific tagged upstream release, and
+  pin the version by recording it in the commit message; e.g.,
+  ``third-party: Add nlohmann/json v3.12.0``.  Later upgrades must also
+  be made to a tagged upstream release, in a single commit that states
+  the new version.
+
+* ``third-party/.gitignore`` ignores everything by default and
+  re-includes tracked files explicitly.  Add re-include rules for the
+  new directory.
+
+  .. code-block:: text
+
+    !<name>/
+
+  This keeps the ignore rules consistent with what is tracked, so that
+  files added by a future upgrade of the vendored copy are not silently
+  ignored by ``git status`` and ``git add``.
+
+* The library license must be compatible with the |ns3| license
+  (see :ref:`General`).

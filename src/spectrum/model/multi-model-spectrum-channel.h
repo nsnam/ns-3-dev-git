@@ -14,6 +14,7 @@
 #include "spectrum-propagation-loss-model.h"
 #include "spectrum-value.h"
 
+#include "ns3/phased-array-model.h"
 #include "ns3/propagation-delay-model.h"
 
 #include <map>
@@ -127,20 +128,28 @@ class MultiModelSpectrumChannel : public SpectrumChannel
         Ptr<const SpectrumModel> txSpectrumModel);
 
     /**
+     * Structure that stores the parameters needed to handle the reception of a signal by a given
+     * receiver
+     */
+    struct RxInfo
+    {
+        Ptr<SpectrumValue> txPsd;             //!< transmitted PSD
+        double txAntennaGain{};               //!< antenna gain at the transmitter
+        Ptr<SpectrumSignalParameters> params; //!< signal parameters
+        Ptr<SpectrumPhy> receiver;            //!< pointer to the receiver SpectrumPhy
+        std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>
+            availableConvertedPsds; //!< available converted PSDs from the TX PSD
+        PhasedArrayModel::ComplexVector
+            txBeamformingVector; //!< beamforming vector of the transmitter's phased array when
+                                 //!< the transmission started (empty if it has no phased array)
+    };
+
+    /**
      * Used internally to reschedule transmission after the propagation delay.
      *
-     * @param txPsd The transmitted PSD.
-     * @param txAntennaGain The antenna gain at the transmitter.
-     * @param params The signal parameters.
-     * @param receiver A pointer to the receiver SpectrumPhy.
-     * @param availableConvertedPsds available converted PSDs from the TX PSD.
+     * @param rxInfo The information needed to handle the reception.
      */
-    virtual void StartRx(
-        Ptr<SpectrumValue> txPsd,
-        double txAntennaGain,
-        Ptr<SpectrumSignalParameters> params,
-        Ptr<SpectrumPhy> receiver,
-        const std::map<SpectrumModelUid_t, Ptr<SpectrumValue>>& availableConvertedPsds);
+    virtual void StartRx(const RxInfo& rxInfo);
 
     /**
      * Data structure holding, for each TX SpectrumModel,  all the

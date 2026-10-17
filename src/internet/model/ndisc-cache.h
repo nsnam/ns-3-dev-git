@@ -140,7 +140,7 @@ class NdiscCache : public Object
      *
      * @param stream the ostream the NDISC cache entries is printed to
      */
-    void PrintNdiscCache(Ptr<OutputStreamWrapper> stream);
+    virtual void PrintNdiscCache(Ptr<OutputStreamWrapper> stream);
 
     /**
      * @brief Clear the NDISC cache of all Auto-Generated entries
@@ -397,7 +397,7 @@ class NdiscCache : public Object
          *
          * @param os the output stream to which this Ipv6Address is printed
          */
-        void Print(std::ostream& os) const;
+        virtual void Print(std::ostream& os) const;
 
       protected:
         /**

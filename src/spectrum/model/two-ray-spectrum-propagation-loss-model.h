@@ -166,6 +166,8 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
      * @param b second node mobility model
      * @param aPhasedArrayModel the antenna array of the first node
      * @param bPhasedArrayModel the antenna array of the second node
+     * @param aBeamformingVector the beamforming vector of the first node's array
+     * @param bBeamformingVector the beamforming vector of the second node's array
      * @return SpectrumSignalParameters including the PSD of the received signal
      */
     Ptr<SpectrumSignalParameters> DoCalcRxPowerSpectralDensity(
@@ -173,7 +175,9 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
         Ptr<const MobilityModel> a,
         Ptr<const MobilityModel> b,
         Ptr<const PhasedArrayModel> aPhasedArrayModel,
-        Ptr<const PhasedArrayModel> bPhasedArrayModel) const override;
+        Ptr<const PhasedArrayModel> bPhasedArrayModel,
+        const PhasedArrayModel::ComplexVector& aBeamformingVector,
+        const PhasedArrayModel::ComplexVector& bBeamformingVector) const override;
 
   protected:
     int64_t DoAssignStreams(int64_t stream) override;
@@ -264,12 +268,16 @@ class TwoRaySpectrumPropagationLossModel : public PhasedArraySpectrumPropagation
      * @param b second node mobility model
      * @param aPhasedArrayModel the antenna array of the first node
      * @param bPhasedArrayModel the antenna array of the second node
+     * @param aBeamformingVector the beamforming vector of the first node's array
+     * @param bBeamformingVector the beamforming vector of the second node's array
      * @return the beamforming gain
      */
     double CalcBeamformingGain(Ptr<const MobilityModel> a,
                                Ptr<const MobilityModel> b,
                                Ptr<const PhasedArrayModel> aPhasedArrayModel,
-                               Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
+                               Ptr<const PhasedArrayModel> bPhasedArrayModel,
+                               const PhasedArrayModel::ComplexVector& aBeamformingVector,
+                               const PhasedArrayModel::ComplexVector& bBeamformingVector) const;
 
     /**
      * Get the index of the closest carrier frequency for which the FTR estimated parameters are

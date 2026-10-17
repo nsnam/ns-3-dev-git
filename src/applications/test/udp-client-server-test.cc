@@ -13,6 +13,7 @@
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
@@ -109,6 +110,103 @@ UdpClientServerTestCase::DoRun()
     auto server = DynamicCast<UdpServer>(serverApp.Get(0));
     NS_TEST_ASSERT_MSG_EQ(server->GetLost(), 0, "Packets were lost !");
     NS_TEST_ASSERT_MSG_EQ(server->GetReceived(), 8, "Did not receive expected number of packets !");
+}
+
+/**
+ * @ingroup applications-test
+ * @ingroup tests
+ *
+ * Test that an UdpClient application binds its socket to the address configured
+ * in the Local attribute, by checking the source port of the packets received
+ * by an UdpServer application
+ */
+class UdpClientLocalAddressTestCase : public TestCase
+{
+  public:
+    UdpClientLocalAddressTestCase();
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Check the source address of a packet received by the server.
+     *
+     * @param packet the received packet
+     * @param from the source address
+     * @param to the destination address
+     */
+    void RxWithAddresses(Ptr<const Packet> packet, const Address& from, const Address& to);
+
+    uint32_t m_received{0}; ///< Number of packets received by the server
+
+    static constexpr uint16_t LOCAL_PORT{12000}; ///< Port configured in the Local attribute
+};
+
+UdpClientLocalAddressTestCase::UdpClientLocalAddressTestCase()
+    : TestCase("Test that an UdpClient application binds to the address configured in the Local "
+               "attribute")
+{
+}
+
+void
+UdpClientLocalAddressTestCase::RxWithAddresses(Ptr<const Packet> packet,
+                                               const Address& from,
+                                               const Address& to)
+{
+    m_received++;
+    NS_TEST_ASSERT_MSG_EQ(InetSocketAddress::ConvertFrom(from).GetPort(),
+                          LOCAL_PORT,
+                          "Packet was not sent from the configured local port");
+}
+
+void
+UdpClientLocalAddressTestCase::DoRun()
+{
+    NodeContainer n;
+    n.Create(2);
+
+    InternetStackHelper internet;
+    internet.Install(n);
+
+    // link the two nodes
+    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
+    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
+    n.Get(0)->AddDevice(txDev);
+    n.Get(1)->AddDevice(rxDev);
+    Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel>();
+    rxDev->SetChannel(channel1);
+    txDev->SetChannel(channel1);
+    NetDeviceContainer d;
+    d.Add(txDev);
+    d.Add(rxDev);
+
+    Ipv4AddressHelper ipv4;
+
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer i = ipv4.Assign(d);
+
+    uint16_t port = 4000;
+    UdpServerHelper serverHelper(port);
+    auto serverApp = serverHelper.Install(n.Get(1));
+    serverApp.Start(Seconds(1));
+    serverApp.Stop(Seconds(10));
+    serverApp.Get(0)->TraceConnectWithoutContext(
+        "RxWithAddresses",
+        MakeCallback(&UdpClientLocalAddressTestCase::RxWithAddresses, this));
+
+    UdpClientHelper clientHelper(InetSocketAddress(i.GetAddress(1), port));
+    clientHelper.SetAttribute("MaxPackets", UintegerValue(10));
+    clientHelper.SetAttribute("Interval", TimeValue(Seconds(1)));
+    clientHelper.SetAttribute("Local",
+                              AddressValue(InetSocketAddress(Ipv4Address::GetAny(), LOCAL_PORT)));
+    auto clientApp = clientHelper.Install(n.Get(0));
+    clientApp.Start(Seconds(2));
+    clientApp.Stop(Seconds(10));
+
+    Simulator::Run();
+    Simulator::Destroy();
+
+    NS_TEST_ASSERT_MSG_EQ(m_received, 8, "Did not receive expected number of packets !");
 }
 
 /**
@@ -353,6 +451,7 @@ UdpClientServerTestSuite::UdpClientServerTestSuite()
 {
     AddTestCase(new UdpTraceClientServerTestCase, TestCase::Duration::QUICK);
     AddTestCase(new UdpClientServerTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new UdpClientLocalAddressTestCase, TestCase::Duration::QUICK);
     AddTestCase(new PacketLossCounterTestCase, TestCase::Duration::QUICK);
     AddTestCase(new UdpEchoClientSetFillTestCase, TestCase::Duration::QUICK);
 }

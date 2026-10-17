@@ -14,7 +14,11 @@
 #include "ns3/double.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/node.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/three-gpp-propagation-loss-model.h"
 #include "ns3/three-gpp-v2v-propagation-loss-model.h"
@@ -1008,14 +1012,16 @@ class ThreeGppShadowingTestCase : public TestCase
      * @param hBs the BS height in meters
      * @param hUt the UT height in meters
      * @param distance the initial distance between the BS and the UT
-     * @param shadowingEnabled true if shadowging must be enabled
+     * @param shadowingEnabled true if shadowing must be enabled
+     * @param frequency channel frequency
      */
     void RunTest(uint16_t testNum,
                  std::string propagationLossModelType,
                  double hBs,
                  double hUt,
                  double distance,
-                 bool shadowingEnabled);
+                 bool shadowingEnabled,
+                 double frequency);
 
     /**
      * Compute the propagation loss
@@ -1023,7 +1029,7 @@ class ThreeGppShadowingTestCase : public TestCase
      * @param b the second mobility model
      * @param testNum the index of the experiment
      */
-    void EvaluateLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint8_t testNum);
+    void EvaluateLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint16_t testNum);
 
     /**
      * Change the channel condition model
@@ -1044,6 +1050,7 @@ class ThreeGppShadowingTestCase : public TestCase
                                   //!< case in dB
         double m_shadowingStdNlos; //!< the standard deviation of the shadowing component in the
                                    //!< NLOS case in dB
+        double m_frequency;        //!< channel frequency
     };
 
     TestVectors<TestVector> m_testVectors;         //!< array containing all the test vectors
@@ -1062,7 +1069,9 @@ ThreeGppShadowingTestCase::~ThreeGppShadowingTestCase()
 }
 
 void
-ThreeGppShadowingTestCase::EvaluateLoss(Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint8_t testNum)
+ThreeGppShadowingTestCase::EvaluateLoss(Ptr<MobilityModel> a,
+                                        Ptr<MobilityModel> b,
+                                        uint16_t testNum)
 {
     double loss = m_lossModel->CalcRxPower(0, a, b);
     m_results.at(testNum).push_back(loss);
@@ -1080,7 +1089,8 @@ ThreeGppShadowingTestCase::RunTest(uint16_t testNum,
                                    double hBs,
                                    double hUt,
                                    double distance,
-                                   bool shadowingEnabled)
+                                   bool shadowingEnabled,
+                                   double frequency)
 {
     // Add a new entry for this test in the results map
     m_results[testNum] = std::vector<double>();
@@ -1102,9 +1112,10 @@ ThreeGppShadowingTestCase::RunTest(uint16_t testNum,
     // Create the propagation loss model
     ObjectFactory propagationLossModelFactory = ObjectFactory(propagationLossModelType);
     m_lossModel = propagationLossModelFactory.Create<ThreeGppPropagationLossModel>();
-    m_lossModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    m_lossModel->SetAttribute("Frequency", DoubleValue(frequency));
     m_lossModel->SetAttribute("ShadowingEnabled",
                               BooleanValue(shadowingEnabled)); // enable the shadow fading
+    m_lossModel->AssignStreams(testNum);
 
     // Set the channel condition to LOS
     Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel>();
@@ -1163,6 +1174,9 @@ ThreeGppShadowingTestCase::DoRun()
     // RMa, UMa, UMi and Indoor-Office.
 
     TestVector testVector;
+
+    // Above 6GHz
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppRmaPropagationLossModel";
     testVector.m_hBs = 25;
     testVector.m_hUt = 1.6;
@@ -1171,6 +1185,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 8;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppRmaPropagationLossModel";
     testVector.m_hBs = 25;
     testVector.m_hUt = 1.6;
@@ -1179,6 +1194,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 8;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppUmaPropagationLossModel";
     testVector.m_hBs = 25;
     testVector.m_hUt = 1.6;
@@ -1187,6 +1203,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 6;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppUmiStreetCanyonPropagationLossModel";
     testVector.m_hBs = 10;
     testVector.m_hUt = 1.6;
@@ -1195,6 +1212,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 7.82;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppIndoorOfficePropagationLossModel";
     testVector.m_hBs = 3;
     testVector.m_hUt = 1;
@@ -1203,6 +1221,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 8.03;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppV2vUrbanPropagationLossModel";
     testVector.m_hBs = 1.6;
     testVector.m_hUt = 1.6;
@@ -1211,6 +1230,7 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 4;
     m_testVectors.Add(testVector);
 
+    testVector.m_frequency = 6e9;
     testVector.m_propagationLossModelType = "ns3::ThreeGppV2vHighwayPropagationLossModel";
     testVector.m_hBs = 1.6;
     testVector.m_hUt = 1.6;
@@ -1219,7 +1239,26 @@ ThreeGppShadowingTestCase::DoRun()
     testVector.m_shadowingStdNlos = 4;
     m_testVectors.Add(testVector);
 
-    uint16_t numSamples = 250;
+    // Sub 6GHz
+    testVector.m_frequency = 3.5e9;
+    testVector.m_propagationLossModelType = "ns3::ThreeGppUmaPropagationLossModel";
+    testVector.m_hBs = 25;
+    testVector.m_hUt = 1.6;
+    testVector.m_distance = 100;
+    testVector.m_shadowingStdLos = 7;
+    testVector.m_shadowingStdNlos = 7;
+    m_testVectors.Add(testVector);
+
+    testVector.m_frequency = 3.5e9;
+    testVector.m_propagationLossModelType = "ns3::ThreeGppUmiStreetCanyonPropagationLossModel";
+    testVector.m_hBs = 10;
+    testVector.m_hUt = 1.6;
+    testVector.m_distance = 100;
+    testVector.m_shadowingStdLos = 7;
+    testVector.m_shadowingStdNlos = 7;
+    m_testVectors.Add(testVector);
+
+    uint16_t numSamples = 400;
 
     for (std::size_t tvIndex = 0; tvIndex < m_testVectors.GetN(); tvIndex++)
     {
@@ -1233,12 +1272,13 @@ ThreeGppShadowingTestCase::DoRun()
                     tv.m_hBs,
                     tv.m_hUt,
                     tv.m_distance,
-                    true);
+                    true,
+                    tv.m_frequency);
         }
 
         // analyze the results
-        std::vector<double> mean_vector; // the vector containing the mean propagation loss for each
-                                         // position (sample mean)
+        std::vector<double> mean_vector; // the vector containing the mean propagation loss for
+                                         // each position (sample mean)
 
         uint16_t numPositions = m_results.at(0).size();
         for (uint16_t k = 0; k < numPositions; k++)
@@ -1259,7 +1299,8 @@ ThreeGppShadowingTestCase::DoRun()
                 tv.m_hBs,
                 tv.m_hUt,
                 tv.m_distance,
-                false);
+                false,
+                tv.m_frequency);
         std::vector<double> true_mean =
             m_results.at(numSamples); // the result of the last test is the true mean
 
@@ -1294,6 +1335,213 @@ ThreeGppShadowingTestCase::DoRun()
 /**
  * @ingroup propagation-tests
  *
+ * Test case for the inter-UE (drop-based) spatial consistency of TR 38.901
+ * Sec. 7.6.3. With the InterUeSpatialConsistency attribute of the channel
+ * condition model enabled, two co-located terminals served by the same site
+ * sample the LOS/NLOS-state, indoor-state, building-type, shadow-fading and
+ * O2I penetration random fields at the same position and must therefore
+ * obtain the same channel condition and the same total loss, and a terminal
+ * must obtain the same indoor state towards different sites. Without it, the
+ * per-link draws are independent and co-located terminals obtain different
+ * shadowing realizations. The terminals are created before the sites, so the
+ * site of each link is only identified by its net device type, see the
+ * SiteNetDeviceTypes attribute of ChannelConditionModel.
+ */
+class ThreeGppColocatedSpatialConsistencyTestCase : public TestCase
+{
+  public:
+    ThreeGppColocatedSpatialConsistencyTestCase();
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Create a node with an aggregated constant-position mobility model.
+     *
+     * @param pos The node position.
+     * @param site Whether to install the net device identifying a site.
+     * @return The mobility model of the new node.
+     */
+    Ptr<MobilityModel> CreateNodeAt(const Vector& pos, bool site);
+
+    /// Result of ComputeColocatedLosses()
+    struct ColocatedLosses
+    {
+        double loss1;          ///< loss of the first terminal, in dB
+        double loss2;          ///< loss of the second terminal, in dB
+        bool sameCondition;    ///< whether the two terminals obtain the same channel condition
+        bool sameIndoorStates; ///< whether the first terminal obtains the same indoor state
+                               ///< towards both sites
+    };
+
+    /**
+     * Compute the losses perceived by two co-located terminals.
+     *
+     * @param scenario Key of the scenario to test.
+     * @param interUeSpatialConsistency Value for the InterUeSpatialConsistency attribute.
+     * @param position The common terminal position.
+     * @param frequency The centre frequency in Hz.
+     * @param o2iThreshold Value for the O2iThreshold attribute.
+     * @return The losses and the channel condition comparisons.
+     */
+    ColocatedLosses ComputeColocatedLosses(const std::string& scenario,
+                                           bool interUeSpatialConsistency,
+                                           const Vector& position,
+                                           double frequency,
+                                           double o2iThreshold);
+};
+
+ThreeGppColocatedSpatialConsistencyTestCase::ThreeGppColocatedSpatialConsistencyTestCase()
+    : TestCase("Test that co-located terminals perceive the same loss with "
+               "InterUeSpatialConsistency")
+{
+}
+
+Ptr<MobilityModel>
+ThreeGppColocatedSpatialConsistencyTestCase::CreateNodeAt(const Vector& pos, bool site)
+{
+    Ptr<Node> node = CreateObject<Node>();
+    if (site)
+    {
+        Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice>();
+        node->AddDevice(dev);
+        dev->SetNode(node);
+    }
+    Ptr<ConstantPositionMobilityModel> mob = CreateObject<ConstantPositionMobilityModel>();
+    mob->SetPosition(pos);
+    node->AggregateObject(mob);
+    return mob;
+}
+
+ThreeGppColocatedSpatialConsistencyTestCase::ColocatedLosses
+ThreeGppColocatedSpatialConsistencyTestCase::ComputeColocatedLosses(const std::string& scenario,
+                                                                    bool interUeSpatialConsistency,
+                                                                    const Vector& position,
+                                                                    double frequency,
+                                                                    double o2iThreshold)
+{
+    double hBs;
+    Ptr<ThreeGppPropagationLossModel> lossModel;
+    Ptr<ThreeGppChannelConditionModel> condModel;
+    if (scenario == "RMa")
+    {
+        hBs = 35;
+        lossModel = CreateObject<ThreeGppRmaPropagationLossModel>();
+        condModel = CreateObject<ThreeGppRmaChannelConditionModel>();
+    }
+    else if (scenario == "UMa")
+    {
+        hBs = 25;
+        lossModel = CreateObject<ThreeGppUmaPropagationLossModel>();
+        condModel = CreateObject<ThreeGppUmaChannelConditionModel>();
+    }
+    else if (scenario == "UMi")
+    {
+        hBs = 10;
+        lossModel = CreateObject<ThreeGppUmiStreetCanyonPropagationLossModel>();
+        condModel = CreateObject<ThreeGppUmiStreetCanyonChannelConditionModel>();
+    }
+    else
+    {
+        NS_ABORT_MSG_UNLESS(scenario == "InH", "Unknown scenario " << scenario);
+        hBs = 3;
+        lossModel = CreateObject<ThreeGppIndoorOfficePropagationLossModel>();
+        condModel = CreateObject<ThreeGppIndoorMixedOfficeChannelConditionModel>();
+    }
+
+    lossModel->SetAttribute("Frequency", DoubleValue(frequency));
+    lossModel->SetAttribute("ShadowingEnabled", BooleanValue(true));
+    condModel->SetAttribute("InterUeSpatialConsistency", BooleanValue(interUeSpatialConsistency));
+    condModel->SetAttribute("O2iThreshold", DoubleValue(o2iThreshold));
+    condModel->SetAttribute("O2iLowLossThreshold", DoubleValue(0.5));
+    condModel->SetAttribute("SiteNetDeviceTypes", StringValue("ns3::SimpleNetDevice"));
+    lossModel->SetChannelConditionModel(condModel);
+
+    // The terminals get lower node ids than the sites.
+    Ptr<MobilityModel> rx1 = CreateNodeAt(position, false);
+    Ptr<MobilityModel> rx2 = CreateNodeAt(position, false);
+    Ptr<MobilityModel> tx = CreateNodeAt(Vector(0.0, 0.0, hBs), true);
+    Ptr<MobilityModel> tx2 = CreateNodeAt(Vector(-80.0, 50.0, hBs), true);
+
+    Ptr<ChannelCondition> cond1 = condModel->GetChannelCondition(tx, rx1);
+    Ptr<ChannelCondition> cond2 = condModel->GetChannelCondition(tx, rx2);
+    Ptr<ChannelCondition> cond1Site2 = condModel->GetChannelCondition(rx1, tx2);
+    return {lossModel->CalcRxPower(0.0, tx, rx1),
+            lossModel->CalcRxPower(0.0, rx2, tx),
+            cond1->GetLosCondition() == cond2->GetLosCondition() &&
+                cond1->GetO2iCondition() == cond2->GetO2iCondition() &&
+                cond1->GetO2iLowHighCondition() == cond2->GetO2iLowHighCondition(),
+            cond1->GetO2iCondition() == cond1Site2->GetO2iCondition()};
+}
+
+void
+ThreeGppColocatedSpatialConsistencyTestCase::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    const std::vector<Vector> positions{Vector(60.0, 0.0, 1.5),
+                                        Vector(-35.0, 120.0, 1.5),
+                                        Vector(200.0, -150.0, 1.5),
+                                        Vector(90.0, 90.0, 1.5),
+                                        Vector(-140.0, -30.0, 1.5)};
+    for (const std::string scenario : {"RMa", "UMa", "UMi", "InH"})
+    {
+        // Below 6 GHz the single-frequency O2I model applies, above it the
+        // low/high-loss one with a spatially consistent building type.
+        for (double frequency : {3.5e9, 28e9})
+        {
+            for (double o2iThreshold : {0.0, 0.5, 1.0})
+            {
+                for (const Vector& pos : positions)
+                {
+                    const auto r =
+                        ComputeColocatedLosses(scenario, true, pos, frequency, o2iThreshold);
+                    NS_TEST_ASSERT_MSG_EQ(r.sameCondition,
+                                          true,
+                                          "Co-located terminals must obtain the same channel "
+                                          "condition with InterUeSpatialConsistency ("
+                                              << scenario << ", O2iThreshold " << o2iThreshold
+                                              << ")");
+                    NS_TEST_ASSERT_MSG_EQ(r.sameIndoorStates,
+                                          true,
+                                          "A terminal must obtain the same indoor state towards "
+                                          "every site with InterUeSpatialConsistency ("
+                                              << scenario << ", O2iThreshold " << o2iThreshold
+                                              << ")");
+                    NS_TEST_ASSERT_MSG_EQ_TOL(r.loss1,
+                                              r.loss2,
+                                              1e-9,
+                                              "Co-located terminals must perceive the same loss "
+                                              "with InterUeSpatialConsistency ("
+                                                  << scenario << ", " << frequency / 1e9
+                                                  << " GHz, O2iThreshold " << o2iThreshold << ")");
+                }
+            }
+        }
+
+        // Without spatial consistency the shadowing draws are independent: at
+        // least one co-located pair sharing the channel condition (so that
+        // only the shadowing can differ) must differ.
+        bool anyDifferent = false;
+        for (const Vector& pos : positions)
+        {
+            const auto r = ComputeColocatedLosses(scenario, false, pos, 3.5e9, 0.0);
+            anyDifferent |= r.sameCondition && std::abs(r.loss1 - r.loss2) > 0.1;
+        }
+        NS_TEST_ASSERT_MSG_EQ(anyDifferent,
+                              true,
+                              "Without InterUeSpatialConsistency, co-located terminals should "
+                              "draw independent shadowing realizations ("
+                                  << scenario << ")");
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup propagation-tests
+ *
  * @brief 3GPP Propagation models TestSuite
  *
  * This TestSuite tests the following models:
@@ -1321,6 +1569,7 @@ ThreeGppPropagationLossModelsTestSuite::ThreeGppPropagationLossModelsTestSuite()
     AddTestCase(new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppShadowingTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppColocatedSpatialConsistencyTestCase, TestCase::Duration::QUICK);
 }
 
 /// Static variable for test initialization

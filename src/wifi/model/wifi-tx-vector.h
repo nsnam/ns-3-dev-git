@@ -16,6 +16,7 @@
 #include "wifi-ru.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -26,7 +27,7 @@ namespace ns3
 {
 
 /// HE MU specific user transmission parameters.
-struct HeMuUserInfo
+struct WIFI_EXPORT HeMuUserInfo
 {
     WifiRu::RuSpec ru; ///< RU specification
     uint8_t mcs;       ///< MCS index
@@ -94,7 +95,7 @@ enum Center26ToneRuIndication : uint8_t
  * purposes, and furthermore it seems close to the way real devices
  * work (e.g., madwifi).
  */
-class WifiTxVector
+class WIFI_EXPORT WifiTxVector
 {
   public:
     /// map of HE MU specific user info parameters indexed by STA-ID
@@ -108,7 +109,7 @@ class WifiTxVector
      * @param mode WifiMode
      * @param powerLevel transmission power level
      * @param preamble preamble type
-     * @param guardInterval the guard interval duration in nanoseconds
+     * @param guardInterval the guard interval duration
      * @param nTx the number of TX antennas
      * @param nss the number of spatial STBC streams (NSS)
      * @param ness the number of extension spatial streams (NESS)
@@ -152,12 +153,14 @@ class WifiTxVector
      *
      * @param staId the station ID for MU
      * @returns the selected payload transmission mode
+     * @hidecaller
      */
     WifiMode GetMode(uint16_t staId = SU_STA_ID) const;
     /**
      * Sets the selected payload transmission mode
      *
      * @param mode the payload WifiMode
+     * @hidecaller
      */
     void SetMode(WifiMode mode);
     /**
@@ -197,6 +200,7 @@ class WifiTxVector
     void SetPreambleType(WifiPreamble preamble);
     /**
      * @returns the channel width
+     * @hidecaller
      */
     MHz_u GetChannelWidth() const;
     /**
@@ -206,13 +210,13 @@ class WifiTxVector
      */
     void SetChannelWidth(MHz_u channelWidth);
     /**
-     * @returns the guard interval duration (in nanoseconds)
+     * @returns the guard interval duration
      */
     Time GetGuardInterval() const;
     /**
-     * Sets the guard interval duration (in nanoseconds)
+     * Sets the guard interval duration
      *
-     * @param guardInterval the guard interval duration (in nanoseconds)
+     * @param guardInterval the guard interval duration
      */
     void SetGuardInterval(Time guardInterval);
     /**
@@ -590,7 +594,7 @@ class WifiTxVector
  *
  * @return output stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiTxVector& v);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiTxVector& v);
 
 } // namespace ns3
 

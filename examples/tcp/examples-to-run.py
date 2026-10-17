@@ -31,6 +31,11 @@ cpp_examples = [
         "True",
         "True",
     ),
+    (
+        "tcp-ecn-example --stopTime=20s",
+        "True",
+        "False",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

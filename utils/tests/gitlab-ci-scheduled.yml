@@ -11,6 +11,7 @@
     # add the core-debug repo to pacman.conf
     - printf "\n%s\n%s\n" "[core-debug]" "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
     - pacman-key --init
+    - pacman -Sy archlinux-keyring --noconfirm
     - pacman -Syu --noconfirm
       base-devel cmake ninja ccache valgrind
       python python-pip python-distutils-extra binutils lcov
@@ -105,8 +106,8 @@ daily-test-default:
   variables:
     MODE: default
 
-# Run the test.py script with files compiled in optimized mode
-daily-build-optimized:
+# Run the test.py script with files compiled in release mode
+daily-build-release:
   extends: .base-test
   rules:
     - if: $RELEASE == "daily"
@@ -115,20 +116,63 @@ daily-build-optimized:
   stage: build
   needs: ["daily-jobs"]
   variables:
-    MODE: optimized
+    MODE: release
 
-daily-test-optimized:
+daily-test-release:
   extends: .base-test
   rules:
     - if: $RELEASE == "daily"
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       allow_failure: true
   stage: test
-  needs: ["daily-build-optimized"]
+  needs: ["daily-build-release"]
   dependencies:
-    - daily-build-optimized
+    - daily-build-release
+  variables:
+    MODE: release
+
+daily-build-test-optimized-gcc:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: build
+  needs: ["daily-jobs"]
+  dependencies: []
   variables:
     MODE: optimized
+    FORCE_TESTS: Force
+  tags:
+    - nsnam
+    - linux
+
+daily-build-test-optimized-clang-libc++:
+  extends: .base-test
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: build
+  needs: ["daily-jobs"]
+  dependencies: []
+  before_script:
+    - pacman-key --init
+    - pacman -Sy archlinux-keyring --noconfirm
+    - pacman -Syu --noconfirm
+      base-devel cmake ninja ccache
+      python python-pip
+      clang libc++
+      boost gsl openmpi
+      openssh git
+  variables:
+    MODE: optimized
+    CXX: clang++
+    CXXFLAGS: -stdlib=libc++
+    FORCE_TESTS: Force
+  tags:
+    - nsnam
+    - linux
 
 ### Sanitizer tests
 weekly-build-test-optimized-sanitizers:
@@ -149,8 +193,8 @@ weekly-build-test-optimized-sanitizers:
     - linux
 
 ### Valgrind tests
-# Run the test.py script with files compiled in optimized mode + valgrind (daily)
-daily-build-test-optimized-valgrind:
+# Run the test.py script with files compiled in release mode + valgrind (daily)
+daily-build-test-release-valgrind:
   extends: .base-test
   rules:
     - if: $RELEASE == "daily"
@@ -160,7 +204,7 @@ daily-build-test-optimized-valgrind:
   needs: ["daily-jobs"]
   dependencies: []
   variables:
-    MODE: optimized
+    MODE: release
     VALGRIND_FLAG: -g --verbose-failed
     FORCE_TESTS: Force
   tags:
@@ -203,8 +247,8 @@ weekly-build-test-default-valgrind:
     - nsnam
     - linux
 
-# Run the test.py script with files compiled in optimized mode
-weekly-build-test-optimized-valgrind:
+# Run the test.py script with files compiled in release mode
+weekly-build-test-release-valgrind:
   extends: .base-test
   rules:
     - if: $RELEASE == "weekly"
@@ -214,7 +258,7 @@ weekly-build-test-optimized-valgrind:
   needs: ["weekly-slow-jobs"]
   dependencies: []
   variables:
-    MODE: optimized
+    MODE: release
     VALGRIND_FLAG: -g --verbose-failed
     FORCE_TESTS: Force
   tags:
@@ -259,3 +303,56 @@ weekly-build-coverage:
   tags:
     - nsnam
     - linux
+
+.weekly-sionna:
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  stage: test
+  dependencies: [ ]
+  script:
+    - $PYTHON -m pip install sionna==1.2.0 sionna-rt==1.2.0 pybind11==2.11.1
+    - $PYTHON ./ns3 configure -G Ninja --enable-python-bindings --enable-examples --filter-module-examples-and-tests=spectrum
+    - $PYTHON ./ns3 run sionna-rt-channel-example
+  timeout: 3h
+
+# Oldest supported version of Ubuntu tested with sionna
+weekly-sionna-ubuntu-22.04:
+  extends: .weekly-sionna
+  image: ubuntu:22.04 # python 3.10
+  needs: [ "weekly-ubuntu" ]
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      g++ ninja-build ccache git
+      python3 libpython3-dev python3-pip python3-venv
+      llvm # Required by Dr. Jit, a Sionna-RT dependency for CPU compute
+    - $PYTHON -m venv ./venv
+    - . ./venv/bin/activate
+    - $PYTHON -m pip install cppyy cmake==3.25.2
+  variables:
+    PYTHON: "python3"
+
+weekly-sionna-macos:
+  extends: .weekly-sionna
+  needs: [ "daily-macos" ]
+  before_script:
+    - brew update
+    - brew install ninja cmake ccache git
+    - curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+    - bash ./Miniconda3-latest-MacOSX-arm64.sh -b -c -u
+    - source ~/.zshrc
+    - conda create -n venv python=3.12 -y
+    - conda activate venv
+    - conda install pip conda-forge::cppyy=3.5.0 conda-forge::libllvm17 -y
+    - export DRJIT_LIBLLVM_PATH="$CONDA_PREFIX/lib/libLLVM-17.dylib"
+  after_script:
+    - source ~/.zshrc
+    - conda deactivate
+    - conda remove --name venv --all -y
+  variables:
+    PYTHON: "python"
+  tags:
+    - macOS
+    - nsnam

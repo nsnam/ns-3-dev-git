@@ -775,9 +775,9 @@ MgtAddBaRequestHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
     i.WriteU8(m_dialogToken);
-    i.WriteHtolsbU16(GetParameterSet());
-    i.WriteHtolsbU16(m_timeoutValue);
-    i.WriteHtolsbU16(GetStartingSequenceControl());
+    i.WriteU16(GetParameterSet());
+    i.WriteU16(m_timeoutValue);
+    i.WriteU16(GetStartingSequenceControl());
     if (m_gcrGroupAddress)
     {
         GcrGroupAddress gcrGroupAddr;
@@ -797,9 +797,9 @@ MgtAddBaRequestHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
     m_dialogToken = i.ReadU8();
-    SetParameterSet(i.ReadLsbtohU16());
-    m_timeoutValue = i.ReadLsbtohU16();
-    SetStartingSequenceControl(i.ReadLsbtohU16());
+    SetParameterSet(i.ReadU16());
+    m_timeoutValue = i.ReadU16();
+    SetStartingSequenceControl(i.ReadU16());
     m_gcrGroupAddress.reset();
     GcrGroupAddress gcrGroupAddr;
     auto tmp = i;
@@ -1002,8 +1002,8 @@ MgtAddBaResponseHeader::Serialize(Buffer::Iterator start) const
     Buffer::Iterator i = start;
     i.WriteU8(m_dialogToken);
     i = m_code.Serialize(i);
-    i.WriteHtolsbU16(GetParameterSet());
-    i.WriteHtolsbU16(m_timeoutValue);
+    i.WriteU16(GetParameterSet());
+    i.WriteU16(m_timeoutValue);
     if (m_gcrGroupAddress)
     {
         GcrGroupAddress gcrGroupAddr;
@@ -1024,8 +1024,8 @@ MgtAddBaResponseHeader::Deserialize(Buffer::Iterator start)
     Buffer::Iterator i = start;
     m_dialogToken = i.ReadU8();
     i = m_code.Deserialize(i);
-    SetParameterSet(i.ReadLsbtohU16());
-    m_timeoutValue = i.ReadLsbtohU16();
+    SetParameterSet(i.ReadU16());
+    m_timeoutValue = i.ReadU16();
     m_gcrGroupAddress.reset();
     GcrGroupAddress gcrGroupAddr;
     auto tmp = i;
@@ -1206,8 +1206,8 @@ void
 MgtDelBaHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
-    i.WriteHtolsbU16(GetParameterSet());
-    i.WriteHtolsbU16(m_reasonCode);
+    i.WriteU16(GetParameterSet());
+    i.WriteU16(m_reasonCode);
     if (m_gcrGroupAddress)
     {
         GcrGroupAddress gcrGroupAddr;
@@ -1220,8 +1220,8 @@ uint32_t
 MgtDelBaHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    SetParameterSet(i.ReadLsbtohU16());
-    m_reasonCode = i.ReadLsbtohU16();
+    SetParameterSet(i.ReadU16());
+    m_reasonCode = i.ReadU16();
     m_gcrGroupAddress.reset();
     GcrGroupAddress gcrGroupAddr;
     auto tmp = i;
@@ -1373,7 +1373,7 @@ MgtEmlOmn::Serialize(Buffer::Iterator start) const
                     "Mode and EMLMR Mode subfields are set to 1");
     if (m_emlControl.linkBitmap)
     {
-        start.WriteHtolsbU16(*m_emlControl.linkBitmap);
+        start.WriteU16(*m_emlControl.linkBitmap);
     }
     // TODO serialize MCS Map Count Control and EMLMR Supported MCS And NSS Set subfields
     // when implemented
@@ -1408,7 +1408,7 @@ MgtEmlOmn::Deserialize(Buffer::Iterator start)
 
     if (m_emlControl.emlsrMode == 1 || m_emlControl.emlmrMode == 1)
     {
-        m_emlControl.linkBitmap = i.ReadLsbtohU16();
+        m_emlControl.linkBitmap = i.ReadU16();
     }
     // TODO deserialize MCS Map Count Control and EMLMR Supported MCS And NSS Set subfields
     // when implemented
@@ -1482,6 +1482,51 @@ FilsDiscHeader::FilsDiscHeader()
       m_accessNetOpt(m_frameCtl.m_anoPresenceInd),
       m_chCntrFreqSeg1(m_frameCtl.m_chCntrFreqSeg1PresenceInd)
 {
+}
+
+FilsDiscHeader::FilsDiscHeader(const FilsDiscHeader& other)
+    : m_frameCtl(other.m_frameCtl),
+      m_timeStamp(other.m_timeStamp),
+      m_beaconInt(other.m_beaconInt),
+      m_len(m_frameCtl.m_lenPresenceInd),
+      m_fdCap(m_frameCtl.m_capPresenceInd),
+      m_opClass(other.m_opClass),
+      m_primaryCh(m_frameCtl.m_primChPresenceInd),
+      m_apConfigSeqNum(m_frameCtl.m_apCsnPresenceInd),
+      m_accessNetOpt(m_frameCtl.m_anoPresenceInd),
+      m_chCntrFreqSeg1(m_frameCtl.m_chCntrFreqSeg1PresenceInd),
+      m_rnr(other.m_rnr),
+      m_tim(other.m_tim),
+      m_ssid(other.m_ssid)
+{
+    m_len = other.m_len.ToOptional();
+    m_fdCap = other.m_fdCap.ToOptional();
+    m_primaryCh = other.m_primaryCh.ToOptional();
+    m_apConfigSeqNum = other.m_apConfigSeqNum.ToOptional();
+    m_accessNetOpt = other.m_accessNetOpt.ToOptional();
+    m_chCntrFreqSeg1 = other.m_chCntrFreqSeg1.ToOptional();
+}
+
+FilsDiscHeader&
+FilsDiscHeader::operator=(const FilsDiscHeader& other)
+{
+    if (this != &other)
+    {
+        m_frameCtl = other.m_frameCtl;
+        m_timeStamp = other.m_timeStamp;
+        m_beaconInt = other.m_beaconInt;
+        m_len = other.m_len.ToOptional();
+        m_fdCap = other.m_fdCap.ToOptional();
+        m_opClass = other.m_opClass;
+        m_primaryCh = other.m_primaryCh.ToOptional();
+        m_apConfigSeqNum = other.m_apConfigSeqNum.ToOptional();
+        m_accessNetOpt = other.m_accessNetOpt.ToOptional();
+        m_chCntrFreqSeg1 = other.m_chCntrFreqSeg1.ToOptional();
+        m_rnr = other.m_rnr;
+        m_tim = other.m_tim;
+        m_ssid = other.m_ssid;
+    }
+    return *this;
 }
 
 void
@@ -1586,8 +1631,8 @@ FilsDiscHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
     m_frameCtl.Serialize(i);
-    i.WriteHtolsbU64(Simulator::Now().GetMicroSeconds()); // Time stamp
-    i.WriteHtolsbU16(m_beaconInt);
+    i.WriteU64(Simulator::Now().GetMicroSeconds()); // Time stamp
+    i.WriteU16(m_beaconInt);
     i.Write(reinterpret_cast<const uint8_t*>(m_ssid.data()), m_ssid.length());
     if (m_len.has_value())
     {
@@ -1628,8 +1673,8 @@ FilsDiscHeader::Deserialize(Buffer::Iterator start)
     Buffer::Iterator i = start;
     auto nOctets = m_frameCtl.Deserialize(i);
     i.Next(nOctets);
-    m_timeStamp = i.ReadLsbtohU64();
-    m_beaconInt = i.ReadLsbtohU16();
+    m_timeStamp = i.ReadU64();
+    m_beaconInt = i.ReadU16();
     std::vector<uint8_t> ssid(m_frameCtl.m_ssidLen + 2);
     i.Read(ssid.data(), m_frameCtl.m_ssidLen + 1);
     ssid[m_frameCtl.m_ssidLen + 1] = 0;
@@ -1705,13 +1750,13 @@ FilsDiscHeader::FilsDiscFrameControl::Serialize(Buffer::Iterator& start) const
                    ((m_chCntrFreqSeg1PresenceInd ? 1 : 0) << 9) |
                    ((m_primChPresenceInd ? 1 : 0) << 10) | (m_rsnInfoPresenceInd << 11) |
                    ((m_lenPresenceInd ? 1 : 0) << 12) | (m_mdPresenceInd << 13);
-    start.WriteHtolsbU16(val);
+    start.WriteU16(val);
 }
 
 uint32_t
 FilsDiscHeader::FilsDiscFrameControl::Deserialize(Buffer::Iterator start)
 {
-    auto val = start.ReadLsbtohU16();
+    auto val = start.ReadU16();
 
     m_ssidLen = val & 0x001f;
     m_capPresenceInd = ((val >> 5) & 0x0001) == 1;
@@ -1742,13 +1787,13 @@ FilsDiscHeader::FdCapability::Serialize(Buffer::Iterator& start) const
 {
     uint16_t val = m_ess | (m_privacy << 1) | (m_chWidth << 2) | (m_maxNss << 5) |
                    (m_multiBssidPresenceInd << 9) | (m_phyIdx << 10) | (m_minRate << 13);
-    start.WriteHtolsbU16(val);
+    start.WriteU16(val);
 }
 
 uint32_t
 FilsDiscHeader::FdCapability::Deserialize(Buffer::Iterator start)
 {
-    auto val = start.ReadLsbtohU16();
+    auto val = start.ReadU16();
 
     m_ess = val & 0x0001;
     m_privacy = (val >> 1) & 0x0001;

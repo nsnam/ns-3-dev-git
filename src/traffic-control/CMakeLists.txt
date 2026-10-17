@@ -1,3 +1,23 @@
+# The fq-* and pfifo-fast queue disc system tests build Ipv4/Ipv6 headers,
+# packet filters and queue disc items, plus TCP/UDP headers, so they are built
+# only when the internet module is also enabled and link against it.
+set(internet_dependent_test_sources)
+set(internet_dependent_test_libs)
+if(internet
+   IN_LIST
+   ns3-all-enabled-modules
+)
+  set(internet_dependent_test_sources
+      test/fq-cobalt-queue-disc-test-suite.cc
+      test/fq-codel-queue-disc-test-suite.cc
+      test/fq-pie-queue-disc-test-suite.cc
+      test/pfifo-fast-queue-disc-test-suite.cc
+  )
+  set(internet_dependent_test_libs
+      ${libinternet}
+  )
+endif()
+
 build_lib(
   LIBNAME traffic-control
   SOURCE_FILES
@@ -48,4 +68,6 @@ build_lib(
     test/red-queue-disc-test-suite.cc
     test/tbf-queue-disc-test-suite.cc
     test/tc-flow-control-test-suite.cc
+    ${internet_dependent_test_sources}
+  TEST_LIBRARIES_TO_LINK ${internet_dependent_test_libs}
 )

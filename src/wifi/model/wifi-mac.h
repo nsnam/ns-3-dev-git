@@ -17,6 +17,7 @@
 #include "wifi-standards.h"
 
 #include "ns3/uniform-random-bit-generator.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <list>
@@ -75,6 +76,32 @@ enum WifiMacDropReason : uint8_t
     WIFI_MAC_DROP_QOS_OLD_PACKET
 };
 
+/**
+ * @brief Stream insertion operator.
+ *
+ * @param os the stream
+ * @param reason the reason why an MPDU was dropped
+ * @returns a reference to the stream
+ */
+inline std::ostream&
+operator<<(std::ostream& os, WifiMacDropReason reason)
+{
+    switch (reason)
+    {
+    case WIFI_MAC_DROP_FAILED_ENQUEUE:
+        return (os << "DROP_FAILED_ENQUEUE");
+    case WIFI_MAC_DROP_EXPIRED_LIFETIME:
+        return (os << "DROP_EXPIRED_LIFETIME");
+    case WIFI_MAC_DROP_REACHED_RETRY_LIMIT:
+        return (os << "DROP_REACHED_RETRY_LIMIT");
+    case WIFI_MAC_DROP_QOS_OLD_PACKET:
+        return (os << "DROP_QOS_OLD_PACKET");
+    default:
+        NS_ABORT_MSG("Unknown reason to drop MPDU: " << +static_cast<uint8_t>(reason));
+        return (os << "unknown");
+    }
+}
+
 typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
 
 /**
@@ -86,7 +113,7 @@ typedef std::unordered_map<uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiP
  * (association/disassociation state machines).
  *
  */
-class WifiMac : public Object
+class WIFI_EXPORT WifiMac : public Object
 {
   public:
     friend class WifiStaticSetupHelper;
@@ -104,9 +131,17 @@ class WifiMac : public Object
     WifiMac(const WifiMac&) = delete;
     WifiMac& operator=(const WifiMac&) = delete;
 
-    /// type of the management frames
-    using MgtFrameType =
+    /// type of the management response frames
+    using MgtResponseFrameType =
         std::variant<MgtBeaconHeader, MgtProbeResponseHeader, MgtAssocResponseHeader>;
+
+    /// type of the management frames
+    using MgtFrameType = std::variant<MgtBeaconHeader,
+                                      MgtProbeResponseHeader,
+                                      MgtAssocResponseHeader,
+                                      MgtAssocRequestHeader,
+                                      MgtReassocRequestHeader,
+                                      MgtProbeRequestHeader>;
 
     /**
      * Assign a fixed random variable stream number to the random variables
@@ -253,7 +288,17 @@ class WifiMac : public Object
      * @return the wifi MAC queue of the (Qos)Txop associated with the given AC,
      *         if such (Qos)Txop is installed, or a null pointer, otherwise
      */
-    virtual Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const;
+    Ptr<WifiMacQueue> GetTxopQueue(AcIndex ac) const;
+
+    /**
+     * Get the (Qos)Txop associated with the given AC, if such (Qos)Txop is installed, or a null
+     * pointer, otherwise.
+     *
+     * @param ac the given Access Category
+     * @return the (Qos)Txop associated with the given AC, if such (Qos)Txop is installed, or a
+     *         null pointer, otherwise
+     */
+    virtual Ptr<Txop> GetTxopFor(AcIndex ac) const;
 
     /**
      * Check if the MAC has frames to transmit over the given link
@@ -334,17 +379,21 @@ class WifiMac : public Object
     void SetBssid(Mac48Address bssid, uint8_t linkId);
 
     /**
-     * Block the transmission on the given links of all unicast frames addressed to
-     * the station with the given address for the given reason. The given MAC address
-     * must be the MLD address in case the addressed device is multi-link.
+     * Block the transmission on the given links of all unicast frames (except management frames,
+     * if requested) addressed to the station with the given address for the given reason. The
+     * given MAC address must be the MLD address in case the addressed device is multi-link.
      *
      * @param reason the reason for blocking transmissions
      * @param address the MAC address of the given device
      * @param linkIds the IDs of the links to block
+     * @param exceptMgt true not to block management frames, false to block management frames.
+     *                  Keeping management frames unblocked is useful, e.g., after disassociation
+     *                  to be able to send new association request frames
      */
     void BlockUnicastTxOnLinks(WifiQueueBlockedReason reason,
                                Mac48Address address,
-                               const std::set<uint8_t>& linkIds);
+                               const std::set<uint8_t>& linkIds,
+                               bool exceptMgt = false);
 
     /**
      * Unblock the transmission on the given links of all unicast frames addressed to
@@ -419,6 +468,17 @@ class WifiMac : public Object
      * to specify the TID to use in case QoS is supported.
      */
     void Enqueue(Ptr<Packet> packet, Mac48Address to, Mac48Address from, uint8_t tid);
+
+    /**
+     * Enqueue a management frame.
+     *
+     * @param macHdr the MAC header
+     * @param headers a sorted list of headers to serialize in the body of the management frame
+     * @param linkId the ID of the link on which the management frame has to be sent
+     */
+    void EnqueueMgt(const WifiMacHeader& macHdr,
+                    const std::list<std::reference_wrapper<const Header>>& headers,
+                    uint8_t linkId);
 
     /**
      * @return if this MAC supports sending from arbitrary address.
@@ -527,6 +587,22 @@ class WifiMac : public Object
      * Public method used to fire a MacRxDrop trace. Implemented for encapsulation purposes.
      */
     void NotifyRxDrop(Ptr<const Packet> packet);
+
+    /**
+     * Notify that the given TXOP is requesting channel access on the given link.
+     *
+     * @param txop the DCF/EDCAF requesting channel access
+     * @param linkId the ID of the given link
+     */
+    virtual void NotifyRequestAccess(Ptr<Txop> txop, uint8_t linkId);
+
+    /**
+     * Notify that the given TXOP has released the channel on the given link.
+     *
+     * @param txop the DCF/EDCAF releasing the channel
+     * @param linkId the ID of the given link
+     */
+    virtual void NotifyChannelReleased(Ptr<Txop> txop, uint8_t linkId);
 
     /**
      * @return pointer to HtConfiguration if it exists
@@ -817,8 +893,17 @@ class WifiMac : public Object
                          uint8_t tid,
                          uint8_t linkId) const;
 
+    /**
+     * Get the set of links that have been disabled for the given MLD, i.e., no TID is mapped onto
+     * such links both in the DL direction and the UL direction.
+     *
+     * @param mldAddr the MLD MAC address of the given MLD
+     * @return the set of links that have been disabled for the given MLD
+     */
+    std::set<linkId_t> GetDisabledLinks(Mac48Address mldAddr);
+
     /// Information reported by ICF drop trace
-    struct IcfDropInfo
+    struct WIFI_EXPORT IcfDropInfo
     {
         WifiIcfDrop reason{}; ///< the reason why the ICF was dropped by the EMLSR client
         uint8_t linkId{};     ///< the ID of the link on which the ICF was dropped
@@ -925,6 +1010,72 @@ class WifiMac : public Object
     virtual void DeaggregateAmsduAndForward(Ptr<const WifiMpdu> mpdu);
 
     /**
+     * Prepare and enqueue a Disassociation frame. This function shall only be called by an AP
+     * or by a non-AP station associated with an AP.
+     *
+     * @param addr1 the receiver address for the Disassociation frame
+     * @param linkId the ID of the link on which the frame is transmitted
+     */
+    void EnqueueDisassociation(Mac48Address addr1, uint8_t linkId);
+
+    /**
+     * Reset the information about the given remote station from the remote station manager
+     * operating on the given link.
+     *
+     * @param remoteAddr the (MLD or link) address of the remote station
+     * @param linkId the ID of the given link
+     */
+    void ResetRemoteInfo(Mac48Address remoteAddr, uint8_t linkId);
+
+    /**
+     * This function performs the operations that APs and non-AP STAs need to take on their queues
+     * in case of disassociation or (re)association. Firstly, all container queues storing frames
+     * to transmit to the given remote station are blocked with reason DISASSOCIATION.
+     *
+     * Additionally, if <i>isDisassoc</i> is true:
+     *
+     * - Management queues and control queues are flushed
+     *
+     * If <i>isDisassoc</i> is false:
+     *
+     * - Management queues are flushed
+     * - In case of MLDs, control queues having a link address as transmitter address are flushed
+     *
+     * The rationale is that a reassociation may involve the setup of a different set of links,
+     * hence management and control frames that must be sent on a specific link shall be dropped.
+     * Control frames that can be sent on any link could be BlockAckReq frames scheduled to advance
+     * the recipient window, hence they should not be dropped if the Block Ack agreement is not
+     * destroyed.
+     *
+     * @param remoteAddr the remote station address (MLD address for ML setup, link address for
+     *                   legacy association)
+     * @param linkIds the ID of the links setup with the remote station
+     * @param isDisassoc true in case of disassociation notified to the AP, false in case of
+     *                   (re)association or disassociation not notified to the AP
+     */
+    void HandleQueuesUponAssocStateChanged(Mac48Address remoteAddr,
+                                           const std::set<uint8_t>& linkIds,
+                                           bool isDisassoc);
+
+    /**
+     * Queues that have been blocked (and not flushed) upon disassociation or reassociation need
+     * to be restored in case of successful association. Restoring a queue involves resetting the
+     * associated link information and configuring new link information that reflects the new set
+     * of setup links.
+     *
+     * @param remoteAddr the remote station address (MLD address for ML setup, link address for
+     *                   legacy association)
+     */
+    void RestoreQueuesAfterReassoc(Mac48Address remoteAddr);
+
+    /**
+     * Destroy all the Block Ack agreements established with the given remote station.
+     *
+     * @param remoteAddr the remote station address for the given link
+     */
+    void DestroyAllBlockAckAgreements(Mac48Address remoteAddr);
+
+    /**
      * Apply the TID-to-Link Mapping negotiated with the given MLD for the given direction
      * by properly configuring the queue scheduler.
      *
@@ -950,7 +1101,7 @@ class WifiMac : public Object
      * to be confused with the general concept of link for a NetDevice (used by the
      * m_linkUp and m_linkDown callbacks).
      */
-    struct LinkEntity
+    struct WIFI_EXPORT LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         virtual ~LinkEntity();

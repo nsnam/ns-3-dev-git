@@ -24,7 +24,7 @@ ZigbeeHelper::ZigbeeHelper()
 {
     NS_LOG_FUNCTION(this);
     m_stackFactory.SetTypeId("ns3::zigbee::ZigbeeStack");
-    m_nwkLayerOnly = false;
+    m_layers = zigbee::StackLayers::FULL_STACK;
 }
 
 void
@@ -51,10 +51,7 @@ ZigbeeHelper::Install(const NetDeviceContainer c)
 
         Ptr<zigbee::ZigbeeStack> zigbeeStack = m_stackFactory.Create<zigbee::ZigbeeStack>();
 
-        if (m_nwkLayerOnly)
-        {
-            zigbeeStack->SetOnlyNwkLayer();
-        }
+        zigbeeStack->SetLayers(m_layers);
 
         zigbeeStackContainer.Add(zigbeeStack);
         device->GetNode()->AggregateObject(zigbeeStack);
@@ -64,9 +61,9 @@ ZigbeeHelper::Install(const NetDeviceContainer c)
 }
 
 void
-ZigbeeHelper::SetNwkLayerOnly()
+ZigbeeHelper::SetLayers(zigbee::StackLayers layers)
 {
-    m_nwkLayerOnly = true;
+    m_layers = layers;
 }
 
 } // namespace ns3

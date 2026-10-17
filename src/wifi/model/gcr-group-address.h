@@ -12,6 +12,7 @@
 #include "wifi-information-element.h"
 
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -21,7 +22,7 @@ namespace ns3
  *
  * The IEEE 802.11 GCR Group Address Element (Sec. 9.4.2.125 of 802.11-2020)
  */
-class GcrGroupAddress : public WifiInformationElement
+class WIFI_EXPORT GcrGroupAddress : public WifiInformationElement
 {
   public:
     GcrGroupAddress() = default;

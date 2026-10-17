@@ -183,13 +183,13 @@ ZigbeeApsHeader::Serialize(Buffer::Iterator start) const
 
     if (m_deliveryMode == ApsDeliveryMode::APS_GROUP_ADDRESSING)
     {
-        i.WriteHtolsbU16(m_groupAddress);
+        i.WriteU16(m_groupAddress);
     }
 
     if (m_frameType == ApsFrameType::APS_DATA || m_frameType == ApsFrameType::APS_ACK)
     {
-        i.WriteHtolsbU16(m_clusterId);
-        i.WriteHtolsbU16(m_profileId);
+        i.WriteU16(m_clusterId);
+        i.WriteU16(m_profileId);
     }
 
     if (m_frameType == ApsFrameType::APS_DATA)
@@ -242,13 +242,13 @@ ZigbeeApsHeader::Deserialize(Buffer::Iterator start)
 
     if (m_deliveryMode == ApsDeliveryMode::APS_GROUP_ADDRESSING)
     {
-        m_groupAddress = i.ReadLsbtohU16();
+        m_groupAddress = i.ReadU16();
     }
 
     if (m_frameType == ApsFrameType::APS_DATA || m_frameType == ApsFrameType::APS_ACK)
     {
-        m_clusterId = i.ReadLsbtohU16();
-        m_profileId = i.ReadLsbtohU16();
+        m_clusterId = i.ReadU16();
+        m_profileId = i.ReadU16();
     }
 
     if (m_frameType == ApsFrameType::APS_DATA)

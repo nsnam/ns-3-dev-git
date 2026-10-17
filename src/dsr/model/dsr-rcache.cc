@@ -6,6 +6,8 @@
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
  *              Song Luan <lsuper@mail.ustc.edu.cn> (Implemented Link Cache using Dijsktra
  * algorithm)
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -46,6 +48,14 @@ NS_LOG_COMPONENT_DEFINE("DsrRouteCache");
 namespace dsr
 {
 
+/**
+ * @ingroup dsr
+ * @brief Compare route cache entries by hop count and priority,
+ *        equivalent to comparing the expire time.
+ * @param a The first route cache entry
+ * @param b The second route canche entry
+ * @returns `true` if `a < b`
+ */
 bool
 CompareRoutesBoth(const DsrRouteCacheEntry& a, const DsrRouteCacheEntry& b)
 {
@@ -55,6 +65,13 @@ CompareRoutesBoth(const DsrRouteCacheEntry& a, const DsrRouteCacheEntry& b)
             (a.GetExpireTime() > b.GetExpireTime()));
 }
 
+/**
+ * @ingroup dsr
+ * @brief Compare route cache entries by hop count only
+ * @param a The first route cache entry
+ * @param b The second route canche entry
+ * @returns `true` if `a < b`
+ */
 bool
 CompareRoutesHops(const DsrRouteCacheEntry& a, const DsrRouteCacheEntry& b)
 {
@@ -62,6 +79,13 @@ CompareRoutesHops(const DsrRouteCacheEntry& a, const DsrRouteCacheEntry& b)
     return a.GetVector().size() < b.GetVector().size();
 }
 
+/**
+ * @ingroup dsr
+ * @brief Compare route cache entries by hop priority only.
+ * @param a The first route cache entry
+ * @param b The second route canche entry
+ * @returns `true` if `a < b`
+ */
 bool
 CompareRoutesExpire(const DsrRouteCacheEntry& a, const DsrRouteCacheEntry& b)
 {
@@ -420,7 +444,7 @@ bool
 DsrRouteCache::LookupRoute_Link(Ipv4Address id, DsrRouteCacheEntry& rt)
 {
     NS_LOG_FUNCTION(this << id);
-    /// We need to purge the link node cache
+    // We need to purge the link node cache
     PurgeLinkNode();
     auto i = m_bestRoutesTable_link.find(id);
     if (i == m_bestRoutesTable_link.end())
@@ -464,7 +488,7 @@ DsrRouteCache::PurgeLinkNode()
             ++i;
         }
     }
-    /// may need to remove them after verify
+    // may need to remove them after verify
     for (auto i = m_nodeCache.begin(); i != m_nodeCache.end();)
     {
         NS_LOG_DEBUG("The node stability " << i->second.GetNodeStability().As(Time::S));
@@ -489,7 +513,7 @@ DsrRouteCache::UpdateNetGraph()
     for (auto i = m_linkCache.begin(); i != m_linkCache.end(); ++i)
     {
         // Here the weight is set as 1
-        /// @todo May need to set different weight for different link here later
+        // TODO May need to set different weight for different link here later
         uint32_t weight = 1;
         m_netGraph[i->first.m_low][i->first.m_high] = weight;
         m_netGraph[i->first.m_high][i->first.m_low] = weight;
@@ -510,7 +534,7 @@ DsrRouteCache::IncStability(Ipv4Address node)
     }
     else
     {
-        /// @todo get rid of the debug here
+        // TODO get rid of the debug here
         NS_LOG_INFO("The node stability " << i->second.GetNodeStability().As(Time::S));
         NS_LOG_INFO("The stability here "
                     << Time(i->second.GetNodeStability() * m_stabilityIncrFactor).As(Time::S));
@@ -534,7 +558,7 @@ DsrRouteCache::DecStability(Ipv4Address node)
     }
     else
     {
-        /// @todo remove it here
+        // TODO remove it here
         NS_LOG_INFO("The stability here " << i->second.GetNodeStability().As(Time::S));
         NS_LOG_INFO("The stability here "
                     << Time(i->second.GetNodeStability() / m_stabilityDecrFactor).As(Time::S));
@@ -550,11 +574,11 @@ DsrRouteCache::AddRoute_Link(DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address
 {
     NS_LOG_FUNCTION(this << source);
     NS_LOG_LOGIC("Use Link Cache");
-    /// Purge the link node cache first
+    // Purge the link node cache first
     PurgeLinkNode();
     for (uint32_t i = 0; i < nodelist.size() - 1; i++)
     {
-        DsrNodeStab ns; /// This is the node stability
+        DsrNodeStab ns; // This is the node stability
         ns.SetNodeStability(m_initStability);
 
         if (m_nodeCache.find(nodelist[i]) == m_nodeCache.end())
@@ -565,10 +589,10 @@ DsrRouteCache::AddRoute_Link(DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address
         {
             m_nodeCache[nodelist[i + 1]] = ns;
         }
-        Link link(nodelist[i], nodelist[i + 1]); /// Link represent the one link for the route
-        DsrLinkStab stab;                        /// Link stability
+        Link link(nodelist[i], nodelist[i + 1]); // Link represent the one link for the route
+        DsrLinkStab stab;                        // Link stability
         stab.SetLinkStability(m_initStability);
-        /// Set the link stability as the smallest node stability
+        // Set the link stability as the smallest node stability
         if (m_nodeCache[nodelist[i]].GetNodeStability() <
             m_nodeCache[nodelist[i + 1]].GetNodeStability())
         {
@@ -581,7 +605,7 @@ DsrRouteCache::AddRoute_Link(DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address
         if (stab.GetLinkStability() < m_minLifeTime)
         {
             NS_LOG_LOGIC("Stability: " << stab.GetLinkStability().As(Time::S));
-            /// Set the link stability as the m)minLifeTime, default is 1 second
+            // Set the link stability as the m)minLifeTime, default is 1 second
             stab.SetLinkStability(m_minLifeTime);
         }
         m_linkCache[link] = stab;
@@ -599,7 +623,7 @@ void
 DsrRouteCache::UseExtends(DsrRouteCacheEntry::IP_VECTOR rt)
 {
     NS_LOG_FUNCTION(this);
-    /// Purge the link node cache first
+    // Purge the link node cache first
     PurgeLinkNode();
     if (rt.size() < 2)
     {
@@ -614,7 +638,7 @@ DsrRouteCache::UseExtends(DsrRouteCacheEntry::IP_VECTOR rt)
             if (m_linkCache[link].GetLinkStability() < m_useExtends)
             {
                 m_linkCache[link].SetLinkStability(m_useExtends);
-                /// @todo remove after debug
+                // TODO remove after debug
                 NS_LOG_INFO("The time of the link "
                             << m_linkCache[link].GetLinkStability().As(Time::S));
             }
@@ -624,7 +648,7 @@ DsrRouteCache::UseExtends(DsrRouteCacheEntry::IP_VECTOR rt)
             NS_LOG_INFO("We cannot find a link in cache");
         }
     }
-    /// Increase the stability of the node cache
+    // Increase the stability of the node cache
     for (auto i = rt.begin(); i != rt.end(); ++i)
     {
         if (m_nodeCache.find(*i) != m_nodeCache.end())
@@ -780,7 +804,7 @@ DsrRouteCache::DeleteAllRoutesIncludeLink(Ipv4Address errorSrc,
         // erase the two kind of links to make sure the link is removed from the link cache
         NS_LOG_DEBUG("Erase the route");
         m_linkCache.erase(link1);
-        /// @todo get rid of this one
+        // TODO get rid of this one
         NS_LOG_DEBUG("The link cache size " << m_linkCache.size());
         m_linkCache.erase(link2);
         NS_LOG_DEBUG("The link cache size " << m_linkCache.size());
@@ -1147,21 +1171,6 @@ DsrRouteCache::AddNeighbor(std::vector<Ipv4Address> nodeList, Ipv4Address ownAdd
     }
 }
 
-/// CloseNeighbor structure
-struct CloseNeighbor
-{
-    /**
-     * Check if the entry is expired
-     *
-     * @param nb DsrRouteCache::Neighbor entry
-     * @return true if expired or closed, false otherwise
-     */
-    bool operator()(const DsrRouteCache::Neighbor& nb) const
-    {
-        return ((nb.m_expireTime < Simulator::Now()) || nb.close);
-    }
-};
-
 void
 DsrRouteCache::PurgeMac()
 {
@@ -1170,20 +1179,23 @@ DsrRouteCache::PurgeMac()
         return;
     }
 
-    CloseNeighbor pred;
     if (!m_handleLinkFailure.IsNull())
     {
-        for (auto j = m_nb.begin(); j != m_nb.end(); ++j)
+        for (const auto& nb : m_nb)
         {
-            if (pred(*j))
+            if (nb.m_expireTime < Simulator::Now() || nb.close)
             {
-                NS_LOG_LOGIC("Close link to " << j->m_neighborAddress);
-                /// @todo disable temporarily
-                //              m_handleLinkFailure (j->m_neighborAddress);
+                NS_LOG_LOGIC("Close link to " << nb.m_neighborAddress);
+                // TODO disable temporarily
+                // m_handleLinkFailure(nb.m_neighborAddress);
             }
         }
     }
-    m_nb.erase(std::remove_if(m_nb.begin(), m_nb.end(), pred), m_nb.end());
+
+    std::erase_if(m_nb, [](const DsrRouteCache::Neighbor& nb) {
+        return nb.m_expireTime < Simulator::Now() || nb.close;
+    });
+
     m_ntimer.Cancel();
     m_ntimer.Schedule();
 }

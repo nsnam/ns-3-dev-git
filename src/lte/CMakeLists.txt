@@ -336,12 +336,14 @@ set(test_sources
     test/lte-test-ue-phy.cc
     test/lte-test-uplink-power-control.cc
     test/lte-test-uplink-sinr.cc
+    test/lte-traced-callback-typedef-test-suite.cc
     test/test-asn1-encoding.cc
     test/test-epc-tft-classifier.cc
     test/test-lte-antenna.cc
     test/test-lte-epc-e2e-data.cc
     test/test-lte-handover-delay.cc
     test/test-lte-handover-failure.cc
+    test/test-lte-handover-spectrum-model.cc
     test/test-lte-handover-target.cc
     test/test-lte-rlc-header.cc
     test/test-lte-rrc.cc

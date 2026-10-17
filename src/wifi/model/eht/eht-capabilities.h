@@ -10,6 +10,7 @@
 #define EHT_CAPABILITIES_H
 
 #include "ns3/he-capabilities.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 #include <map>
@@ -25,7 +26,7 @@ class HeCapabilities;
  * EHT MAC Capabilities Info subfield.
  * See IEEE 802.11be D1.5 9.4.2.313.2 EHT MAC Capabilities Information subfield
  */
-struct EhtMacCapabilities
+struct WIFI_EXPORT EhtMacCapabilities
 {
     uint8_t epcsPriorityAccessSupported : 1;      //!< EPCS Priority Access Supported
     uint8_t ehtOmControlSupport : 1;              //!< EHT OM Control Support
@@ -62,7 +63,7 @@ struct EhtMacCapabilities
  * EHT PHY Capabilities Info subfield.
  * See IEEE 802.11be D1.5 9.4.2.313.3 EHT PHY Capabilities Information subfield
  */
-struct EhtPhyCapabilities
+struct WIFI_EXPORT EhtPhyCapabilities
 {
     uint8_t support320MhzIn6Ghz : 1;                 //!< Support For 320 MHz In 6 GHz
     uint8_t support242ToneRuInBwLargerThan20Mhz : 1; //!< Support For 242-tone RU In BW Wider Than
@@ -100,9 +101,9 @@ struct EhtPhyCapabilities
     uint8_t maxNumSupportedEhtLtfs : 5; //!< Maximum Number Of Supported EHT-LTFs
     uint8_t supportMcs15 : 4;           //!< Support Of MCS 15
     uint8_t supportEhtDupIn6GHz : 1;    //!< Support Of EHT DUP (MCS 14) In 6 GHz
-    uint8_t
-        support20MhzOperatingStaReceivingNdpWithWiderBw : 1; //!< Support For 20 MHz Operating STA
-                                                             //!< Receiving NDP With Wider Bandwidth
+    uint8_t support20MhzOperatingStaReceivingNdpWithWiderBw : 1; //!< Support For 20 MHz Operating
+                                                                 //!< STA Receiving NDP With Wider
+                                                                 //!< Bandwidth
 
     uint8_t nonOfdmaUlMuMimoBwNotLargerThan80Mhz : 1; //!< Non-OFDMA UL MU-MIMO (BW ≤ 80 MHz)
     uint8_t nonOfdmaUlMuMimo160Mhz : 1;               //!< Non-OFDMA UL MU-MIMO (BW = 160 MHz)
@@ -111,10 +112,10 @@ struct EhtPhyCapabilities
     uint8_t muBeamformer160Mhz : 1;                   //!< MU Beamformer (BW = 160 MHz)
     uint8_t muBeamformer320Mhz : 1;                   //!< MU Beamformer (BW = 320 MHz)
     uint8_t tbSoundingFeedbackRateLimit : 1;          //!< TB Sounding Feedback Rate Limit
-    uint8_t
-        rx1024QamInWiderBwDlOfdmaSupport : 1; //!< Rx 1024-QAM In Wider Bandwidth DL OFDMA Support
-    uint8_t
-        rx4096QamInWiderBwDlOfdmaSupport : 1; //!< Rx 4096-QAM In Wider Bandwidth DL OFDMA Support
+    uint8_t rx1024QamInWiderBwDlOfdmaSupport : 1;     //!< Rx 1024-QAM In Wider Bandwidth DL
+                                                      //!< OFDMA Support
+    uint8_t rx4096QamInWiderBwDlOfdmaSupport : 1;     //!< Rx 4096-QAM In Wider Bandwidth DL
+                                                      //!< OFDMA Support
 
     /**
      * Get the size of the serialized EHT PHY capabilities subfield
@@ -142,7 +143,7 @@ struct EhtPhyCapabilities
  * EHT MCS and NSS Set subfield.
  * See IEEE 802.11be D1.5 9.4.2.313.4 Supported EHT-MCS And NSS Set subfield
  */
-struct EhtMcsAndNssSet
+struct WIFI_EXPORT EhtMcsAndNssSet
 {
     /**
      * The different EHT-MCS map types as defined in 9.4.2.313.4 Supported EHT-MCS And NSS Set
@@ -196,12 +197,12 @@ struct EhtMcsAndNssSet
  * EHT PPE Thresholds subfield.
  * See IEEE 802.11be D1.5 9.4.2.313.5 EHT PPE Thresholds subfield
  */
-struct EhtPpeThresholds
+struct WIFI_EXPORT EhtPpeThresholds
 {
     /**
      * EHT PPE Thresholds Info
      */
-    struct EhtPpeThresholdsInfo
+    struct WIFI_EXPORT EhtPpeThresholdsInfo
     {
         uint8_t ppetMax : 3; //!< PPETmax
         uint8_t ppet8 : 3;   //!< PPE8
@@ -237,7 +238,7 @@ struct EhtPpeThresholds
  *
  * The IEEE 802.11be EHT Capabilities
  */
-class EhtCapabilities : public WifiInformationElement
+class WIFI_EXPORT EhtCapabilities : public WifiInformationElement
 {
   public:
     /**

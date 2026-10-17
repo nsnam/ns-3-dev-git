@@ -27,6 +27,12 @@ class Inet6SocketAddress
 {
   public:
     /**
+     * Address length when converted to an Address[bytes].
+     * In this case it's 18: 16 (IPv6 address) + 2 (port)
+     */
+    static constexpr uint8_t ADDRESS_LENGTH = 18;
+
+    /**
      * @brief Constructor.
      * @param ipv6 the IPv6 address
      * @param port the port

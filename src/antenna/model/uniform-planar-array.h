@@ -73,6 +73,14 @@ class UniformPlanarArray : public PhasedArrayModel
     Vector GetElementLocation(uint64_t index) const override;
 
     /**
+     * @brief Returns the horizontal and vertical apertures of the panel, i.e.,
+     * the extents of its columns and rows in its own plane, which do not depend
+     * on the bearing and downtilt angles.
+     * @return the horizontal and vertical apertures, in wavelengths
+     */
+    std::pair<double, double> GetApertures() const override;
+
+    /**
      *  Check if an antenna array contains dual-polarized elements
      *
      * @return true if antenna has two polarization otherwise false

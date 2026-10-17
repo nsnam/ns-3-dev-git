@@ -8,7 +8,6 @@
 
 #include "scheduler.h"
 
-#include "assert.h"
 #include "log.h"
 
 /**

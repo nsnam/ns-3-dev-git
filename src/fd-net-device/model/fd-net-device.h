@@ -149,6 +149,7 @@ class FdNetDevice : public NetDevice
     Address GetAddress() const override;
     bool SetMtu(const uint16_t mtu) override;
     uint16_t GetMtu() const override;
+    uint16_t GetPaddingThreshold() const override;
     bool IsLinkUp() const override;
     void AddLinkChangeCallback(Callback<void> callback) override;
     bool IsBroadcast() const override;

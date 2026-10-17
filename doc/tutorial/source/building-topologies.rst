@@ -1018,8 +1018,8 @@ the WifiNetDevice objects that the helper create.
               "ActiveProbing", BooleanValue(false));
 
 In the above code, the specific kind of MAC layer that
-will be created by the helper is specified by the TypeId value
-of `ns3::StaWifiMac` type.  The "QosSupported" attribute is
+will be created by the helper is specified by the ``TypeId`` value
+of ``ns3::StaWifiMac`` type.  The "QosSupported" attribute is
 set to true by default for ``WifiMacHelper`` objects when the standard
 is at least 802.11n or newer. The combination
 of these two configurations means that the MAC instance next created

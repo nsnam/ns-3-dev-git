@@ -103,14 +103,14 @@ He6GhzBandCapabilities::SerializeInformationField(Buffer::Iterator start) const
                         (m_capabilitiesInfo.m_rdResponder << 11) |
                         (m_capabilitiesInfo.m_rxAntennaPatternConsistency << 12) |
                         (m_capabilitiesInfo.m_txAntennaPatternConsistency << 13);
-    start.WriteHtolsbU16(twoBytes);
+    start.WriteU16(twoBytes);
 }
 
 uint16_t
 He6GhzBandCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
     Buffer::Iterator tmp = start;
-    uint16_t twoBytes = start.ReadLsbtohU16();
+    uint16_t twoBytes = start.ReadU16();
     m_capabilitiesInfo.m_minMpduStartSpacing = twoBytes & 0x07;
     m_capabilitiesInfo.m_maxAmpduLengthExponent = (twoBytes >> 3) & 0x07;
     m_capabilitiesInfo.m_maxMpduLength = (twoBytes >> 6) & 0x03;

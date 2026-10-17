@@ -10,6 +10,7 @@
 #define AP_EMLSR_MANAGER_H
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-band.h"
 
 namespace ns3
@@ -27,7 +28,7 @@ class WifiTxVector;
  * ApEmlsrManager is an abstract base class defining the API that EHT AP MLDs with
  * EMLSR activated can use to handle the operations on the EMLSR links of EMLSR clients
  */
-class ApEmlsrManager : public Object
+class WIFI_EXPORT ApEmlsrManager : public Object
 {
   public:
     /**

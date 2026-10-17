@@ -20,6 +20,7 @@
 #include "ns3/mgt-headers.h"
 #include "ns3/net-device-container.h"
 #include "ns3/packet.h"
+#include "ns3/power-save-manager.h"
 #include "ns3/simulator.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-net-device.h"
@@ -160,6 +161,39 @@ WifiStaticSetupHelper::SetStaticAssocPostInit(Ptr<ApWifiMac> apMac, Ptr<StaWifiM
 
     NS_LOG_DEBUG("Assoc success AP addr=" << apMldAddr << ", STA addr=" << clientMldAddr);
 
+    // Note that the call above to StaWifiMac::ReceiveAssocResp() triggers a call to
+    // StaWifiMac::SetPmModeAfterAssociation(), which sets a callback to intercept the Ack sent in
+    // response to the AssocResp and, at the end of the Ack transmission, schedule the transmission
+    // of Data Null frames to notify the AP about the power management mode each STA has to switch
+    // to based on the value of the StaLinkEntity::pmMode field (which defaults to WIFI_PM_ACTIVE
+    // and can be set via the PowerSaveMode attribute of the PowerSaveManager). When using the
+    // static setup helper, however, no AssocResp is sent, hence no Ack is sent and the transmission
+    // of Data Null frames is not scheduled. Therefore, we need to make the AP aware of the PM mode
+    // of the STAs affiliated with the client device without actually sending Data Null frames.
+    AlignApViewOfStaPmMode(apMac, clientMac);
+
+    // The callback that is set by StaWifiMac::SetPmModeAfterAssociation() to intercept the Ack sent
+    // in response to the AssocResp also schedules a call to notify the Power Save Manager that
+    // association is completed at the end of the transmission of the Ack. Given that no AssocResp
+    // is sent when using the static setup helper, we need to explicitly make the relevant calls
+    // here.
+    if (clientMac->m_powerSaveManager)
+    {
+        for (const auto apLinkId : apMac->GetLinkIds())
+        {
+            if (const auto& beaconEvent = apMac->GetLink(apLinkId).beaconEvent;
+                beaconEvent.IsPending())
+            {
+                clientMac->m_powerSaveManager->NotifyBeaconIntervalAndTimestamp(
+                    apMac->GetBeaconInterval(),
+                    Simulator::Now() + Simulator::GetDelayLeft(beaconEvent) -
+                        apMac->GetBeaconInterval(),
+                    apLinkId);
+            }
+        }
+        clientMac->m_powerSaveManager->NotifyAssocCompleted();
+    }
+
     if (isMldAssoc)
     {
         // Update TID-to-Link Mapping in MAC queues
@@ -279,6 +313,23 @@ WifiStaticSetupHelper::GetAssocReq(Ptr<StaWifiMac> clientMac, linkId_t linkId, b
     }
 
     return assocReq;
+}
+
+void
+WifiStaticSetupHelper::AlignApViewOfStaPmMode(Ptr<ApWifiMac> apMac, Ptr<StaWifiMac> clientMac)
+{
+    const auto setupLinks = clientMac->GetSetupLinkIds();
+    for (const auto linkId : setupLinks)
+    {
+        if (clientMac->GetPmMode(linkId) == WIFI_PM_ACTIVE)
+        {
+            apMac->StaSwitchingToActiveModeOrDeassociated(clientMac->GetAddress(), linkId);
+        }
+        else
+        {
+            apMac->StaSwitchingToPsMode(clientMac->GetAddress(), linkId);
+        }
+    }
 }
 
 void
@@ -495,17 +546,38 @@ WifiStaticSetupHelper::SetStaticEmlsrPostInit(Ptr<WifiNetDevice> apDev,
         return;
     }
 
+    // The call below to EmlsrManager::ChangeEmlsrMode() triggers a call to
+    // StaWifiMac::NotifyEmlsrModeChanged(), which switches all STAs operating on an EMLSR link to
+    // the active mode, thus possibly overriding settings configured via the PowerSave manager and
+    // already applied after ML setup. Save the current settings so that they can be restored later
+    std::map<linkId_t, WifiPowerManagementMode> pmModes;
+    for (const auto linkId : setupLinks)
+    {
+        pmModes[linkId] = clientMac->GetPmMode(linkId);
+    }
+
     auto emlsrManager = clientMac->GetEmlsrManager();
     NS_ASSERT_MSG(emlsrManager, "EMLSR Manager not set");
     emlsrManager->ComputeOperatingChannels();
     auto emlOmnReq = emlsrManager->GetEmlOmn();
     auto emlsrLinkId = emlsrManager->GetLinkToSendEmlOmn();
-    emlsrManager->ChangeEmlsrMode();
+    emlsrManager->ChangeEmlsrMode(emlsrLinkId);
     auto clientLinkAddr = clientMac->GetFrameExchangeManager(emlsrLinkId)->GetAddress();
     auto apMac = DynamicCast<ApWifiMac>(apDev->GetMac());
     NS_ASSERT_MSG(apMac, "Expected ApWifiMac");
     apMac->ReceiveEmlOmn(emlOmnReq, clientLinkAddr, emlsrLinkId);
     apMac->EmlOmnExchangeCompleted(emlOmnReq, clientLinkAddr, emlsrLinkId);
+
+    // restore PM modes for STAs affiliated with the client device
+    for (const auto& [linkId, pmMode] : pmModes)
+    {
+        clientMac->GetLink(linkId).pmMode = pmMode;
+    }
+
+    // ApWifiMac::EmlOmnExchangeCompleted() (called above) causes the AP to consider all STAs
+    // affiliated with the client device and operating on an EMLSR link as in active mode, thus
+    // possibly overriding settings applied after ML setup. Align the views of the PM modes again
+    AlignApViewOfStaPmMode(apMac, clientMac);
 }
 
 void

@@ -115,10 +115,10 @@ class ThreeGppHttpHeader : public Header
     Time GetServerTs() const;
 
   private:
-    uint16_t m_contentType;   //!<" Content type field in integer format.
-    uint32_t m_contentLength; //!<" Content length field (in bytes unit).
-    uint64_t m_clientTs;      //!<" Client time stamp field (in time step unit).
-    uint64_t m_serverTs;      //!<" Server time stamp field (in time step unit).
+    uint16_t m_contentType{0};   //!< Content type field in integer format.
+    uint32_t m_contentLength{0}; //!< Content length field (in bytes unit).
+    uint64_t m_clientTs{0};      //!< Client time stamp field (in time step unit).
+    uint64_t m_serverTs{0};      //!< Server time stamp field (in time step unit).
 };
 
 } // namespace ns3

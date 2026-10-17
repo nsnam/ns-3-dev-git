@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -53,7 +55,7 @@ DsrErrorBuffer::Enqueue(DsrErrorBuffEntry& entry)
                                  << " dst " << i->GetDestination() << " "
                                  << entry.GetDestination());
 
-        /// @todo check the source and destination over here
+        // TODO check the source and destination over here
         if ((i->GetPacket()->GetUid() == entry.GetPacket()->GetUid()) &&
             (i->GetSource() == entry.GetSource()) && (i->GetNextHop() == entry.GetSource()) &&
             (i->GetDestination() == entry.GetDestination()))
@@ -142,21 +144,6 @@ DsrErrorBuffer::Find(Ipv4Address dst)
     return false;
 }
 
-/// IsExpired structure
-struct IsExpired
-{
-    /**
-     * @brief comparison operator
-     * @param e entry to compare
-     * @return true if entry expired
-     */
-    bool operator()(const DsrErrorBuffEntry& e) const
-    {
-        // NS_LOG_DEBUG("Expire time for packet in req queue: "<<e.GetExpireTime ());
-        return (e.GetExpireTime().IsStrictlyNegative());
-    }
-};
-
 void
 DsrErrorBuffer::Purge()
 {
@@ -164,17 +151,21 @@ DsrErrorBuffer::Purge()
      * Purge the buffer to eliminate expired entries
      */
     NS_LOG_DEBUG("The error buffer size " << m_errorBuffer.size());
-    IsExpired pred;
-    for (auto i = m_errorBuffer.begin(); i != m_errorBuffer.end(); ++i)
+
+    for (const auto& item : m_errorBuffer)
     {
-        if (pred(*i))
+        if (item.GetExpireTime().IsStrictlyNegative())
         {
             NS_LOG_DEBUG("Dropping Queue Packets");
-            Drop(*i, "Drop out-dated packet ");
+            Drop(item, "Drop out-dated packet ");
         }
     }
-    m_errorBuffer.erase(std::remove_if(m_errorBuffer.begin(), m_errorBuffer.end(), pred),
-                        m_errorBuffer.end());
+
+    [[maybe_unused]] auto erasedElementsNum =
+        std::erase_if(m_errorBuffer, [](const DsrErrorBuffEntry& e) {
+            return e.GetExpireTime().IsStrictlyNegative();
+        });
+    NS_LOG_DEBUG("Purged " << erasedElementsNum << " from Error Buffer");
 }
 
 void

@@ -39,20 +39,25 @@ class MyModel
      *
      * @param [in] eventValue Event argument.
      */
-    void HandleEvent(double eventValue);
+    void HandleEvent(Time eventValue);
 };
 
 void
 MyModel::Start()
 {
-    Simulator::Schedule(Seconds(10), &MyModel::HandleEvent, this, Simulator::Now().GetSeconds());
+    Simulator::Schedule(Seconds(10), &MyModel::HandleEvent, this, Simulator::Now());
+
+    Simulator::Schedule(Seconds(11), []() {
+        std::cout << "Lambda scheduled from within a class method at "
+                  << Simulator::Now().As(Time::S) << std::endl;
+    });
 }
 
 void
-MyModel::HandleEvent(double value)
+MyModel::HandleEvent(Time value)
 {
-    std::cout << "Member method received event at " << Simulator::Now().GetSeconds()
-              << "s started at " << value << "s" << std::endl;
+    std::cout << "Member method received event at " << Simulator::Now().As(Time::S)
+              << " started at " << value.As(Time::S) << std::endl;
 }
 
 /**
@@ -63,8 +68,7 @@ MyModel::HandleEvent(double value)
 void
 ExampleFunction(MyModel* model)
 {
-    std::cout << "ExampleFunction received event at " << Simulator::Now().GetSeconds() << "s"
-              << std::endl;
+    std::cout << "ExampleFunction received event at " << Simulator::Now().As(Time::S) << std::endl;
     model->Start();
 }
 
@@ -74,8 +78,7 @@ ExampleFunction(MyModel* model)
 void
 RandomFunction()
 {
-    std::cout << "RandomFunction received event at " << Simulator::Now().GetSeconds() << "s"
-              << std::endl;
+    std::cout << "RandomFunction received event at " << Simulator::Now().As(Time::S) << std::endl;
 }
 
 /** Simple function event handler; the corresponding event is cancelled. */

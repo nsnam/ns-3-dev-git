@@ -12,6 +12,7 @@
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/ctrl-headers.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-tx-parameters.h"
 
@@ -35,7 +36,7 @@ class HeFrameExchangeManager;
  * However, given that DL MU-MIMO is not yet supported, a MultiUserScheduler can
  * only be aggregated to HE APs.
  */
-class MultiUserScheduler : public Object
+class WIFI_EXPORT MultiUserScheduler : public Object
 {
   public:
     /**
@@ -56,14 +57,14 @@ class MultiUserScheduler : public Object
     };
 
     /// Information to be provided in case of DL MU transmission
-    struct DlMuInfo
+    struct WIFI_EXPORT DlMuInfo
     {
         WifiPsduMap psduMap;       //!< the DL MU PPDU to transmit
         WifiTxParameters txParams; //!< the transmission parameters
     };
 
     /// Information to be provided in case of UL MU transmission
-    struct UlMuInfo
+    struct WIFI_EXPORT UlMuInfo
     {
         CtrlTriggerHeader trigger; //!< the Trigger Frame used to solicit TB PPDUs
         WifiMacHeader macHdr;      //!< the MAC header for the Trigger Frame
@@ -75,18 +76,13 @@ class MultiUserScheduler : public Object
      * access. The Multi-user Scheduler determines the format of the next transmission.
      *
      * @param edca the EDCAF which has been granted the opportunity to transmit
-     * @param availableTime the amount of time allowed for the frame exchange. Pass
-     *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
+     * @param availableTime the limit (if any) on the amount of time allowed for the frame exchange
      * @param allowedWidth the allowed width for the next transmission
      * @param linkId the ID of the link over which channel access was gained
      * @return the format of the next transmission
      */
     TxFormat NotifyAccessGranted(Ptr<QosTxop> edca,
-                                 Time availableTime,
-                                 bool initialFrame,
+                                 const std::optional<Time>& availableTime,
                                  MHz_u allowedWidth,
                                  uint8_t linkId);
 
@@ -258,11 +254,10 @@ class MultiUserScheduler : public Object
     void NotifyNewAggregate() override;
     void DoInitialize() override;
 
-    Ptr<ApWifiMac> m_apMac;       //!< the AP wifi MAC
-    Ptr<QosTxop> m_edca;          //!< the AC that gained channel access
-    Time m_availableTime;         //!< the time available for frame exchange
-    bool m_initialFrame;          //!< true if a TXOP is being started
-    MHz_u m_allowedWidth;         //!< the allowed width for the current transmission
+    Ptr<ApWifiMac> m_apMac;              //!< the AP wifi MAC
+    Ptr<QosTxop> m_edca;                 //!< the AC that gained channel access
+    std::optional<Time> m_availableTime; //!< the limit on the time available for frame exchange
+    MHz_u m_allowedWidth;                //!< the allowed width for the current transmission
     uint8_t m_linkId;             //!< the ID of the link over which channel access has been granted
     Time m_defaultTbPpduDuration; //!< the default duration of TB PPDUs solicited by Basic TFs
 
@@ -319,7 +314,7 @@ class MultiUserScheduler : public Object
     /**
      * Type for the information about the last transmission
      */
-    struct LastTxInfo
+    struct WIFI_EXPORT LastTxInfo
     {
         TxFormat lastTxFormat{NO_TX}; ///< the format of last transmission
         DlMuInfo dlInfo;              ///< information required to perform a DL MU transmission

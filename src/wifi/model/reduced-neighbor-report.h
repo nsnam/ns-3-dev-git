@@ -12,6 +12,7 @@
 #include "wifi-information-element.h"
 
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 #include <vector>
 
@@ -26,13 +27,13 @@ class WifiPhyOperatingChannel;
  *
  * This class knows how to serialize and deserialize the Reduced Neighbor Report element.
  */
-class ReducedNeighborReport : public WifiInformationElement
+class WIFI_EXPORT ReducedNeighborReport : public WifiInformationElement
 {
   public:
     /**
      * MLD Parameters subfield
      */
-    struct MldParameters
+    struct WIFI_EXPORT MldParameters
     {
         uint8_t apMldId;              //!< AP MLD ID
         uint8_t linkId : 4;           //!< Link ID
@@ -44,7 +45,7 @@ class ReducedNeighborReport : public WifiInformationElement
     /**
      * TBTT Information field
      */
-    struct TbttInformation
+    struct WIFI_EXPORT TbttInformation
     {
         uint8_t neighborApTbttOffset{0}; //!< Neighbor AP TBTT Offset
         Mac48Address bssid;              //!< BSSID (optional)
@@ -57,7 +58,7 @@ class ReducedNeighborReport : public WifiInformationElement
     /**
      * TBTT Information Header subfield
      */
-    struct TbttInformationHeader
+    struct WIFI_EXPORT TbttInformationHeader
     {
         uint8_t type : 2;          //!< TBTT Information Field Type (2 bits)
         uint8_t filtered : 1;      //!< Filtered Neighbor AP (1 bit)
@@ -69,7 +70,7 @@ class ReducedNeighborReport : public WifiInformationElement
     /**
      * Neighbor AP information field
      */
-    struct NeighborApInformation
+    struct WIFI_EXPORT NeighborApInformation
     {
         mutable TbttInformationHeader tbttInfoHdr{0, 0, 0, 0, 0}; //!< TBTT Information header
         uint8_t operatingClass{0};                                //!< Operating class

@@ -94,7 +94,6 @@ AddressAllocatorHelperTestCase::DoTeardown()
 void
 AddressAllocatorHelperTestCase::DoRun()
 {
-    Ipv4Address network;
     Ipv4Address address;
     Ipv4AddressHelper h;
 

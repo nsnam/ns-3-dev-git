@@ -17,6 +17,7 @@
 #include "ns3/lr-wpan-mac-base.h"
 #include "ns3/lr-wpan-net-device.h"
 #include "ns3/traced-callback.h"
+#include "ns3/zigbee-zdo.h"
 
 #include <stdint.h>
 
@@ -30,6 +31,20 @@ namespace zigbee
 
 class ZigbeeNwk;
 class ZigbeeAps;
+class ZigbeeZdo;
+
+/**
+ * @ingroup zigbee
+ *
+ * Selects which Zigbee layers are instantiated by a ZigbeeStack. The values are
+ * cumulative: each level includes all the layers of the levels below it.
+ */
+enum class StackLayers : uint8_t
+{
+    ONLY_NWK = 0,    //!< Only the NWK layer
+    NWK_AND_APS = 1, //!< NWK layer + APS sub-layer
+    FULL_STACK = 2   //!< NWK layer + APS sub-layer + ZDO (default)
+};
 
 /**
  * @ingroup zigbee
@@ -37,9 +52,10 @@ class ZigbeeAps;
  *  Zigbee protocol stack to device interface.
  *
  * This class is an encapsulating class representing the protocol stack as described
- * by the Zigbee Specification. In the current implementation only the Zigbee
- * network layer (NWK) is included. However, this class is meant be later
- * be extended to include other layer and sublayers part of the Zigbee Specification.
+ * by the Zigbee Specification. The set of layers instantiated by this class is
+ * selectable via ::StackLayers, ranging from the network layer (NWK) alone up to
+ * the full NWK + APS + ZDO stack. This class is meant to be later extended to
+ * include other layers and sublayers part of the Zigbee Specification.
  * The implementation is analogous to a NetDevice which encapsulates PHY and
  * MAC layers and provide the necessary hooks. Zigbee Stack is meant to encapsulate
  * NWK, APS, ZLC layers (and others if applicable).
@@ -101,6 +117,20 @@ class ZigbeeStack : public Object
     void SetAps(Ptr<ZigbeeAps> aps);
 
     /**
+     * Get the Zigbee Device Object (ZDO) used by this ZigbeeStack.
+     *
+     * @return the Zigbee device object (ZDO)
+     */
+    Ptr<ZigbeeZdo> GetZdo() const;
+
+    /**
+     * Set the Zigbee Device Object (ZDO) used by this ZigbeeStack.
+     *
+     * @param zdo The zigbee device object (ZDO)
+     */
+    void SetZdo(Ptr<ZigbeeZdo> zdo);
+
+    /**
      *  Returns a smart pointer to the underlying NetDevice.
      *
      * @return A smart pointer to the underlying NetDevice.
@@ -117,9 +147,12 @@ class ZigbeeStack : public Object
     void SetNetDevice(Ptr<NetDevice> netDevice);
 
     /**
-     * Inticates to the Zigbee stack that only the NWK layer should be present.
+     * Selects which set of Zigbee layers should be instantiated by this stack.
+     * Must be called before the stack is initialized.
+     *
+     * @param layers The set of layers to instantiate (see ::StackLayers).
      */
-    void SetOnlyNwkLayer();
+    void SetLayers(StackLayers layers);
 
   protected:
     /**
@@ -133,13 +166,25 @@ class ZigbeeStack : public Object
     void DoInitialize() override;
 
   private:
+    /**
+     *  This function is a special function that works as a demultiplexer for the
+     * APSDE-DATA.indication. It is used to direct the result of an APSDE-DATA.indication to either
+     * the Application Framework [Endpoints 1~254] or to the Zigbee Device Object (ZDO) [Endpoint 0]
+     * depending on the destination endpoint.
+     *
+     * @param params The parameters of the APSDE-DATA.indication.
+     * @param p The packet received.
+     */
+    void ApsDataIndicationDispatcher(ApsdeDataIndicationParams params, Ptr<Packet> p);
+
     Ptr<lrwpan::LrWpanMacBase> m_mac; //!< The underlying LrWpan MAC connected to this Zigbee Stack.
     Ptr<ZigbeeNwk> m_nwk;             //!< The Zigbee Network layer.
     Ptr<ZigbeeAps> m_aps;             //!< The Zigbee Application Support Sub-layer
+    Ptr<ZigbeeZdo> m_zdo;             //!< The Zigbee Device Object (ZDO).
     Ptr<ZigbeeGroupTable> m_groupTable; //!< The Zigbee Group Table used by both NWK and APS layers.
     Ptr<Node> m_node;                   //!< The node associated with this NetDevice.
     Ptr<NetDevice> m_netDevice;         //!< Smart pointer to the underlying NetDevice.
-    bool m_nwkOnly; //!< Indicates that only the NWK layer is present in the Zigbee stack
+    StackLayers m_layers;               //!< Selected set of Zigbee layers to instantiate.
 };
 
 } // namespace zigbee

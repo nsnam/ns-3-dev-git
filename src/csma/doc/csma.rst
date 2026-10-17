@@ -159,6 +159,23 @@ CsmaNetDevice provides following Attributes:
 * Rx:  A trace source for received packets;
 * Drop:  A trace source for dropped packets.
 
+In addition to these attributes, CsmaNetDevice exposes a number of trace
+sources.  The most commonly used ones are:
+
+* ``MacTx``: Trace source for packets handed down from upper layers, and fires
+  before the packet is enqueued into the device transmit queue;
+* ``MacTxDrop``: Trace source for packets dropped by the device before
+  transmission;
+* ``MacRx``: Trace source for packets successfully received in non-promiscuous
+  mode;
+* ``MacPromiscRx``: Trace source for packets received in promiscuous mode and fired
+  only when a promiscuous receive callback is installed via
+  ``SetPromiscReceiveCallback``;
+* ``Sniffer`` / ``PromiscSniffer``: Trace sources simulating non-promiscuous
+  and promiscuous packet sniffers. On the receive path they follow the same
+  packet selection as ``MacRx`` / ``MacPromiscRx`` and on the transmit
+  path they fire after dequeuing from the device transmit queue.
+
 The CsmaNetDevice supports the assignment of a "receive error model." This is an
 ErrorModel object that is used to simulate data corruption on the link.
 
@@ -193,7 +210,7 @@ mode for correct results. The encapsulation mode is not sensed at the receiver.
 
 The CsmaNetDevice implements a random exponential backoff algorithm that is
 executed if the channel is determined to be busy (``TRANSMITTING`` or
-``PPROPAGATING``) when the device wants to start propagating. This results in a
+``PROPAGATING``) when the device wants to start propagating. This results in a
 random delay of up to pow (2, retries) - 1 microseconds before a retry is
 attempted. The default maximum number of retries is 1000.
 

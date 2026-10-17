@@ -62,4 +62,10 @@ Watchdog::Expire()
     }
 }
 
+bool
+Watchdog::IsExpired() const
+{
+    return (m_end <= Simulator::Now());
+}
+
 } // namespace ns3

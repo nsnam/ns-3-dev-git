@@ -106,13 +106,15 @@ WifiRemoteStationManager::GetTypeId()
                           WifiModeValue(),
                           MakeWifiModeAccessor(&WifiRemoteStationManager::m_nonUnicastMode),
                           MakeWifiModeChecker())
-            .AddAttribute("DefaultTxPowerLevel",
-                          "Default power level to be used for transmissions. "
-                          "This is the power level that is used by all those WifiManagers that do "
-                          "not implement TX power control.",
-                          UintegerValue(0),
-                          MakeUintegerAccessor(&WifiRemoteStationManager::m_defaultTxPowerLevel),
-                          MakeUintegerChecker<uint8_t>())
+            .AddAttribute(
+                "DefaultTxPowerLevel",
+                "Default power level to be used for transmissions. "
+                "This is the power level that is used by all those WifiManagers that do "
+                "not implement TX power control.",
+                UintegerValue(WIFI_MIN_TX_PWR_LEVEL), // corresponds to WifiPhy::TxPowerStart
+                MakeUintegerAccessor(&WifiRemoteStationManager::m_defaultTxPowerLevel),
+                MakeUintegerChecker<uint8_t>(WIFI_MIN_TX_PWR_LEVEL,
+                                             std::numeric_limits<uint8_t>::max()))
             .AddAttribute("ErpProtectionMode",
                           "Protection mode used when non-ERP STAs are connected to an ERP AP: "
                           "Rts-Cts or Cts-To-Self",
@@ -509,6 +511,13 @@ WifiRemoteStationManager::RecordDisassociated(Mac48Address address)
     LookupState(address)->m_state = WifiRemoteStationState::DISASSOC;
 }
 
+void
+WifiRemoteStationManager::RecordAdhocPeer(Mac48Address address)
+{
+    NS_ASSERT(!address.IsGroup());
+    LookupState(address)->m_state = WifiRemoteStationState::ADHOC_PEER;
+}
+
 bool
 WifiRemoteStationManager::IsAssocRefused(Mac48Address address) const
 {
@@ -517,6 +526,16 @@ WifiRemoteStationManager::IsAssocRefused(Mac48Address address) const
         return false;
     }
     return LookupState(address)->m_state == WifiRemoteStationState::ASSOC_REFUSED;
+}
+
+bool
+WifiRemoteStationManager::IsAdhocPeer(Mac48Address address) const
+{
+    if (address.IsGroup())
+    {
+        return false;
+    }
+    return LookupState(address)->m_state == WifiRemoteStationState::ADHOC_PEER;
 }
 
 void
@@ -667,7 +686,7 @@ WifiRemoteStationManager::GetDataTxVector(const WifiMacHeader& header, MHz_u all
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetCtsToSelfTxVector()
+WifiRemoteStationManager::GetCtsToSelfTxVector(MHz_u allowedWidth)
 {
     WifiMode defaultMode = GetDefaultMode();
     WifiPreamble defaultPreamble;
@@ -692,15 +711,23 @@ WifiRemoteStationManager::GetCtsToSelfTxVector()
         defaultPreamble = WIFI_PREAMBLE_LONG;
     }
 
-    return WifiTxVector(defaultMode,
-                        GetDefaultTxPowerLevel(),
-                        defaultPreamble,
-                        GetGuardIntervalForMode(defaultMode, m_wifiPhy->GetDevice()),
-                        GetNumberOfAntennas(),
-                        1,
-                        0,
-                        m_wifiPhy->GetTxBandwidth(defaultMode),
-                        false);
+    WifiTxVector v(defaultMode,
+                   GetDefaultTxPowerLevel(),
+                   defaultPreamble,
+                   GetGuardIntervalForMode(defaultMode, m_wifiPhy->GetDevice()),
+                   GetNumberOfAntennas(),
+                   1,
+                   0,
+                   m_wifiPhy->GetTxBandwidth(defaultMode),
+                   false);
+
+    // The CTS-to-self must cover the bandwidth of the data transmission it protects,
+    // because the TXOP holder shall not transmit any PPDU in the TXOP with a bandwidth
+    // exceeding that of the CTS-to-self frame (Sec. 10.23.2.8 of 802.11-2024); use the
+    // non-HT duplicate format for bandwidths wider than 20 MHz
+    AdjustTxVectorForCtlResponse(v, allowedWidth);
+
+    return v;
 }
 
 void
@@ -845,6 +872,22 @@ WifiRemoteStationManager::GetBlockAckTxVector(Mac48Address to,
     AdjustTxVectorForCtlResponse(v, dataTxVector.GetChannelWidth());
 
     return v;
+}
+
+WifiTxVector
+WifiRemoteStationManager::GetBlockAckReqTxVector(Mac48Address to,
+                                                 const WifiTxVector& dataTxVector) const
+{
+    return GetBlockAckTxVector(to, dataTxVector);
+}
+
+WifiTxVector
+WifiRemoteStationManager::GetBlockAckReqTxVector(Mac48Address to, MHz_u allowedWidth)
+{
+    WifiMacHeader hdr(WIFI_MAC_QOSDATA);
+    hdr.SetAddr1(to);
+    auto txVector = GetDataTxVector(hdr, allowedWidth);
+    return GetBlockAckReqTxVector(to, txVector);
 }
 
 WifiMode
@@ -1121,7 +1164,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus(Mac48Address address,
                                               uint16_t nFailedMpdus,
                                               double rxSnr,
                                               double dataSnr,
-                                              WifiTxVector dataTxVector)
+                                              const WifiTxVector& dataTxVector)
 {
     NS_LOG_FUNCTION(this << address << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr
                          << dataTxVector);
@@ -1492,31 +1535,8 @@ WifiRemoteStationManager::LookupState(Mac48Address address) const
     }
 
     auto state = std::make_shared<WifiRemoteStationState>();
-    state->m_state = WifiRemoteStationState::BRAND_NEW;
-    state->m_address = address;
-    state->m_aid = 0;
-    state->m_operationalRateSet.push_back(GetDefaultMode());
-    state->m_operationalMcsSet.push_back(GetDefaultMcs());
-    state->m_dsssSupported = false;
-    state->m_erpOfdmSupported = false;
-    state->m_ofdmSupported = false;
-    state->m_htCapabilities = nullptr;
-    state->m_htOperation = nullptr;
-    state->m_vhtCapabilities = nullptr;
-    state->m_vhtOperation = nullptr;
-    state->m_heCapabilities = nullptr;
-    state->m_heOperation = nullptr;
-    state->m_ehtCapabilities = nullptr;
-    state->m_ehtOperation = nullptr;
-    state->m_mleCommonInfo = nullptr;
-    state->m_emlsrEnabled = false;
-    state->m_channelWidth = m_wifiPhy->GetChannelWidth();
-    state->m_guardInterval = GetGuardInterval();
-    state->m_ness = 0;
-    state->m_aggregation = false;
-    state->m_qosSupported = false;
-    state->m_isInPsMode = false;
     const_cast<WifiRemoteStationManager*>(this)->m_states.insert({address, state});
+    ResetState(address);
     NS_LOG_DEBUG("WifiRemoteStationManager::LookupState returning new state");
     return state;
 }
@@ -1539,6 +1559,40 @@ WifiRemoteStationManager::Lookup(Mac48Address address) const
     station->m_rssiAndUpdateTimePair = std::make_pair(dBm_u{0}, Seconds(0));
     const_cast<WifiRemoteStationManager*>(this)->m_stations.insert({address, station});
     return station;
+}
+
+void
+WifiRemoteStationManager::ResetState(Mac48Address address) const
+{
+    NS_LOG_FUNCTION(this << address);
+    if (const auto stateIt = m_states.find(address); stateIt != m_states.cend())
+    {
+        auto& state = stateIt->second;
+        state->m_state = WifiRemoteStationState::BRAND_NEW;
+        state->m_address = address;
+        state->m_aid = 0;
+        state->m_operationalRateSet = {GetDefaultMode()};
+        state->m_operationalMcsSet = {GetDefaultMcs()};
+        state->m_dsssSupported = false;
+        state->m_erpOfdmSupported = false;
+        state->m_ofdmSupported = false;
+        state->m_htCapabilities = nullptr;
+        state->m_htOperation = nullptr;
+        state->m_vhtCapabilities = nullptr;
+        state->m_vhtOperation = nullptr;
+        state->m_heCapabilities = nullptr;
+        state->m_heOperation = nullptr;
+        state->m_ehtCapabilities = nullptr;
+        state->m_ehtOperation = nullptr;
+        state->m_mleCommonInfo = nullptr;
+        state->m_emlsrEnabled = false;
+        state->m_channelWidth = m_wifiPhy->GetChannelWidth();
+        state->m_guardInterval = GetGuardInterval();
+        state->m_ness = 0;
+        state->m_aggregation = false;
+        state->m_qosSupported = false;
+        state->m_isInPsMode = false;
+    }
 }
 
 void
@@ -1726,7 +1780,7 @@ WifiRemoteStationManager::AddStationHeOperation(Mac48Address from, const HeOpera
 {
     NS_LOG_FUNCTION(this << from << heOperation);
     auto state = LookupState(from);
-    if (auto operation6GHz = heOperation.m_6GHzOpInfo)
+    if (auto& operation6GHz = heOperation.m_6GHzOpInfo)
     {
         switch (operation6GHz->m_chWid)
         {

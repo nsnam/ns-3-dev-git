@@ -140,7 +140,9 @@ class MldSwapLinksTest : public TestCase
  * @ingroup wifi-test
  * @ingroup tests
  *
- * Test that the AIDs that an AP MLD assigns to SLDs and MLDs are all unique.
+ * Test that the AIDs that an AP MLD assigns to SLDs and MLDs are all unique. Also, check that
+ * a non-AP STA in powersave mode and a non-AP MLD with an affiliated non-AP STA in powersave mode
+ * are able to disassociate and then associate again with the AP MLD.
  */
 class AidAssignmentTest : public TestCase
 {
@@ -165,12 +167,37 @@ class AidAssignmentTest : public TestCase
      */
     void SetSsid(Ptr<StaWifiMac> staMac, Mac48Address /* apAddr */);
 
+    /**
+     * Have a non-AP STA (MLD) switch to powersave mode and disassociate.
+     *
+     * @param multiLink true to test a non-AP MLD, false to test a non-AP STA
+     */
+    void SwitchToPsModeAndDisassociate(bool multiLink);
+
+    /**
+     * Check that the station that had the given AID assigned is now disassociated.
+     *
+     * @param aid the given AID
+     * @param staMac the MAC of the station that is now disassociated
+     */
+    void CheckDisassociation(uint16_t aid, Ptr<StaWifiMac> staMac, Mac48Address /* apAddress */);
+
+    /**
+     * Check that the station that had disassociated is now associated again.
+     *
+     * @param aid the AID of the station that associated again
+     * @param staMac the MAC of the station that associated again
+     */
+    void CheckReassociation(uint16_t aid, Ptr<StaWifiMac> staMac, Mac48Address /* apAddress */);
+
     const std::vector<std::string> m_linkChannels;  //!< channels for all AP links
     const std::vector<std::set<uint8_t>> m_linkIds; //!< link IDs for all non-AP STAs/MLDs
     WifiAssocType m_assocType;                      //!< association type
+    Ptr<ApWifiMac> m_apMac;                         //!< AP MAC
     NetDeviceContainer m_staDevices;                //!< non-AP STAs/MLDs devices
     uint16_t m_startAid;                            //!< first AID to allocate to stations
     uint16_t m_expectedAid;                         //!< expected AID for current non-AP STA/MLD
+    std::size_t m_nReassociations{0};               //!< re-associations counter
 };
 
 /**
@@ -352,6 +379,13 @@ class MultiLinkOperationsTestBase : public TestCase
  * switch PHY band (if any). The links that are expected to be setup are also provided as input
  * parameters. This test verifies that the management frames exchanged during ML discovery
  * and ML setup contain the expected values and that the two MLDs setup the expected links.
+ * Also, it is verified that, when the AP MLD receives the Ack following the Association Response:
+ * (i) the AP MLD considers the STA affiliated with the non-AP MLD and operating on the link used
+ * for association as in active mode and the other STAs affiliated with the non-AP MLD as in
+ * PowerSave mode; (ii) the STA affiliated with the non-AP MLD and operating on the link used for
+ * association is in active mode, while the other STAs affiliated with the non-AP MLD are switching
+ * to active mode, as they were in PowerSave mode and scheduled the transmission of a Data Null
+ * frame to switch to active mode.
  *
  * The negotiated TID-to-link mapping is tested by verifying that generated QoS data frames of
  * a given TID are transmitted on links which the TID is mapped to. Specifically, the following
@@ -409,6 +443,20 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
      * Check correctness of Multi-Link Setup procedure.
      */
     void CheckMlSetup();
+
+    /**
+     * This function is connected to the ApWifiMac's AssociatedSta trace source and checks that:
+     * (i) the AP MLD considers the STA affiliated with the non-AP MLD and operating on the link
+     * used for association as in active mode and the other STAs affiliated with the non-AP MLD as
+     * in PowerSave mode; (ii) the STA affiliated with the non-AP MLD and operating on the link used
+     * for association is in active mode, while the other STAs affiliated with the non-AP MLD are
+     * switching to active mode, as they were in PowerSave mode and scheduled the transmission of a
+     * Data Null frame to switch to active mode.
+     *
+     * @param aid the AID assigned to the associated STA
+     * @param staAddr the MAC link address of the associated STA
+     */
+    void CheckPmMode(uint16_t aid, Mac48Address staAddr);
 
     /**
      * Check that links that are not setup on the non-AP MLD are disabled. Also, on the AP side,
@@ -486,6 +534,7 @@ class MultiLinkSetupTest : public MultiLinkOperationsTestBase
     std::vector<std::size_t>
         m_qosFrames2;       //!< indices of QoS frames of the optional set in the vector of TX PSDUs
     bool m_support160MHzOp; //!< whether non-AP MLDs support 160 MHz operations
+    bool m_assocCompleted;  //!< whether non-AP MLD has completed association
 };
 
 /**
@@ -853,6 +902,83 @@ class BarAfterDroppedMpduTest : public MultiLinkOperationsTestBase
     std::size_t m_processedEvents{0};    //!< number of processed events
     Ptr<ListErrorModel> m_staErrorModel; //!< error rate model to corrupt frames at the non-AP STA
     Ptr<ListErrorModel> m_apErrorModel;  //!< error rate model to corrupt frames at the AP MLD
+};
+
+/**
+ * @ingroup wifi-test
+ * @ingroup tests
+ *
+ * @brief Test transmission of control and management frames when a TID-to-Link Mapping is setup
+ *
+ * In this test, a 2-link non-AP MLD associates with a 2-link AP MLD using ML setup. Three different
+ * TID-to-Link Mappings are considered:
+ * - link 1 is not used for DL transmissions for TID 0, 6 and 7
+ * - link 1 is not used for UL transmissions for TID 0, 6 and 7
+ * - link 1 is disabled (i.e., no TID is mapped onto it)
+ * While the AP MLD transmits a DL data frame for TID 0 on link 0, a BlockAckReq (which may be sent
+ * on any link) is enqueued. It is checked that the BlockAckReq is queued, it cannot be transmitted
+ * on link 1 and it is transmitted on link 0 after the DL data frame exchange is completed. While
+ * the AP MLD transmits the DL data frame for TID 0 on link 0, an individually addressed management
+ * frame to be sent on link 1 is also queued (AC VO is used). It is checked that the management
+ * frame is never transmitted, if link 1 is disabled, or it is promptly transmitted on link 1,
+ * otherwise.
+ */
+class CtrlAndMgmtFramesWithTtlmTest : public MultiLinkOperationsTestBase
+{
+  public:
+    /// Enumeration of the tested scenarios
+    enum Scenario : uint8_t
+    {
+        TTLM_LINK_TID_NOT_MAPPED_DL = 0,
+        TTLM_LINK_TID_NOT_MAPPED_UL,
+        TTLM_LINK_DISABLED
+    };
+
+    /**
+     * Constructor.
+     *
+     * @param scenario the tested scenario
+     */
+    CtrlAndMgmtFramesWithTtlmTest(Scenario scenario);
+
+  protected:
+    void DoSetup() override;
+    void DoRun() override;
+    void Transmit(Ptr<WifiMac> mac,
+                  uint8_t phyId,
+                  WifiConstPsduMap psduMap,
+                  WifiTxVector txVector,
+                  double txPowerW) override;
+
+    /// Actions and checks to perform upon the transmission of each frame
+    struct Events
+    {
+        /**
+         * Constructor.
+         *
+         * @param type the frame MAC header type
+         * @param f function to perform actions and checks
+         */
+        Events(WifiMacType type,
+               std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, linkId_t)>&& f = {})
+            : hdrType(type),
+              func(f)
+        {
+        }
+
+        WifiMacType hdrType; ///< MAC header type of frame being transmitted
+        std::function<void(Ptr<const WifiPsdu>, const WifiTxVector&, uint8_t)>
+            func; ///< function to perform actions and checks
+    };
+
+    /// Insert elements in the list of expected events (transmitted frames)
+    void InsertEvents();
+
+  private:
+    Scenario m_scenario;              //!< the tested scenario
+    const std::size_t m_nPackets{2};  //!< number of generated packets
+    std::list<Events> m_events;       //!< list of events for a test run
+    std::size_t m_processedEvents{0}; //!< number of processed events
 };
 
 /**

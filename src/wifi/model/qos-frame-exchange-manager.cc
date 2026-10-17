@@ -83,6 +83,17 @@ QosFrameExchangeManager::DoDispose()
     FrameExchangeManager::DoDispose();
 }
 
+void
+QosFrameExchangeManager::Reset()
+{
+    NS_LOG_FUNCTION(this);
+    m_edca = nullptr;
+    m_edcaBackingOff = nullptr;
+    m_pifsRecoveryEvent.Cancel();
+    m_initialFrame = false;
+    FrameExchangeManager::Reset();
+}
+
 bool
 QosFrameExchangeManager::SendCfEndIfNeeded()
 {
@@ -111,16 +122,12 @@ QosFrameExchangeManager::SendCfEndIfNeeded()
     {
         NS_LOG_DEBUG("Send CF-End frame");
         ForwardMpduDown(mpdu, cfEndTxVector);
-        Simulator::Schedule(txDuration,
-                            &QosFrameExchangeManager::NotifyChannelReleased,
-                            this,
-                            m_edca);
+        Simulator::Schedule(txDuration, &QosFrameExchangeManager::NotifyChannelReleased, this);
         ResetTxNav();
         return true;
     }
 
-    NotifyChannelReleased(m_edca);
-    m_edca = nullptr;
+    NotifyChannelReleased();
     return false;
 }
 
@@ -139,17 +146,16 @@ QosFrameExchangeManager::PifsRecovery(bool forceCurrentCw)
     if (m_allowedWidth == MHz_u{0})
     {
         // PIFS recovery failed, TXOP is terminated
-        NotifyChannelReleased(m_edca);
+        auto edca = m_edca;
+        NotifyChannelReleased();
         if (!forceCurrentCw)
         {
-            m_edca->UpdateFailedCw(m_linkId);
+            edca->UpdateFailedCw(m_linkId);
         }
-        m_edca = nullptr;
     }
     else
     {
-        // the txopDuration parameter is unused because we are not starting a new TXOP
-        StartTransmission(m_edca, Seconds(0));
+        StartTransmission();
     }
 }
 
@@ -162,7 +168,7 @@ QosFrameExchangeManager::CancelPifsRecovery()
 
     NS_LOG_DEBUG("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
     m_pifsRecoveryEvent.Cancel();
-    NotifyChannelReleased(m_edca);
+    NotifyChannelReleased();
 }
 
 bool
@@ -185,14 +191,16 @@ QosFrameExchangeManager::StartTransmission(Ptr<Txop> edca, MHz_u allowedWidth)
     }
 
     m_allowedWidth = allowedWidth;
-    auto qosTxop = StaticCast<QosTxop>(edca);
-    return StartTransmission(qosTxop, qosTxop->GetTxopLimit(m_linkId));
+    m_dcf = edca;
+    m_edca = StaticCast<QosTxop>(edca);
+    return StartTransmission();
 }
 
 bool
-QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
+QosFrameExchangeManager::StartTransmission()
 {
-    NS_LOG_FUNCTION(this << edca << txopDuration);
+    NS_ASSERT(m_edca);
+    NS_LOG_FUNCTION(this << m_edca->GetAccessCategory());
 
     if (m_pifsRecoveryEvent.IsPending())
     {
@@ -205,8 +213,6 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
     {
         m_txTimer.Cancel();
     }
-    m_dcf = edca;
-    m_edca = edca;
 
     // We check if this EDCAF invoked the backoff procedure (without terminating
     // the TXOP) because the transmission of a non-initial frame of a TXOP failed
@@ -235,9 +241,10 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
             (backingOff && m_edca->GetRemainingTxop(m_linkId).IsZero()))
         {
             // starting a new TXOP
+            const auto txopDuration = m_edca->GetTxopLimit(m_linkId);
             m_edca->NotifyChannelAccessed(m_linkId, txopDuration);
 
-            if (StartFrameExchange(m_edca, txopDuration, true))
+            if (StartFrameExchange())
             {
                 m_initialFrame = true;
                 return true;
@@ -245,15 +252,14 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 
             // TXOP not even started, return false
             NS_LOG_DEBUG("No frame transmitted");
-            NotifyChannelReleased(m_edca);
-            m_edca = nullptr;
+            NotifyChannelReleased();
             return false;
         }
 
         // We are continuing a TXOP, check if we can transmit another frame
         NS_ASSERT(!m_initialFrame);
 
-        if (!StartFrameExchange(m_edca, m_edca->GetRemainingTxop(m_linkId), false))
+        if (!StartFrameExchange())
         {
             NS_LOG_DEBUG("Not enough remaining TXOP time");
             return SendCfEndIfNeeded();
@@ -264,27 +270,34 @@ QosFrameExchangeManager::StartTransmission(Ptr<QosTxop> edca, Time txopDuration)
 
     // we get here if TXOP limit is null
     m_initialFrame = true;
+    m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
 
-    if (StartFrameExchange(m_edca, Time::Min(), true))
+    if (StartFrameExchange())
     {
-        m_edca->NotifyChannelAccessed(m_linkId, Seconds(0));
         return true;
     }
 
     NS_LOG_DEBUG("No frame transmitted");
-    NotifyChannelReleased(m_edca);
-    m_edca = nullptr;
+    NotifyChannelReleased();
     return false;
 }
 
-bool
-QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
-                                            Time availableTime,
-                                            bool initialFrame)
+std::optional<Time>
+QosFrameExchangeManager::GetAvailTxopTime(const std::optional<Mac48Address>& receiver) const
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_ASSERT_MSG(m_edca, "This device (" << m_self << ") does not appear to hold a TXOP");
 
-    Ptr<WifiMpdu> mpdu = edca->PeekNextMpdu(m_linkId);
+    return m_edca->GetTxopLimit(m_linkId).IsZero()
+               ? std::nullopt
+               : std::optional{m_edca->GetRemainingTxop(m_linkId)};
+}
+
+bool
+QosFrameExchangeManager::StartFrameExchange()
+{
+    NS_LOG_FUNCTION(this);
+
+    auto mpdu = m_edca->PeekNextMpdu(m_linkId);
 
     // Even though channel access is requested when the queue is not empty, at
     // the time channel access is granted the lifetime of the packet might be
@@ -295,12 +308,13 @@ QosFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca,
         return false;
     }
 
+    auto availableTime = GetAvailTxopTime(mpdu->GetHeader().GetAddr1());
     mpdu = CreateAliasIfNeeded(mpdu);
     WifiTxParameters txParams;
     txParams.m_txVector =
         GetWifiRemoteStationManager()->GetDataTxVector(mpdu->GetHeader(), m_allowedWidth);
 
-    Ptr<WifiMpdu> item = edca->GetNextMpdu(m_linkId, mpdu, txParams, availableTime, initialFrame);
+    auto item = m_edca->GetNextMpdu(m_linkId, mpdu, txParams, availableTime);
 
     if (!item)
     {
@@ -339,7 +353,7 @@ QosFrameExchangeManager::CreateAliasIfNeeded(Ptr<WifiMpdu> mpdu) const
 bool
 QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
                                     WifiTxParameters& txParams,
-                                    Time availableTime) const
+                                    const std::optional<Time>& availableTime) const
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << availableTime);
@@ -397,10 +411,10 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
     NS_ASSERT(acknowledgmentTime.has_value());
     NS_LOG_DEBUG("acknowledgment time=" << *acknowledgmentTime);
 
-    Time ppduDurationLimit = Time::Min();
-    if (availableTime != Time::Min())
+    std::optional<Time> ppduDurationLimit;
+    if (availableTime)
     {
-        ppduDurationLimit = availableTime - *protectionTime - *acknowledgmentTime;
+        ppduDurationLimit = *availableTime - *protectionTime - *acknowledgmentTime;
     }
 
     if (!IsWithinLimitsIfAddMpdu(mpdu, txParams, ppduDurationLimit))
@@ -426,7 +440,7 @@ QosFrameExchangeManager::TryAddMpdu(Ptr<const WifiMpdu> mpdu,
 bool
 QosFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
                                                  const WifiTxParameters& txParams,
-                                                 Time ppduDurationLimit) const
+                                                 const std::optional<Time>& ppduDurationLimit) const
 {
     NS_ASSERT(mpdu);
     NS_LOG_FUNCTION(this << *mpdu << &txParams << ppduDurationLimit);
@@ -440,14 +454,15 @@ QosFrameExchangeManager::IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
 }
 
 bool
-QosFrameExchangeManager::IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize,
-                                                   Mac48Address receiver,
-                                                   const WifiTxParameters& txParams,
-                                                   Time ppduDurationLimit) const
+QosFrameExchangeManager::IsWithinSizeAndTimeLimits(
+    uint32_t ppduPayloadSize,
+    Mac48Address receiver,
+    const WifiTxParameters& txParams,
+    const std::optional<Time>& ppduDurationLimit) const
 {
     NS_LOG_FUNCTION(this << ppduPayloadSize << receiver << &txParams << ppduDurationLimit);
 
-    if (ppduDurationLimit != Time::Min() && ppduDurationLimit.IsNegative())
+    if (ppduDurationLimit && ppduDurationLimit->IsNegative())
     {
         NS_LOG_DEBUG("ppduDurationLimit is null or negative, time limit is trivially exceeded");
         return false;
@@ -466,7 +481,8 @@ QosFrameExchangeManager::IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize,
     auto txTime = txParams.m_txDuration.value();
     NS_LOG_DEBUG("PPDU duration: " << txTime.As(Time::MS));
 
-    if ((ppduDurationLimit.IsStrictlyPositive() && txTime > ppduDurationLimit) ||
+    if ((ppduDurationLimit && ppduDurationLimit->IsStrictlyPositive() &&
+         txTime > *ppduDurationLimit) ||
         (maxPpduDuration.IsStrictlyPositive() && txTime > maxPpduDuration))
     {
         NS_LOG_DEBUG(
@@ -511,7 +527,9 @@ QosFrameExchangeManager::GetFrameDurationId(const WifiMacHeader& header,
                      WifiPhy::CalculateTxDuration(size, txParams.m_txVector, m_phy->GetPhyBand()),
                  *txParams.m_acknowledgment->acknowledgmentTime);
 
-    if (m_protectSingleExchange)
+    // use single protection to transmit Association Request/Response or Probe Request/Response
+    if (m_protectSingleExchange || header.IsAssocReq() || header.IsAssocResp() ||
+        header.IsProbeReq() || header.IsProbeResp())
     {
         duration = std::min(duration, singleDurationId + m_singleExchangeProtectionSurplus);
     }
@@ -630,11 +648,9 @@ QosFrameExchangeManager::TransmissionSucceeded()
         m_edca->GetRemainingTxop(m_linkId) > m_phy->GetSifs())
     {
         NS_LOG_DEBUG("Schedule another transmission in a SIFS");
-        bool (QosFrameExchangeManager::*fp)(Ptr<QosTxop>, Time) =
-            &QosFrameExchangeManager::StartTransmission;
+        bool (QosFrameExchangeManager::*fp)() = &QosFrameExchangeManager::StartTransmission;
 
-        // we are continuing a TXOP, hence the txopDuration parameter is unused
-        Simulator::Schedule(m_phy->GetSifs(), fp, this, m_edca, Seconds(0));
+        Simulator::Schedule(m_phy->GetSifs(), fp, this);
 
         if (m_protectedIfResponded)
         {
@@ -643,8 +659,7 @@ QosFrameExchangeManager::TransmissionSucceeded()
     }
     else
     {
-        NotifyChannelReleased(m_edca);
-        m_edca = nullptr;
+        NotifyChannelReleased();
     }
     m_initialFrame = false;
     m_sentFrameTo.clear();
@@ -671,8 +686,7 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
         {
             m_edca->UpdateFailedCw(m_linkId);
         }
-        NotifyChannelReleased(m_edca);
-        m_edca = nullptr;
+        NotifyChannelReleased();
     }
     else
     {
@@ -720,6 +734,21 @@ QosFrameExchangeManager::TransmissionFailed(bool forceCurrentCw)
     m_sentFrameTo.clear();
     // reset TXNAV because transmission failed
     ResetTxNav();
+}
+
+void
+QosFrameExchangeManager::NotifyChannelReleased()
+{
+    NS_LOG_FUNCTION(this);
+
+    NS_ASSERT_MSG(m_dcf || m_edca, "No DCF/EDCAF gained access to the channel being released");
+    if (m_edca)
+    {
+        m_edca->NotifyChannelReleased(m_linkId);
+        m_edca = nullptr;
+        m_dcf = nullptr;
+    }
+    FrameExchangeManager::NotifyChannelReleased();
 }
 
 void

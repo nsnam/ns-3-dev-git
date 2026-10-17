@@ -57,7 +57,7 @@ IePerr::SerializeInformationField(Buffer::Iterator i) const
         i.WriteU8(0); // not used // Bit 6: AE (Address Extension) subfield (1 = destination
                       // external address is present, 0 = otherwise).
         WriteTo(i, m_addressUnits[j].destination);
-        i.WriteHtolsbU32(m_addressUnits[j].seqnum);
+        i.WriteU32(m_addressUnits[j].seqnum);
         i.WriteU8(0);
         i.WriteU8(0);
     }
@@ -76,7 +76,7 @@ IePerr::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
         i.Next(1); // flags is not used now
         HwmpProtocol::FailedDestination unit;
         ReadFrom(i, unit.destination);
-        unit.seqnum = i.ReadLsbtohU32();
+        unit.seqnum = i.ReadU32();
         m_addressUnits.push_back(unit);
         i.Next(2); // Reason
     }

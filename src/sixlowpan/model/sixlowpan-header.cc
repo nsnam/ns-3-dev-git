@@ -68,7 +68,19 @@ SixLowPanDispatch::GetDispatchType(uint8_t dispatch)
 SixLowPanDispatch::NhcDispatch_e
 SixLowPanDispatch::GetNhcDispatchType(uint8_t dispatch)
 {
-    if ((dispatch >= LOWPAN_NHC) && (dispatch <= LOWPAN_NHC_N))
+    if ((dispatch >= LOWPAN_GHC_EXT) && (dispatch <= LOWPAN_GHC_EXT_N))
+    {
+        return LOWPAN_GHC_EXT;
+    }
+    else if (dispatch == LOWPAN_GHC_ICMPV6)
+    {
+        return LOWPAN_GHC_ICMPV6;
+    }
+    else if ((dispatch >= LOWPAN_GHC_UDP) && (dispatch <= LOWPAN_GHC_UDP_N))
+    {
+        return LOWPAN_GHC_UDP;
+    }
+    else if ((dispatch >= LOWPAN_NHC) && (dispatch <= LOWPAN_NHC_N))
     {
         return LOWPAN_NHC;
     }
@@ -1104,7 +1116,15 @@ SixLowPanIphc::Serialize(Buffer::Iterator start) const
         switch (GetDam())
         {
         case HC_INLINE:
-            i.Write(m_dstInlinePart, 16);
+            // Stateful (DAC=1) multicast is the 48-bit form (RFC 6282, Section 3.1.1).
+            if (!GetDac())
+            {
+                i.Write(m_dstInlinePart, 16);
+            }
+            else
+            {
+                i.Write(m_dstInlinePart, 6);
+            }
             break;
         case HC_COMPR_64:
             i.Write(m_dstInlinePart, 6);
@@ -1238,7 +1258,15 @@ SixLowPanIphc::Deserialize(Buffer::Iterator start)
         switch (GetDam())
         {
         case HC_INLINE:
-            i.Read(m_dstInlinePart, 16);
+            // Stateful (DAC=1) multicast is the 48-bit form (RFC 6282, Section 3.1.1).
+            if (!GetDac())
+            {
+                i.Read(m_dstInlinePart, 16);
+            }
+            else
+            {
+                i.Read(m_dstInlinePart, 6);
+            }
             break;
         case HC_COMPR_64:
             i.Read(m_dstInlinePart, 6);
@@ -2103,6 +2131,7 @@ SixLowPanMesh::Deserialize(Buffer::Iterator start)
         addrSize = 8;
     }
     i.Read(buffer, addrSize);
+    m_src.SetType("MacAddress", addrSize);
     m_src.CopyFrom(buffer, addrSize);
 
     if (m_f)
@@ -2114,6 +2143,7 @@ SixLowPanMesh::Deserialize(Buffer::Iterator start)
         addrSize = 8;
     }
     i.Read(buffer, addrSize);
+    m_dst.SetType("MacAddress", addrSize);
     m_dst.CopyFrom(buffer, addrSize);
 
     return GetSerializedSize();
@@ -2183,6 +2213,148 @@ SixLowPanMesh::GetHopsLeft() const
 
 std::ostream&
 operator<<(std::ostream& os, const SixLowPanMesh& h)
+{
+    h.Print(os);
+    return os;
+}
+
+/*
+ * SixLowPanCio
+ */
+NS_OBJECT_ENSURE_REGISTERED(Icmpv6OptionSixLowPanCapabilityIndication);
+
+Icmpv6OptionSixLowPanCapabilityIndication::Icmpv6OptionSixLowPanCapabilityIndication()
+{
+    SetType(Icmpv6Header::ICMPV6_OPT_CAPABILITY_INDICATION);
+    SetLength(1);
+    m_capabilityOptionField = 0;
+}
+
+TypeId
+Icmpv6OptionSixLowPanCapabilityIndication::GetTypeId()
+{
+    static TypeId tid = TypeId("ns3::Icmpv6OptionSixLowPanCapabilityIndication")
+                            .SetParent<Icmpv6Header>()
+                            .SetGroupName("SixLowPan")
+                            .AddConstructor<Icmpv6OptionSixLowPanCapabilityIndication>();
+    return tid;
+}
+
+TypeId
+Icmpv6OptionSixLowPanCapabilityIndication::GetInstanceTypeId() const
+{
+    return GetTypeId();
+}
+
+void
+Icmpv6OptionSixLowPanCapabilityIndication::Print(std::ostream& os) const
+{
+    os << "( type = " << (uint32_t)GetType() << " Option field: ";
+
+    if (m_capabilityOptionField & D)
+    {
+        os << "D";
+    }
+    else
+    {
+        os << " ";
+    }
+
+    if (m_capabilityOptionField & L)
+    {
+        os << "L";
+    }
+    else
+    {
+        os << " ";
+    }
+
+    if (m_capabilityOptionField & B)
+    {
+        os << "B";
+    }
+    else
+    {
+        os << " ";
+    }
+
+    if (m_capabilityOptionField & P)
+    {
+        os << "P";
+    }
+    else
+    {
+        os << " ";
+    }
+
+    if (m_capabilityOptionField & E)
+    {
+        os << "E";
+    }
+    else
+    {
+        os << " ";
+    }
+
+    if (m_capabilityOptionField & G)
+    {
+        os << "G";
+    }
+    else
+    {
+        os << " ";
+    }
+    os << " )";
+}
+
+uint32_t
+Icmpv6OptionSixLowPanCapabilityIndication::GetSerializedSize() const
+{
+    return 8;
+}
+
+void
+Icmpv6OptionSixLowPanCapabilityIndication::Serialize(Buffer::Iterator start) const
+{
+    Buffer::Iterator i = start;
+
+    i.WriteU8(GetType());
+    i.WriteU8(GetLength());
+
+    i.WriteU8(0);
+    i.WriteU8(m_capabilityOptionField);
+    i.WriteU32(0);
+}
+
+uint32_t
+Icmpv6OptionSixLowPanCapabilityIndication::Deserialize(Buffer::Iterator start)
+{
+    Buffer::Iterator i = start;
+
+    SetType(i.ReadU8());
+    SetLength(i.ReadU8());
+
+    i.Next();
+    m_capabilityOptionField = i.ReadU8();
+    i.Next(4);
+
+    return GetSerializedSize();
+}
+
+void
+Icmpv6OptionSixLowPanCapabilityIndication::SetOption(SixLowPanCapability_e option)
+{
+    m_capabilityOptionField |= option;
+}
+
+bool
+Icmpv6OptionSixLowPanCapabilityIndication::CheckOption(SixLowPanCapability_e option) const
+{
+    return (m_capabilityOptionField & option) != 0;
+}
+
+std::ostream&
+operator<<(std::ostream& os, const Icmpv6OptionSixLowPanCapabilityIndication& h)
 {
     h.Print(os);
     return os;

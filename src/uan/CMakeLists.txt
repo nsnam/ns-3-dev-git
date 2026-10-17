@@ -50,6 +50,8 @@ build_lib(
     model/uan-tx-mode.h
   LIBRARIES_TO_LINK ${libmobility}
                     ${libenergy}
-  TEST_SOURCES test/uan-energy-model-test.cc
-               test/uan-test.cc
+  TEST_SOURCES
+    test/uan-energy-model-test.cc
+    test/uan-test.cc
+    test/uan-traced-callback-typedef-test-suite.cc
 )

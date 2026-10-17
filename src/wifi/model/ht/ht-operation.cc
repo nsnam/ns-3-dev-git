@@ -438,8 +438,8 @@ HtOperation::SerializeInformationField(Buffer::Iterator start) const
     start.WriteU8(GetInformationSubset1());
     start.WriteU16(GetInformationSubset2());
     start.WriteU16(GetInformationSubset3());
-    start.WriteHtolsbU64(GetBasicMcsSet1());
-    start.WriteHtolsbU64(GetBasicMcsSet2());
+    start.WriteU64(GetBasicMcsSet1());
+    start.WriteU64(GetBasicMcsSet2());
 }
 
 uint16_t
@@ -450,8 +450,8 @@ HtOperation::DeserializeInformationField(Buffer::Iterator start, uint16_t length
     uint8_t informationsubset1 = i.ReadU8();
     uint16_t informationsubset2 = i.ReadU16();
     uint16_t informationsubset3 = i.ReadU16();
-    uint64_t mcsset1 = i.ReadLsbtohU64();
-    uint64_t mcsset2 = i.ReadLsbtohU64();
+    uint64_t mcsset1 = i.ReadU64();
+    uint64_t mcsset2 = i.ReadU64();
     SetPrimaryChannel(primarychannel);
     SetInformationSubset1(informationsubset1);
     SetInformationSubset2(informationsubset2);

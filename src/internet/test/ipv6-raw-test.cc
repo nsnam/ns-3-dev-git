@@ -481,6 +481,23 @@ Ipv6RawSocketImplTest::DoRun()
     m_receivedPacket = nullptr;
     m_receivedPacket2 = nullptr;
 
+    // Multicast group bind test (@issueid{1039}): a raw socket bound to a
+    // non-all-nodes multicast group must receive packets sent to that group.
+    Ptr<Socket> rxSocketMcast = rxSocketFactory->CreateSocket();
+    rxSocketMcast->SetRecvCallback(MakeCallback(&Ipv6RawSocketImplTest::ReceivePkt, this));
+    rxSocketMcast->SetAttribute("Protocol", UintegerValue(Ipv6Header::IPV6_ICMPV6));
+    NS_TEST_EXPECT_MSG_EQ(rxSocketMcast->Bind(Inet6SocketAddress(Ipv6Address("ff02::114"), 0)),
+                          0,
+                          "bind to multicast group");
+    txSocket->Bind(Inet6SocketAddress(Ipv6Address("2001:db8::2"), 0));
+    SendData(txSocket, "ff02::114");
+    NS_TEST_EXPECT_MSG_EQ(m_receivedPacket->GetSize(),
+                          163,
+                          "recv: ff02::114 (raw socket bound to a multicast group)");
+
+    m_receivedPacket = nullptr;
+    m_receivedPacket2 = nullptr;
+
     // Simple getpeername tests
 
     Address peerAddress;

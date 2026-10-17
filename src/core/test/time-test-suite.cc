@@ -11,8 +11,10 @@
 #include "ns3/int64x64.h"
 #include "ns3/nstime.h"
 #include "ns3/test.h"
+#include "ns3/time-span.h"
 
 #include <array>
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -521,6 +523,90 @@ TimeInputOutputTestCase::DoRun()
     CheckAs(t * 1e+6, "+36.361026d");
     CheckAs(t * 1e+7, "+363.610261d");
     CheckAs(t * 1e+8, "+9.961925y");
+
+    std::stringstream timeSpanStream{" { 50ms , 100ms } "};
+    TimeSpan timeSpan(Seconds(0), Seconds(0));
+    timeSpanStream >> timeSpan;
+    NS_TEST_EXPECT_MSG_EQ(timeSpan.Begin(), MilliSeconds(50), "Unexpected TimeSpan begin time");
+    NS_TEST_EXPECT_MSG_EQ(timeSpan.End(), MilliSeconds(100), "Unexpected TimeSpan end time");
+
+    std::stringstream timeSpanOutput;
+    timeSpanOutput << TimeSpan(NanoSeconds(50), NanoSeconds(100));
+    NS_TEST_EXPECT_MSG_EQ(timeSpanOutput.str(), "{+50ns, +100ns}", "Unexpected TimeSpan output");
+
+    TimeSpan timeSpanString(" { 50ms , 100ms } ");
+    NS_TEST_EXPECT_MSG_EQ(timeSpanString.Begin(),
+                          MilliSeconds(50),
+                          "Unexpected string TimeSpan begin time");
+    NS_TEST_EXPECT_MSG_EQ(timeSpanString.End(),
+                          MilliSeconds(100),
+                          "Unexpected string TimeSpan end time");
+
+    NS_TEST_EXPECT_MSG_EQ(timeSpan == timeSpanString, true, "Equivalent TimeSpan objects differ");
+    NS_TEST_EXPECT_MSG_EQ(timeSpan == TimeSpan(MilliSeconds(50), MilliSeconds(150)),
+                          false,
+                          "Different TimeSpan objects compare equal");
+}
+
+/**
+ * @ingroup core-tests
+ * @brief Checks that integer unit conversions whose result does not fit in
+ *        int64_t wrap around in a well-defined (two's-complement) manner.
+ *
+ * Time::ToInteger() multiplies the raw value by an integer unit-conversion
+ * factor. When the mathematical result exceeds the range of int64_t, the
+ * operation must wrap around deterministically rather than invoke signed
+ * integer overflow, which is undefined behavior (and is trapped by the
+ * undefined-behavior sanitizer). This test pins down that wrapped result for
+ * both positive and negative times.
+ */
+class TimeToIntegerOverflowTestCase : public TestCase
+{
+  public:
+    /**
+     * @brief Constructor for TimeToIntegerOverflowTestCase.
+     */
+    TimeToIntegerOverflowTestCase();
+
+  private:
+    /**
+     * @brief DoRun for TimeToIntegerOverflowTestCase.
+     */
+    void DoRun() override;
+};
+
+TimeToIntegerOverflowTestCase::TimeToIntegerOverflowTestCase()
+    : TestCase("Integer unit conversion overflow wraps without undefined behavior")
+{
+}
+
+void
+TimeToIntegerOverflowTestCase::DoRun()
+{
+    // GetFemtoSeconds() converts the stored value to femtoseconds by an integer
+    // multiplication. This test assumes a resolution coarser than femtoseconds
+    // (the default is nanoseconds) so that the value 10000 s is representable
+    // internally but its femtosecond count is not.
+    NS_TEST_ASSERT_MSG_NE(Time::GetResolution(),
+                          Time::FS,
+                          "test precondition: resolution must be coarser than fs");
+
+    // 10000 s == 1e19 fs. That exceeds INT64_MAX (~9.22e18) but is below 2^64,
+    // so the femtosecond count cannot be represented exactly in the signed
+    // 64-bit return value and instead wraps around modulo 2^64. This documents
+    // the (intentional, well-defined) behavior of the integer Get*() accessors.
+    const uint64_t totalFemtos = 10000000000000000000ULL; // 1e19 fs, > INT64_MAX, < 2^64
+
+    // Positive time: +1e19 wraps to 1e19 - 2^64 == -8446744073709551616.
+    NS_TEST_ASSERT_MSG_EQ(Seconds(10000).GetFemtoSeconds(),
+                          static_cast<int64_t>(totalFemtos),
+                          "femtosecond overflow of a positive Time must wrap modulo 2^64");
+
+    // Negative time: -1e19 wraps to 2^64 - 1e19 == +8446744073709551616,
+    // confirming the sign is handled consistently by the wraparound.
+    NS_TEST_ASSERT_MSG_EQ(Seconds(-10000).GetFemtoSeconds(),
+                          -static_cast<int64_t>(totalFemtos),
+                          "femtosecond overflow of a negative Time must wrap modulo 2^64");
 }
 
 /**
@@ -535,6 +621,7 @@ static class TimeTestSuite : public TestSuite
     {
         AddTestCase(new TimeWithSignTestCase(), TestCase::Duration::QUICK);
         AddTestCase(new TimeInputOutputTestCase(), TestCase::Duration::QUICK);
+        AddTestCase(new TimeToIntegerOverflowTestCase(), TestCase::Duration::QUICK);
         // This should be last, since it changes the resolution
         AddTestCase(new TimeSimpleTestCase(), TestCase::Duration::QUICK);
     }

@@ -30,7 +30,7 @@ Mac48Address::Mac48Address(const char* str)
     NS_LOG_FUNCTION(this << str);
     NS_ASSERT_MSG(strlen(str) <= 17, "Mac48Address: illegal string (too long) " << str);
 
-    unsigned int bytes[6];
+    unsigned int bytes[ADDRESS_LENGTH];
     int charsRead = 0;
 
     int i = sscanf(str,
@@ -42,30 +42,30 @@ Mac48Address::Mac48Address(const char* str)
                    bytes + 4,
                    bytes + 5,
                    &charsRead);
-    NS_ASSERT_MSG(i == 6 && !str[charsRead], "Mac48Address: illegal string " << str);
+    NS_ASSERT_MSG(i == ADDRESS_LENGTH && !str[charsRead], "Mac48Address: illegal string " << str);
 
     std::copy(std::begin(bytes), std::end(bytes), std::begin(m_address));
 }
 
 void
-Mac48Address::CopyFrom(const uint8_t buffer[6])
+Mac48Address::CopyFrom(const uint8_t buffer[ADDRESS_LENGTH])
 {
     NS_LOG_FUNCTION(this << &buffer);
-    std::memcpy(m_address, buffer, 6);
+    std::copy(buffer, buffer + ADDRESS_LENGTH, m_address.begin());
 }
 
 void
-Mac48Address::CopyTo(uint8_t buffer[6]) const
+Mac48Address::CopyTo(uint8_t buffer[ADDRESS_LENGTH]) const
 {
     NS_LOG_FUNCTION(this << &buffer);
-    std::memcpy(buffer, m_address, 6);
+    std::copy(m_address.begin(), m_address.end(), buffer);
 }
 
 bool
 Mac48Address::IsMatchingType(const Address& address)
 {
     NS_LOG_FUNCTION(&address);
-    return address.CheckCompatible(GetType(), 6);
+    return address.CheckCompatible(GetType(), ADDRESS_LENGTH);
 }
 
 Mac48Address::
@@ -78,16 +78,16 @@ Address
 Mac48Address::ConvertTo() const
 {
     NS_LOG_FUNCTION(this);
-    return Address(GetType(), m_address, 6);
+    return Address(GetType(), m_address.data(), ADDRESS_LENGTH);
 }
 
 Mac48Address
 Mac48Address::ConvertFrom(const Address& address)
 {
     NS_LOG_FUNCTION(&address);
-    NS_ASSERT(address.CheckCompatible(GetType(), 6));
+    NS_ASSERT(address.CheckCompatible(GetType(), ADDRESS_LENGTH));
     Mac48Address retval;
-    address.CopyTo(retval.m_address);
+    address.CopyTo(retval.m_address.data());
     return retval;
 }
 
@@ -123,7 +123,7 @@ uint8_t
 Mac48Address::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", ADDRESS_LENGTH);
     return type;
 }
 
@@ -175,7 +175,7 @@ Mac48Address::GetMulticast(Ipv4Address multicastGroup)
     // need to pull it out so we can play with it.  When we're done, we have the
     // high order bits in etherBuffer[0], etc.
     //
-    uint8_t etherBuffer[6];
+    uint8_t etherBuffer[ADDRESS_LENGTH];
     etherAddr.CopyTo(etherBuffer);
 
     //
@@ -208,7 +208,7 @@ Mac48Address::GetMulticast(Ipv6Address addr)
 {
     NS_LOG_FUNCTION(addr);
     Mac48Address etherAddr = Mac48Address::GetMulticast6Prefix();
-    uint8_t etherBuffer[6];
+    uint8_t etherBuffer[ADDRESS_LENGTH];
     uint8_t ipBuffer[16];
 
     /* a MAC multicast IPv6 address is like 33:33 and the four low bytes */
@@ -229,19 +229,20 @@ Mac48Address::GetMulticast(Ipv6Address addr)
 std::ostream&
 operator<<(std::ostream& os, const Mac48Address& address)
 {
-    uint8_t ad[6];
-    address.CopyTo(ad);
-
+    std::ios_base::fmtflags ff = os.flags();
     os.setf(std::ios::hex, std::ios::basefield);
-    os.fill('0');
-    for (uint8_t i = 0; i < 5; i++)
-    {
-        os << std::setw(2) << (uint32_t)ad[i] << ":";
-    }
-    // Final byte not suffixed by ":"
-    os << std::setw(2) << (uint32_t)ad[5];
-    os.setf(std::ios::dec, std::ios::basefield);
-    os.fill(' ');
+    auto fill = os.fill('0');
+
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[0]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[1]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[2]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[3]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[4]) << ":";
+    os << std::setw(2) << static_cast<uint32_t>(address.m_address[5]);
+
+    os.flags(ff); // Restore stream flags
+    os.fill(fill);
+
     return os;
 }
 
@@ -252,7 +253,7 @@ operator>>(std::istream& is, Mac48Address& address)
     is >> v;
 
     std::string::size_type col = 0;
-    for (uint8_t i = 0; i < 6; ++i)
+    for (uint8_t i = 0; i < Mac48Address::ADDRESS_LENGTH; ++i)
     {
         std::string tmp;
         std::string::size_type next;

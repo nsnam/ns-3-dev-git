@@ -11,6 +11,8 @@
 
 #include "obss-pd-algorithm.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -28,7 +30,7 @@ namespace ns3
  * in case the received RSSI is lower than that constant OBSS PD level value, and is informed
  * about TX power restrictions that might be applied to the next transmission.
  */
-class ConstantObssPdAlgorithm : public ObssPdAlgorithm
+class WIFI_EXPORT ConstantObssPdAlgorithm : public ObssPdAlgorithm
 {
   public:
     ConstantObssPdAlgorithm();

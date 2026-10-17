@@ -268,7 +268,7 @@ ZigbeeNwkHeader::Serialize(Buffer::Iterator start) const
     Buffer::Iterator i = start;
 
     uint16_t frameControl = GetFrameControl();
-    i.WriteHtolsbU16(frameControl);
+    i.WriteU16(frameControl);
 
     WriteTo(i, m_dstAddr);
     WriteTo(i, m_srcAddr);
@@ -297,7 +297,7 @@ uint32_t
 ZigbeeNwkHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    uint16_t frameControl = i.ReadLsbtohU16();
+    uint16_t frameControl = i.ReadU16();
     SetFrameControl(frameControl);
     ReadFrom(i, m_dstAddr);
     ReadFrom(i, m_srcAddr);

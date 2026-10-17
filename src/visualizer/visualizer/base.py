@@ -61,6 +61,8 @@ netdevice_traits = {
     ns.MeshPointDevice: NetDeviceTraits(is_virtual=True),
     ns.LteUeNetDevice: NetDeviceTraits(is_wireless=True),
     ns.LteEnbNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.lrwpan.LrWpanNetDevice: NetDeviceTraits(is_wireless=True),
+    ns.SixLowPanNetDevice: NetDeviceTraits(is_virtual=False, is_wireless=True),
 }
 
 

@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -19,7 +21,7 @@ namespace ns3
  *
  * The IEEE 802.11 ADDBA Extension Element (Sec. 9.4.2.139 of 802.11-2020)
  */
-class AddbaExtension : public WifiInformationElement
+class WIFI_EXPORT AddbaExtension : public WifiInformationElement
 {
   public:
     AddbaExtension() = default;
@@ -27,7 +29,7 @@ class AddbaExtension : public WifiInformationElement
     /**
      * ADDBA Extended Parameter Set
      */
-    struct ExtParamSet
+    struct WIFI_EXPORT ExtParamSet
     {
         uint8_t noFragment : 1;    //!< reserved when transmitted by HE STA to HE STA
         uint8_t heFragmentOp : 2;  //!< indicates level of HE dynamic fragmentation (unsupported)

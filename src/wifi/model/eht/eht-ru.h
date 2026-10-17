@@ -9,6 +9,7 @@
 #ifndef EHT_RU_H
 #define EHT_RU_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-common.h"
 
 #include <cstdint>
@@ -24,13 +25,13 @@ namespace ns3
 /**
  * This class stores the subcarrier groups of all the available EHT RUs.
  */
-class EhtRu
+class WIFI_EXPORT EhtRu
 {
   public:
     /**
      * RU Specification.
      */
-    class RuSpec
+    class WIFI_EXPORT RuSpec
     {
       public:
         /**
@@ -87,28 +88,12 @@ class EhtRu
         bool GetPrimary80MHzOrLower80MHz() const;
 
         /**
-         * Compare this RU to the given RU.
+         * Default three-way comparison
          *
-         * @param other the given RU
-         * @return true if this RU compares equal to the given RU, false otherwise
+         * @param rhs right hand side
+         * @return deduced comparison type
          */
-        bool operator==(const RuSpec& other) const;
-
-        /**
-         * Compare this RU to the given RU.
-         *
-         * @param other the given RU
-         * @return true if this RU differs from the given RU, false otherwise
-         */
-        bool operator!=(const RuSpec& other) const;
-
-        /**
-         * Compare this RU to the given RU.
-         *
-         * @param other the given RU
-         * @return true if this RU is smaller than the given RU, false otherwise
-         */
-        bool operator<(const RuSpec& other) const;
+        auto operator<=>(const RuSpec& rhs) const = default;
 
       private:
         RuType m_ruType{};      //!< RU type
@@ -275,7 +260,7 @@ class EhtRu
  * @param ru the RU
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const EhtRu::RuSpec& ru);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const EhtRu::RuSpec& ru);
 
 } // namespace ns3
 

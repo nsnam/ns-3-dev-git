@@ -132,7 +132,7 @@ class TrafficControlHelper
      * given attributes. To set the InternalQueueList, PacketFilterList and ChildQueueDiscList
      * attributes, use the AddInternalQueue, AddPacketFilter and AddChildQueueDisc methods.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of queue disc
      * @param args A sequence of name-value pairs of the attributes to set.
      * @return the handle of the root queue disc (zero)
@@ -144,7 +144,7 @@ class TrafficControlHelper
      * Helper function used to add the given number of internal queues (of the given
      * type and with the given attributes) to the queue disc having the given handle.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param handle the handle of the parent queue disc
      * @param count the number of queues to add
      * @param type the type of queue
@@ -157,7 +157,7 @@ class TrafficControlHelper
      * Helper function used to add a packet filter (of the given type and with
      * the given attributes) to the queue disc having the given handle.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param handle the handle of the parent queue disc
      * @param type the type of packet filter
      * @param args A sequence of name-value pairs of the attributes to set.
@@ -174,7 +174,7 @@ class TrafficControlHelper
      * Helper function used to add the given number of queue disc classes (of the given
      * type and with the given attributes) to the queue disc having the given handle.
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param handle the handle of the parent queue disc
      * @param count the number of queue disc classes to add
      * @param type the type of queue disc class
@@ -192,7 +192,7 @@ class TrafficControlHelper
      * the given attributes) to a given class (included in the queue disc
      * having the given handle).
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param handle the handle of the parent queue disc
      * @param classId the class ID of the class to attach the queue disc to
      * @param type the type of queue disc
@@ -215,7 +215,7 @@ class TrafficControlHelper
      * the given attributes) to each of the given classes (included in the queue disc
      * having the given handle).
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param handle the handle of the parent queue disc
      * @param classes the class IDs of the classes to attach a queue disc to
      * @param type the type of queue disc
@@ -232,7 +232,7 @@ class TrafficControlHelper
      * Helper function used to add a queue limits object to the transmission
      * queues of the devices
      *
-     * @tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+     * @tparam Args @deduced Template type parameter pack for the sequence of name-value pairs.
      * @param type the type of queue
      * @param args A sequence of name-value pairs of the attributes to set.
      */

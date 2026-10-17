@@ -25,7 +25,18 @@ TcpLinuxReno::GetTypeId()
     static TypeId tid = TypeId("ns3::TcpLinuxReno")
                             .SetParent<TcpCongestionOps>()
                             .SetGroupName("Internet")
-                            .AddConstructor<TcpLinuxReno>();
+                            .AddConstructor<TcpLinuxReno>()
+                            .AddAttribute("BetaLoss",
+                                          "Beta for multiplicative decrease",
+                                          DoubleValue(0.5),
+                                          MakeDoubleAccessor(&TcpLinuxReno::m_betaLoss),
+                                          MakeDoubleChecker<double>(0.0, 1.0))
+                            .AddAttribute("BetaEcn",
+                                          "Beta for multiplicative decrease for ABE",
+                                          DoubleValue(0.7), // According to RFC 8511 (ABE)
+                                          MakeDoubleAccessor(&TcpLinuxReno::m_betaEcn),
+                                          MakeDoubleChecker<double>(0.0, 1.0));
+
     return tid;
 }
 
@@ -136,8 +147,13 @@ TcpLinuxReno::GetSsThresh(Ptr<const TcpSocketState> state, uint32_t bytesInFligh
 {
     NS_LOG_FUNCTION(this << state << bytesInFlight);
 
-    // In Linux, it is written as:  return max(tp->snd_cwnd >> 1U, 2U);
-    return std::max<uint32_t>(2 * state->m_segmentSize, state->m_cWnd / 2);
+    if (state->m_abeEnabled && state->m_ecnState == TcpSocketState::ECN_ECE_RCVD)
+    {
+        return std::max<uint32_t>(2 * state->m_segmentSize,
+                                  state->m_cWnd * m_betaEcn); // According to RFC 8511 (ABE)
+    }
+
+    return std::max<uint32_t>(2 * state->m_segmentSize, state->m_cWnd * m_betaLoss);
 }
 
 Ptr<TcpCongestionOps>

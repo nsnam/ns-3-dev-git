@@ -23,7 +23,6 @@
 namespace ns3
 {
 
-class Socket;
 class Packet;
 
 /**
@@ -102,8 +101,8 @@ class PacketSink : public SinkApplication
     void DoDispose() override;
 
   private:
-    void StartApplication() override;
-    void StopApplication() override;
+    void DoStartApplication() override;
+    void DoStopApplication() override;
 
     /**
      * @brief Handle a packet received by the application
@@ -159,12 +158,12 @@ class PacketSink : public SinkApplication
             if (InetSocketAddress::IsMatchingType(x))
             {
                 InetSocketAddress a = InetSocketAddress::ConvertFrom(x);
-                return Ipv4AddressHash()(a.GetIpv4());
+                return std::hash<Ipv4Address>{}(a.GetIpv4());
             }
             else if (Inet6SocketAddress::IsMatchingType(x))
             {
                 Inet6SocketAddress a = Inet6SocketAddress::ConvertFrom(x);
-                return Ipv6AddressHash()(a.GetIpv6());
+                return std::hash<Ipv6Address>{}(a.GetIpv6());
             }
 
             NS_ABORT_MSG("PacketSink: unexpected address type, neither IPv4 nor IPv6");
@@ -174,26 +173,22 @@ class PacketSink : public SinkApplication
 
     std::unordered_map<Address, Ptr<Packet>, AddressHash> m_buffer; //!< Buffer for received packets
 
-    Ptr<Socket> m_socket;  //!< Socket
-    Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
-
     // In the case of TCP, each socket accept returns a new socket, so the
     // listening socket is stored separately from the accepted sockets
     std::list<Ptr<Socket>> m_socketList; //!< the accepted sockets
 
-    uint64_t m_totalRx; //!< Total bytes received
-    TypeId m_tid;       //!< Protocol TypeId
+    uint64_t m_totalRx{0}; //!< Total bytes received
 
-    bool m_enableSeqTsSizeHeader; //!< Enable or disable the export of SeqTsSize header
+    bool m_enableSeqTsSizeHeader{false}; //!< Enable or disable the export of SeqTsSize header
 
-    /// Traced Callback: received packets, source address.
-    TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
     /// Callback for tracing the packet Rx events, includes source and destination addresses
     TracedCallback<Ptr<const Packet>, const Address&, const Address&> m_rxTraceWithAddresses;
     /// Callbacks for tracing the packet Rx events, includes source, destination addresses, and
     /// headers
     TracedCallback<Ptr<const Packet>, const Address&, const Address&, const SeqTsSizeHeader&>
         m_rxTraceWithSeqTsSize;
+
+    uint8_t m_tos{0}; //!< Type of Service for outbound packets
 };
 
 } // namespace ns3

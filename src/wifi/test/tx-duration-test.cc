@@ -120,8 +120,8 @@ class TxDurationTest : public TestCase
      *
      * @return true if values correspond, false otherwise
      */
-    static bool CheckMuTxDuration(std::list<uint32_t> sizes,
-                                  std::list<HeMuUserInfo> userInfos,
+    static bool CheckMuTxDuration(const std::list<uint32_t>& sizes,
+                                  const std::list<HeMuUserInfo>& userInfos,
                                   MHz_u channelWidth,
                                   Time guardInterval,
                                   WifiPreamble preamble,
@@ -141,9 +141,9 @@ class TxDurationTest : public TestCase
      *
      * @return the overall Tx duration for the list of sizes (SU or MU PPDU)
      */
-    static Time CalculateTxDurationUsingList(std::list<uint32_t> sizes,
-                                             std::list<uint16_t> staIds,
-                                             WifiTxVector txVector,
+    static Time CalculateTxDurationUsingList(const std::list<uint32_t>& sizes,
+                                             const std::list<uint16_t>& staIds,
+                                             const WifiTxVector& txVector,
                                              WifiPhyBand band);
 };
 
@@ -252,7 +252,7 @@ TxDurationTest::CheckTxDuration(uint32_t size,
             calculatedDuration != calculatedDurationUsingList)
         {
             std::cerr << "size=" << size << " band=" << testedBand << " mode=" << payloadMode
-                      << " channelWidth=" << +channelWidth << " guardInterval=" << guardInterval
+                      << " channelWidth=" << channelWidth << " guardInterval=" << guardInterval
                       << " datarate=" << payloadMode.GetDataRate(channelWidth, guardInterval, 1)
                       << " preamble=" << preamble << " known=" << knownDuration
                       << " calculated=" << calculatedDuration
@@ -264,8 +264,8 @@ TxDurationTest::CheckTxDuration(uint32_t size,
 }
 
 bool
-TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
-                                  std::list<HeMuUserInfo> userInfos,
+TxDurationTest::CheckMuTxDuration(const std::list<uint32_t>& sizes,
+                                  const std::list<HeMuUserInfo>& userInfos,
                                   MHz_u channelWidth,
                                   Time guardInterval,
                                   WifiPreamble preamble,
@@ -357,9 +357,9 @@ TxDurationTest::CheckMuTxDuration(std::list<uint32_t> sizes,
 }
 
 Time
-TxDurationTest::CalculateTxDurationUsingList(std::list<uint32_t> sizes,
-                                             std::list<uint16_t> staIds,
-                                             WifiTxVector txVector,
+TxDurationTest::CalculateTxDurationUsingList(const std::list<uint32_t>& sizes,
+                                             const std::list<uint16_t>& staIds,
+                                             const WifiTxVector& txVector,
                                              WifiPhyBand band)
 {
     NS_ASSERT(sizes.size() == staIds.size());
@@ -379,34 +379,31 @@ TxDurationTest::CalculateTxDurationUsingList(std::list<uint32_t> sizes,
 void
 TxDurationTest::DoRun()
 {
-    bool retval = true;
-
     // IEEE Std 802.11-2007 Table 18-2 "Example of LENGTH calculations for CCK"
-    retval = retval &&
-             CheckPayloadDuration(1023,
-                                  DsssPhy::GetDsssRate11Mbps(),
-                                  MHz_u{22},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_LONG,
-                                  MicroSeconds(744)) &&
-             CheckPayloadDuration(1024,
-                                  DsssPhy::GetDsssRate11Mbps(),
-                                  MHz_u{22},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_LONG,
-                                  MicroSeconds(745)) &&
-             CheckPayloadDuration(1025,
-                                  DsssPhy::GetDsssRate11Mbps(),
-                                  MHz_u{22},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_LONG,
-                                  MicroSeconds(746)) &&
-             CheckPayloadDuration(1026,
-                                  DsssPhy::GetDsssRate11Mbps(),
-                                  MHz_u{22},
-                                  NanoSeconds(800),
-                                  WIFI_PREAMBLE_LONG,
-                                  MicroSeconds(747));
+    auto retval = CheckPayloadDuration(1023,
+                                       DsssPhy::GetDsssRate11Mbps(),
+                                       MHz_u{22},
+                                       NanoSeconds(800),
+                                       WIFI_PREAMBLE_LONG,
+                                       MicroSeconds(744)) &&
+                  CheckPayloadDuration(1024,
+                                       DsssPhy::GetDsssRate11Mbps(),
+                                       MHz_u{22},
+                                       NanoSeconds(800),
+                                       WIFI_PREAMBLE_LONG,
+                                       MicroSeconds(745)) &&
+                  CheckPayloadDuration(1025,
+                                       DsssPhy::GetDsssRate11Mbps(),
+                                       MHz_u{22},
+                                       NanoSeconds(800),
+                                       WIFI_PREAMBLE_LONG,
+                                       MicroSeconds(746)) &&
+                  CheckPayloadDuration(1026,
+                                       DsssPhy::GetDsssRate11Mbps(),
+                                       MHz_u{22},
+                                       NanoSeconds(800),
+                                       WIFI_PREAMBLE_LONG,
+                                       MicroSeconds(747));
 
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11b CCK duration failed");
 
@@ -414,8 +411,7 @@ TxDurationTest::DoRun()
     // and we test different rates.
     // The payload durations for modes other than 11mbb have been
     // calculated by hand according to  IEEE Std 802.11-2007 18.2.3.5
-    retval = retval &&
-             CheckTxDuration(1023,
+    retval = CheckTxDuration(1023,
                              DsssPhy::GetDsssRate11Mbps(),
                              MHz_u{22},
                              NanoSeconds(800),
@@ -610,16 +606,15 @@ TxDurationTest::DoRun()
 
     // values from
     // https://web.archive.org/web/20100711002639/http://mailman.isi.edu/pipermail/ns-developers/2009-July/006226.html
-    retval = retval && CheckTxDuration(14,
-                                       DsssPhy::GetDsssRate1Mbps(),
-                                       MHz_u{22},
-                                       NanoSeconds(800),
-                                       WIFI_PREAMBLE_LONG,
-                                       MicroSeconds(304));
+    retval = CheckTxDuration(14,
+                             DsssPhy::GetDsssRate1Mbps(),
+                             MHz_u{22},
+                             NanoSeconds(800),
+                             WIFI_PREAMBLE_LONG,
+                             MicroSeconds(304));
 
     // values from http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              DsssPhy::GetDsssRate11Mbps(),
                              MHz_u{22},
                              NanoSeconds(800),
@@ -642,8 +637,7 @@ TxDurationTest::DoRun()
 
     // 802.11a durations
     // values from http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              OfdmPhy::GetOfdmRate54Mbps(),
                              MHz_u{20},
                              NanoSeconds(800),
@@ -665,8 +659,7 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11a duration failed");
 
     // 802.11g durations are same as 802.11a durations but with 6 us signal extension
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              ErpOfdmPhy::GetErpOfdmRate54Mbps(),
                              MHz_u{20},
                              NanoSeconds(800),
@@ -688,8 +681,7 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11g duration failed");
 
     // 802.11n durations
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              HtPhy::GetHtMcs7(),
                              MHz_u{20},
                              NanoSeconds(800),
@@ -783,8 +775,7 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11n duration failed");
 
     // 802.11ac durations
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              VhtPhy::GetVhtMcs8(),
                              MHz_u{20},
                              NanoSeconds(800),
@@ -968,8 +959,7 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11ac duration failed");
 
     // 802.11ax SU durations
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              HePhy::GetHeMcs0(),
                              MHz_u{20},
                              NanoSeconds(800),
@@ -1405,8 +1395,7 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11ax SU duration failed");
 
     // 802.11ax MU durations
-    retval = retval &&
-             CheckMuTxDuration(
+    retval = CheckMuTxDuration(
                  std::list<uint32_t>{1536, 1536},
                  std::list<HeMuUserInfo>{{HeRu::RuSpec{RuType::RU_242_TONE, 1, true}, 0, 1},
                                          {HeRu::RuSpec{RuType::RU_242_TONE, 2, true}, 0, 1}},
@@ -1435,8 +1424,7 @@ TxDurationTest::DoRun()
     NS_TEST_EXPECT_MSG_EQ(retval, true, "an 802.11ax MU duration failed");
 
     // 802.11be SU durations
-    retval = retval &&
-             CheckTxDuration(1536,
+    retval = CheckTxDuration(1536,
                              EhtPhy::GetEhtMcs0(),
                              MHz_u{20},
                              NanoSeconds(800),

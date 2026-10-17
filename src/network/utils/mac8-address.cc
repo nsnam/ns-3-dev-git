@@ -31,14 +31,14 @@ Mac8Address::~Mac8Address()
 uint8_t
 Mac8Address::GetType()
 {
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("MacAddress", ADDRESS_LENGTH);
     return type;
 }
 
 Address
 Mac8Address::ConvertTo() const
 {
-    return Address(GetType(), &m_address, 1);
+    return Address(GetType(), &m_address, ADDRESS_LENGTH);
 }
 
 Mac8Address
@@ -53,7 +53,7 @@ Mac8Address::ConvertFrom(const Address& address)
 bool
 Mac8Address::IsMatchingType(const Address& address)
 {
-    return address.CheckCompatible(GetType(), 1);
+    return address.CheckCompatible(GetType(), ADDRESS_LENGTH);
 }
 
 Mac8Address::
@@ -107,28 +107,10 @@ Mac8Address::ResetAllocationIndex()
     m_allocationIndex = 0;
 }
 
-bool
-operator<(const Mac8Address& a, const Mac8Address& b)
-{
-    return a.m_address < b.m_address;
-}
-
-bool
-operator==(const Mac8Address& a, const Mac8Address& b)
-{
-    return a.m_address == b.m_address;
-}
-
-bool
-operator!=(const Mac8Address& a, const Mac8Address& b)
-{
-    return !(a == b);
-}
-
 std::ostream&
 operator<<(std::ostream& os, const Mac8Address& address)
 {
-    os << (int)address.m_address;
+    os << static_cast<uint32_t>(address.m_address);
     return os;
 }
 

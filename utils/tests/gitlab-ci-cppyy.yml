@@ -1,6 +1,6 @@
-cppyy-22.04:
+cppyy-24.04:
   stage: test
-  image: ubuntu:22.04 # python 3.10
+  image: ubuntu:24.04 # python 3.12
   dependencies: []
   variables:
     FILES_CHANGED: git-diff-name-only.txt
@@ -8,15 +8,17 @@ cppyy-22.04:
     - apt update
     - DEBIAN_FRONTEND=noninteractive apt install -y
       g++ cmake ninja-build ccache
-      python3 python3-pip
+      python3 python3-pip python3-venv
       libboost-dev libgsl-dev libgtk-3-dev
       git wget
+    - python3 -m venv ns3venv
+    - source ./ns3venv/bin/activate
     - pip install cppyy==3.5.0 matplotlib numpy
   script:
     - if (git remote | grep -qw upstream) ; then
       git remote remove upstream ;
       fi
-    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream "${CI_MERGE_REQUEST_PROJECT_URL:-https://gitlab.com/nsnam/ns-3-dev.git}"
     - git diff --name-only upstream/$CI_DEFAULT_BRANCH | tee $FILES_CHANGED
 
     # Run this job in the following cases: 1) default branch, 2) changes to source code, 3) changes to configurations.
@@ -63,7 +65,7 @@ cppyy-22.04:
     # Upgrade the pip version to reuse the pre-build cppyy
     - python -m pip install pip --upgrade
     - python -m pip install setuptools setuptools_scm wheel --upgrade
-    - python -m pip install auditwheel cmake-build-extension cppyy==3.1.2
+    - python -m pip install auditwheel cmake-build-extension cppyy==3.5.0
     # Configure and build wheel
     - python setup.py bdist_wheel build_ext
     - export EXCLUDE_INTERNAL_LIBRARIES=`python ./build-support/pip-wheel/auditwheel-exclude-list.py`
@@ -102,16 +104,6 @@ cppyy-22.04:
       - wheelhouse/*.whl
     when: on_success
 
-manylinux-pip-wheel-py3.8:
-  extends: .manylinux-pip-wheel
-  variables:
-    PYTHON: "python3.8"
-
-manylinux-pip-wheel-py3.9:
-  extends: .manylinux-pip-wheel
-  variables:
-    PYTHON: "python3.9"
-
 manylinux-pip-wheel-py3.10:
   extends: .manylinux-pip-wheel
   variables:
@@ -131,3 +123,8 @@ manylinux-pip-wheel-py3.13:
   extends: .manylinux-pip-wheel
   variables:
     PYTHON: "python3.13"
+
+manylinux-pip-wheel-py3.14:
+  extends: .manylinux-pip-wheel
+  variables:
+    PYTHON: "python3.14"

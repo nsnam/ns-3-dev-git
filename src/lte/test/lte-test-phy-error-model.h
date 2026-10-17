@@ -34,14 +34,12 @@ class LenaDataPhyErrorModelTestCase : public TestCase
      * @param dist the distance between nodes
      * @param blerRef expected BLER
      * @param toleranceRxPackets receive packet loss tolerance
-     * @param statsStartTime the start time for collecting statistics
      * @param rngRun rng run
      */
     LenaDataPhyErrorModelTestCase(uint16_t nUser,
                                   uint16_t dist,
                                   double blerRef,
                                   uint16_t toleranceRxPackets,
-                                  Time statsStartTime,
                                   uint32_t rngRun);
     ~LenaDataPhyErrorModelTestCase() override;
 
@@ -59,9 +57,7 @@ class LenaDataPhyErrorModelTestCase : public TestCase
     double m_dist;                 ///< the distance between nodes
     double m_blerRef;              ///< the expected BLER
     uint16_t m_toleranceRxPackets; ///< receive packet tolerance loss
-    Time m_statsStartTime; ///< Extra time in the beginning of simulation to allow RRC connection
-                           ///< establishment + SRS
-    uint32_t m_rngRun;     ///< the rng run
+    uint32_t m_rngRun;             ///< the rng run
 };
 
 /**
@@ -79,14 +75,12 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
      * @param dist the distance between nodes
      * @param blerRef expected BLER
      * @param toleranceRxPackets receive packet loss tolerance
-     * @param statsStartTime the start time for collecting statistics
      * @param rngRun rng number
      */
     LenaDlCtrlPhyErrorModelTestCase(uint16_t nEnb,
                                     uint16_t dist,
                                     double blerRef,
                                     uint16_t toleranceRxPackets,
-                                    Time statsStartTime,
                                     uint32_t rngRun);
     ~LenaDlCtrlPhyErrorModelTestCase() override;
 
@@ -104,9 +98,7 @@ class LenaDlCtrlPhyErrorModelTestCase : public TestCase
     double m_dist;                 ///< the distance between nodes
     double m_blerRef;              ///< the expected BLER
     uint16_t m_toleranceRxPackets; ///< receive packet tolerance loss
-    Time m_statsStartTime; ///< Extra time in the beginning of simulation to allow RRC connection
-                           ///< establishment + SRS
-    uint32_t m_rngRun;     ///< the rng run number
+    uint32_t m_rngRun;             ///< the rng run number
 };
 
 /**

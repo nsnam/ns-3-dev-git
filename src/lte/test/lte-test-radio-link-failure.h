@@ -31,7 +31,7 @@ using namespace ns3;
 /**
  * @brief Test suite for
  *
- * \sa ns3::LteRadioLinkFailureTestCase
+ * @sa ns3::LteRadioLinkFailureTestCase
  */
 class LteRadioLinkFailureTestSuite : public TestSuite
 {

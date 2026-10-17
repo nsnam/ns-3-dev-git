@@ -100,14 +100,16 @@ Moreover, clang-tidy is integrated with CMake, enabling code scanning during the
 
 .. note::
 
-  Check the list of supported versions of clang-format in the ``utils/check-style-clang-format.py`` program
-  or in the `coding-style.rst <https://gitlab.com/nsnam/ns-3-dev/-/blob/master/doc/contributing/source/coding-style.rst>`_ document.
+  Check the list of supported versions of clang-format and clang-tidy in the
+  `RELEASE_NOTES.md <https://gitlab.com/nsnam/ns-3-dev/-/blob/master/RELEASE_NOTES.md>`_ document.
 
 clang-format is strongly recommended to write code that follows the ns-3 code conventions, but
 might be skipped for simpler tasks (e.g., writing a simple simulation script for yourself).
 
 clang-tidy is recommended when writing a module, to both follow code conventions and to provide
-hints on possible bugs in code.
+hints on possible bugs in code. Note: when using CMake's ``include_directories()`` to include a
+third-party dependency directory, it is important to set the ``SYSTEM`` flag, to prevent clang-tidy
+from checking code that is not under our control (e.g. ``include_directories(SYSTEM ${SQLite3_INCLUDE_DIRS})``).
 
 Both are used in the CI system, and a merge request will likely fail if you did not use them.
 
@@ -149,10 +151,10 @@ if you are running LTE or NR simulations (which make use of SQLite databases):
 Python bindings (ns-3.37 and newer)
 ===================================
 
-|ns3| Python support now uses `cppyy <https://cppyy.readthedocs.io/en/latest/>`_.  Version 3.1.2
-is the most recent supported cppyy release since ns-3.42.
+|ns3| Python support now uses `cppyy <https://cppyy.readthedocs.io/en/latest/>`_.  Version 3.5.0
+is the most recent supported cppyy release since ns-3.45, and requires Python 3.10 or later.
 
-Cppyy version 2.4.2 should be used from ns-3.37 up to 3.41.
+Cppyy version 3.1.2 should be used from ns-3.42 up to 3.44, and version 2.4.2 from ns-3.37 up to 3.41.
 
 Due to an `upstream limitation with cppyy <https://github.com/wlav/cppyy/issues/150>`_, Python bindings do not work on macOS machines with Apple silicon (M1 and M2 processors).
 

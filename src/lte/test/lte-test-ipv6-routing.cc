@@ -7,17 +7,20 @@
  */
 
 #include "ns3/config-store.h"
-#include "ns3/core-module.h"
 #include "ns3/epc-helper.h"
-#include "ns3/internet-module.h"
+#include "ns3/iana-internet-protocol-numbers.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ip-l4-protocol.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv6-static-routing-helper.h"
 #include "ns3/ipv6-static-routing.h"
 #include "ns3/lte-helper.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/point-to-point-epc-helper.h"
 #include "ns3/point-to-point-helper.h"
+#include "ns3/test.h"
 #include "ns3/udp-echo-helper.h"
+#include "ns3/udp-header.h"
 
 #include <algorithm>
 
@@ -108,7 +111,7 @@ LteIpv6RoutingTestCase::SentAtClient(Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32
 {
     Ipv6Header ipv6Header;
     p->PeekHeader(ipv6Header);
-    if (ipv6Header.GetNextHeader() == UdpL4Protocol::PROT_NUMBER)
+    if (ipv6Header.GetNextHeader() == iana::internetprotocolnumbers::UDP)
     {
         m_clientTxPkts.push_back(p->Copy());
     }
@@ -119,7 +122,7 @@ LteIpv6RoutingTestCase::ReceivedAtClient(Ptr<const Packet> p, Ptr<Ipv6> ipv6, ui
 {
     Ipv6Header ipv6Header;
     p->PeekHeader(ipv6Header);
-    if (ipv6Header.GetNextHeader() == UdpL4Protocol::PROT_NUMBER)
+    if (ipv6Header.GetNextHeader() == iana::internetprotocolnumbers::UDP)
     {
         m_clientRxPkts.push_back(p->Copy());
     }
@@ -130,7 +133,7 @@ LteIpv6RoutingTestCase::EnbToPgw(Ptr<Packet> p)
 {
     Ipv6Header ipv6Header;
     p->PeekHeader(ipv6Header);
-    if (ipv6Header.GetNextHeader() == UdpL4Protocol::PROT_NUMBER)
+    if (ipv6Header.GetNextHeader() == iana::internetprotocolnumbers::UDP)
     {
         m_pgwUidRxFrmEnb.push_back(p->GetUid());
     }
@@ -141,7 +144,7 @@ LteIpv6RoutingTestCase::TunToPgw(Ptr<Packet> p)
 {
     Ipv6Header ipv6Header;
     p->PeekHeader(ipv6Header);
-    if (ipv6Header.GetNextHeader() == UdpL4Protocol::PROT_NUMBER)
+    if (ipv6Header.GetNextHeader() == iana::internetprotocolnumbers::UDP)
     {
         m_pgwUidRxFrmTun.push_back(p->GetUid());
     }

@@ -628,7 +628,7 @@ ReducedNeighborReport::SerializeInformationField(Buffer::Iterator start) const
         tbttInfoHdr |= (neighborApInfo.tbttInfoHdr.filtered << 2);
         tbttInfoHdr |= (neighborApInfo.tbttInfoHdr.tbttInfoCount << 4);
         tbttInfoHdr |= (neighborApInfo.tbttInfoHdr.tbttInfoLength << 8);
-        start.WriteHtolsbU16(tbttInfoHdr);
+        start.WriteU16(tbttInfoHdr);
 
         start.WriteU8(neighborApInfo.operatingClass);
         start.WriteU8(neighborApInfo.channelNumber);
@@ -643,7 +643,7 @@ ReducedNeighborReport::SerializeInformationField(Buffer::Iterator start) const
             }
             if (neighborApInfo.hasShortSsid)
             {
-                start.WriteHtolsbU32(tbttInformation.shortSsid);
+                start.WriteU32(tbttInformation.shortSsid);
             }
             if (neighborApInfo.hasBssParams)
             {
@@ -661,7 +661,7 @@ ReducedNeighborReport::SerializeInformationField(Buffer::Iterator start) const
                 other |= (tbttInformation.mldParameters.bssParamsChangeCount << 4);
                 other |= (tbttInformation.mldParameters.allUpdates << 12);
                 other |= (tbttInformation.mldParameters.disabledLink << 13);
-                start.WriteHtolsbU16(other);
+                start.WriteU16(other);
             }
         }
     }
@@ -677,7 +677,7 @@ ReducedNeighborReport::DeserializeInformationField(Buffer::Iterator start, uint1
     {
         AddNbrApInfoField();
 
-        auto tbttInfoHdr = i.ReadLsbtohU16();
+        auto tbttInfoHdr = i.ReadU16();
         m_nbrApInfoFields.back().tbttInfoHdr.type = tbttInfoHdr & 0x0003;
         m_nbrApInfoFields.back().tbttInfoHdr.filtered = (tbttInfoHdr >> 2) & 0x0001;
         m_nbrApInfoFields.back().tbttInfoHdr.tbttInfoCount = (tbttInfoHdr >> 4) & 0x000f;
@@ -704,7 +704,7 @@ ReducedNeighborReport::DeserializeInformationField(Buffer::Iterator start, uint1
             }
             if (m_nbrApInfoFields.back().hasShortSsid)
             {
-                m_nbrApInfoFields.back().tbttInformationSet.back().shortSsid = i.ReadLsbtohU32();
+                m_nbrApInfoFields.back().tbttInformationSet.back().shortSsid = i.ReadU32();
                 count += 4;
             }
             if (m_nbrApInfoFields.back().hasBssParams)
@@ -721,7 +721,7 @@ ReducedNeighborReport::DeserializeInformationField(Buffer::Iterator start, uint1
             {
                 auto& mldParams = m_nbrApInfoFields.back().tbttInformationSet.back().mldParameters;
                 mldParams.apMldId = i.ReadU8();
-                uint16_t other = i.ReadLsbtohU16();
+                uint16_t other = i.ReadU16();
                 count += 3;
                 mldParams.linkId = other & 0x000f;
                 mldParams.bssParamsChangeCount = (other >> 4) & 0x00ff;

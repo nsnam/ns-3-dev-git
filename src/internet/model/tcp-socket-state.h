@@ -174,6 +174,8 @@ class TcpSocketState : public Object
     uint32_t m_segmentSize{0};          //!< Segment size
     SequenceNumber32 m_lastAckedSeq{0}; //!< Last sequence ACKed
 
+    bool m_sackEnabled{true}; //!< Whether SACK is enabled on the connection
+
     TracedValue<TcpCongState_t> m_congState{CA_OPEN}; //!< State in the Congestion state machine
 
     TracedValue<EcnState_t> m_ecnState{
@@ -197,15 +199,17 @@ class TcpSocketState : public Object
     Time m_minRtt{Time::Max()}; //!< Minimum RTT observed throughout the connection
 
     TracedValue<uint32_t> m_bytesInFlight{0}; //!< Bytes in flight
-    bool m_isCwndLimited{false};              //!< Whether throughput is limited by cwnd
-    TracedValue<Time> m_srtt;                 //!< Smoothed RTT
-    TracedValue<Time> m_lastRtt;              //!< RTT of the last (S)ACKed packet
+    TracedValue<uint32_t> m_fackAwnd{0};      //!< inflight data by FACK
+
+    bool m_isCwndLimited{false}; //!< Whether throughput is limited by cwnd
+    TracedValue<Time> m_srtt;    //!< Smoothed RTT
+    TracedValue<Time> m_lastRtt; //!< RTT of the last (S)ACKed packet
 
     Ptr<TcpRxBuffer> m_rxBuffer; //!< Rx buffer (reordering buffer)
 
-    EcnMode_t m_ecnMode{ClassicEcn}; //!< ECN mode
-    UseEcn_t m_useEcn{Off};          //!< Socket ECN capability
-
+    EcnMode_t m_ecnMode{ClassicEcn};     //!< ECN mode
+    UseEcn_t m_useEcn{Off};              //!< Socket ECN capability
+    bool m_abeEnabled{false};            //!< ABE mode
     EcnCodePoint_t m_ectCodePoint{Ect0}; //!< ECT code point to use
 
     uint32_t m_lastAckedSackedBytes{

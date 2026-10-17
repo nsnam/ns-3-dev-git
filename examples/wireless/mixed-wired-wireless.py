@@ -332,13 +332,11 @@ def main(argv):
     )
     appSink = ns.NodeList.GetNode(lastNodeIndex)
 
-    ns.cppyy.cppdef(
-        """
+    ns.cppyy.cppdef("""
         Ipv4Address getIpv4AddressFromNode(Ptr<Node> node){
         return node->GetObject<Ipv4>()->GetAddress(1,0).GetLocal();
         }
-    """
-    )
+    """)
     # Let's fetch the IP address of the last node, which is on Ipv4Interface 1
     remoteAddr = ns.cppyy.gbl.getIpv4AddressFromNode(appSink)
     socketAddr = ns.InetSocketAddress(remoteAddr, port)

@@ -78,7 +78,7 @@ class AdhocAlohaNoackIdealPhyHelper
     void SetDeviceAttribute(std::string n1, const AttributeValue& v1);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *

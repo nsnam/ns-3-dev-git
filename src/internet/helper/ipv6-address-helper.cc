@@ -140,7 +140,7 @@ Ipv6AddressHelper::NewAddress()
         addrBuf[i] = netBuf[i] | hostBuf[i];
     }
 
-    Ipv6Address addr = Ipv6Address(addrBuf);
+    auto addr = Ipv6Address(addrBuf);
 
     // Remember: hostBuf[15] is the Least Significant Byte.
     uint16_t sum;

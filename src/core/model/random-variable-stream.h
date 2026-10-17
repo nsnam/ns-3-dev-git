@@ -199,7 +199,7 @@ class RandomVariableStream : public Object
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double min = 0.0;
  *   double max = 10.0;
  *
@@ -359,7 +359,7 @@ class ConstantRandomVariable : public RandomVariableStream
  * the value to equal or exceed \c Max it is reset to \c Min plus the
  * remainder:
  *
- * \code{.cc}
+ * @code{.cc}
  *     m_current += m_increment->GetValue();
  *     if (m_current >= m_max)
  *     {
@@ -522,7 +522,7 @@ class SequentialRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double mean = 3.14;
  *   double bound = 0.0;
  *
@@ -655,7 +655,7 @@ class ExponentialRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double scale = 5.0;
  *   double shape = 2.0;
  *
@@ -803,7 +803,7 @@ class ParetoRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double scale = 5.0;
  *   double shape = 1.0;
  *
@@ -946,7 +946,7 @@ class WeibullRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double mean = 5.0;
  *   double variance = 2.0;
  *
@@ -1007,6 +1007,13 @@ class NormalRandomVariable : public RandomVariableStream
     double GetVariance() const;
 
     /**
+     * @brief Returns the standard deviation value for the normal distribution returned by this RNG
+     * stream.
+     * @return The standard deviation value for the normal distribution returned by this RNG stream.
+     */
+    double GetStdDev() const;
+
+    /**
      * @brief Returns the bound on values that can be returned by this RNG stream.
      * @return The bound on values that can be returned by this RNG stream.
      */
@@ -1024,6 +1031,14 @@ class NormalRandomVariable : public RandomVariableStream
 
     /** @copydoc GetValue(double,double,double) */
     uint32_t GetInteger(uint32_t mean, uint32_t variance, uint32_t bound);
+
+    /**
+     * Set standard deviation of this normal distribution RNG stream.
+     * The deviation is squared and stored as variance, which can also be set
+     * via the variance attribute.
+     * @param [in] stdDev Standard deviation value for the normal distribution.
+     */
+    void SetStdDev(double stdDev);
 
     // Inherited
     double GetValue() override;
@@ -1114,7 +1129,7 @@ class NormalRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double mu = 5.0;
  *   double sigma = 2.0;
  *
@@ -1237,7 +1252,7 @@ class LogNormalRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double alpha = 5.0;
  *   double beta = 2.0;
  *
@@ -1367,7 +1382,7 @@ class GammaRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   uint32_t k = 5;
  *   double lambda = 2.0;
  *
@@ -1492,7 +1507,7 @@ class ErlangRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double mean = 5.0;
  *   double min = 2.0;
  *   double max = 10.0;
@@ -1633,7 +1648,7 @@ class TriangularRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   uint32_t n = 1;
  *   double alpha = 2.0;
  *
@@ -1753,7 +1768,7 @@ class ZipfRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double alpha = 2.0;
  *
  *   Ptr<ZetaRandomVariable> x = CreateObject<ZetaRandomVariable> ();
@@ -1830,7 +1845,7 @@ class ZetaRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   Ptr<DeterministicRandomVariable> s = CreateObject<DeterministicRandomVariable> ();
  *
  *   std::vector array{ 4, 4, 7, 7, 10, 10};
@@ -1948,7 +1963,7 @@ class DeterministicRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *    // Create the RNG with a non-uniform distribution between 0 and 10.
  *    // in sampling mode.
  *    Ptr<EmpiricalRandomVariable> x = CreateObject<EmpiricalRandomVariable> ();
@@ -2129,7 +2144,7 @@ class EmpiricalRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   uint32_t trials = 10;
  *   double probability = 0.5;
  *
@@ -2233,7 +2248,7 @@ class BinomialRandomVariable : public RandomVariableStream
  * @par Example
  *
  * Here is an example of how to use this class:
- * \code{.cc}
+ * @code{.cc}
  *   double probability = 0.5;
  *
  *   Ptr<BernoulliRandomVariable> x = CreateObject<BernoulliRandomVariable> ();

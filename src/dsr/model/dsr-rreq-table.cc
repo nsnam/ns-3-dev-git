@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -252,7 +254,7 @@ DsrRreqTable::FindSourceEntry(Ipv4Address src, Ipv4Address dst, uint16_t id)
     {
         NS_LOG_LOGIC("The source request table entry for " << src << " not found");
 
-        receivedRreqEntryList.clear(); /// Clear the received source request entry
+        receivedRreqEntryList.clear(); // Clear the received source request entry
         receivedRreqEntryList.push_back(rreqEntry);
 
         m_sourceRreqMap[src] = receivedRreqEntryList;
@@ -272,13 +274,13 @@ DsrRreqTable::FindSourceEntry(Ipv4Address src, Ipv4Address dst, uint16_t id)
     // We loop the receive rreq entry to find duplicate
     for (auto j = receivedRreqEntryList.begin(); j != receivedRreqEntryList.end(); ++j)
     {
-        if (*j == rreqEntry) /// Check if we have found one duplication entry or not
+        if (*j == rreqEntry) // Check if we have found one duplication entry or not
         {
             return true;
         }
     }
-    /// if this entry is not found, we need to save the entry in the cache, and then return
-    /// false for the check
+    // if this entry is not found, we need to save the entry in the cache, and then return
+    // false for the check
     receivedRreqEntryList.push_back(rreqEntry);
     m_sourceRreqMap[src] = receivedRreqEntryList;
     return false;

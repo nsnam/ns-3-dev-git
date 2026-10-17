@@ -1,6 +1,7 @@
 build_lib(
   LIBNAME mobility
   SOURCE_FILES
+    helper/leo-orbit-node-helper.cc
     helper/group-mobility-helper.cc
     helper/mobility-helper.cc
     helper/ns2-mobility-helper.cc
@@ -11,8 +12,12 @@ build_lib(
     model/constant-velocity-mobility-model.cc
     model/gauss-markov-mobility-model.cc
     model/geocentric-constant-position-mobility-model.cc
+    model/geocentric-ecef-mobility-model.cc
     model/geographic-positions.cc
     model/hierarchical-mobility-model.cc
+    model/leo-circular-orbit-mobility-model.cc
+    model/leo-circular-orbit-position-allocator.cc
+    model/leo-orbital-shell.cc
     model/mobility-model.cc
     model/position-allocator.cc
     model/random-direction-2d-mobility-model.cc
@@ -23,6 +28,7 @@ build_lib(
     model/waypoint-mobility-model.cc
     model/waypoint.cc
   HEADER_FILES
+    helper/leo-orbit-node-helper.h
     helper/group-mobility-helper.h
     helper/mobility-helper.h
     helper/ns2-mobility-helper.h
@@ -33,8 +39,12 @@ build_lib(
     model/constant-velocity-mobility-model.h
     model/gauss-markov-mobility-model.h
     model/geocentric-constant-position-mobility-model.h
+    model/geocentric-ecef-mobility-model.h
     model/geographic-positions.h
     model/hierarchical-mobility-model.h
+    model/leo-circular-orbit-mobility-model.h
+    model/leo-circular-orbit-position-allocator.h
+    model/leo-orbital-shell.h
     model/mobility-model.h
     model/position-allocator.h
     model/random-direction-2d-mobility-model.h
@@ -47,9 +57,11 @@ build_lib(
   LIBRARIES_TO_LINK ${libantenna}
                     ${libnetwork}
   TEST_SOURCES
+    test/leo-mobility-test-suite.cc
     test/box-line-intersection-test.cc
     test/geo-to-cartesian-test.cc
     test/geocentric-topocentric-conversion-test.cc
+    test/geocentric-elevation-angle-test.cc
     test/mobility-test-suite.cc
     test/mobility-trace-test-suite.cc
     test/ns2-mobility-helper-test-suite.cc
@@ -57,5 +69,6 @@ build_lib(
     test/rectangle-closest-border-test.cc
     test/steady-state-random-waypoint-mobility-model-test.cc
     test/waypoint-mobility-model-test.cc
+    test/mobility-traced-callback-typedef-test-suite.cc
   GENERATE_EXPORT_HEADER
 )

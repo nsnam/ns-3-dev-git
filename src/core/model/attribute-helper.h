@@ -45,9 +45,12 @@ namespace ns3
  * Because these macros generate class and function definitions, it's
  * difficult to document the results directly.  Instead, we use a
  * set of functions in print-introspected-doxygen.cc to generate
- * most of the APi documentation.  When using these macros,
- * please add the required function calls to print-introspected-doxygen.cc
- * so your new API is documented.
+ * most of the API documentation.  When introducing a new AttributeValue
+ * subclass (whether via these macros or by hand), the new type must also
+ * be added to the attributes[] list in PrintAttributeImplementations() in
+ * utils/print-introspected-doxygen.cc.  Otherwise the introspected Doxygen
+ * documentation for the new value type, its accessors and its checker will
+ * not be generated.
  */
 
 /**
@@ -75,9 +78,9 @@ namespace ns3
  *
  * A simple string-based attribute checker
  *
- * @tparam T    \explicit The specific AttributeValue type used to represent
+ * @tparam T    @explicit The specific AttributeValue type used to represent
  *              the Attribute.
- * @tparam BASE \explicit The AttributeChecker type corresponding to \pname{T}.
+ * @tparam BASE @explicit The AttributeChecker type corresponding to \pname{T}.
  * @param [in] name  The name of the AttributeValue type, essentially the
  *              string form of \pname{T}.
  * @param [in] underlying Underlying type name.

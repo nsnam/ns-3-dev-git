@@ -51,7 +51,7 @@ main(int argc, char* argv[])
   LogComponentEnable ("DsrHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrRouting", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrOptionHeader", LOG_LEVEL_ALL);
-  LogComponentEnable ("DsrFsHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsrRoutingHeader", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrGraReplyTable", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrSendBuffer", LOG_LEVEL_ALL);
   LogComponentEnable ("DsrRouteCache", LOG_LEVEL_ALL);
@@ -66,16 +66,16 @@ main(int argc, char* argv[])
     // General parameters
     uint32_t nWifis = 50;
     uint32_t nSinks = 10;
-    double TotalTime = 600.0;
-    double dataTime = 500.0;
-    double ppers = 1;
+    Time totalTime = Seconds(600.0);
+    Time dataTime = Seconds(500.0);
     uint32_t packetSize = 64;
-    double dataStart = 100.0; // start sending data at 100s
+    Time dataStart = Seconds(100.0); // start sending data at 100s
+    bool enablePcap = false;
 
     // mobility parameters
-    double pauseTime = 0.0;
-    double nodeSpeed = 20.0;
-    double txpDistance = 250.0;
+    Time pauseTime = Seconds(0.0);
+    double nodeSpeed = 20.0;    // [m/s]
+    double txpDistance = 250.0; // [m]
 
     std::string rate = "0.512kbps";
     std::string dataMode("DsssRate11Mbps");
@@ -85,11 +85,12 @@ main(int argc, char* argv[])
     CommandLine cmd(__FILE__);
     cmd.AddValue("nWifis", "Number of wifi nodes", nWifis);
     cmd.AddValue("nSinks", "Number of SINK traffic nodes", nSinks);
-    cmd.AddValue("rate", "CBR traffic rate(in kbps), Default:8", rate);
-    cmd.AddValue("nodeSpeed", "Node speed in RandomWayPoint model, Default:20", nodeSpeed);
-    cmd.AddValue("packetSize", "The packet size", packetSize);
-    cmd.AddValue("txpDistance", "Specify node's transmit range, Default:300", txpDistance);
-    cmd.AddValue("pauseTime", "pauseTime for mobility model, Default: 0", pauseTime);
+    cmd.AddValue("rate", "CBR traffic rate [kbps]", rate);
+    cmd.AddValue("nodeSpeed", "Node speed in RandomWayPoint model [m/s]", nodeSpeed);
+    cmd.AddValue("packetSize", "Packet size [Bytes]", packetSize);
+    cmd.AddValue("txpDistance", "Node's transmit range [m]", txpDistance);
+    cmd.AddValue("pauseTime", "pauseTime for mobility model [s]", pauseTime);
+    cmd.AddValue("Pcap", "Enable PCAP traces", enablePcap);
     cmd.Parse(argc, argv);
 
     SeedManager::SetSeed(10);
@@ -147,8 +148,8 @@ main(int argc, char* argv[])
                                      << "]";
 
     std::ostringstream pauseConstantRandomVariableStream;
-    pauseConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant=" << pauseTime
-                                      << "]";
+    pauseConstantRandomVariableStream
+        << "ns3::ConstantRandomVariable[Constant=" << pauseTime.GetSeconds() << "]";
 
     adhocMobility.SetMobilityModel(
         "ns3::RandomWaypointMobilityModel",
@@ -174,9 +175,8 @@ main(int argc, char* argv[])
     Ipv4InterfaceContainer allInterfaces;
     allInterfaces = address.Assign(allDevices);
 
-    uint16_t port = 9;
-    double randomStartTime =
-        (1 / ppers) / nSinks; // distributed btw 1s evenly as we are sending 4pkt/s
+    uint16_t port = 23456;                 // arbitrary number, preferably > 1024
+    auto appStagger = Seconds(1) / nSinks; // distributed btw 1s evenly as we are sending 4pkt/s
 
     for (uint32_t i = 0; i < nSinks; ++i)
     {
@@ -184,7 +184,7 @@ main(int argc, char* argv[])
                               InetSocketAddress(Ipv4Address::GetAny(), port));
         ApplicationContainer apps_sink = sink.Install(adhocNodes.Get(i));
         apps_sink.Start(Seconds(0));
-        apps_sink.Stop(Seconds(TotalTime));
+        apps_sink.Stop(totalTime);
 
         OnOffHelper onoff1("ns3::UdpSocketFactory",
                            Address(InetSocketAddress(allInterfaces.GetAddress(i), port)));
@@ -194,12 +194,18 @@ main(int argc, char* argv[])
         onoff1.SetAttribute("DataRate", DataRateValue(DataRate(rate)));
 
         ApplicationContainer apps1 = onoff1.Install(adhocNodes.Get(i + nWifis - nSinks));
-        apps1.Start(Seconds(dataStart + i * randomStartTime));
-        apps1.Stop(Seconds(dataTime + i * randomStartTime));
+        apps1.Start(dataStart + i * appStagger);
+        apps1.Stop(dataTime + i * appStagger);
+    }
+
+    if (enablePcap)
+    {
+        wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+        wifiPhy.EnablePcapAll("wifi-dsr-example");
     }
 
     NS_LOG_INFO("Run Simulation.");
-    Simulator::Stop(Seconds(TotalTime));
+    Simulator::Stop(totalTime);
     Simulator::Run();
     Simulator::Destroy();
 

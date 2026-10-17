@@ -10,6 +10,7 @@
 #define AMPDU_SUBFRAME_HEADER_H
 
 #include "ns3/header.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -18,7 +19,7 @@ namespace ns3
  * @ingroup wifi
  * @brief Headers for A-MPDU subframes
  */
-class AmpduSubframeHeader : public Header
+class WIFI_EXPORT AmpduSubframeHeader : public Header
 {
   public:
     AmpduSubframeHeader();

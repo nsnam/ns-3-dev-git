@@ -96,6 +96,7 @@ SpectrumWifiPhyHelper::AddWifiBandwidthFilter(Ptr<SpectrumChannel> channel)
 void
 SpectrumWifiPhyHelper::AddPhyToFreqRangeMapping(uint8_t linkId, const FrequencyRange& freqRange)
 {
+    NS_LOG_FUNCTION(this << linkId << freqRange);
     if (auto it = m_interfacesMap.find(linkId); it == m_interfacesMap.end())
     {
         m_interfacesMap.insert({linkId, {freqRange}});
@@ -109,6 +110,7 @@ SpectrumWifiPhyHelper::AddPhyToFreqRangeMapping(uint8_t linkId, const FrequencyR
 void
 SpectrumWifiPhyHelper::ResetPhyToFreqRangeMapping()
 {
+    NS_LOG_FUNCTION(this);
     m_interfacesMap.clear();
 }
 
@@ -149,6 +151,7 @@ SpectrumWifiPhyHelper::Create(Ptr<Node> node, Ptr<WifiNetDevice> device) const
 void
 SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy> phy) const
 {
+    NS_LOG_FUNCTION(this << linkId << phy->GetPhyId());
     if (!m_interfacesMap.contains(linkId))
     {
         // default setup: set all interfaces to this link
@@ -169,26 +172,32 @@ SpectrumWifiPhyHelper::InstallPhyInterfaces(uint8_t linkId, Ptr<SpectrumWifiPhy>
 void
 SpectrumWifiPhyHelper::SpectrumChannelSwitched(Ptr<SpectrumWifiPhy> phy)
 {
+    NS_LOG_FUNCTION(phy->GetPhyId());
     for (const auto& otherPhy : phy->GetDevice()->GetPhys())
     {
         auto spectrumPhy = DynamicCast<SpectrumWifiPhy>(otherPhy);
         NS_ASSERT(spectrumPhy);
         if (spectrumPhy == phy)
         {
-            // this is the PHY that has switched
+            NS_LOG_DEBUG("PHY " << +otherPhy->GetPhyId()
+                                << " is the one that has switched: do nothing");
             continue;
         }
         if (spectrumPhy->GetCurrentFrequencyRange() == phy->GetCurrentFrequencyRange())
         {
-            // this is the active interface
+            NS_LOG_DEBUG("This is the active interface for PHY " << +otherPhy->GetPhyId()
+                                                                 << ": do nothing");
             continue;
         }
         if (const auto& interfaces = spectrumPhy->GetSpectrumPhyInterfaces();
             !interfaces.contains(phy->GetCurrentFrequencyRange()))
         {
-            // no interface attached to that channel
+            NS_LOG_DEBUG("No interface covering range " << phy->GetCurrentFrequencyRange()
+                                                        << " for PHY " << +otherPhy->GetPhyId()
+                                                        << ": do nothing");
             continue;
         }
+        NS_LOG_DEBUG("Configure interface for PHY " << +otherPhy->GetPhyId());
         spectrumPhy->ConfigureInterface(phy->GetOperatingChannel().GetFrequencies(),
                                         phy->GetChannelWidth());
     }

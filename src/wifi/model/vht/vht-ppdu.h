@@ -12,6 +12,7 @@
 #define VHT_PPDU_H
 
 #include "ns3/ofdm-ppdu.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-operating-channel.h"
 
 /**
@@ -31,14 +32,14 @@ class WifiPsdu;
  *
  * VhtPpdu stores a preamble, PHY headers and a PSDU of a PPDU with VHT header
  */
-class VhtPpdu : public OfdmPpdu
+class WIFI_EXPORT VhtPpdu : public OfdmPpdu
 {
   public:
     /**
      * VHT PHY header (VHT-SIG-A1/A2/B).
      * See section 21.3.8 in IEEE 802.11-2016.
      */
-    class VhtSigHeader
+    class WIFI_EXPORT VhtSigHeader
     {
       public:
         VhtSigHeader();

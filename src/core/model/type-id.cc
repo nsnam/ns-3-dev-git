@@ -12,9 +12,7 @@
 #include "singleton.h"
 #include "trace-source-accessor.h"
 
-#include <iomanip>
 #include <map>
-#include <sstream>
 #include <vector>
 
 /**
@@ -359,6 +357,9 @@ class IidManager : public Singleton<IidManager>
          */
         HashChainFlag = 0x80000000
     };
+
+    /** Use maximum value of size_t as a flag for "size unknown" */
+    static constexpr std::size_t SIZE_UNKNOWN = std::numeric_limits<std::size_t>::max();
 };
 
 // static
@@ -441,7 +442,7 @@ IidManager::AllocateUid(std::string name)
     information.hash = hash;
     information.parent = 0;
     information.groupName = "";
-    information.size = (std::size_t)(-1);
+    information.size = SIZE_UNKNOWN;
     information.hasConstructor = false;
     information.mustHideFromDocumentation = false;
     information.supportLevel = TypeId::SupportLevel::SUPPORTED;
@@ -502,6 +503,7 @@ IidManager::SetSize(uint16_t uid, std::size_t size)
 {
     NS_LOG_FUNCTION(IID << uid << size);
     IidInformation* information = LookupInformation(uid);
+    NS_ASSERT_MSG(size < SIZE_UNKNOWN, "Size is too large");
     information->size = size;
 }
 
@@ -1148,6 +1150,28 @@ TypeId::SetAttributeInitialValue(std::size_t i, Ptr<const AttributeValue> initia
     NS_LOG_FUNCTION(this << i << initialValue);
     IidManager::Get()->SetAttributeInitialValue(m_tid, i, initialValue);
     return true;
+}
+
+bool
+TypeId::SetAttributeInitialValue(std::string name, Ptr<const AttributeValue> initialValue)
+{
+    NS_LOG_FUNCTION(this << name << initialValue);
+    // Walk the inheritance chain to the TypeId that declares the attribute; the
+    // initial value must be recorded there so ObjectBase::ConstructSelf reads it
+    // back for a derived instance (issue #147).
+    auto [found, declaringTid, info] = FindAttribute(*this, name);
+    if (!found)
+    {
+        return false;
+    }
+    for (std::size_t i = 0; i < declaringTid.GetAttributeN(); ++i)
+    {
+        if (declaringTid.GetAttribute(i).name == name)
+        {
+            return declaringTid.SetAttributeInitialValue(i, initialValue);
+        }
+    }
+    return false;
 }
 
 Callback<ObjectBase*>

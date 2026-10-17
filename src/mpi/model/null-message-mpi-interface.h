@@ -67,8 +67,8 @@ class NullMessageMpiInterface : public ParallelCommunicationInterface, Object
      * collaborators are private to restrict use.
      * It is not intended for state to be shared.
      */
-    friend ns3::RemoteChannelBundle;
-    friend ns3::NullMessageSimulatorImpl;
+    friend class ns3::RemoteChannelBundle;
+    friend class ns3::NullMessageSimulatorImpl;
 
     /**
      * @brief Send a Null Message to across the specified bundle.

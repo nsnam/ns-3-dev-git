@@ -13,6 +13,9 @@ build_lib(
     model/zigbee-nwk-header.cc
     model/zigbee-nwk-payload-header.cc
     model/zigbee-nwk-tables.cc
+    model/zdo/zigbee-zdo.cc
+    model/zdo/zigbee-zdo-server-header.cc
+    model/zdo/zigbee-zdo-client-header.cc
   HEADER_FILES
     helper/zigbee-helper.h
     helper/zigbee-stack-container.h
@@ -26,7 +29,13 @@ build_lib(
     model/zigbee-nwk-header.h
     model/zigbee-nwk-payload-header.h
     model/zigbee-nwk-tables.h
+    model/zigbee-profiles.h
+    model/zdo/zigbee-zdo.h
+    model/zdo/zigbee-zdo-server-header.h
+    model/zdo/zigbee-zdo-client-header.h
   LIBRARIES_TO_LINK ${liblr-wpan}
-  TEST_SOURCES test/zigbee-rreq-test.cc
-               test/zigbee-aps-data-test.cc
+  TEST_SOURCES
+    test/zigbee-rreq-test.cc
+    test/zigbee-aps-data-test.cc
+    test/zigbee-zdo-test.cc
 )

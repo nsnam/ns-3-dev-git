@@ -3,6 +3,7 @@ set(source_files
     helper/internet-trace-helper.cc
     helper/ipv4-address-helper.cc
     helper/ipv4-global-routing-helper.cc
+    helper/ipv6-global-routing-helper.cc
     helper/ipv4-interface-container.cc
     helper/ipv4-list-routing-helper.cc
     helper/ipv4-routing-helper.cc
@@ -31,7 +32,7 @@ set(source_files
     model/ipv4-address-generator.cc
     model/ipv4-end-point-demux.cc
     model/ipv4-end-point.cc
-    model/ipv4-global-routing.cc
+    model/global-routing.cc
     model/ipv4-header.cc
     model/ipv4-interface-address.cc
     model/ipv4-interface.cc
@@ -133,6 +134,7 @@ set(header_files
     helper/internet-trace-helper.h
     helper/ipv4-address-helper.h
     helper/ipv4-global-routing-helper.h
+    helper/ipv6-global-routing-helper.h
     helper/ipv4-interface-container.h
     helper/ipv4-list-routing-helper.h
     helper/ipv4-routing-helper.h
@@ -161,7 +163,7 @@ set(header_files
     model/ipv4-address-generator.h
     model/ipv4-end-point-demux.h
     model/ipv4-end-point.h
-    model/ipv4-global-routing.h
+    model/global-routing.h
     model/ipv4-header.h
     model/ipv4-interface-address.h
     model/ipv4-interface.h
@@ -258,8 +260,53 @@ if(WIN32)
   )
 endif()
 
+# ns3tcp system tests live here because they exercise TCP; they pull in
+# applications and point-to-point (and csma for the no-delay / socket tests) so
+# they are linked conditionally to keep internet's test binary buildable when
+# those modules are not enabled.
+set(ns3tcp_sources)
+set(ns3tcp_libs)
+if((applications
+    IN_LIST
+    ns3-all-enabled-modules
+   )
+   AND (point-to-point
+        IN_LIST
+        ns3-all-enabled-modules
+       )
+)
+  set(ns3tcp_sources
+      test/ns3tcp-cubic-test-suite.cc
+      test/ns3tcp-loss-test-suite.cc
+      test/ns3tcp-socket-writer.cc
+      test/ns3tcp-state-test-suite.cc
+  )
+  set(ns3tcp_libs
+      ${libapplications}
+      ${libpoint-to-point}
+  )
+  if(csma
+     IN_LIST
+     ns3-all-enabled-modules
+  )
+    list(
+      APPEND
+      ns3tcp_sources
+      test/ns3tcp-no-delay-test-suite.cc
+      test/ns3tcp-socket-test-suite.cc
+    )
+    list(
+      APPEND
+      ns3tcp_libs
+      ${libcsma}
+    )
+  endif()
+endif()
+
 set(test_sources
+    ${ns3tcp_sources}
     test/global-route-manager-impl-test-suite.cc
+    test/icmp-checksum-test-suite.cc
     test/icmp-test.cc
     test/internet-stack-helper-test-suite.cc
     test/ipv4-address-generator-test-suite.cc
@@ -267,8 +314,9 @@ set(test_sources
     test/ipv4-deduplication-test.cc
     test/ipv4-forwarding-test.cc
     test/ipv4-fragmentation-test.cc
-    test/ipv4-global-routing-test-suite.cc
+    test/global-routing-test-suite.cc
     test/ipv4-header-test.cc
+    test/ipv4-icmp-no-route-test-suite.cc
     test/ipv4-list-routing-test-suite.cc
     test/ipv4-packet-info-tag-test-suite.cc
     test/ipv4-raw-test.cc
@@ -289,6 +337,7 @@ set(test_sources
     test/ipv6-test.cc
     test/neighbor-cache-test.cc
     test/rtt-test.cc
+    test/tcp-abe-test.cc
     test/tcp-advertised-window-test.cc
     test/tcp-bbr-test.cc
     test/tcp-bic-test.cc
@@ -297,10 +346,12 @@ set(test_sources
     test/tcp-close-test.cc
     test/tcp-cong-avoid-test.cc
     test/tcp-datasentcb-test.cc
+    test/tcp-dctcp-loss-test-suite.cc
     test/tcp-dctcp-test.cc
     test/tcp-ecn-test.cc
     test/tcp-endpoint-bug2211.cc
     test/tcp-error-model.cc
+    test/tcp-fack-test.cc
     test/tcp-fast-retr-test.cc
     test/tcp-general-test.cc
     test/tcp-header-test.cc
@@ -312,6 +363,7 @@ set(test_sources
     test/tcp-linux-reno-test.cc
     test/tcp-loss-test.cc
     test/tcp-lp-test.cc
+    test/tcp-no-sack-dupack-test.cc
     test/tcp-option-test.cc
     test/tcp-pacing-test.cc
     test/tcp-pkts-acked-test.cc
@@ -329,10 +381,12 @@ set(test_sources
     test/tcp-tx-buffer-test.cc
     test/tcp-vegas-test.cc
     test/tcp-veno-test.cc
+    test/tcp-window-update-test-suite.cc
     test/tcp-wscaling-test.cc
     test/tcp-yeah-test.cc
     test/tcp-zero-window-test.cc
     test/udp-test.cc
+    test/internet-traced-callback-typedef-test-suite.cc
 )
 
 build_lib(
@@ -343,5 +397,6 @@ build_lib(
   LIBRARIES_TO_LINK ${libbridge}
                     ${libtraffic-control}
   TEST_SOURCES ${test_sources}
+  TEST_LIBRARIES_TO_LINK ${ns3tcp_libs}
   GENERATE_EXPORT_HEADER
 )

@@ -671,7 +671,7 @@ Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool check
         return;
     }
 
-    if (GetLink(linkId).access != NOT_REQUESTED)
+    if (GetLink(linkId).access != WifiChannelAccessStatus::NOT_REQUESTED)
     {
         NS_LOG_DEBUG("Channel access already requested or granted on link " << +linkId);
         return;
@@ -690,7 +690,7 @@ Txop::StartAccessAfterEvent(uint8_t linkId, bool hadFramesToTransmit, bool check
         GenerateBackoff(linkId);
     }
 
-    m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
+    RequestAccess(linkId);
 }
 
 void
@@ -704,7 +704,7 @@ Txop::DoInitialize()
     }
 }
 
-Txop::ChannelAccessStatus
+WifiChannelAccessStatus
 Txop::GetAccessStatus(uint8_t linkId) const
 {
     return GetLink(linkId).access;
@@ -714,33 +714,50 @@ void
 Txop::NotifyAccessRequested(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    GetLink(linkId).access = REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::REQUESTED;
 }
 
 void
 Txop::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
     NS_LOG_FUNCTION(this << linkId << txopDuration);
-    GetLink(linkId).access = GRANTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::GRANTED;
 }
 
 void
 Txop::NotifyChannelReleased(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    GetLink(linkId).access = NOT_REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
     GenerateBackoff(linkId);
     if (HasFramesToTransmit(linkId))
     {
-        Simulator::ScheduleNow(&Txop::RequestAccess, this, linkId);
+        // if the channel released notification (below) leads the power save manager to put the
+        // PHY in sleep state, do not request channel access (which would wake up the PHY)
+        Simulator::ScheduleNow([=, this]() {
+            if (auto phy = m_mac->GetWifiPhy(linkId); phy && !phy->IsStateSleep())
+            {
+                NS_LOG_DEBUG("Request channel access again after releasing the channel");
+                RequestAccess(linkId);
+            }
+        });
     }
+    m_mac->NotifyChannelReleased(this, linkId);
 }
 
 void
 Txop::RequestAccess(uint8_t linkId)
 {
     NS_LOG_FUNCTION(this << linkId);
-    if (GetLink(linkId).access == NOT_REQUESTED)
+    if (GetLink(linkId).access == WifiChannelAccessStatus::NOT_REQUESTED)
+    {
+        m_mac->NotifyRequestAccess(this, linkId);
+    }
+    // if the PHY is in sleep state, the notification of access requested may lead the power save
+    // manager to wake up the STA, which may cause a channel access request. Hence, we have to
+    // check again whether the channel access has not been already requested before calling
+    // ChannelAccessManager::RequestAccess().
+    if (GetLink(linkId).access == WifiChannelAccessStatus::NOT_REQUESTED)
     {
         m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
     }

@@ -1,0 +1,5 @@
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(0, 3, PARAM-BEGINPARAM-END PARAM-TAIL)
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(): [INFO ] line 1: logged before the interruption
++9000000000000000000.00000s 7 [lbl] LogLineTestExample:LogLines(): [INFO ] line 2: outer line with PARAM-BEGINPARAM-END
+NS_ASSERT failed, cond="false", msg="assertion in the middle of a log line", +9000000000000000000.00000s 7 file=..., line=...
+NS_FATAL, terminating

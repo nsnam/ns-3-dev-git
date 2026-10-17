@@ -22,6 +22,7 @@
 #include "ipv6.h"
 #include "udp-l4-protocol.h"
 
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/log.h"
@@ -622,7 +623,7 @@ UdpSocketImpl::DoSendTo(Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t 
     {
         Ipv4Header header;
         header.SetDestination(dest);
-        header.SetProtocol(UdpL4Protocol::PROT_NUMBER);
+        header.SetProtocol(iana::internetprotocolnumbers::UDP);
         Socket::SocketErrno errno_;
         Ptr<Ipv4Route> route;
         Ptr<NetDevice> oif = m_boundnetdevice; // specify non-zero if bound to a specific device
@@ -768,7 +769,7 @@ UdpSocketImpl::DoSendTo(Ptr<Packet> p, Ipv6Address dest, uint16_t port)
     {
         Ipv6Header header;
         header.SetDestination(dest);
-        header.SetNextHeader(UdpL4Protocol::PROT_NUMBER);
+        header.SetNextHeader(iana::internetprotocolnumbers::UDP);
         Socket::SocketErrno errno_;
         Ptr<Ipv6Route> route;
         Ptr<NetDevice> oif = m_boundnetdevice; // specify non-zero if bound to a specific device

@@ -10,6 +10,7 @@
 #define IDEAL_WIFI_MANAGER_H
 
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3
@@ -32,7 +33,7 @@ struct IdealWifiRemoteStation;
  * of SNR thresholds built from a target BER and transmission
  * mode-specific SNR/BER curves.
  */
-class IdealWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT IdealWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

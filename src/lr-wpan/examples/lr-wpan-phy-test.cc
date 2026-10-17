@@ -33,12 +33,13 @@ GetSetTRXStateConfirm(PhyEnumeration status)
  * @param psduLength PSDU length
  * @param p packet
  * @param lqi link quality indication
+ * @param rssi received signal strength indicator
  */
 void
-ReceivePdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
+ReceivePdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int8_t rssi)
 {
-    NS_LOG_UNCOND("At: " << Simulator::Now() << " Received frame size: " << psduLength
-                         << " LQI: " << (uint16_t)lqi);
+    NS_LOG_UNCOND("At: " << Simulator::Now() << " Received frame size: " << psduLength << " LQI: "
+                         << static_cast<int16_t>(lqi) << " RSSI: " << static_cast<int16_t>(rssi));
 }
 
 /**

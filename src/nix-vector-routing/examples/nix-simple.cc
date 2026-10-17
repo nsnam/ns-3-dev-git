@@ -54,7 +54,7 @@
            fe80::200:ff:fe00:8 (Link-local on n0 -- n2)
     n3 IP: 2001:3::200:ff:fe00:6 (Global Unicast on n2 -- n3)
            fe80::200:ff:fe00:6 (Link-local on n2 -- n3)
-   \endverbatim
+   @endverbatim
  *
  * Route Path for considered cases:
  * - Source (n0) and Destination (n3)
@@ -113,7 +113,7 @@
   10.1.4.1                      010 (3 bits left)
   IpRouteCache:
   Destination                   Gateway                       Source OutputDevice 10.1.4.1 10.1.3.1
- 10.1.3.2                        0 \endverbatim
+ 10.1.3.2                        0 @endverbatim
  *
  * Expected IPv6 Routing Path output for above
  * cases (in the output stream):
@@ -162,7 +162,7 @@
   IpRouteCache:
   Destination                   Gateway                       Source OutputDevice
   2001:4::200:ff:fe00:7         fe80::200:ff:fe00:5           2001:3::200:ff:fe00:6           0
-  \endverbatim
+  @endverbatim
  */
 
 using namespace ns3;

@@ -336,7 +336,7 @@ WifiCoTraceHelper::NotifyWifiPhyState(std::size_t idx,
         }
         else
         {
-            NS_LOG_DEBUG("LinkId not found for phyId:" << phyId);
+            NS_LOG_DEBUG("LinkId not found for phyId:" << +phyId);
         }
     }
 }

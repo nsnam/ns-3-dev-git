@@ -437,8 +437,8 @@ VhtPhy::GetDataRateFromTxVector(const WifiTxVector& txVector, uint16_t /* staId 
 uint64_t
 VhtPhy::GetDataRate(uint8_t mcsValue, MHz_u channelWidth, Time guardInterval, uint8_t nss)
 {
-    [[maybe_unused]] const auto gi = guardInterval.GetNanoSeconds();
-    NS_ASSERT((gi == 800) || (gi == 400));
+    NS_ASSERT_MSG(IsValidGuardInterval(guardInterval, WIFI_STANDARD_80211ac),
+                  "Invalid VHT guard interval " << guardInterval.As(Time::NS));
     NS_ASSERT(nss <= 8);
     NS_ASSERT_MSG(IsCombinationAllowed(mcsValue, channelWidth, nss),
                   "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " MHz when NSS is "
@@ -520,7 +520,7 @@ VhtPhy::IsCombinationAllowed(uint8_t mcsValue, MHz_u channelWidth, uint8_t nss)
 uint32_t
 VhtPhy::GetMaxPsduSize() const
 {
-    return 4692480;
+    return WIFI_PSDU_MAX_LENGTH_VHT;
 }
 
 dBm_u

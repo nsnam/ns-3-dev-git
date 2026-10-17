@@ -182,3 +182,7 @@ change to ImageMagick security policy::
       <policy domain="coder" rights="none" pattern="XPS" />
     </policymap>
 
+If you install eigen3 via brew packaging for Linux (eigen@3), you need to add it to the CMake
+prefix path to be able to locate it properly, since brew does not symlink it.::
+
+  ./ns3 configure -- -DCMAKE_PREFIX_PATH="/home/linuxbrew/.linuxbrew/opt/eigen@3/"

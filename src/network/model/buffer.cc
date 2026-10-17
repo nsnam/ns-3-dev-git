@@ -626,11 +626,9 @@ Buffer::Serialize(uint8_t* buffer, uint32_t maxSize) const
     }
 
     memcpy(p, m_data->m_data + m_zeroAreaStart, dataEndLength);
-    // The following line is unnecessary.
-    // p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
 
     // Serialized everything successfully
-    return 1;
+    return size;
 }
 
 uint32_t
@@ -638,7 +636,7 @@ Buffer::Deserialize(const uint8_t* buffer, uint32_t size)
 {
     NS_LOG_FUNCTION(this << &buffer << size);
     auto p = reinterpret_cast<const uint32_t*>(buffer);
-    uint32_t sizeCheck = size - 4;
+    uint32_t sizeCheck = size;
 
     NS_ASSERT(sizeCheck >= 4);
     uint32_t zeroDataLength = *p++;
@@ -675,7 +673,7 @@ Buffer::Deserialize(const uint8_t* buffer, uint32_t size)
     NS_ASSERT(sizeCheck == 0);
     // return zero if buffer did not
     // contain a complete message
-    return (sizeCheck != 0) ? 0 : 1;
+    return (sizeCheck != 0) ? 0 : size;
 }
 
 void

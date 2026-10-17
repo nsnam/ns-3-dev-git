@@ -155,7 +155,7 @@ nightly builds using
 
   $ ./test.py --html=nightly.html
 
-In this case, an HTML file named ''nightly.html'' would be created with a pretty
+In this case, an HTML file named ``nightly.html`` would be created with a pretty
 summary of the testing done.  A ''human readable'' format is available for users
 interested in the details.
 
@@ -409,12 +409,12 @@ if the example has been configured or not, it will just try to run it and
 report the result of the attempt.
 
 When ``test.py`` runs, by default it will first ensure that the system has
-been completely built.  This can be defeated by selecting the ``--nobuild``
+been completely built.  This can be defeated by selecting the ``--no-build``
 option.
 
 ::
 
-  $ ./test.py --list --nobuild
+  $ ./test.py --list --no-build
 
 will result in a list of the currently built test suites being displayed, similar to:
 

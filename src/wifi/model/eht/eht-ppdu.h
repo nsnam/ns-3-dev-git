@@ -10,6 +10,7 @@
 #define EHT_PPDU_H
 
 #include "ns3/he-ppdu.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -28,13 +29,13 @@ namespace ns3
  *
  * EhtPpdu is currently identical to HePpdu
  */
-class EhtPpdu : public HePpdu
+class WIFI_EXPORT EhtPpdu : public HePpdu
 {
   public:
     /**
      * PHY header for EHT TB PPDUs
      */
-    struct EhtTbPhyHeader
+    struct WIFI_EXPORT EhtTbPhyHeader
     {
         // U-SIG fields
         uint8_t m_phyVersionId : 3 {0}; ///< PHY Version Identifier field
@@ -46,7 +47,7 @@ class EhtPpdu : public HePpdu
     /**
      * PHY header for EHT MU PPDUs
      */
-    struct EhtMuPhyHeader
+    struct WIFI_EXPORT EhtMuPhyHeader
     {
         // U-SIG fields
         uint8_t m_phyVersionId : 3 {0};         ///< PHY Version Identifier field
@@ -54,10 +55,10 @@ class EhtPpdu : public HePpdu
         uint8_t m_bssColor : 6 {0};             ///< BSS color field
         uint8_t m_ppduType : 2 {0};             ///< PPDU Type And Compressed Mode field
         uint8_t m_puncturedChannelInfo : 5 {0}; ///< Punctured Channel Information field
-        uint8_t m_ehtSigMcs : 2 {0};            ///< EHT-SIG-B MCS
+        uint8_t m_ehtSigMcs : 2 {0};            ///< EHT-SIG MCS
 
         // EHT-SIG fields
-        uint8_t m_giLtfSize{0}; ///< GI+LTF Size field
+        uint8_t m_giLtfSize : 2 {0}; ///< GI+LTF Size field
 
         std::optional<RuAllocation> m_ruAllocationA; //!< RU Allocation-A that are going to be
                                                      //!< carried in EHT-SIG common subfields

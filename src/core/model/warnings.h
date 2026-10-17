@@ -20,28 +20,28 @@
  * @ingroup warnings
  * @def NS_WARNING_POP
  * Pops the diagnostic warning list from the stack, restoring it to the previous state.
- * \sa NS_WARNING_PUSH
+ * @sa NS_WARNING_PUSH
  */
 
 /**
  * @ingroup warnings
  * @def NS_WARNING_PUSH
  * Push the diagnostic warning list to the stack, allowing it to be restored later.
- * \sa NS_WARNING_POP
+ * @sa NS_WARNING_POP
  */
 
 /**
  * @ingroup warnings
  * @def NS_WARNING_SILENCE_DEPRECATED
  * Silences the "-Wdeprecated-declarations" warnings.
- * \sa NS_WARNING_POP
+ * @sa NS_WARNING_POP
  */
 
 /**
  * @ingroup warnings
  * @def NS_WARNING_SILENCE_MAYBE_UNINITIALIZED
  * Silences GCC "-Wmaybe-uninitialized" warnings.
- * \sa NS_WARNING_POP
+ * @sa NS_WARNING_POP
  */
 
 /**
@@ -79,7 +79,7 @@
  *   NS_WARNING_SILENCE_MAYBE_UNINITIALIZED;
  * @endcode
  *
- * \sa NS_WARNING_PUSH_DEPRECATED
+ * @sa NS_WARNING_PUSH_DEPRECATED
  */
 
 #if defined(_MSC_VER)

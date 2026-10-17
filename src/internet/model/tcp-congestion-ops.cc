@@ -86,7 +86,17 @@ TcpNewReno::GetTypeId()
     static TypeId tid = TypeId("ns3::TcpNewReno")
                             .SetParent<TcpCongestionOps>()
                             .SetGroupName("Internet")
-                            .AddConstructor<TcpNewReno>();
+                            .AddConstructor<TcpNewReno>()
+                            .AddAttribute("BetaLoss",
+                                          "Beta for multiplicative decrease",
+                                          DoubleValue(0.5),
+                                          MakeDoubleAccessor(&TcpNewReno::m_betaLoss),
+                                          MakeDoubleChecker<double>(0.0, 1.0))
+                            .AddAttribute("BetaEcn",
+                                          "Beta for multiplicative decrease for ABE",
+                                          DoubleValue(0.7), // According to RFC 8511 (ABE)
+                                          MakeDoubleAccessor(&TcpNewReno::m_betaEcn),
+                                          MakeDoubleChecker<double>(0.0, 1.0));
     return tid;
 }
 
@@ -126,7 +136,7 @@ TcpNewReno::~TcpNewReno()
  *
  * The ns-3 implementation respect the RFC definition. Linux does something
  * different:
- * \code{.cpp}
+ * @code{.cpp}
    u32 tcp_slow_start(struct tcp_sock *tp, u32 acked)
    {
      u32 cwnd = tp->snd_cwnd + acked;
@@ -138,7 +148,7 @@ TcpNewReno::~TcpNewReno()
 
      return acked;
    }
-   \endcode
+   @endcode
  *
  * As stated, we want to avoid the case when a cumulative ACK increases cWnd more
  * than a segment size, but we keep count of how many segments we have ignored,
@@ -234,7 +244,13 @@ TcpNewReno::GetSsThresh(Ptr<const TcpSocketState> state, uint32_t bytesInFlight)
 {
     NS_LOG_FUNCTION(this << state << bytesInFlight);
 
-    return std::max(2 * state->m_segmentSize, bytesInFlight / 2);
+    if (state->m_abeEnabled && state->m_ecnState == TcpSocketState::ECN_ECE_RCVD)
+    {
+        return std::max<uint32_t>(2 * state->m_segmentSize,
+                                  bytesInFlight * m_betaEcn); // According to RFC 8511 (ABE)
+    }
+
+    return std::max<uint32_t>(2 * state->m_segmentSize, bytesInFlight * m_betaLoss);
 }
 
 Ptr<TcpCongestionOps>

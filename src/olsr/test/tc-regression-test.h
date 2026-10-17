@@ -32,7 +32,7 @@ namespace olsr
  */
 // clang-format off
 /**
- * \verbatim
+ * @verbatim
           1       2       3
           |<------|------>|         HELLO (empty) src = 10.1.1.2
           |       |<------|------>  HELLO (empty) src = 10.1.1.3
@@ -65,7 +65,7 @@ namespace olsr
    <------|------>|       |         HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.1
           |       |<------|------>  HELLO (Link Type: MPR Link, Neighbor: 10.1.1.2) src = 10.1.1.3
           |<------|------>|         HELLO (Link Type: Symmetric, Neighbor: 10.1.1.3; Link Type: Symmetric, Neighbor: 10.1.1.1) src = 10.1.1.2
-   \endverbatim
+   @endverbatim
  */
 // clang-format on
 

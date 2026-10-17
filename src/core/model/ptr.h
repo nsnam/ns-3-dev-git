@@ -60,7 +60,10 @@ namespace ns3
  * bit of typing.  If the Object does not inherit from Object
  * (or ObjectBase) there is also a convenience wrapper Create<>()
  *
- * @tparam T \explicit The type of the underlying object.
+ * @tparam T @explicit The type of the underlying object.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 template <typename T>
 class Ptr
@@ -79,7 +82,7 @@ class Ptr
      * to returning to the caller so the caller is
      * responsible for calling Unref himself.
      *
-     * @tparam U \deduced The actual type of the argument and return pointer.
+     * @tparam U @deduced The actual type of the argument and return pointer.
      * @param [in] p Smart pointer
      * @return The pointer managed by this smart pointer.
      */
@@ -92,9 +95,11 @@ class Ptr
      * to returning to the caller so the caller is not
      * responsible for calling Unref himself.
      *
-     * @tparam U \deduced The actual type of the argument and return pointer.
+     * @tparam U @deduced The actual type of the argument and return pointer.
      * @param [in] p Smart pointer
      * @return The pointer managed by this smart pointer.
+     * @hidecaller
+     * @hideref
      */
     template <typename U>
     friend U* PeekPointer(const Ptr<U>& p);
@@ -134,11 +139,49 @@ class Ptr
     /**
      * Copy, removing \c const qualifier.
      *
-     * @tparam U \deduced The type underlying the Ptr being copied.
+     * @tparam U @deduced The type underlying the Ptr being copied.
      * @param [in] o The Ptr to copy.
      */
     template <typename U>
     Ptr(const Ptr<U>& o);
+
+    /**
+     * Move by transferring the managed reference from another Ptr.
+     *
+     * The moved-from Ptr is left empty. The underlying reference count is not changed.
+     *
+     * @param [in,out] o The Ptr to move from.
+     */
+    Ptr(Ptr&& o) noexcept
+        : m_ptr(o.m_ptr)
+    {
+        o.m_ptr = nullptr;
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * Releases any object currently referenced by this Ptr, then transfers the managed
+     * reference from another Ptr. The moved-from Ptr is left empty. The underlying
+     * reference count for the moved object is not changed.
+     *
+     * @param [in,out] o The Ptr to move from.
+     * @return A reference to self.
+     */
+    Ptr& operator=(Ptr&& o) noexcept
+    {
+        if (this != &o)
+        {
+            if (m_ptr)
+            {
+                m_ptr->Unref();
+            }
+            m_ptr = o.m_ptr;
+            o.m_ptr = nullptr;
+        }
+        return *this;
+    }
+
     /** Destructor. */
     ~Ptr();
     /**
@@ -229,10 +272,12 @@ class Ptr
  */
 /** @{ */
 /**
- * @tparam T  \explicit The type of class object to create.
- * @tparam Ts \deduced Types of the constructor arguments.
+ * @tparam T  @explicit The type of class object to create.
+ * @tparam Ts @deduced Types of the constructor arguments.
  * @param  [in] args Constructor arguments.
  * @return A Ptr to the newly created \c T.
+ * @hidecaller
+ * @hiderefby
  */
 template <typename T, typename... Ts>
 Ptr<T> Create(Ts&&... args);
@@ -242,7 +287,7 @@ Ptr<T> Create(Ts&&... args);
 /**
  * @ingroup ptr
  * Output streamer.
- * @tparam T \deduced The type of the underlying Object.
+ * @tparam T @deduced The type of the underlying Object.
  * @param [in,out] os The output stream.
  * @param [in] p The Ptr.
  * @returns The stream.
@@ -264,8 +309,8 @@ std::ostream& operator<<(std::ostream& os, const Ptr<T>& p);
  * Note that either \c p or \c q could also be ordinary pointers
  * to the underlying object.
  *
- * @tparam T1 \deduced Type of the object on the lhs.
- * @tparam T2 \deduced Type of the object on the rhs.
+ * @tparam T1 @deduced Type of the object on the lhs.
+ * @tparam T2 @deduced Type of the object on the rhs.
  * @param [in] lhs The left operand.
  * @param [in] rhs The right operand.
  * @return \c true if the operands point to the same underlying object.
@@ -303,8 +348,8 @@ std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool> operator==(const Ptr<
  * Note that either \c p or \c q could also be ordinary pointers
  * to the underlying object.
  *
- * @tparam T1 \deduced Type of the object on the lhs.
- * @tparam T2 \deduced Type of the object on the rhs.
+ * @tparam T1 @deduced Type of the object on the lhs.
+ * @tparam T2 @deduced Type of the object on the rhs.
  * @param [in] lhs The left operand.
  * @param [in] rhs The right operand.
  * @return \c true if the operands point to the same underlying object.
@@ -332,7 +377,7 @@ std::enable_if_t<std::is_same_v<T2, std::nullptr_t>, bool> operator!=(const Ptr<
  * @ingroup ptr
  * Comparison operator applied to the underlying pointers.
  *
- * @tparam T \deduced The type of the operands.
+ * @tparam T @deduced The type of the operands.
  * @param [in] lhs The left operand.
  * @param [in] rhs The right operand.
  * @return The comparison on the underlying pointers.
@@ -356,8 +401,8 @@ bool operator>=(const Ptr<T>& lhs, const Ptr<T>& rhs);
  * Return a copy of \c p with its stored pointer const casted from
  * \c T2 to \c T1.
  *
- * @tparam T1 \deduced The type to return in a Ptr.
- * @tparam T2 \deduced The type of the underlying object.
+ * @tparam T1 @deduced The type to return in a Ptr.
+ * @tparam T2 @deduced The type of the underlying object.
  * @param [in] p The original \c const Ptr.
  * @return A non-const Ptr.
  */
@@ -376,7 +421,7 @@ struct CallbackTraits;
  *
  * This is the specialization for Ptr types.
  *
- * @tparam T \deduced The type of the underlying object.
+ * @tparam T @deduced The type of the underlying object.
  */
 template <typename T>
 struct CallbackTraits<Ptr<T>>
@@ -401,12 +446,20 @@ template <typename T>
 struct EventMemberImplObjTraits;
 
 /**
+ * @ingroup events
+ * @defgroup makeeventmemptr MakeEvent from class methods.
+ *
+ * Create EventImpl instances from class member methods which take
+ * varying numbers of arguments.
+ */
+
+/**
  * @ingroup makeeventmemptr
  * Helper for the MakeEvent functions which take a class method.
  *
  * This is the specialization for Ptr types.
  *
- * @tparam T \deduced The type of the underlying object.
+ * @tparam T @deduced The type of the underlying object.
  */
 template <typename T>
 struct EventMemberImplObjTraits<Ptr<T>>
@@ -567,8 +620,8 @@ operator>=(const Ptr<T>& lhs, const Ptr<T>& rhs)
 /**
  * Cast a Ptr.
  *
- * @tparam T1 \deduced The desired type to cast to.
- * @tparam T2 \deduced The type of the original Ptr.
+ * @tparam T1 @deduced The desired type to cast to.
+ * @tparam T2 @deduced The type of the original Ptr.
  * @param [in] p The original Ptr.
  * @return The result of the cast.
  */
@@ -580,6 +633,11 @@ ConstCast(const Ptr<T2>& p)
     return Ptr<T1>(const_cast<T1*>(PeekPointer(p)));
 }
 
+/**
+ * @copydoc ConstCast()
+ * @hidecaller
+ * @hiderefby
+ */
 template <typename T1, typename T2>
 Ptr<T1>
 DynamicCast(const Ptr<T2>& p)
@@ -599,7 +657,7 @@ StaticCast(const Ptr<T2>& p)
 /**
  * Return a deep copy of a Ptr.
  *
- * @tparam T \deduced The type of the underlying object.
+ * @tparam T @deduced The type of the underlying object.
  * @param [in] object The object Ptr to copy.
  * @returns The copy.
  */
@@ -737,8 +795,12 @@ Ptr<T>::operator*()
     return *m_ptr;
 }
 
+// Clang-format guard required for versions <= 20
+// clang-format off
 template <typename T>
-Ptr<T>::operator bool() const
+Ptr<T>::
+operator bool() const
+// clang-format on
 {
     return m_ptr != nullptr;
 }
@@ -760,7 +822,7 @@ Ptr<T>::operator bool() const
  * it, otherwise the object will persist until the container itself is
  * deleted.
  *
- * @tparam T \deduced The type held by the `Ptr`
+ * @tparam T @deduced The type held by the `Ptr`
  */
 template <class T>
 struct std::hash<ns3::Ptr<T>>

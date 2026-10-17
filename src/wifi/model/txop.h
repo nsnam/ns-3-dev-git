@@ -10,11 +10,13 @@
 #define TXOP_H
 
 #include "wifi-mac-header.h"
+#include "wifi-types.h"
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
 #include "ns3/uniform-random-bit-generator.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <memory>
@@ -23,7 +25,7 @@
 #define WIFI_TXOP_NS_LOG_APPEND_CONTEXT                                                            \
     if (m_mac)                                                                                     \
     {                                                                                              \
-        std::clog << "[mac=" << m_mac->GetAddress() << "] ";                                       \
+        ns3LogStream << "[mac=" << m_mac->GetAddress() << "] ";                                    \
     }
 
 class EmlsrUlTxopTest;
@@ -52,7 +54,7 @@ enum WifiMacDropReason : uint8_t; // opaque enum declaration
  * parameters (one Txop per AC). It generates backoff values and stores the channel access status
  * (not requested, requested, granted) for the corresponding DCF/EDCA and for each link.
  */
-class Txop : public Object
+class WIFI_EXPORT Txop : public Object
 {
   public:
     Txop();
@@ -70,14 +72,18 @@ class Txop : public Object
     typedef Callback<void, WifiMacDropReason, Ptr<const WifiMpdu>> DroppedMpdu;
 
     /**
-     * Enumeration for channel access status
+     * Deprecated channel access status enums.
+     *
+     * Use `WifiChannelAccessStatus` class enum values instead.
+     * @{
      */
-    enum ChannelAccessStatus
-    {
-        NOT_REQUESTED = 0,
-        REQUESTED,
-        GRANTED
-    };
+    NS_DEPRECATED_3_49("Use WifiChannelAccessStatus::NOT_REQUESTED instead")
+    static constexpr auto NOT_REQUESTED = WifiChannelAccessStatus::NOT_REQUESTED;
+    NS_DEPRECATED_3_49("Use WifiChannelAccessStatus::REQUESTED instead")
+    static constexpr auto REQUESTED = WifiChannelAccessStatus::REQUESTED;
+    NS_DEPRECATED_3_49("Use WifiChannelAccessStatus::GRANTED instead")
+    static constexpr auto GRANTED = WifiChannelAccessStatus::GRANTED;
+    /**@}*/
 
     /**
      * Check for QoS TXOP.
@@ -387,7 +393,7 @@ class Txop : public Object
      * @param linkId the ID of the given link
      * @return the current channel access status for the given link
      */
-    virtual ChannelAccessStatus GetAccessStatus(uint8_t linkId) const;
+    virtual WifiChannelAccessStatus GetAccessStatus(uint8_t linkId) const;
 
     /**
      * Request channel access on the given link after the occurrence of an event that possibly
@@ -455,7 +461,7 @@ class Txop : public Object
      * increasing order of link ID. If user provides access parameters, they are used by WifiMac
      * instead of the default values specified by Table 9-155 of 802.11-2020.
      */
-    struct UserDefinedAccessParams
+    struct WIFI_EXPORT UserDefinedAccessParams
     {
         std::vector<uint32_t> cwMins; //!< the minimum contention window values for all the links
         std::vector<uint32_t> cwMaxs; //!< the maximum contention window values for all the links
@@ -525,7 +531,7 @@ class Txop : public Object
      * "link" is that of the 11be amendment which introduced multi-link devices. For
      * previous amendments, only one link can be created.
      */
-    struct LinkEntity
+    struct WIFI_EXPORT LinkEntity
     {
         /// Destructor (a virtual method is needed to make this struct polymorphic)
         virtual ~LinkEntity() = default;
@@ -543,7 +549,8 @@ class Txop : public Object
         std::size_t staRetryCount{0}; //!< the Station Short Retry Count (SSRC) maintained by
                                       //!< non-QoS stations or the QoS STA Retry Count (QSRC)
                                       //!< maintained by QoS STAs for each AC
-        ChannelAccessStatus access{NOT_REQUESTED}; //!< channel access status
+        WifiChannelAccessStatus access{
+            WifiChannelAccessStatus::NOT_REQUESTED}; //!< channel access status
 
         mutable class
         {

@@ -105,6 +105,10 @@ AlohaNoackNetDevice::GetTypeId()
                             "and is being forwarded up the local protocol stack.  "
                             "This is a non-promiscuous trace,",
                             MakeTraceSourceAccessor(&AlohaNoackNetDevice::m_macRxTrace),
+                            "ns3::Packet::TracedCallback")
+            .AddTraceSource("MacRxDrop",
+                            "A packet has been dropped because no protocol handler consumed it.",
+                            MakeTraceSourceAccessor(&AlohaNoackNetDevice::m_macRxDropTrace),
                             "ns3::Packet::TracedCallback");
     return tid;
 }
@@ -481,7 +485,11 @@ AlohaNoackNetDevice::NotifyReceptionEndOk(Ptr<Packet> packet)
 
     if (packetType != PACKET_OTHERHOST)
     {
-        m_rxCallback(this, packet, llc.GetType(), header.GetSource());
+        if (!m_rxCallback(this, packet, llc.GetType(), header.GetSource()))
+        {
+            NS_LOG_INFO("Drop packet due to no protocol handler");
+            m_macRxDropTrace(packet);
+        }
     }
 }
 

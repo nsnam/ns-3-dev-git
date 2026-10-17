@@ -41,7 +41,10 @@ if(${NS3_FETCH_OPTIONAL_COMPONENTS})
   )
 endif()
 
-include_directories(${click_INCLUDE_DIRS})
+include_directories(
+  SYSTEM
+  ${click_INCLUDE_DIRS}
+)
 set(NS3_CLICK
     "ON"
     CACHE INTERNAL

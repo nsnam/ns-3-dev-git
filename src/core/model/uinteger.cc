@@ -7,7 +7,6 @@
  */
 #include "uinteger.h"
 
-#include "fatal-error.h"
 #include "log.h"
 
 #include <sstream>

@@ -471,7 +471,7 @@ EmlsrLinkSwitchTest::CheckRtsFrame(const WifiConstPsduMap& psduMap,
     if (++m_countRtsFrames == 1)
     {
         auto psdu = psduMap.begin()->second;
-        m_errorModel->SetList({psdu->GetPacket()->GetUid()});
+        m_errorModel->SetList({(*psdu->begin())->GetPacket()->GetUid()});
 
         // check that when CTS timeout occurs, the main PHY is switching
         Simulator::Schedule(

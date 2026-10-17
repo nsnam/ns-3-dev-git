@@ -265,10 +265,7 @@ Radvd::Send(Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
      * we always send RA with router's link-local address, we can
      * calculate checksum here.
      */
-    raHdr.CalculatePseudoHeaderChecksum(src,
-                                        dst,
-                                        p->GetSize() + raHdr.GetSerializedSize(),
-                                        58 /* ICMPv6 */);
+    raHdr.CalculatePseudoHeaderChecksum(src, dst, p->GetSize() + raHdr.GetSerializedSize());
     p->AddHeader(raHdr);
 
     /* Router advertisements MUST always have a ttl of 255

@@ -263,6 +263,13 @@ operator<<(std::ostream& os, const Ipv6RoutingTableEntry& route)
     return os;
 }
 
+bool
+operator==(const Ipv6RoutingTableEntry a, const Ipv6RoutingTableEntry b)
+{
+    return (a.GetDest() == b.GetDest() && a.GetDestNetworkPrefix() == b.GetDestNetworkPrefix() &&
+            a.GetGateway() == b.GetGateway() && a.GetInterface() == b.GetInterface());
+}
+
 Ipv6MulticastRoutingTableEntry::Ipv6MulticastRoutingTableEntry()
 {
 }

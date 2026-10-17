@@ -108,6 +108,12 @@ class Ipv6InterfaceAddress
     Ipv6Prefix GetPrefix() const;
 
     /**
+     * @brief Get the IPv6 prefix length.
+     * @return IPv6 prefix length
+     */
+    uint8_t GetPrefixLength() const;
+
+    /**
      * @brief Set the state.
      * @param state the state
      */
@@ -182,9 +188,9 @@ class Ipv6InterfaceAddress
     Ipv6Address m_address;
 
     /**
-     * @brief The IPv6 prefix.
+     * @brief The IPv6 prefix length.
      */
-    Ipv6Prefix m_prefix;
+    uint8_t m_prefixLength;
 
     /**
      * @brief State of the address.
@@ -211,15 +217,6 @@ class Ipv6InterfaceAddress
     friend bool operator==(const Ipv6InterfaceAddress& a, const Ipv6InterfaceAddress& b);
 
     /**
-     * @brief Not equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are not equal
-     */
-    friend bool operator!=(const Ipv6InterfaceAddress& a, const Ipv6InterfaceAddress& b);
-
-    /**
      * @brief Last DAD probe packet UID.
      */
     uint32_t m_nsDadUid;
@@ -238,15 +235,8 @@ std::ostream& operator<<(std::ostream& os, const Ipv6InterfaceAddress& addr);
 inline bool
 operator==(const Ipv6InterfaceAddress& a, const Ipv6InterfaceAddress& b)
 {
-    return (a.m_address == b.m_address && a.m_prefix == b.m_prefix && a.m_state == b.m_state &&
-            a.m_scope == b.m_scope);
-}
-
-inline bool
-operator!=(const Ipv6InterfaceAddress& a, const Ipv6InterfaceAddress& b)
-{
-    return (a.m_address != b.m_address || a.m_prefix != b.m_prefix || a.m_state != b.m_state ||
-            a.m_scope != b.m_scope);
+    return (a.m_address == b.m_address && a.m_prefixLength == b.m_prefixLength &&
+            a.m_state == b.m_state && a.m_scope == b.m_scope);
 }
 
 } /* namespace ns3 */

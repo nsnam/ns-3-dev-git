@@ -1,0 +1,8 @@
+# Starlink LEO Constellation configuration
+#
+altitudeKm,inclinationDegrees,numberOfPlanes,numberOfSatellitesPerPlane
+1150.0,53.0,1,3
+1110.0,53.8,32,50
+1130.0,74.0,8,50
+1275.0,81.0,5,75
+1325.0,70.0,6,75

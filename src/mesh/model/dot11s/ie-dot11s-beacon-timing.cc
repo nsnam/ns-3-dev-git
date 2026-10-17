@@ -155,8 +155,8 @@ IeBeaconTiming::SerializeInformationField(Buffer::Iterator i) const
     for (auto j = m_neighbours.begin(); j != m_neighbours.end(); j++)
     {
         i.WriteU8((*j)->GetAid());
-        i.WriteHtolsbU16((*j)->GetLastBeacon());
-        i.WriteHtolsbU16((*j)->GetBeaconInterval());
+        i.WriteU16((*j)->GetLastBeacon());
+        i.WriteU16((*j)->GetBeaconInterval());
     }
 }
 
@@ -169,8 +169,8 @@ IeBeaconTiming::DeserializeInformationField(Buffer::Iterator start, uint16_t len
     {
         Ptr<IeBeaconTimingUnit> new_element = Create<IeBeaconTimingUnit>();
         new_element->SetAid(i.ReadU8());
-        new_element->SetLastBeacon(i.ReadLsbtohU16());
-        new_element->SetBeaconInterval(i.ReadLsbtohU16());
+        new_element->SetLastBeacon(i.ReadU16());
+        new_element->SetBeaconInterval(i.ReadU16());
         m_neighbours.push_back(new_element);
     }
     return i.GetDistanceFrom(start);

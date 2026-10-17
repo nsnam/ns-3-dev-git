@@ -411,11 +411,12 @@ types, through the helpers, such as (e.g.):
 
 The standard set of Mac-level NetDevice trace sources is provided.
 
-* ``MaxTx``:  Trace source triggered when |ns3| provides the device with a
+* ``MacTx``:  Trace source triggered when |ns3| provides the device with a
   new frame to send
-* ``MaxTxDrop``:  Trace source if write to file descriptor fails
-* ``MaxPromiscRx``:  Whenever any valid Mac frame is received
-* ``MaxRx``:  Whenever a valid Mac frame is received for this device
+* ``MacTxDrop``:  Trace source indicating a packet has been dropped by the
+  device before transmission
+* ``MacPromiscRx``:  Whenever any valid Mac frame is received
+* ``MacRx``:  Whenever a valid Mac frame is received for this device
 * ``Sniffer``:  Non-promiscuous packet sniffer
 * ``PromiscSniffer``:  Promiscuous packet sniffer (for tcpdump-like traces)
 

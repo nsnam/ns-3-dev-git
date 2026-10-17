@@ -33,9 +33,9 @@ struct WIFI_EXPORT FrequencyChannelInfo
      * @brief spaceship operator.
      *
      * @param info the frequency channel info
-     * @returns -1 if the provided channel info is located at a lower channel number, 0 if the
-     * provided channel info is identical or 1 if the provided channel info is located at a higher
-     * channel number
+     * @returns a negative value if the provided channel info is located at a lower channel number,
+     * 0 if the provided channel info is identical or a positive value if the provided channel info
+     * is located at a higher channel number
      */
     auto operator<=>(const FrequencyChannelInfo& info) const = default;
     uint8_t number{0};                                        ///< the channel number
@@ -52,7 +52,7 @@ struct WIFI_EXPORT FrequencyChannelInfo
  * @param info the frequency channel info
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const FrequencyChannelInfo& info);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const FrequencyChannelInfo& info);
 
 /**
  * @ingroup wifi
@@ -66,7 +66,7 @@ class WIFI_EXPORT WifiPhyOperatingChannel
     using ConstIterator = std::set<FrequencyChannelInfo>::const_iterator;
 
     /// Comparison functor used to sort the segments by increasing frequencies
-    struct Compare
+    struct WIFI_EXPORT Compare
     {
         /**
          * Functional operator for sorting the frequency segments.
@@ -435,7 +435,7 @@ class WIFI_EXPORT WifiPhyOperatingChannel
  * @param channel the operating channel
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiPhyOperatingChannel& channel);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiPhyOperatingChannel& channel);
 
 } // namespace ns3
 

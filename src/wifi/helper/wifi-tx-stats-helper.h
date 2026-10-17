@@ -15,6 +15,7 @@
 #include "ns3/object.h"
 #include "ns3/qos-utils.h"
 #include "ns3/type-id.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-types.h"
 #include "ns3/wifi-utils.h"
@@ -46,7 +47,7 @@ class WifiMpdu;
  * and how long it took to complete acknowledgement (or failure) once the first transmission
  * of it was attempted. For failed MPDUs, their WifiMacDropReason can be accessed.
  */
-class WifiTxStatsHelper
+class WIFI_EXPORT WifiTxStatsHelper
 {
   public:
     /**
@@ -67,7 +68,7 @@ class WifiTxStatsHelper
     /**
      * Structure for recording information about an individual data MPDU transmission.
      */
-    struct MpduRecord
+    struct WIFI_EXPORT MpduRecord
     {
         uint32_t m_nodeId{std::numeric_limits<uint32_t>::max()};   //!< The sending node ID
         uint32_t m_deviceId{std::numeric_limits<uint32_t>::max()}; //!< The sending device ID
@@ -137,7 +138,7 @@ class WifiTxStatsHelper
     /**
      * Hash function for the tuples used in unordered_maps
      */
-    struct TupleHash
+    struct WIFI_EXPORT TupleHash
     {
         /**
          * Combines two hash values into one (similar to boost::hash_combine)
@@ -158,7 +159,7 @@ class WifiTxStatsHelper
         template <typename Tuple, size_t Index = 0>
         size_t tuple_hash(const Tuple& tuple) const
         {
-            if constexpr (Index < std::tuple_size<Tuple>::value)
+            if constexpr (Index < std::tuple_size_v<Tuple>)
             {
                 size_t seed = tuple_hash<Tuple, Index + 1>(tuple);
                 hash_combine(seed, std::get<Index>(tuple));

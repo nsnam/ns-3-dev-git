@@ -532,7 +532,7 @@ ByteTagList::Serialize(uint32_t* buffer, uint32_t maxSize) const
     }
 
     // Serialized successfully
-    return 1;
+    return size;
 }
 
 uint32_t
@@ -540,7 +540,7 @@ ByteTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 {
     NS_LOG_FUNCTION(this << buffer << size);
     const uint32_t* p = buffer;
-    uint32_t sizeCheck = size - 4;
+    uint32_t sizeCheck = size;
 
     NS_ASSERT(sizeCheck >= 4);
     uint32_t numberTagData = *p++;
@@ -585,7 +585,7 @@ ByteTagList::Deserialize(const uint32_t* buffer, uint32_t size)
 
     // return zero if buffer did not
     // contain a complete message
-    return (sizeCheck != 0) ? 0 : 1;
+    return (sizeCheck != 0) ? 0 : size;
 }
 
 } // namespace ns3

@@ -11,6 +11,8 @@
 
 #include "wifi-helper.h"
 
+#include "ns3/wifi-export.h"
+
 #include <map>
 #include <set>
 
@@ -30,7 +32,7 @@ class SpectrumWifiPhy;
  * added to this helper (via one of the SetChannel methods), unless one has
  * previously been installed on the channel object.
  */
-class SpectrumWifiPhyHelper : public WifiPhyHelper
+class WIFI_EXPORT SpectrumWifiPhyHelper : public WifiPhyHelper
 {
   public:
     /**

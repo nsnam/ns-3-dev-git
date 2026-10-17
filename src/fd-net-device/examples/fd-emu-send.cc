@@ -134,7 +134,7 @@ main(int argc, char* argv[])
     std::string emuMode("netmap");
 #endif
 
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.AddValue("deviceName", "Device name", deviceName);
     cmd.AddValue("level", "Enable send (1) or write (0) level test", level);
     cmd.AddValue("emuMode", "Emulation mode in {raw, netmap}", emuMode);

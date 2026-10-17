@@ -25,6 +25,13 @@ option(NS3_ENABLE_SUDO
 # A flag that controls some aspects related to pip packaging
 option(NS3_PIP_PACKAGING "Control aspects related to pip wheel packaging" OFF)
 
+# A flag to indicate which CMakePreset was used to configure CMake, so the ns3
+# script can retrieve its environment variables to use for execution
+set(NS3_CMAKE_PRESET ""
+    CACHE STRING
+          "Indicates which CMakePreset was selected at configuration time"
+)
+
 # fPIC (position-independent code) and fPIE (position-independent executable)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 

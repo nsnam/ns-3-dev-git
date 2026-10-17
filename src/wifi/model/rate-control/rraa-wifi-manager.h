@@ -11,6 +11,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3
@@ -19,7 +20,7 @@ namespace ns3
 struct RraaWifiRemoteStation;
 
 /// WifiRraaThresholds structure
-struct WifiRraaThresholds
+struct WIFI_EXPORT WifiRraaThresholds
 {
     double m_ori;    ///< Opportunistic Rate Increase threshold
     double m_mtl;    ///< Maximum Tolerable Loss threshold
@@ -44,7 +45,7 @@ typedef std::vector<std::pair<WifiRraaThresholds, WifiMode>> RraaThresholdsTable
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */
-class RraaWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT RraaWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

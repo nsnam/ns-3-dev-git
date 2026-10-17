@@ -87,7 +87,7 @@ class NodeContainer
      * Create a node container which is a concatenation of multiple input
      * NodeContainers.
      *
-     * @tparam Ts \deduced Template type parameter pack for the multiple
+     * @tparam Ts @deduced Template type parameter pack for the multiple
      *         NodeContainers
      * @param nc The first NodeContainer
      * @param args The remaining NodeContainers
@@ -112,14 +112,14 @@ class NodeContainer
      * for-loop to run through the Nodes
      *
      * @code
-     *   NodeContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Node method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Node method
+     *   }
      * @endcode
      *
      * @returns an iterator which refers to the first Node in the container.
+     * @hidecaller
      */
     Iterator Begin() const;
 
@@ -133,14 +133,14 @@ class NodeContainer
      * for-loop to run through the Nodes
      *
      * @code
-     *   NodeContainer::Iterator i;
-     *   for (i = container.Begin (); i != container.End (); ++i)
-     *     {
-     *       (*i)->method ();  // some Node method
-     *     }
+     *   for (auto i = container.Begin(); i != container.End(); ++i)
+     *   {
+     *       (*i)->method(); // some Node method
+     *   }
      * @endcode
      *
      * @returns an iterator which indicates an ending condition for a loop.
+     * @hidecaller
      */
     Iterator End() const;
 
@@ -186,6 +186,7 @@ class NodeContainer
      *
      * @param i the index of the requested node pointer.
      * @returns the requested node pointer.
+     * @hidecaller
      */
     Ptr<Node> Get(uint32_t i) const;
 
@@ -198,6 +199,7 @@ class NodeContainer
      * automates that task.
      *
      * @param n The number of Nodes to create
+     * @hidecaller
      */
     void Create(uint32_t n);
 
@@ -227,7 +229,7 @@ class NodeContainer
      * @brief Append the contents of another NodeContainer to the end of
      * this container.
      *
-     * @tparam Ts \deduced Template type parameter pack for the multiple
+     * @tparam Ts @deduced Template type parameter pack for the multiple
      *         NodeContainer
      * @param nc The NodeContainer to append
      * @param args The remaining NodeContainers to append

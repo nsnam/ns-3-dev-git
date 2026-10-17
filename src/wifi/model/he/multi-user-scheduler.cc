@@ -216,7 +216,7 @@ MultiUserScheduler::AccessReqTimeout(uint8_t linkId)
     // request channel access if not requested yet
     auto edca = m_apMac->GetQosTxop(m_accessReqAc);
 
-    if (edca->GetAccessStatus(linkId) == Txop::NOT_REQUESTED)
+    if (edca->GetAccessStatus(linkId) == WifiChannelAccessStatus::NOT_REQUESTED)
     {
         m_apMac->GetChannelAccessManager(linkId)->RequestAccess(edca);
     }
@@ -234,16 +234,14 @@ MultiUserScheduler::AccessReqTimeout(uint8_t linkId)
 
 MultiUserScheduler::TxFormat
 MultiUserScheduler::NotifyAccessGranted(Ptr<QosTxop> edca,
-                                        Time availableTime,
-                                        bool initialFrame,
+                                        const std::optional<Time>& availableTime,
                                         MHz_u allowedWidth,
                                         uint8_t linkId)
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame << allowedWidth << linkId);
+    NS_LOG_FUNCTION(this << edca << availableTime << allowedWidth << linkId);
 
     m_edca = edca;
     m_availableTime = availableTime;
-    m_initialFrame = initialFrame;
     m_allowedWidth = allowedWidth;
     m_linkId = linkId;
 

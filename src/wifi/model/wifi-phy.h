@@ -33,11 +33,11 @@
     {                                                                                              \
         if (DynamicCast<const WifiPhy>(phy))                                                       \
         {                                                                                          \
-            std::clog << "[index=" << +phy->GetPhyId() << "][channel="                             \
-                      << (phy->GetOperatingChannel().IsSet()                                       \
-                              ? std::to_string(+phy->GetOperatingChannel().GetNumber())            \
-                              : "UNKNOWN")                                                         \
-                      << "][band=" << phy->GetPhyBand() << "] ";                                   \
+            ns3LogStream << "[index=" << +phy->GetPhyId() << "][channel="                          \
+                         << (phy->GetOperatingChannel().IsSet()                                    \
+                                 ? std::to_string(+phy->GetOperatingChannel().GetNumber())         \
+                                 : "UNKNOWN")                                                      \
+                         << "][band=" << phy->GetPhyBand() << "] ";                                \
         }                                                                                          \
     }
 
@@ -69,6 +69,9 @@ class WIFI_EXPORT WifiPhy : public Object
     /**
      * @brief Get the type ID.
      * @return the object TypeId
+     *
+     * Call graph was not generated because of its size.
+     * @hidecallgraph
      */
     static TypeId GetTypeId();
 
@@ -252,6 +255,8 @@ class WIFI_EXPORT WifiPhy : public Object
      * @param staId the STA-ID of the recipient (only used for MU)
      *
      * @return the total amount of time this PHY will stay busy for the transmission of these bytes.
+     *
+     * @hidecaller
      */
     static Time CalculateTxDuration(uint32_t size,
                                     const WifiTxVector& txVector,
@@ -860,15 +865,15 @@ class WIFI_EXPORT WifiPhy : public Object
      * minimum level and the maximum level. Transmission power levels are
      * equally separated (in dBm) with the minimum and the maximum included.
      *
-     * @param n the number of available levels
+     * @param numLevels the number of available levels
      */
-    void SetNTxPower(uint8_t n);
+    void SetNTxPowerLevels(uint8_t numLevels);
     /**
      * Return the number of available transmission power levels.
      *
      * @return the number of available transmission power levels
      */
-    uint8_t GetNTxPower() const;
+    uint8_t GetNTxPowerLevels() const;
     /**
      * Sets the transmission gain.
      *
@@ -1665,7 +1670,7 @@ class WIFI_EXPORT WifiPhy : public Object
     dB_u m_rxGain;                     //!< Reception gain
     dBm_u m_txPowerBase;               //!< Minimum transmission power
     dBm_u m_txPowerEnd;                //!< Maximum transmission power
-    uint8_t m_nTxPower;                //!< Number of available transmission power levels
+    uint8_t m_nTxPowerLevels;          //!< Number of available transmission power levels
     dBm_per_MHz_u m_powerDensityLimit; //!< the power density limit
 
     bool m_powerRestricted; //!< Flag whether transmit power is restricted by OBSS PD SR
@@ -1703,7 +1708,7 @@ class WIFI_EXPORT WifiPhy : public Object
  * @param rxSignalInfo received signal info to stringify
  * @return output stream
  */
-std::ostream& operator<<(std::ostream& os, RxSignalInfo rxSignalInfo);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, RxSignalInfo rxSignalInfo);
 
 } // namespace ns3
 

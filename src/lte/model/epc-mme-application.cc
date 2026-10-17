@@ -70,7 +70,7 @@ void
 EpcMmeApplication::AddEnb(uint16_t gci, Ipv4Address enbS1uAddr, EpcS1apSapEnb* enbS1apSap)
 {
     NS_LOG_FUNCTION(this << gci << enbS1uAddr << enbS1apSap);
-    Ptr<EnbInfo> enbInfo = Create<EnbInfo>();
+    auto enbInfo = std::make_shared<EnbInfo>();
     enbInfo->gci = gci;
     enbInfo->s1uAddr = enbS1uAddr;
     enbInfo->s1apSapEnb = enbS1apSap;
@@ -81,7 +81,7 @@ void
 EpcMmeApplication::AddUe(uint64_t imsi)
 {
     NS_LOG_FUNCTION(this << imsi);
-    Ptr<UeInfo> ueInfo = Create<UeInfo>();
+    auto ueInfo = std::make_shared<UeInfo>();
     ueInfo->imsi = imsi;
     ueInfo->mmeUeS1Id = imsi;
     ueInfo->bearerCounter = 0;
@@ -233,7 +233,7 @@ EpcMmeApplication::DoErabReleaseIndication(
 }
 
 void
-EpcMmeApplication::RemoveBearer(Ptr<UeInfo> ueInfo, uint8_t epsBearerId)
+EpcMmeApplication::RemoveBearer(std::shared_ptr<UeInfo> ueInfo, uint8_t epsBearerId)
 {
     NS_LOG_FUNCTION(this << epsBearerId);
     auto bit = ueInfo->bearersToBeActivated.begin();

@@ -48,7 +48,7 @@ workflow:
     - if (git remote | grep -qw upstream) ; then
       git remote remove upstream ;
       fi
-    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream https://gitlab.com/nsnam/ns-3-dev.git
+    - git remote add -t $CI_DEFAULT_BRANCH --no-tags -f upstream "${CI_MERGE_REQUEST_PROJECT_URL:-https://gitlab.com/nsnam/ns-3-dev.git}"
     - git diff --name-only upstream/$CI_DEFAULT_BRANCH | tee $FILES_CHANGED
 
     # Run this job in the following cases: 1) default branch, 2) changes to source code, 3) changes to configurations.
@@ -112,7 +112,7 @@ include:
   - "utils/tests/gitlab-ci-per-commit.yml"
   - "utils/tests/gitlab-ci-alpine.yml"
   - "utils/tests/gitlab-ci-ubuntu.yml"
-  - "utils/tests/gitlab-ci-fedora.yml"
+  - "utils/tests/gitlab-ci-rockylinux.yml"
   - "utils/tests/gitlab-ci-gcc.yml"
   - "utils/tests/gitlab-ci-clang.yml"
   - "utils/tests/gitlab-ci-scheduled.yml"
@@ -122,3 +122,4 @@ include:
   - "utils/tests/gitlab-ci-release.yml"
   - "utils/tests/gitlab-ci-build.yml"
   - "utils/tests/gitlab-ci-macos.yml"
+  - "utils/tests/gitlab-ci-windows.yml"

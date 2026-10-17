@@ -41,9 +41,12 @@ ZigbeeStack::ZigbeeStack()
 
     m_nwk = CreateObject<zigbee::ZigbeeNwk>();
     m_aps = CreateObject<zigbee::ZigbeeAps>();
+    m_zdo = CreateObject<zigbee::ZigbeeZdo>();
     m_groupTable = Create<zigbee::ZigbeeGroupTable>();
 
-    m_nwkOnly = false;
+    // Default to the full stack. SetLayers can change this before initialization;
+    // DoInitialize wires the selected layers and drops the unused ones.
+    m_layers = StackLayers::FULL_STACK;
 }
 
 ZigbeeStack::~ZigbeeStack()
@@ -58,6 +61,7 @@ ZigbeeStack::DoDispose()
 
     m_netDevice = nullptr;
     m_node = nullptr;
+    m_zdo = nullptr;
     m_aps = nullptr;
     m_nwk = nullptr;
     m_groupTable = nullptr;
@@ -102,22 +106,42 @@ ZigbeeStack::DoInitialize()
     m_mac->SetMlmeAssociateConfirmCallback(MakeCallback(&ZigbeeNwk::MlmeAssociateConfirm, m_nwk));
     // TODO: complete other callback hooks with the MAC
 
-    if (!m_nwkOnly)
+    m_nwk->SetGroupTable(m_groupTable);
+
+    if (m_layers >= StackLayers::NWK_AND_APS)
     {
         // Set APS callback hooks with NWK (i.e., NLDE primitives only)
         m_nwk->SetNldeDataConfirmCallback(MakeCallback(&ZigbeeAps::NldeDataConfirm, m_aps));
         m_nwk->SetNldeDataIndicationCallback(MakeCallback(&ZigbeeAps::NldeDataIndication, m_aps));
 
-        m_nwk->SetGroupTable(m_groupTable);
+        // Connect the APS layer to the same group table used by the NWK layer
         m_aps->SetGroupTable(m_groupTable);
 
-        m_aps->Initialize();
         m_aps->SetNwk(m_nwk);
-        AggregateObject(m_aps);
     }
     else
     {
-        m_nwk->SetGroupTable(m_groupTable);
+        // APS is not part of the selected stack: drop it so no callbacks are wired.
+        m_aps = nullptr;
+    }
+
+    if (m_layers >= StackLayers::FULL_STACK)
+    {
+        // Connect the APS to the demultiplexer (dispatcher) to deliver the APSDE-DATA.indication
+        // to either the Zigbee Device Object (ZDO) or the Application Framework (AF).
+        m_aps->SetApsdeDataIndicationCallback(
+            MakeCallback(&ZigbeeStack::ApsDataIndicationDispatcher, this));
+
+        // ZDO has references to both the APS and NWK layers, so it can send requests to both layers
+        m_zdo->SetAps(m_aps);
+        m_zdo->SetNwk(m_nwk);
+
+        m_zdo->Initialize();
+    }
+    else
+    {
+        // ZDO is not part of the selected stack: drop it so no callbacks are wired.
+        m_zdo = nullptr;
     }
 
     // Obtain Extended address as soon as NWK is set to begin operations
@@ -153,9 +177,12 @@ ZigbeeStack::SetNetDevice(Ptr<NetDevice> netDevice)
 }
 
 void
-ZigbeeStack::SetOnlyNwkLayer()
+ZigbeeStack::SetLayers(StackLayers layers)
 {
-    m_nwkOnly = true;
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(ZigbeeStack::IsInitialized(),
+                    "Zigbee layers cannot be set after initialization");
+    m_layers = layers;
 }
 
 Ptr<zigbee::ZigbeeNwk>
@@ -184,6 +211,48 @@ ZigbeeStack::SetAps(Ptr<zigbee::ZigbeeAps> aps)
     NS_LOG_FUNCTION(this);
     NS_ABORT_MSG_IF(ZigbeeStack::IsInitialized(), "APS layer cannot be set after initialization");
     m_aps = aps;
+}
+
+Ptr<zigbee::ZigbeeZdo>
+ZigbeeStack::GetZdo() const
+{
+    return m_zdo;
+}
+
+void
+ZigbeeStack::SetZdo(Ptr<zigbee::ZigbeeZdo> zdo)
+{
+    NS_LOG_FUNCTION(this);
+    NS_ABORT_MSG_IF(ZigbeeStack::IsInitialized(), "ZDO layer cannot be set after initialization");
+    m_zdo = zdo;
+}
+
+void
+ZigbeeStack::ApsDataIndicationDispatcher(ApsdeDataIndicationParams params, Ptr<Packet> p)
+{
+    if (params.m_dstEndPoint == 0)
+    {
+        // Zigbee Device Object (ZDO), Endpoint 0.
+        if (m_zdo)
+        {
+            NS_LOG_DEBUG("ZigbeeStack: APSDE-DATA.indication directed to ZDO (endpoint 0)");
+            m_zdo->ApsDataIndication(params, p);
+        }
+        else
+        {
+            NS_LOG_DEBUG("ZigbeeStack: APSDE-DATA.indication directed to ZDO (endpoint 0) "
+                         "dropped, the ZDO layer is not present in this stack");
+        }
+    }
+    else
+    {
+        // Application Framework, Endpoints 1~254
+        // TODO:
+        // NS_LOG_DEBUG("ZigbeeStack: APSDE-DATA.indication directed to
+        //               Application Framework (endpoint "
+        //                << params.dstEndpoint << ")");
+        // m_af->ApsDataIndication(params, p);
+    }
 }
 
 } // namespace zigbee

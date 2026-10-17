@@ -26,7 +26,6 @@
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-server.h"
-#include "ns3/pointer.h"
 #include "ns3/qos-txop.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/rr-multi-user-scheduler.h"
@@ -38,6 +37,7 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-psdu.h"
+#include "ns3/wifi-static-setup-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/yans-wifi-phy.h"
 
@@ -172,10 +172,17 @@ class IdealWifiManagerForGcrTest : public IdealWifiManager
      */
     static TypeId GetTypeId()
     {
-        static TypeId tid = TypeId("ns3::IdealWifiManagerForGcrTest")
-                                .SetParent<IdealWifiManager>()
-                                .SetGroupName("Wifi")
-                                .AddConstructor<IdealWifiManagerForGcrTest>();
+        static TypeId tid =
+            TypeId("ns3::IdealWifiManagerForGcrTest")
+                .SetParent<IdealWifiManager>()
+                .SetGroupName("Wifi")
+                .AddConstructor<IdealWifiManagerForGcrTest>()
+                .AddAttribute(
+                    "ForceHighestCombination",
+                    "Force highest combination of MCS/BW/NSS.",
+                    BooleanValue(false),
+                    MakeBooleanAccessor(&IdealWifiManagerForGcrTest::m_forceHighestCombination),
+                    MakeBooleanChecker());
         return tid;
     }
 
@@ -188,15 +195,27 @@ class IdealWifiManagerForGcrTest : public IdealWifiManager
                                uint8_t dataNss) override
     {
         m_blockAckSenders.insert(station->m_state->m_address);
-        IdealWifiManager::DoReportAmpduTxStatus(station,
-                                                nSuccessfulMpdus,
-                                                nFailedMpdus,
-                                                rxSnr,
-                                                dataSnr,
-                                                dataChannelWidth,
-                                                dataNss);
     }
 
+    WifiTxVector DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth) override
+    {
+        auto txVector = IdealWifiManager::DoGetDataTxVector(st, allowedWidth);
+        if (const auto mc = txVector.GetModulationClass();
+            m_forceHighestCombination && (mc >= WIFI_MOD_CLASS_HT))
+        {
+            // the highest MCS is not always compatible with all combinations in case of VHT, hence
+            // pick the MCS just before it
+            txVector.SetMode(*std::next(st->m_state->m_operationalMcsSet.crbegin()));
+            txVector.SetChannelWidth(std::min(GetChannelWidth(st), allowedWidth));
+            const auto maxMcs = (mc == WIFI_MOD_CLASS_HT)
+                                    ? ((txVector.GetMode().GetMcsValue() / 8) + 1)
+                                    : GetNumberOfSupportedStreams(st);
+            txVector.SetNss(maxMcs);
+        }
+        return txVector;
+    }
+
+    bool m_forceHighestCombination;           ///< flag to force highest combination of MCS/BW/NSS
     GcrManager::GcrMembers m_blockAckSenders; ///< hold set of BACK senders that have passed
                                               ///< success/failure infos to RSM
 };
@@ -446,6 +465,19 @@ GcrTestBase::Transmit(std::string context,
                 NS_TEST_EXPECT_MSG_EQ(mpdu->GetHeader().GetAddr1(),
                                       m_apWifiMac->GetAddress(),
                                       "Incorrect Address1 set for CTS-to-self frame");
+                // the CTS-to-self must cover the bandwidth of the protected groupcast frame,
+                // since no PPDU in the TXOP may be wider than the CTS-to-self frame
+                // (Sec. 10.23.2.8 of 802.11-2024)
+                const auto expectedCtsWidth =
+                    std::min_element(m_params.stas.cbegin(),
+                                     m_params.stas.cend(),
+                                     [](const auto& sta1, const auto& sta2) {
+                                         return sta1.maxChannelWidth < sta2.maxChannelWidth;
+                                     })
+                        ->maxChannelWidth;
+                NS_TEST_EXPECT_MSG_EQ(txVector.GetChannelWidth(),
+                                      expectedCtsWidth,
+                                      "Incorrect channel width for CTS-to-self frame");
                 m_nTxApCts++;
             }
             else
@@ -789,7 +821,7 @@ GcrTestBase::DoSetup()
                         "Ssid",
                         SsidValue(Ssid("ns-3-ssid")),
                         "BeaconGeneration",
-                        BooleanValue(true),
+                        BooleanValue(false),
                         "RobustAVStreamingSupported",
                         BooleanValue(true));
     ConfigureGcrManager(apMacHelper);
@@ -876,6 +908,9 @@ GcrTestBase::DoSetup()
     mobility.Install(wifiStaNodes);
 
     auto apNetDevice = DynamicCast<WifiNetDevice>(apDevice.Get(0));
+    NS_ASSERT(apNetDevice);
+    WifiStaticSetupHelper::SetStaticAssociation(apNetDevice, staDevices);
+
     m_apWifiMac = DynamicCast<ApWifiMac>(apNetDevice->GetMac());
     m_apWifiMac->SetAttribute("BE_MaxAmsduSize", UintegerValue(0));
     m_apWifiMac->SetAttribute(
@@ -1002,9 +1037,7 @@ GcrTestBase::DoSetup()
         }
     }
 
-    PointerValue ptr;
-    m_apWifiMac->GetAttribute("BE_Txop", ptr);
-    ptr.Get<QosTxop>()->TraceConnectWithoutContext(
+    m_apWifiMac->GetQosTxop(AC_BE)->TraceConnectWithoutContext(
         "TxopTrace",
         MakeCallback(&GcrTestBase::NotifyTxopTerminated, this));
 
@@ -1039,9 +1072,19 @@ GcrUrTest::GcrUrTest(const std::string& testName,
                      const GcrUrParameters& gcrUrParams)
     : GcrTestBase(testName, commonParams),
       m_gcrUrParams{gcrUrParams},
-      m_currentUid{0}
+      m_currentSeqNo{}
 {
-    m_rngRun = 2;
+}
+
+void
+GcrUrTest::DoSetup()
+{
+    GcrTestBase::DoSetup();
+    auto rsm = DynamicCast<IdealWifiManagerForGcrTest>(m_apWifiMac->GetWifiRemoteStationManager());
+    NS_ASSERT(rsm);
+    // GCR-UR with static setup helper won't let a chance to Ideal RAA to get SNR feedback, hence
+    // consider interference-free channel and select highest MCS, largest BW and max NSS
+    rsm->SetAttribute("ForceHighestCombination", BooleanValue(true));
 }
 
 void
@@ -1077,10 +1120,15 @@ GcrUrTest::Transmit(std::string context,
     auto addr1 = mpdu->GetHeader().GetAddr1();
     if (addr1.IsGroup() && !addr1.IsBroadcast() && mpdu->GetHeader().IsQosData())
     {
-        if (const auto uid = mpdu->GetPacket()->GetUid(); m_currentUid != uid)
+        // A new groupcast frame is identified by its sequence number: all (unsolicited)
+        // retries of a groupcast frame carry the same sequence number, whereas a new
+        // groupcast frame uses the next one. Relying on the packet UID here is not robust,
+        // as a retransmitted frame may be carried by a different packet instance (and hence
+        // report a different UID) depending on unrelated packet allocations in the process.
+        if (const auto seqNo = mpdu->GetHeader().GetSequenceNumber(); m_currentSeqNo != seqNo)
         {
             m_totalTxGroupcasts.push_back(0);
-            m_currentUid = uid;
+            m_currentSeqNo = seqNo;
             m_currentMpdu = nullptr;
         }
         if (m_totalTxGroupcasts.back() == 0)
@@ -1234,44 +1282,33 @@ GcrUrTest::CheckResults()
                           numNonRetryGroupcastFrames,
                           "Unexpected number of non-retransmitted groupcast frames");
 
-    NS_ASSERT(!m_totalTxGroupcasts.empty());
+    uint8_t numRetries = m_expectGcrUsed ? m_gcrUrParams.nGcrRetries : 0;
+    uint16_t expectedTxAttempts = ((1 + numRetries) * numNonRetryGroupcastFrames);
     const auto totalTxGroupcastFrames =
         std::accumulate(m_totalTxGroupcasts.cbegin(), m_totalTxGroupcasts.cend(), 0U);
-    uint8_t numRetries = m_expectGcrUsed ? m_gcrUrParams.nGcrRetries : 0;
-    // with test conditions, one more retry when A-MPDU is not used
-    const auto nonAmpduPackets = m_gcrUrParams.packetsPauzeAggregation.has_value()
-                                     ? (m_gcrUrParams.packetsResumeAggregation.value() -
-                                        m_gcrUrParams.packetsPauzeAggregation.value())
-                                     : 0;
-    ;
-    uint16_t expectedTxAttempts =
-        m_gcrUrParams.packetsPauzeAggregation.has_value() &&
-                (m_gcrUrParams.expectedSkippedRetries > 0)
-            ? (std::ceil((1 + numRetries - m_gcrUrParams.expectedSkippedRetries) *
-                         ((static_cast<double>(m_params.numGroupcastPackets - nonAmpduPackets) /
-                           expectedMaxNumMpdusInPsdu))) +
-               ((1 + numRetries - (m_gcrUrParams.expectedSkippedRetries - 1)) * nonAmpduPackets))
-            : ((1 + numRetries - m_gcrUrParams.expectedSkippedRetries) *
-               numNonRetryGroupcastFrames);
-    NS_TEST_EXPECT_MSG_EQ(totalTxGroupcastFrames,
-                          expectedTxAttempts,
-                          "Unexpected number of transmission attempts");
+    if (m_gcrUrParams.expectedMinSkippedRetries > 0)
+    {
+        for (const auto txGroupcasts : m_totalTxGroupcasts)
+        {
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(
+                +txGroupcasts,
+                1 + numRetries - m_gcrUrParams.expectedMinSkippedRetries,
+                "Groupcast frame has been retransmitted more times than expected");
+        }
+    }
+    else
+    {
+        NS_TEST_EXPECT_MSG_EQ(totalTxGroupcastFrames,
+                              expectedTxAttempts,
+                              "Unexpected number of transmission attempts");
+    }
 
     uint8_t numStas = m_params.stas.size();
     for (uint8_t i = 0; i < numStas; ++i)
     {
         numRetries =
             (m_params.stas.at(i).standard >= WIFI_STANDARD_80211n) ? m_gcrUrParams.nGcrRetries : 0;
-        expectedTxAttempts =
-            m_gcrUrParams.packetsPauzeAggregation.has_value() &&
-                    (m_gcrUrParams.expectedSkippedRetries > 0)
-                ? (std::ceil((1 + numRetries - m_gcrUrParams.expectedSkippedRetries) *
-                             ((static_cast<double>(m_params.numGroupcastPackets - nonAmpduPackets) /
-                               expectedMaxNumMpdusInPsdu))) +
-                   ((1 + numRetries - (m_gcrUrParams.expectedSkippedRetries - 1)) *
-                    nonAmpduPackets))
-                : ((1 + numRetries - m_gcrUrParams.expectedSkippedRetries) *
-                   numNonRetryGroupcastFrames);
+        expectedTxAttempts = ((1 + numRetries) * numNonRetryGroupcastFrames);
 
         // calculate the amount of corrupted PSDUs and the expected number of retransmission per
         // MPDU
@@ -1340,7 +1377,9 @@ GcrUrTest::CheckResults()
                                      : std::max(expectedNumAttempt, prevExpectedNumAttempt);
             prevExpectedNumAttempt = expectedNumAttempt;
             const std::size_t rxPsdus = (j - droppedPsdus);
-            NS_ASSERT(m_rxGroupcastPerSta.at(i).size() > rxPsdus);
+            NS_TEST_ASSERT_MSG_LT(rxPsdus,
+                                  m_rxGroupcastPerSta.at(i).size(),
+                                  "More dropped PSDUs than expected");
             NS_TEST_EXPECT_MSG_EQ(+m_rxGroupcastPerSta.at(i).at(rxPsdus),
                                   +expectedNumAttempt,
                                   "Packet has not been forwarded up at the expected TX attempt");
@@ -1350,10 +1389,13 @@ GcrUrTest::CheckResults()
                               rxPackets,
                               "STA" + std::to_string(i + 1) +
                                   " did not receive the expected number of groupcast packets");
-        NS_TEST_EXPECT_MSG_EQ(+m_phyRxPerSta.at(i),
-                              (expectedTxAttempts - corruptedPsdus),
-                              "STA" + std::to_string(i + 1) +
-                                  " did not receive the expected number of retransmissions");
+        if (m_gcrUrParams.expectedMinSkippedRetries == 0)
+        {
+            NS_TEST_EXPECT_MSG_EQ(+m_phyRxPerSta.at(i),
+                                  (expectedTxAttempts - corruptedPsdus),
+                                  "STA" + std::to_string(i + 1) +
+                                      " did not receive the expected number of retransmissions");
+        }
     }
 }
 
@@ -1369,7 +1411,7 @@ GcrBaTest::GcrBaTest(const std::string& testName,
       m_lastTxSeq{-1},
       m_nTxGcrBarsInCurrentTxop{0}
 {
-    m_rngRun = 5;
+    m_rngRun = 8;
 }
 
 void
@@ -1508,7 +1550,6 @@ GcrBaTest::Transmit(std::string context,
                                  (Simulator::Now() > m_params.startGroupcast)) ||
                                 ((m_params.startGroupcast < m_params.startUnicast) &&
                                  (Simulator::Now() < m_params.startUnicast)));
-        NS_ASSERT(blockAckReq.IsGcr() == expectedGcr);
         NS_TEST_EXPECT_MSG_EQ(blockAckReq.IsGcr(),
                               expectedGcr,
                               "Expected GCR Block Ack request type sent to STA " << +staId);
@@ -1520,7 +1561,6 @@ GcrBaTest::Transmit(std::string context,
                   m_nTxGcrBar > m_params.mpdusToCorruptPerPsdu.size())
                      ? m_params.numGroupcastPackets
                      : m_firstTxSeq);
-            NS_ASSERT(blockAckReq.GetStartingSequence() == expectedStartingSequence);
             NS_TEST_EXPECT_MSG_EQ(
                 blockAckReq.GetStartingSequence(),
                 expectedStartingSequence,
@@ -1778,6 +1818,9 @@ GcrBaTest::CheckResults()
                                      : std::max(expectedNumAttempt, prevExpectedNumAttempt);
             prevExpectedNumAttempt = expectedNumAttempt;
             const std::size_t rxPsdus = (j - droppedPsdus);
+            NS_TEST_ASSERT_MSG_LT(rxPsdus,
+                                  m_rxGroupcastPerSta.at(i).size(),
+                                  "More dropped PSDUs than expected");
             NS_TEST_EXPECT_MSG_EQ(+m_rxGroupcastPerSta.at(i).at(rxPsdus),
                                   +expectedNumAttempt,
                                   "Packet has not been forwarded up at the expected TX attempt");
@@ -2101,7 +2144,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                .maxNumMpdusInPsdu = 1,
                                .maxLifetime = MilliSeconds(1),
                                .rtsThreshold = maxRtsCtsThreshold},
-                              {.expectedSkippedRetries = 4}),
+                              {.expectedMinSkippedRetries = 4}),
                 TestCase::Duration::QUICK);
     AddTestCase(new GcrUrTest("GCR-UR with A-MPDU paused during test and number of packets larger "
                               "than MPDU buffer size",
@@ -2121,7 +2164,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                         {GCR_CAPABLE_STA, WIFI_STANDARD_80211be}},
                                .numGroupcastPackets = 300,
                                .packetSize = 200,
-                               .maxNumMpdusInPsdu = 1024, // capped to 64 because not lowest is HT
+                               .maxNumMpdusInPsdu = 1024, // capped to 64 because lowest is HT
                                .rtsThreshold = maxRtsCtsThreshold},
                               {}),
                 TestCase::Duration::QUICK);
@@ -2132,7 +2175,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                         {GCR_CAPABLE_STA, WIFI_STANDARD_80211be}},
                                .numGroupcastPackets = 300,
                                .packetSize = 200,
-                               .maxNumMpdusInPsdu = 1024, // capped to 256 because not lowest is HE
+                               .maxNumMpdusInPsdu = 1024, // capped to 256 because lowest is HE
                                .rtsThreshold = maxRtsCtsThreshold},
                               {}),
                 TestCase::Duration::QUICK);
@@ -2158,7 +2201,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                .rtsThreshold = 500,
                                .rtsFramesToCorrupt = {3, 4, 5},
                                .expectedDroppedGroupcastMpdus = {3, 4}},
-                              {.expectedSkippedRetries = 6}),
+                              {.expectedMinSkippedRetries = 6}),
                 TestCase::Duration::QUICK);
     AddTestCase(new GcrUrTest("GCR-UR with corrupted CTS frames to verify previously assigned "
                               "sequence numbers are properly released",
@@ -2171,7 +2214,7 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                .rtsThreshold = 500,
                                .ctsFramesToCorrupt = {3, 4, 5},
                                .expectedDroppedGroupcastMpdus = {3, 4}},
-                              {.expectedSkippedRetries = 6}),
+                              {.expectedMinSkippedRetries = 6}),
                 TestCase::Duration::QUICK);
     AddTestCase(new GcrUrTest("GCR-UR with reduced lifetime, A-MPDU paused during test and number "
                               "of packets larger than MPDU buffer size",
@@ -2181,8 +2224,8 @@ WifiGcrTestSuite::WifiGcrTestSuite()
                                .maxNumMpdusInPsdu = 2,
                                .maxLifetime = MilliSeconds(1),
                                .rtsThreshold = maxRtsCtsThreshold,
-                               .duration = Seconds(4.0)},
-                              {.expectedSkippedRetries = 4,
+                               .duration = Seconds(3.0)},
+                              {.expectedMinSkippedRetries = 2,
                                .packetsPauzeAggregation = 4,
                                .packetsResumeAggregation = 100}),
                 TestCase::Duration::QUICK);

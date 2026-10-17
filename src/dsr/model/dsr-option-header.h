@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -253,7 +255,7 @@ class DsrOptionPadnHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            Address[n]                         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRreqHeader : public DsrOptionHeader
 {
@@ -403,27 +405,7 @@ class DsrOptionRreqHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            Address[n]                         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
- *
- * The Route Reply header modified for ns-3 implementation:
- *
- * @verbatim
-   ns-3 Route Reply (RREP) Message Format
-
-   |      0        |      1        |      2        |      3        |
-   0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  Option Type  |  Opt Data Len |L|   Reserved   |   Reserved   |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                            Address[1]                         |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                            Address[2]                         |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                               ...                             |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                            Address[n]                         |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRrepHeader : public DsrOptionHeader
 {
@@ -541,7 +523,7 @@ class DsrOptionRrepHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                            Address[n]                         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionSRHeader : public DsrOptionHeader
 {
@@ -705,7 +687,7 @@ enum ErrorType
    .                    Type-Specific Information                  .
    .                                                               .
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  *
  * The type-specific information field varies by type of error,
  * as detailed in the derived classes.
@@ -837,7 +819,7 @@ class DsrOptionRerrHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                    Unreachable Node Address                   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
 {
@@ -978,7 +960,7 @@ class DsrOptionRerrUnreachHeader : public DsrOptionRerrHeader
    +-+-+-+-+-+-+-+-+
    |Unsupported Opt|
    +-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionRerrUnsupportedHeader : public DsrOptionRerrHeader
 {
@@ -1103,7 +1085,7 @@ class DsrOptionRerrUnsupportedHeader : public DsrOptionRerrHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Option Type |  Opt Data Len |         Identification         |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionAckReqHeader : public DsrOptionHeader
 {
@@ -1186,7 +1168,7 @@ class DsrOptionAckReqHeader : public DsrOptionHeader
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                     ACK Destination Address                   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   \endverbatim
+   @endverbatim
  */
 class DsrOptionAckHeader : public DsrOptionHeader
 {
@@ -1281,10 +1263,16 @@ class DsrOptionAckHeader : public DsrOptionHeader
     Ipv4Address m_realDstAddress;
 };
 
+/**
+ * @brief Output streamer for DsrOptionSRHeader
+ * @param os The output stream
+ * @param dsr The DsrOptionSRHeader
+ * @return The stream
+ */
 [[maybe_unused]] static inline std::ostream&
-operator<<(std::ostream& os, const DsrOptionSRHeader& sr)
+operator<<(std::ostream& os, const DsrOptionSRHeader& dsr)
 {
-    sr.Print(os);
+    dsr.Print(os);
     return os;
 }
 

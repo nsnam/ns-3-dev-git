@@ -75,10 +75,6 @@ UdpClient::GetTypeId()
                           UintegerValue(1024),
                           MakeUintegerAccessor(&UdpClient::m_size),
                           MakeUintegerChecker<uint32_t>(12, 65507))
-            .AddTraceSource("Tx",
-                            "A new packet is created and sent",
-                            MakeTraceSourceAccessor(&UdpClient::m_txTrace),
-                            "ns3::Packet::TracedCallback")
             .AddTraceSource("TxWithAddresses",
                             "A new packet is created and sent",
                             MakeTraceSourceAccessor(&UdpClient::m_txTraceWithAddresses),
@@ -87,13 +83,10 @@ UdpClient::GetTypeId()
 }
 
 UdpClient::UdpClient()
-    : m_sent{0},
-      m_totalTx{0},
-      m_socket{nullptr},
-      m_peerPort{},
-      m_sendEvent{}
+    : SourceApplication(false)
 {
     NS_LOG_FUNCTION(this);
+    m_protocolTid = TypeId::LookupByName("ns3::UdpSocketFactory");
 }
 
 UdpClient::~UdpClient()
@@ -164,53 +157,11 @@ UdpClient::GetPort() const
 }
 
 void
-UdpClient::StartApplication()
+UdpClient::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (!m_socket)
-    {
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket = Socket::CreateSocket(GetNode(), tid);
-        NS_ABORT_MSG_IF(m_peer.IsInvalid(), "Remote address not properly set");
-        if (!m_local.IsInvalid())
-        {
-            NS_ABORT_MSG_IF((Inet6SocketAddress::IsMatchingType(m_peer) &&
-                             InetSocketAddress::IsMatchingType(m_local)) ||
-                                (InetSocketAddress::IsMatchingType(m_peer) &&
-                                 Inet6SocketAddress::IsMatchingType(m_local)),
-                            "Incompatible peer and local address IP version");
-            if (m_socket->Bind(m_local) == -1)
-            {
-                NS_FATAL_ERROR("Failed to bind socket");
-            }
-        }
-        else
-        {
-            if (InetSocketAddress::IsMatchingType(m_peer))
-            {
-                if (m_socket->Bind() == -1)
-                {
-                    NS_FATAL_ERROR("Failed to bind socket");
-                }
-            }
-            else if (Inet6SocketAddress::IsMatchingType(m_peer))
-            {
-                if (m_socket->Bind6() == -1)
-                {
-                    NS_FATAL_ERROR("Failed to bind socket");
-                }
-            }
-            else
-            {
-                NS_ASSERT_MSG(false, "Incompatible address type: " << m_peer);
-            }
-        }
-        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        m_socket->Connect(m_peer);
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-        m_socket->SetAllowBroadcast(true);
-    }
+    m_socket->SetAllowBroadcast(true);
 
 #ifdef NS3_LOG_ENABLE
     std::stringstream peerAddressStringStream;
@@ -228,14 +179,7 @@ UdpClient::StartApplication()
     m_peerString = peerAddressStringStream.str();
 #endif // NS3_LOG_ENABLE
 
-    m_sendEvent = Simulator::Schedule(Seconds(0), &UdpClient::Send, this);
-}
-
-void
-UdpClient::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-    Simulator::Cancel(m_sendEvent);
+    m_sendEvent = Simulator::ScheduleNow(&UdpClient::Send, this);
 }
 
 void
@@ -279,6 +223,13 @@ UdpClient::Send()
     {
         m_sendEvent = Simulator::Schedule(m_interval, &UdpClient::Send, this);
     }
+}
+
+void
+UdpClient::CancelEvents()
+{
+    NS_LOG_FUNCTION(this);
+    Simulator::Cancel(m_sendEvent);
 }
 
 uint64_t

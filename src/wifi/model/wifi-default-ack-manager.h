@@ -11,6 +11,8 @@
 
 #include "wifi-ack-manager.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -22,7 +24,7 @@ class WifiMpdu;
  *
  * WifiDefaultAckManager is the default ack manager.
  */
-class WifiDefaultAckManager : public WifiAckManager
+class WIFI_EXPORT WifiDefaultAckManager : public WifiAckManager
 {
   public:
     /**

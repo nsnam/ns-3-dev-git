@@ -24,6 +24,7 @@ SOURCES = \
 	source/hash-functions.rst \
 	source/helpers.rst \
 	source/how-to-write-tests.rst \
+	source/json.rst \
 	source/logging-asserts.rst \
 	source/new-models.rst \
 	source/new-modules.rst \

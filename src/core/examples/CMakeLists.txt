@@ -4,6 +4,7 @@ set(base_examples
     fatal-example
     hash-example
     length-example
+    log-line-test-example
     main-callback
     main-ptr
     sample-log-time-format
@@ -12,7 +13,9 @@ set(base_examples
     sample-show-progress
     sample-simulator
     system-path-examples
+    templated-classes
     test-string-value-formatting
+    timespan-example
 )
 
 foreach(

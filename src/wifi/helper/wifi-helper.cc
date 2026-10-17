@@ -10,6 +10,7 @@
 
 #include "wifi-helper.h"
 
+#include "ns3/adhoc-wifi-mac.h"
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/config.h"
@@ -167,7 +168,7 @@ AsciiPhyReceiveSinkWithoutContext(Ptr<OutputStreamWrapper> stream,
 }
 
 WifiPhyHelper::WifiPhyHelper(uint8_t nLinks)
-    : m_pcapDlt{PcapHelper::DLT_IEEE802_11},
+    : m_pcapDlt{iana::linktype::IEEE802_11},
       m_pcapType{PcapCaptureType::PCAP_PER_PHY}
 {
     NS_ABORT_IF(nLinks == 0);
@@ -270,14 +271,14 @@ WifiPhyHelper::PcapSniffTxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     switch (info->pcapDlt)
     {
-    case PcapHelper::DLT_IEEE802_11:
+    case iana::linktype::IEEE802_11:
         file->Write(Simulator::Now(), packet);
         return;
-    case PcapHelper::DLT_PRISM_HEADER: {
+    case iana::linktype::IEEE802_11_PRISM: {
         NS_FATAL_ERROR("PcapSniffTxEvent(): DLT_PRISM_HEADER not implemented");
         return;
     }
-    case PcapHelper::DLT_IEEE802_11_RADIO: {
+    case iana::linktype::IEEE802_11_RADIOTAP: {
         Ptr<Packet> p = packet->Copy();
         const auto header = GetRadiotapHeader(p,
                                               channelFreqMhz,
@@ -311,14 +312,14 @@ WifiPhyHelper::PcapSniffRxEvent(const std::shared_ptr<PcapFilesInfo>& info,
     }
     switch (info->pcapDlt)
     {
-    case PcapHelper::DLT_IEEE802_11:
+    case iana::linktype::IEEE802_11:
         file->Write(Simulator::Now(), packet);
         return;
-    case PcapHelper::DLT_PRISM_HEADER: {
+    case iana::linktype::IEEE802_11_PRISM: {
         NS_FATAL_ERROR("PcapSniffRxEvent(): DLT_PRISM_HEADER not implemented");
         return;
     }
-    case PcapHelper::DLT_IEEE802_11_RADIO: {
+    case iana::linktype::IEEE802_11_RADIOTAP: {
         Ptr<Packet> p = packet->Copy();
         const auto header = GetRadiotapHeader(p,
                                               channelFreqMhz,
@@ -353,12 +354,6 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
     const auto gi = txVector.GetGuardInterval();
 
     header.SetWifiHeader(IsEht(preamble) ? 2 : 1);
-
-    if (signalNoise)
-    {
-        header.SetAntennaSignalPower(signalNoise->signal);
-        header.SetAntennaNoisePower(signalNoise->noise);
-    }
 
     header.SetTsft(Simulator::Now().GetMicroSeconds());
 
@@ -411,6 +406,12 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         channelFields.flags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ;
     }
     header.SetChannelFields(channelFields);
+
+    if (signalNoise)
+    {
+        header.SetAntennaSignalPower(signalNoise->signal);
+        header.SetAntennaNoisePower(signalNoise->noise);
+    }
 
     if (modClass == WIFI_MOD_CLASS_HT)
     {
@@ -609,6 +610,7 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
         header.SetHeMuOtherUserFields(heMuOtherUserFields);
     }
 
+    const auto isLowP80 = p20Index < (channelWidth / 40);
     if (IsEht(preamble))
     {
         RadiotapHeader::UsigFields usigFields{};
@@ -772,7 +774,6 @@ WifiPhyHelper::GetRadiotapHeader(Ptr<Packet> packet,
                 RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_2_KNOWN |
                 GetRadiotapField(RadiotapHeader::EHT_DATA4_RU_ALLOC_CC_2_2_2, ruAllocation.at(7));
             ehtFields.known |= RadiotapHeader::EHT_KNOWN_PRIMARY_80;
-            const auto isLowP80 = p20Index < (channelWidth / MHz_u{40});
             ehtFields.data.at(1) |=
                 GetRadiotapField(RadiotapHeader::EHT_DATA1_PRIMARY_80,
                                  (isLowP80 ? RadiotapHeader::EHT_DATA1_PRIMARY_80_LOWEST
@@ -820,20 +821,20 @@ WifiPhyHelper::SetPcapDataLinkType(SupportedPcapDataLinkTypes dlt)
     switch (dlt)
     {
     case DLT_IEEE802_11:
-        m_pcapDlt = PcapHelper::DLT_IEEE802_11;
+        m_pcapDlt = iana::linktype::IEEE802_11;
         return;
     case DLT_PRISM_HEADER:
-        m_pcapDlt = PcapHelper::DLT_PRISM_HEADER;
+        m_pcapDlt = iana::linktype::IEEE802_11_PRISM;
         return;
     case DLT_IEEE802_11_RADIO:
-        m_pcapDlt = PcapHelper::DLT_IEEE802_11_RADIO;
+        m_pcapDlt = iana::linktype::IEEE802_11_RADIOTAP;
         return;
     default:
         NS_ABORT_MSG("WifiPhyHelper::SetPcapFormat(): Unexpected format");
     }
 }
 
-PcapHelper::DataLinkType
+uint16_t
 WifiPhyHelper::GetPcapDataLinkType() const
 {
     return m_pcapDlt;
@@ -1223,6 +1224,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("ConstantRateWifiManager", logLevel);
     LogComponentEnable("DefaultApEmlsrManager", logLevel);
     LogComponentEnable("DefaultEmlsrManager", logLevel);
+    LogComponentEnable("DefaultPowerSaveManager", logLevel);
     LogComponentEnable("DsssErrorRateModel", logLevel);
     LogComponentEnable("DsssPhy", logLevel);
     LogComponentEnable("DsssPpdu", logLevel);
@@ -1259,6 +1261,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("OriginatorBlockAckAgreement", logLevel);
     LogComponentEnable("ParfWifiManager", logLevel);
     LogComponentEnable("PhyEntity", logLevel);
+    LogComponentEnable("PowerSaveManager", logLevel);
     LogComponentEnable("QosFrameExchangeManager", logLevel);
     LogComponentEnable("QosTxop", logLevel);
     LogComponentEnable("RecipientBlockAckAgreement", logLevel);
@@ -1285,6 +1288,7 @@ WifiHelper::EnableLogComponents(LogLevel logLevel)
     LogComponentEnable("WifiDefaultProtectionManager", logLevel);
     LogComponentEnable("WifiMac", logLevel);
     LogComponentEnable("WifiMacQueue", logLevel);
+    LogComponentEnable("WifiMacQueueScheduler", logLevel);
     LogComponentEnable("WifiMpdu", logLevel);
     LogComponentEnable("WifiNetDevice", logLevel);
     LogComponentEnable("WifiPhyStateHelper", logLevel);
@@ -1366,6 +1370,11 @@ WifiHelper::AssignStreams(NetDeviceContainer c, int64_t stream)
             if (auto apMac = DynamicCast<ApWifiMac>(mac); apMac)
             {
                 currentStream += apMac->AssignStreams(currentStream);
+            }
+            // if an IBSS STA, handle any beacon jitter
+            if (auto adhocMac = DynamicCast<AdhocWifiMac>(mac); adhocMac)
+            {
+                currentStream += adhocMac->AssignStreams(currentStream);
             }
             // if a STA, handle any probe request jitter
             if (auto staMac = DynamicCast<StaWifiMac>(mac); staMac)

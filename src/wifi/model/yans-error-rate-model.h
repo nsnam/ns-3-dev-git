@@ -11,6 +11,8 @@
 
 #include "error-rate-model.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -39,7 +41,7 @@ namespace ns3
  *    - More detailed description and validation can be found in
  *      http://www.nsnam.org/~pei/80211b.pdf
  */
-class YansErrorRateModel : public ErrorRateModel
+class WIFI_EXPORT YansErrorRateModel : public ErrorRateModel
 {
   public:
     /**

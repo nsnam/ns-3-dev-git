@@ -42,14 +42,14 @@ StatusCode::GetSerializedSize() const
 Buffer::Iterator
 StatusCode::Serialize(Buffer::Iterator start) const
 {
-    start.WriteHtolsbU16(m_code);
+    start.WriteU16(m_code);
     return start;
 }
 
 Buffer::Iterator
 StatusCode::Deserialize(Buffer::Iterator start)
 {
-    m_code = start.ReadLsbtohU16();
+    m_code = start.ReadU16();
     return start;
 }
 

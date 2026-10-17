@@ -109,6 +109,10 @@ OrphanIndication(Ptr<LrWpanNetDevice> device, MlmeOrphanIndicationParams params)
 int
 main(int argc, char* argv[])
 {
+    // CommandLine options required by PyViz visualizer
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
+
     LogComponentEnableAll(LogLevel(LOG_PREFIX_TIME | LOG_PREFIX_FUNC));
 
     // Create 2 PAN coordinator nodes, and 1 end device
@@ -146,12 +150,12 @@ main(int argc, char* argv[])
     Ptr<ConstantPositionMobilityModel> coord1Mobility =
         CreateObject<ConstantPositionMobilityModel>();
     coord1Mobility->SetPosition(Vector(0, 0, 0));
-    coord1NetDevice->GetPhy()->SetMobility(coord1Mobility);
+    coord1->AggregateObject(coord1Mobility);
 
     Ptr<ConstantPositionMobilityModel> endNodeMobility =
         CreateObject<ConstantPositionMobilityModel>();
     endNodeMobility->SetPosition(Vector(100, 0, 0));
-    endNodeNetDevice->GetPhy()->SetMobility(endNodeMobility);
+    endNode->AggregateObject(endNodeMobility);
 
     // MAC layer Callbacks hooks
     endNodeNetDevice->GetMac()->SetMlmeScanConfirmCallback(

@@ -477,7 +477,7 @@ OfdmPhy::GetOfdmRate(uint64_t rate, MHz_u bw)
         }
         break;
     default:
-        NS_ABORT_MSG("Inexistent bandwidth (" << +bw << " MHz) requested for 11a OFDM");
+        NS_ABORT_MSG("Inexistent bandwidth (" << bw << " MHz) requested for 11a OFDM");
         return WifiMode();
     }
 }
@@ -650,7 +650,7 @@ OfdmPhy::IsAllowed(const WifiTxVector& /*txVector*/)
 uint32_t
 OfdmPhy::GetMaxPsduSize() const
 {
-    return 4095;
+    return WIFI_PSDU_MAX_LENGTH;
 }
 
 MHz_u

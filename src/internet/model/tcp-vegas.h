@@ -122,7 +122,6 @@ class TcpVegas : public TcpNewReno
 
     Ptr<TcpCongestionOps> Fork() override;
 
-  protected:
   private:
     /**
      * @brief Enable Vegas algorithm to start taking Vegas samples

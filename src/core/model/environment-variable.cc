@@ -10,10 +10,8 @@
 
 #include "string.h"
 
-#include <cstdlib>  // std::getenv
-#include <cstdlib>  // Global functions setenv, unsetenv
-#include <cstring>  // strlen
-#include <iostream> // clog
+#include <cstdlib> // Global functions std::getenv, setenv, unsetenv
+#include <cstring> // strlen
 
 /**
  * @file

@@ -286,6 +286,12 @@ UniformPlanarArray::GetElementLocation(uint64_t index) const
     return loc;
 }
 
+std::pair<double, double>
+UniformPlanarArray::GetApertures() const
+{
+    return {m_disH * (m_numColumns - 1.0), m_disV * (m_numRows - 1.0)};
+}
+
 uint8_t
 UniformPlanarArray::GetNumPols() const
 {

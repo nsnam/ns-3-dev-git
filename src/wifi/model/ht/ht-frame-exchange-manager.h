@@ -12,6 +12,7 @@
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/msdu-aggregator.h"
 #include "ns3/qos-frame-exchange-manager.h"
+#include "ns3/wifi-export.h"
 
 class AmpduAggregationTest;
 
@@ -27,7 +28,7 @@ class RecipientBlockAckAgreement;
  * HtFrameExchangeManager handles the frame exchange sequences
  * for HT stations.
  */
-class HtFrameExchangeManager : public QosFrameExchangeManager
+class WIFI_EXPORT HtFrameExchangeManager : public QosFrameExchangeManager
 {
   public:
     /// allow AmpduAggregationTest class access
@@ -41,7 +42,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     HtFrameExchangeManager();
     ~HtFrameExchangeManager() override;
 
-    bool StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
+    bool StartFrameExchange() override;
     void SetWifiMac(const Ptr<WifiMac> mac) override;
     void CalculateAcknowledgmentTime(WifiAcknowledgment* acknowledgment) const override;
 
@@ -61,8 +62,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     /**
      * Check if the PSDU obtained by aggregating the given MPDU to the PSDU specified
      * by the given TX parameters meets the constraints on the maximum A-MPDU size
-     * and its transmission time does not exceed the given PPDU duration limit (if
-     * different than Time::Min()).
+     * and its transmission time does not exceed the given PPDU duration limit.
      *
      * @param mpdu the given MPDU
      * @param txParams the TX parameters
@@ -71,7 +71,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      */
     bool IsWithinLimitsIfAddMpdu(Ptr<const WifiMpdu> mpdu,
                                  const WifiTxParameters& txParams,
-                                 Time ppduDurationLimit) const override;
+                                 const std::optional<Time>& ppduDurationLimit) const override;
 
     /**
      * Check whether an A-MPDU of the given size meets the constraint on the maximum
@@ -98,14 +98,13 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      *
      * @param msdu the given MSDU
      * @param txParams the TX parameters
-     * @param availableTime the constraint on the TX time of the PSDU, if different
-     *        than Time::Min()
+     * @param availableTime the constraint (if any) on the TX time of the PSDU
      * @return true if aggregating an MSDU to the current PSDU does not violate the
      *         size and time constraints
      */
     virtual bool TryAggregateMsdu(Ptr<const WifiMpdu> msdu,
                                   WifiTxParameters& txParams,
-                                  Time availableTime) const;
+                                  const std::optional<Time>& availableTime) const;
 
     /**
      * Check if the PSDU obtained by aggregating the given MSDU to the PSDU specified
@@ -115,12 +114,12 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      *
      * @param msdu the given MSDU
      * @param txParams the TX parameters
-     * @param ppduDurationLimit the constraint on the PPDU transmission time
+     * @param ppduDurationLimit the constraint (if any) on the PPDU transmission time
      * @return true if the size and time constraints are met, false otherwise
      */
     virtual bool IsWithinLimitsIfAggregateMsdu(Ptr<const WifiMpdu> msdu,
                                                const WifiTxParameters& txParams,
-                                               Time ppduDurationLimit) const;
+                                               const std::optional<Time>& ppduDurationLimit) const;
 
     /**
      * This method can be called to accept a received ADDBA Request. An
@@ -157,8 +156,19 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @return the next BAR or Trigger Frame to be sent, if any
      */
     Ptr<WifiMpdu> GetBar(AcIndex ac,
-                         std::optional<uint8_t> optTid = std::nullopt,
+                         std::optional<tid_t> optTid = std::nullopt,
                          std::optional<Mac48Address> optAddress = std::nullopt);
+
+    /**
+     * Check if a BlockAckReq to the given recipient for the given TID can be transmitted on this
+     * link.
+     *
+     * @param recipient the (MLD or link) address of the given recipient
+     * @param tid the given TID
+     * @return whether a BlockAckReq to the given recipient for the given TID can be transmitted on
+     *         this link
+     */
+    virtual bool CanTransmitBarTo(Mac48Address recipient, tid_t tid) const;
 
     /**
      * Get a PSDU containing the given MPDU
@@ -171,7 +181,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
 
   protected:
     void DoDispose() override;
-
+    void Reset() override;
     void ReceiveMpdu(Ptr<const WifiMpdu> mpdu,
                      RxSignalInfo rxSignalInfo,
                      const WifiTxVector& txVector,
@@ -190,6 +200,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
     void TransmissionSucceeded() override;
     void ProtectionCompleted() override;
     void NotifyLastGcrUrTx(Ptr<const WifiMpdu> mpdu) override;
+    bool SendBufferedUnit(Mac48Address sender) override;
 
     /**
      * Process a received management action frame that relates to Block Ack agreement.
@@ -253,18 +264,23 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
 
     /**
      * If the given MPDU contains a BlockAckReq frame (the duration of which plus the response
-     * fits within the given available time, if the latter is not Time::Min() and this is not
-     * the initial frame of a TXOP), transmit the frame and return true. Otherwise, return false.
+     * fits within the given limit (if any) on the available time), transmit the frame and return
+     * true. Otherwise, return false.
      *
      * @param mpdu the given MPDU
-     * @param availableTime the amount of time allowed for the frame exchange. Equals
-     *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
+     * @param availableTime the limit (if any) on the amount of time allowed for the frame exchange
      * @return true if frame is transmitted, false otherwise
      */
-    virtual bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu, Time availableTime, bool initialFrame);
+    virtual bool SendMpduFromBaManager(Ptr<WifiMpdu> mpdu,
+                                       const std::optional<Time>& availableTime);
+
+    /**
+     * Get the TXVECTOR to use to send a BlockAckReq to the given recipient.
+     *
+     * @param to the MAC address of the given recipient
+     * @return the TXVECTOR to use to send a BlockAckReq to the given recipient
+     */
+    virtual WifiTxVector GetBlockAckReqTxVector(Mac48Address to) const;
 
     /**
      * Given a non-broadcast QoS data frame, prepare the PSDU to transmit by attempting
@@ -273,23 +289,18 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * the given available time.
      *
      * @param peekedItem the given non-broadcast QoS data frame
-     * @param availableTime the amount of time allowed for the frame exchange. Equals
-     *                      Time::Min() in case the TXOP limit is null
-     * @param initialFrame true if the frame being transmitted is the initial frame
-     *                     of the TXOP. This is used to determine whether the TXOP
-     *                     limit can be exceeded
+     * @param availableTime the limit (if any) on the amount of time allowed for the frame exchange
      * @return true if frame is transmitted, false otherwise
      */
-    virtual bool SendDataFrame(Ptr<WifiMpdu> peekedItem, Time availableTime, bool initialFrame);
+    virtual bool SendDataFrame(Ptr<WifiMpdu> peekedItem, const std::optional<Time>& availableTime);
 
     /**
      * Retrieve the starting sequence number for a BA agreement to be established.
      *
-     * @param header the MAC header of the next data packet selected for transmission once the BA
-     * agreement is established. \return the starting sequence number for a BA agreement to be
-     * established
+     * @param mpdu the next MPDU selected for transmission once the BA agreement is established
+     * @return the starting sequence number for a BA agreement to be established
      */
-    uint16_t GetBaAgreementStartingSequenceNumber(const WifiMacHeader& header);
+    uint16_t GetBaAgreementStartingSequenceNumber(Ptr<const WifiMpdu> mpdu);
 
     /**
      * A Block Ack agreement needs to be established with the given recipient for the
@@ -329,8 +340,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
      * @param startingSeq the BA agreement starting sequence number
      * @param timeout timeout value.
      * @param immediateBAck flag to indicate whether immediate BlockAck is used.
-     * @param availableTime the amount of time allowed for the frame exchange. Equals
-     *                      Time::Min() in case the TXOP limit is null
+     * @param availableTime the limit (if any) on the amount of time allowed for the frame exchange
      * @param gcrGroupAddr the GCR Group Address (only if the Block Ack agreement is being
      *                     set up for the GCR service)
      * @return true if ADDBA Request frame is transmitted, false otherwise
@@ -340,7 +350,7 @@ class HtFrameExchangeManager : public QosFrameExchangeManager
                           uint16_t startingSeq,
                           uint16_t timeout,
                           bool immediateBAck,
-                          Time availableTime,
+                          const std::optional<Time>& availableTime,
                           std::optional<Mac48Address> gcrGroupAddr = std::nullopt);
 
     /**

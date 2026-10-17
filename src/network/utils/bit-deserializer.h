@@ -19,7 +19,7 @@ namespace ns3
 /**
  * @ingroup packet
  *
- * @brief Bit deserializer. See also \sa ns3::BitSerializer
+ * @brief Bit deserializer. See also @sa ns3::BitSerializer
  *
  * This class helps converting a variable number, variable sized
  * number of bit-boundary fields stored as byte array representation

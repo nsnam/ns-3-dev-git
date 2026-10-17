@@ -35,7 +35,7 @@ operator<(const RadioBearerStatsConnector::CellIdRnti& a,
  * and provides calculators with cellId and IMSI,
  * because most trace sources do not provide it.
  */
-struct BoundCallbackArgument : public SimpleRefCount<BoundCallbackArgument>
+struct BoundCallbackArgument
 {
   public:
     Ptr<RadioBearerStatsCalculator> stats; //!< statistics calculator
@@ -52,7 +52,7 @@ struct BoundCallbackArgument : public SimpleRefCount<BoundCallbackArgument>
  * @param packetSize
  */
 void
-DlTxPduCallback(Ptr<BoundCallbackArgument> arg,
+DlTxPduCallback(std::shared_ptr<BoundCallbackArgument> arg,
                 std::string path,
                 uint16_t rnti,
                 uint8_t lcid,
@@ -72,7 +72,7 @@ DlTxPduCallback(Ptr<BoundCallbackArgument> arg,
  * @param delay
  */
 void
-DlRxPduCallback(Ptr<BoundCallbackArgument> arg,
+DlRxPduCallback(std::shared_ptr<BoundCallbackArgument> arg,
                 std::string path,
                 uint16_t rnti,
                 uint8_t lcid,
@@ -92,7 +92,7 @@ DlRxPduCallback(Ptr<BoundCallbackArgument> arg,
  * @param packetSize
  */
 void
-UlTxPduCallback(Ptr<BoundCallbackArgument> arg,
+UlTxPduCallback(std::shared_ptr<BoundCallbackArgument> arg,
                 std::string path,
                 uint16_t rnti,
                 uint8_t lcid,
@@ -112,7 +112,7 @@ UlTxPduCallback(Ptr<BoundCallbackArgument> arg,
  * @param delay
  */
 void
-UlRxPduCallback(Ptr<BoundCallbackArgument> arg,
+UlRxPduCallback(std::shared_ptr<BoundCallbackArgument> arg,
                 std::string path,
                 uint16_t rnti,
                 uint8_t lcid,
@@ -255,7 +255,7 @@ RadioBearerStatsConnector::ConnectTracesSrb0(std::string context,
     NS_LOG_LOGIC("ueManagerPath = " << ueManagerPath);
     if (m_rlcStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_rlcStats;
@@ -286,7 +286,7 @@ RadioBearerStatsConnector::ConnectTracesSrb1(std::string context,
     NS_LOG_LOGIC("ueManagerPath = " << ueManagerPath);
     if (m_rlcStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_rlcStats;
@@ -299,7 +299,7 @@ RadioBearerStatsConnector::ConnectTracesSrb1(std::string context,
     }
     if (m_pdcpStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_pdcpStats;
@@ -329,7 +329,7 @@ RadioBearerStatsConnector::ConnectTracesDrbEnb(std::string context,
     NS_LOG_LOGIC("basePath = " << basePath);
     if (m_rlcStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_rlcStats;
@@ -338,7 +338,7 @@ RadioBearerStatsConnector::ConnectTracesDrbEnb(std::string context,
     }
     if (m_pdcpStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_pdcpStats;
@@ -368,7 +368,7 @@ RadioBearerStatsConnector::ConnectTracesDrbUe(std::string context,
     NS_LOG_LOGIC("basePath = " << basePath);
     if (m_rlcStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_rlcStats;
@@ -377,7 +377,7 @@ RadioBearerStatsConnector::ConnectTracesDrbUe(std::string context,
     }
     if (m_pdcpStats)
     {
-        Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument>();
+        auto arg = std::make_shared<BoundCallbackArgument>();
         arg->imsi = imsi;
         arg->cellId = cellId;
         arg->stats = m_pdcpStats;

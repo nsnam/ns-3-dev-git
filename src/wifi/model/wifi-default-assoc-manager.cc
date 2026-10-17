@@ -50,6 +50,15 @@ WifiDefaultAssocManager::GetTypeId()
                 "equal or lower than that channel width.",
                 BooleanValue(false),
                 MakeBooleanAccessor(&WifiDefaultAssocManager::m_skipAssocIncompatibleChannelWidth),
+                MakeBooleanChecker())
+            .AddAttribute(
+                "SkipScanningIfApInfoAvail",
+                "If this attribute is set to true, any existing AP information (gathered "
+                "from previous scanning) can be used instead of starting a new scanning "
+                "procedure. If this attribute is set to false, existing AP information "
+                "is disregarded and a new scanning procedure is started when requested.",
+                BooleanValue(true),
+                MakeBooleanAccessor(&WifiDefaultAssocManager::m_skipScanningIfApInfoAvail),
                 MakeBooleanChecker());
     return tid;
 }
@@ -85,13 +94,14 @@ WifiDefaultAssocManager::DoStartScanning()
     NS_LOG_FUNCTION(this);
 
     // if there are entries in the sorted list of AP information, reuse them and
-    // do not perform scanning
-    if (!GetSortedList().empty())
+    // do not perform scanning if SkipScanningIfApInfoAvail is set to true
+    if (m_skipScanningIfApInfoAvail && !GetSortedList().empty())
     {
         Simulator::ScheduleNow(&WifiDefaultAssocManager::EndScanning, this);
         return;
     }
 
+    const_cast<SortedList&>(GetSortedList()).clear();
     m_probeRequestEvent.Cancel();
     m_waitBeaconEvent.Cancel();
 
@@ -148,7 +158,7 @@ WifiDefaultAssocManager::EndScanning()
     // then radios with no constraint
     std::list<uint8_t> localLinkIds;
 
-    for (uint8_t linkId = 0; linkId < m_mac->GetNLinks(); linkId++)
+    for (const auto linkId : m_mac->GetLinkIds())
     {
         if (linkId == bestAp.m_linkId)
         {
@@ -300,8 +310,7 @@ WifiDefaultAssocManager::ChannelSwitchTimeout(uint8_t linkId)
 bool
 WifiDefaultAssocManager::CanBeInserted(const StaWifiMac::ApInfo& apInfo) const
 {
-    return ((m_waitBeaconEvent.IsPending() || m_probeRequestEvent.IsPending()) &&
-            (!m_skipAssocIncompatibleChannelWidth || IsChannelWidthCompatible(apInfo)));
+    return (!m_skipAssocIncompatibleChannelWidth || IsChannelWidthCompatible(apInfo));
 }
 
 bool

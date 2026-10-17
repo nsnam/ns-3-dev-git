@@ -22,6 +22,7 @@
 #include "ns3/test.h"
 #include "ns3/tuple.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/wifi-ns3-constants.h"
 #include "ns3/wifi-psdu.h"
 
 #include <algorithm>
@@ -380,7 +381,7 @@ WifiPrimaryChannelsTest::DoSetup()
                 "MaxMissedBeacons",
                 UintegerValue(20),
                 "WaitBeaconTimeout",
-                TimeValue(MicroSeconds(102400))); // same as BeaconInterval
+                TimeValue(DEFAULT_BEACON_INTERVAL())); // same as BeaconInterval
 
     WifiPhy::ChannelSettingsValue channelValue;
 
@@ -404,7 +405,7 @@ WifiPrimaryChannelsTest::DoSetup()
                     "Ssid",
                     SsidValue(Ssid("wifi-ssid-" + std::to_string(bss))),
                     "BeaconInterval",
-                    TimeValue(MicroSeconds(102400)),
+                    TimeValue(DEFAULT_BEACON_INTERVAL()),
                     "EnableBeaconJitter",
                     BooleanValue(false));
 
@@ -459,7 +460,7 @@ WifiPrimaryChannelsTest::DoSetup()
     pkt->AddHeader(trigger);
 
     m_triggerTxVector = WifiTxVector(OfdmPhy::GetOfdmRate6Mbps(),
-                                     0,
+                                     WIFI_MIN_TX_PWR_LEVEL,
                                      WIFI_PREAMBLE_LONG,
                                      NanoSeconds(800),
                                      1,
@@ -493,7 +494,7 @@ WifiPrimaryChannelsTest::DoRun()
         for (uint16_t i = 1; i < m_nStationsPerBss; i++)
         {
             dev = DynamicCast<WifiNetDevice>(m_staDevices[bss].Get(i));
-            Simulator::Schedule(i * MicroSeconds(102400),
+            Simulator::Schedule(i * DEFAULT_BEACON_INTERVAL(),
                                 &WifiMac::SetSsid,
                                 dev->GetMac(),
                                 Ssid("wifi-ssid-" + std::to_string(bss)));
@@ -507,13 +508,13 @@ WifiPrimaryChannelsTest::DoRun()
         dev = DynamicCast<WifiNetDevice>(m_apDevices.Get(bss));
         auto mac = DynamicCast<ApWifiMac>(dev->GetMac());
 
-        Simulator::Schedule((m_nStationsPerBss - 1) * MicroSeconds(102400),
+        Simulator::Schedule((m_nStationsPerBss - 1) * DEFAULT_BEACON_INTERVAL(),
                             &ApWifiMac::SetBeaconInterval,
                             mac,
                             MicroSeconds(1024 * 65535));
     }
 
-    m_time = (m_nStationsPerBss + 1) * MicroSeconds(102400);
+    m_time = (m_nStationsPerBss + 1) * DEFAULT_BEACON_INTERVAL();
 
     Simulator::Schedule(m_time, &WifiPrimaryChannelsTest::CheckAssociation, this);
 
@@ -768,7 +769,7 @@ WifiPrimaryChannelsTest::SendDlSuPpdu(uint8_t bss, MHz_u txChannelWidth)
     uint8_t bssColor = apDev->GetHeConfiguration()->m_bssColor;
     auto txVector = WifiTxVector(
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_SU : WIFI_PREAMBLE_EHT_MU,
         NanoSeconds(800),
         1,
@@ -805,7 +806,7 @@ WifiPrimaryChannelsTest::SendDlMuPpdu(uint8_t bss,
 
     auto txVector = WifiTxVector(
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_MU : WIFI_PREAMBLE_EHT_MU,
         NanoSeconds(800),
         1,
@@ -934,7 +935,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
     uint16_t length = 0;
     WifiTxVector trigVector(
         (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-        0,
+        WIFI_MIN_TX_PWR_LEVEL,
         (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
         NanoSeconds(3200),
         1,
@@ -1002,7 +1003,7 @@ WifiPrimaryChannelsTest::DoSendHeTbPpdu(uint8_t bss,
         const auto staId = DynamicCast<StaWifiMac>(staDev->GetMac())->GetAssociationId();
         WifiTxVector txVector(
             (m_standard == WIFI_STANDARD_80211ax) ? HePhy::GetHeMcs8() : EhtPhy::GetEhtMcs8(),
-            0,
+            WIFI_MIN_TX_PWR_LEVEL,
             (m_standard == WIFI_STANDARD_80211ax) ? WIFI_PREAMBLE_HE_TB : WIFI_PREAMBLE_EHT_TB,
             NanoSeconds(3200),
             1,

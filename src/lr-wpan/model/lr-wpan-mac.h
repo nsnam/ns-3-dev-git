@@ -289,8 +289,10 @@ class LrWpanMac : public LrWpanMacBase
      * @param psduLength number of bytes in the PSDU
      * @param p the packet to be transmitted
      * @param lqi Link quality (LQI) value measured during reception of the PPDU
+     * @param rssi The received signal strength indicator measured during the reception of the
+     * packet. Supported by IEEE 802.15.4-2015 onwards.
      */
-    void PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi);
+    void PdDataIndication(uint32_t psduLength, Ptr<Packet> p, uint8_t lqi, int8_t rssi);
 
     /**
      * IEEE 802.15.4-2006 section 6.2.1.2
@@ -741,7 +743,7 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * Helper structure for managing transmission queue elements.
      */
-    struct TxQueueElement : public SimpleRefCount<TxQueueElement>
+    struct TxQueueElement
     {
         uint8_t txQMsduHandle; //!< MSDU Handle
         Ptr<Packet> txQPkt;    //!< Queued packet
@@ -750,7 +752,7 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * Helper structure for managing pending transaction list elements (Indirect transmissions).
      */
-    struct IndTxQueueElement : public SimpleRefCount<IndTxQueueElement>
+    struct IndTxQueueElement
     {
         uint8_t seqNum;               //!< The sequence number of  the queued packet
         Mac16Address dstShortAddress; //!< The destination short Mac Address
@@ -763,10 +765,12 @@ class LrWpanMac : public LrWpanMacBase
      * Process a frame when promiscuous mode is active.
      *
      * @param lqi The LQI value of the received packet
+     * @param rssi The receive signal strength indicator in dBm.
      * @param receivedMacHdr The reference to the received MAC header
      * @param p The packet containing the MAC payload
      */
     void ReceiveInPromiscuousMode(uint8_t lqi,
+                                  int8_t rssi,
                                   const LrWpanMacHeader& receivedMacHdr,
                                   Ptr<Packet> p);
 
@@ -889,10 +893,14 @@ class LrWpanMac : public LrWpanMacBase
      * Used to process the reception of data.
      *
      * @param lqi The value of the link quality indicator (LQI) of the received packet.
+     * @param rssi The received signal strength indicator in dBm.
      * @param receivedMacHdr The reference to the received MAC header.
      * @param p The packet containing the data payload.
      */
-    void ReceiveData(uint8_t lqi, const LrWpanMacHeader& receivedMacHdr, Ptr<Packet> p);
+    void ReceiveData(uint8_t lqi,
+                     int8_t rssi,
+                     const LrWpanMacHeader& receivedMacHdr,
+                     Ptr<Packet> p);
 
     /**
      * Used to process an acknowledgment packet.
@@ -922,7 +930,7 @@ class LrWpanMac : public LrWpanMacBase
      *
      * @param txQElement The element added to the Tx Queue.
      */
-    void EnqueueTxQElement(Ptr<TxQueueElement> txQElement);
+    void EnqueueTxQElement(std::shared_ptr<TxQueueElement> txQElement);
 
     /**
      * Remove the tip of the transmission queue, including clean up related to the
@@ -974,7 +982,7 @@ class LrWpanMac : public LrWpanMacBase
      * @param entry The dequeued element from the pending transaction list.
      * @return The status of the dequeue
      */
-    bool DequeueInd(Mac64Address dst, Ptr<IndTxQueueElement> entry);
+    bool DequeueInd(Mac64Address dst, std::shared_ptr<IndTxQueueElement> entry);
 
     /**
      * Purge expired transactions from the pending transactions list.
@@ -1229,13 +1237,13 @@ class LrWpanMac : public LrWpanMacBase
     /**
      * The transmit queue used by the MAC.
      */
-    std::deque<Ptr<TxQueueElement>> m_txQueue;
+    std::deque<std::shared_ptr<TxQueueElement>> m_txQueue;
 
     /**
      * The indirect transmit queue used by the MAC pending messages (The pending transaction
      * list).
      */
-    std::deque<Ptr<IndTxQueueElement>> m_indTxQueue;
+    std::deque<std::shared_ptr<IndTxQueueElement>> m_indTxQueue;
 
     /**
      * The maximum size of the transmit queue.

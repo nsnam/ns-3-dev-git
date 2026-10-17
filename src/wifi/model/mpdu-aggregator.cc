@@ -212,7 +212,7 @@ MpduAggregator::GetAmpduSubframeHeader(uint16_t mpduSize, bool isSingle)
 std::vector<Ptr<WifiMpdu>>
 MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                              WifiTxParameters& txParams,
-                             Time availableTime) const
+                             const std::optional<Time>& availableTime) const
 {
     NS_LOG_FUNCTION(this << *mpdu << &txParams << availableTime);
 
@@ -287,8 +287,7 @@ MpduAggregator::GetNextAmpdu(Ptr<WifiMpdu> mpdu,
                 // and duration limit are met. Note that the returned MPDU differs from
                 // the peeked MPDU if A-MSDU aggregation is enabled.
                 NS_LOG_DEBUG("Trying to aggregate another MPDU");
-                nextMpdu =
-                    qosTxop->GetNextMpdu(m_linkId, peekedMpdu, txParams, availableTime, false);
+                nextMpdu = qosTxop->GetNextMpdu(m_linkId, peekedMpdu, txParams, availableTime);
             }
         }
 

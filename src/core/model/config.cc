@@ -909,23 +909,19 @@ SetDefaultFailSafe(std::string fullName, const AttributeValue& value)
     {
         return false;
     }
+    // Resolve and write through the inheritance chain so attributes declared on
+    // a parent TypeId are recorded on the declaring TypeId. @see @issueid{147}
     TypeId::AttributeInformation info;
-    tid.LookupAttributeByName(paramName, &info);
-    for (uint32_t j = 0; j < tid.GetAttributeN(); j++)
+    if (!tid.LookupAttributeByName(paramName, &info))
     {
-        TypeId::AttributeInformation tmp = tid.GetAttribute(j);
-        if (tmp.name == paramName)
-        {
-            Ptr<AttributeValue> v = tmp.checker->CreateValidValue(value);
-            if (!v)
-            {
-                return false;
-            }
-            tid.SetAttributeInitialValue(j, v);
-            return true;
-        }
+        return false;
     }
-    return false;
+    Ptr<AttributeValue> v = info.checker->CreateValidValue(value);
+    if (!v)
+    {
+        return false;
+    }
+    return tid.SetAttributeInitialValue(paramName, v);
 }
 
 void

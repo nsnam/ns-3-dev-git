@@ -12,6 +12,7 @@
 #include "wifi-units.h"
 
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -22,7 +23,7 @@ namespace ns3
  * @brief Model the transmit current as a function of the transmit power and mode
  *
  */
-class WifiTxCurrentModel : public Object
+class WIFI_EXPORT WifiTxCurrentModel : public Object
 {
   public:
     /**
@@ -72,7 +73,7 @@ class WifiTxCurrentModel : public Object
  * \f$ \eta = \frac{P_{tx}}{(I_{tx}-I_{idle})\cdot V} \f$
  *
  */
-class LinearWifiTxCurrentModel : public WifiTxCurrentModel
+class WIFI_EXPORT LinearWifiTxCurrentModel : public WifiTxCurrentModel
 {
   public:
     /**

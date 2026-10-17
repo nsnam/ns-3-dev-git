@@ -134,7 +134,7 @@ MeshHeader::Serialize(Buffer::Iterator start) const
     Buffer::Iterator i = start;
     i.WriteU8(m_meshFlags);
     i.WriteU8(m_meshTtl);
-    i.WriteHtolsbU32(m_meshSeqno);
+    i.WriteU32(m_meshSeqno);
     uint8_t addresses_to_add = GetAddressExt();
     // Writing Address extensions:
     if ((addresses_to_add == 1) || (addresses_to_add == 3))
@@ -158,7 +158,7 @@ MeshHeader::Deserialize(Buffer::Iterator start)
     uint8_t addresses_to_read = 0;
     m_meshFlags = i.ReadU8();
     m_meshTtl = i.ReadU8();
-    m_meshSeqno = i.ReadLsbtohU32();
+    m_meshSeqno = i.ReadU32();
     addresses_to_read = m_meshFlags & 0x03;
     if ((addresses_to_read == 1) || (addresses_to_read == 3))
     {

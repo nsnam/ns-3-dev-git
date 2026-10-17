@@ -73,6 +73,9 @@ struct ObjectDeleter
  * all its aggregates. The DoDispose() method is always automatically
  * invoked from the Unref() method before destroying the Object,
  * even if the user did not call Dispose() directly.
+ *
+ * Inheritance graph was not generated because of its size.
+ * @hideinheritancegraph
  */
 class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
 {
@@ -130,7 +133,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
         std::vector<Ptr<Object>>::const_iterator m_uniAggrIter;
     };
 
-    /** Constructor. */
+    /** @hidecaller */
     Object();
     /** Destructor. */
     ~Object() override;
@@ -141,9 +144,10 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * Get a pointer to the requested aggregated Object.  If the type of object
      * requested is ns3::Object, a Ptr to the calling object is returned.
      *
-     * @tparam T \explicit The type of the aggregated Object to retrieve.
+     * @tparam T @explicit The type of the aggregated Object to retrieve.
      * @returns A pointer to the requested Object, or zero
      *          if it could not be found.
+     * @hidecaller
      */
     template <typename T>
     inline Ptr<T> GetObject() const;
@@ -151,10 +155,11 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * Get a pointer to the requested aggregated Object by TypeId.  If the
      * TypeId argument is ns3::Object, a Ptr to the calling object is returned.
      *
-     * @tparam T \explicit The type of the aggregated Object to retrieve.
+     * @tparam T @explicit The type of the aggregated Object to retrieve.
      * @param [in] tid The TypeId of the requested Object.
      * @returns A pointer to the requested Object with the specified TypeId,
      *          or zero if it could not be found.
+     * @hidecaller
      */
     template <typename T>
     Ptr<T> GetObject(TypeId tid) const;
@@ -186,7 +191,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * notify all aggregated Objects that they have been aggregated
      * together.
      *
-     * \sa NotifyNewAggregate()
+     * @sa NotifyNewAggregate()
      */
     void AggregateObject(Ptr<Object> other);
 
@@ -224,7 +229,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      *   - If B is forcefully destroyed, A1 and A2 are unaffected.
      *
      *
-     * \sa AggregateObject()
+     * @sa AggregateObject()
      */
     void UnidirectionalAggregateObject(Ptr<Object> other);
 
@@ -248,7 +253,7 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * the lifetime of an Object, just like DoDispose() is called only
      * once.
      *
-     * \sa DoInitialize()
+     * @sa DoInitialize()
      */
     void Initialize();
 
@@ -301,6 +306,8 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
      * DoDispose() method.
      *
      * It is safe to call GetObject() from within this method.
+     *
+     * @hidecaller
      */
     virtual void DoDispose();
     /**
@@ -329,24 +336,24 @@ class Object : public SimpleRefCount<Object, ObjectBase, ObjectDeleter>
     /**
      * Copy an Object.
      *
-     * @tparam T \deduced The type of the Object being copied.
+     * @tparam T @deduced The type of the Object being copied.
      * @param [in] object A pointer to the object to copy.
      * @returns A copy of the input object.
      *
      * This method invoke the copy constructor of the input object
      * and returns the new instance.
      */
-    /**@{*/
     template <typename T>
     friend Ptr<T> CopyObject(Ptr<T> object);
+
+    /** @copydoc CopyObject(Ptr<T>) */
     template <typename T>
     friend Ptr<T> CopyObject(Ptr<const T> object);
-    /**@}*/
 
     /**
      * Set the TypeId and construct all Attributes of an Object.
      *
-     * @tparam T \deduced The type of the Object to complete.
+     * @tparam T @deduced The type of the Object to complete.
      * @param [in] object The uninitialized object pointer.
      * @return The derived object.
      */
@@ -610,9 +617,10 @@ CompleteConstruct(T* object)
 /**
  * Create an object by type, with varying number of constructor parameters.
  *
- * @tparam T \explicit The type of the derived object to construct.
+ * @tparam T @explicit The type of the derived object to construct.
  * @param [in] args Arguments to pass to the constructor.
  * @return The derived object.
+ * @hidecaller
  */
 template <typename T, typename... Args>
 Ptr<T>

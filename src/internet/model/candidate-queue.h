@@ -9,7 +9,10 @@
 #ifndef CANDIDATE_QUEUE_H
 #define CANDIDATE_QUEUE_H
 
+#include "global-route-manager.h"
+
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 
 #include <list>
 #include <stdint.h>
@@ -17,7 +20,15 @@
 namespace ns3
 {
 
+template <typename T>
 class SPFVertex;
+
+template <typename>
+class CandidateQueue;
+
+// Forward declaration of operator<<
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const CandidateQueue<T>& q);
 
 /**
  * @ingroup globalrouting
@@ -38,8 +49,24 @@ class SPFVertex;
  * requirement for a Reorder () operation led us to implement this simple
  * enhanced priority queue.
  */
+template <typename T>
 class CandidateQueue
 {
+    static_assert(std::is_same_v<T, Ipv4Manager> || std::is_same_v<T, Ipv6Manager>,
+                  "T must be either Ipv4Manager or Ipv6Manager when calling CandidateQueue");
+
+    /// Alias for determining whether the parent is Ipv4RoutingProtocol or Ipv6RoutingProtocol
+    static constexpr bool IsIpv4 = std::is_same_v<Ipv4Manager, T>;
+
+    /// Alias for Ipv4Manager and Ipv6Manager classes
+    using IpManager = typename std::conditional_t<IsIpv4, Ipv4Manager, Ipv6Manager>;
+
+    /// Alias for Ipv4 and Ipv6 classes
+    using Ip = typename std::conditional_t<IsIpv4, Ipv4, Ipv6>;
+
+    /// Alias for Ipv4Address and Ipv6Address classes
+    using IpAddress = typename std::conditional_t<IsIpv4, Ipv4Address, Ipv6Address>;
+
   public:
     /**
      * @brief Create an empty SPF Candidate Queue.
@@ -80,7 +107,7 @@ class CandidateQueue
      * @see SPFVertex
      * @param vNew The Shortest Path First Vertex to add to the queue.
      */
-    void Push(SPFVertex* vNew);
+    void Push(SPFVertex<T>* vNew);
 
     /**
      * @brief Pop the Shortest Path First Vertex pointer at the top of the queue.
@@ -92,7 +119,7 @@ class CandidateQueue
      * @see Top ()
      * @returns The Shortest Path First Vertex pointer at the top of the queue.
      */
-    SPFVertex* Pop();
+    SPFVertex<T>* Pop();
 
     /**
      * @brief Return the Shortest Path First Vertex pointer at the top of the
@@ -105,7 +132,7 @@ class CandidateQueue
      * @see Pop ()
      * @returns The Shortest Path First Vertex pointer at the top of the queue.
      */
-    SPFVertex* Top() const;
+    SPFVertex<T>* Top() const;
 
     /**
      * @brief Test the Candidate Queue to determine if it is empty.
@@ -131,7 +158,7 @@ class CandidateQueue
      * @param addr The IP address to search for.
      * @returns The SPFVertex* pointer corresponding to the given IP address.
      */
-    SPFVertex* Find(const Ipv4Address addr) const;
+    SPFVertex<T>* Find(const IpAddress addr) const;
 
     /**
      * @brief Reorders the Candidate Queue according to the priority scheme.
@@ -160,10 +187,10 @@ class CandidateQueue
      * @param v2 second operand
      * @return True if v1 should be popped before v2; false otherwise
      */
-    static bool CompareSPFVertex(const SPFVertex* v1, const SPFVertex* v2);
+    static bool CompareSPFVertex(const SPFVertex<T>* v1, const SPFVertex<T>* v2);
 
-    typedef std::list<SPFVertex*> CandidateList_t; //!< container of SPFVertex pointers
-    CandidateList_t m_candidates;                  //!< SPFVertex candidates
+    typedef std::list<SPFVertex<T>*> CandidateList_t; //!< container of SPFVertex pointers
+    CandidateList_t m_candidates;                     //!< SPFVertex candidates
 
     /**
      * @brief Stream insertion operator.
@@ -172,7 +199,7 @@ class CandidateQueue
      * @param q the CandidateQueue
      * @returns the reference to the output stream
      */
-    friend std::ostream& operator<<(std::ostream& os, const CandidateQueue& q);
+    friend std::ostream& operator<< <T>(std::ostream& os, const CandidateQueue& q);
 };
 
 } // namespace ns3

@@ -23,7 +23,7 @@ using namespace ns3;
 /**
  * @brief Test suite for executing the primary cell change test cases.
  *
- * \sa ns3::LtePrimaryCellChangeTestCase
+ * @sa ns3::LtePrimaryCellChangeTestCase
  */
 class LtePrimaryCellChangeTestSuite : public TestSuite
 {

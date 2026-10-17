@@ -177,6 +177,16 @@ build_example(
 )
 
 build_example(
+  NAME wifi-roaming
+  SOURCE_FILES wifi-roaming.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libcsma}
+    ${libbridge}
+    ${libapplications}
+)
+
+build_example(
   NAME wifi-simple-adhoc
   SOURCE_FILES wifi-simple-adhoc.cc
   LIBRARIES_TO_LINK ${libinternet}
@@ -308,4 +318,13 @@ build_example(
     ${libnetwork}
     ${libapplications}
     ${libinternet}
+)
+
+build_example(
+  NAME wifi-ps-mode
+  SOURCE_FILES wifi-ps-mode.cc
+  LIBRARIES_TO_LINK
+    ${libwifi}
+    ${libapplications}
+    ${libflow-monitor}
 )

@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 #include <set>
 
 namespace ns3
@@ -21,7 +23,7 @@ namespace ns3
  *
  * The IEEE 802.11 Non-Inheritance Information Element
  */
-class NonInheritance : public WifiInformationElement
+class WIFI_EXPORT NonInheritance : public WifiInformationElement
 {
   public:
     WifiInformationElementId ElementId() const override;

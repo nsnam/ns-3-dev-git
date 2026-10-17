@@ -15,6 +15,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 
@@ -32,7 +33,7 @@ class WifiTxParameters;
  * @brief Aggregator used to construct A-MSDUs
  * @ingroup wifi
  */
-class MsduAggregator : public Object
+class WIFI_EXPORT MsduAggregator : public Object
 {
   public:
     /// EDCA queues typedef
@@ -93,12 +94,12 @@ class MsduAggregator : public Object
      *
      * @param peekedItem the MSDU which we attempt to aggregate other MSDUs to
      * @param txParams the TX parameters for the current frame
-     * @param availableTime the time available for the frame exchange
+     * @param availableTime the limit (if any) on the time available for the frame exchange
      * @return the resulting A-MSDU, if aggregation is possible, a null pointer otherwise.
      */
     Ptr<WifiMpdu> GetNextAmsdu(Ptr<WifiMpdu> peekedItem,
                                WifiTxParameters& txParams,
-                               Time availableTime) const;
+                               const std::optional<Time>& availableTime) const;
 
     /**
      * Determine the maximum size for an A-MSDU of the given TID that can be sent

@@ -12,6 +12,7 @@
 #include "wifi-standard-constants.h"
 
 #include "ns3/trailer.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -21,7 +22,7 @@ namespace ns3
  *
  * Implements the IEEE 802.11 MAC trailer
  */
-class WifiMacTrailer : public Trailer
+class WIFI_EXPORT WifiMacTrailer : public Trailer
 {
   public:
     WifiMacTrailer();

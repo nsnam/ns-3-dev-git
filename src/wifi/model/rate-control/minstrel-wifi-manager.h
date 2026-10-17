@@ -11,6 +11,7 @@
 #define MINSTREL_WIFI_MANAGER_H
 
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 #include <fstream>
@@ -24,7 +25,7 @@ class UniformRandomVariable;
 /**
  * A struct to contain all information related to a data rate
  */
-struct RateInfo
+struct WIFI_EXPORT RateInfo
 {
     /**
      * Perfect transmission time calculation, or frame calculation
@@ -70,7 +71,7 @@ typedef std::vector<std::vector<uint8_t>> SampleRate;
  * This struct extends from WifiRemoteStation struct to hold additional
  * information required by the Minstrel Wifi manager
  */
-struct MinstrelWifiRemoteStation : public WifiRemoteStation
+struct WIFI_EXPORT MinstrelWifiRemoteStation : public WifiRemoteStation
 {
     Time m_nextStatsUpdate; ///< 10 times every second
 
@@ -143,7 +144,7 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
  * Since the EWMA probability is initialized to zero, this generates
  * a more accurate EWMA.
  */
-class MinstrelWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT MinstrelWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

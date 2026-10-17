@@ -59,8 +59,8 @@ So far, in our design, we have::
     {
     public:
      /**
-      * \returns true if the Packet is to be considered as errored/corrupted
-      * \param pkt Packet to apply error model to
+      * @returns true if the Packet is to be considered as errored/corrupted
+      * @param pkt Packet to apply error model to
       */
       bool IsCorrupt(Ptr<Packet> pkt);
     };
@@ -398,13 +398,47 @@ An example for the ``CounterCalculator<uint32_t>``::
         extern template class CounterCalculator<uint32_t>;
     }
     //.cc file
-    #include <ns3/.h file>
+    #include "ns3/header-file-name.h"
     namespace ns3
     {
         NS_OBJECT_TEMPLATE_CLASS_DEFINE (CounterCalculator, uint32_t);
     }
 
 More details can be found in `issue #761 <https://gitlab.com/nsnam/ns-3-dev/-/issues/761>`_.
+
+Template classes using namespaces should use a different macro:
+``NS_OBJECT_TEMPLATE_CLASS_WITH_NS_DEFINE(nst, type, nsp, param);`` where ``nst`` is the
+namespace of the type, and ``nsp`` is the namespace of the param.
+
+An example is::
+
+    //.h file
+    namespace ns3
+    {
+    namespace alpha
+    {
+    template <typename T>
+    class AlphaProt : public std::enable_if_t<std::is_same_v<Object, T>, T>
+    {
+      public:
+        static TypeId GetTypeId()
+        {
+            std::string name = GetTemplateClassName<AlphaProt<T>>();
+            static TypeId tid = TypeId(name).SetParent<Object>();
+            return tid;
+        }
+    };
+    } // namespace alpha
+    } // namespace ns3
+
+    //.cc file
+    #include "ns3/header-file-name.h"
+    namespace ns3
+    {
+        NS_OBJECT_TEMPLATE_CLASS_WITH_NS_DEFINE(alpha, AlphaProt, ns3, Object);
+    }
+
+More details can be found in `issue #1132 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1132>`_.
 
 
 Including External Files

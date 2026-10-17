@@ -180,6 +180,7 @@ class AlohaNoackNetDevice : public NetDevice
     TracedCallback<Ptr<const Packet>> m_macTxDropTrace;    //!< Tx Drop trace
     TracedCallback<Ptr<const Packet>> m_macPromiscRxTrace; //!< Promiscuous Rx trace
     TracedCallback<Ptr<const Packet>> m_macRxTrace;        //!< Rx trace
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;    //!< Rx Drop trace (no protocol handler)
 
     Ptr<Node> m_node;       //!< Node owning this NetDevice
     Ptr<Channel> m_channel; //!< Channel

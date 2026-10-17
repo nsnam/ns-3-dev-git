@@ -291,7 +291,7 @@ class Packet : public SimpleRefCount<Packet>
      */
     Ptr<Packet> CreateFragment(uint32_t start, uint32_t length) const;
     /**
-     * @brief Returns the the size in bytes of the packet (including the zero-filled
+     * @brief Returns the size in bytes of the packet (including the zero-filled
      * initial payload).
      *
      * @returns the size in bytes of the packet
@@ -500,7 +500,7 @@ class Packet : public SimpleRefCount<Packet>
      *
      * @returns an iterator
      *
-     * \sa EnablePrinting EnableChecking
+     * @sa EnablePrinting EnableChecking
      */
     PacketMetadata::ItemIterator BeginItem() const;
 
@@ -544,8 +544,7 @@ class Packet : public SimpleRefCount<Packet>
      *
      * @param buffer a raw byte buffer to which the packet will be serialized
      * @param maxSize the max size of the buffer for bounds checking
-     *
-     * @returns one if all data were serialized, zero if buffer size was too small.
+     * @return number of serialized bytes on success, 0 on failure
      */
     uint32_t Serialize(uint8_t* buffer, uint32_t maxSize) const;
 
@@ -576,11 +575,11 @@ class Packet : public SimpleRefCount<Packet>
      * As example, if you want to tag the first 10 bytes, you have to call
      * the method in this way:
      *
-     * \code{.cpp}
+     * @code{.cpp}
          Ptr<Packet> p = ... ;
          SomeTag tag;
          p->AddByteTag (tag, 1, 10);
-       \endcode
+       @endcode
      *
      * @param tag the new tag to add to this packet
      * @param start the position of the first byte tagged by this tag
@@ -665,7 +664,7 @@ class Packet : public SimpleRefCount<Packet>
      *
      * @param os the stream on which to print the tags.
      *
-     * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+     * @sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
      *  Packet::RemoveAllPacketTags
      */
     void PrintPacketTags(std::ostream& os) const;
@@ -772,7 +771,7 @@ class Packet : public SimpleRefCount<Packet>
      * @brief Deserializes a packet.
      * @param [in] buffer the input buffer.
      * @param [in] size the buffer size.
-     * @returns the number of deserialized bytes.
+     * @return number of deserialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint8_t* buffer, uint32_t size);
 

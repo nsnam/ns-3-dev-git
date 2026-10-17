@@ -9,6 +9,7 @@
 
 #include "synchronizer.h"
 
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 
@@ -69,11 +70,11 @@ class WallClockSynchronizer : public Synchronizer
     ~WallClockSynchronizer() override;
 
     /** Conversion constant between &mu;s and ns. */
-    static const uint64_t US_PER_NS = (uint64_t)1000;
+    static constexpr uint64_t US_PER_NS{1000};
     /** Conversion constant between &mu;s and seconds. */
-    static const uint64_t US_PER_SEC = (uint64_t)1000000;
+    static constexpr uint64_t US_PER_SEC{1000000};
     /** Conversion constant between ns and s. */
-    static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
+    static constexpr uint64_t NS_PER_SEC{1000000000};
 
   protected:
     /**
@@ -109,7 +110,7 @@ class WallClockSynchronizer : public Synchronizer
      * Signal().  In either case, we are done waiting.  If the timeout happened,
      * we return @c true; if a Signal happened we return @c false.
      *
-     * @param [in] ns The target normalized real time we should wait for.
+     * @param [in] ns The target normalized delay we should wait for.
      * @returns @c true if we reached the target time,
      *          @c false if we returned because the condition was set.
      */
@@ -138,15 +139,16 @@ class WallClockSynchronizer : public Synchronizer
     uint64_t DriftCorrect(uint64_t nsNow, uint64_t nsDelay);
 
     /**
-     * @brief Get the current absolute real time (in ns since the epoch).
+     * @brief Get the current real time, in ns, relative to the
+     * std::chrono::steady_clock epoch.
      *
      * @returns The current real time, in ns.
      */
     uint64_t GetRealtime();
     /**
-     * @brief Get the current normalized real time, in ns.
+     * @brief Get the elapsed real time since the simulation started, in ns.
      *
-     * @returns The current normalized real time, in ns.
+     * @returns The elapsed real time, in ns.
      */
     uint64_t GetNormalizedRealtime();
 
@@ -160,7 +162,7 @@ class WallClockSynchronizer : public Synchronizer
     /** Mutex controlling access to the condition variable. */
     std::mutex m_mutex;
     /** The condition state. */
-    bool m_condition;
+    std::atomic<bool> m_condition{false};
 };
 
 } // namespace ns3

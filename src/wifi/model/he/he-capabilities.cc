@@ -147,12 +147,12 @@ void
 HeCapabilities::SerializeInformationField(Buffer::Iterator start) const
 {
     // write the corresponding value for each bit
-    start.WriteHtolsbU32(GetHeMacCapabilitiesInfo1());
-    start.WriteHtolsbU16(GetHeMacCapabilitiesInfo2());
-    start.WriteHtolsbU64(GetHePhyCapabilitiesInfo1());
-    start.WriteHtolsbU16(GetHePhyCapabilitiesInfo2());
+    start.WriteU32(GetHeMacCapabilitiesInfo1());
+    start.WriteU16(GetHeMacCapabilitiesInfo2());
+    start.WriteU64(GetHePhyCapabilitiesInfo1());
+    start.WriteU16(GetHePhyCapabilitiesInfo2());
     start.WriteU8(GetHePhyCapabilitiesInfo3());
-    start.WriteHtolsbU32(GetSupportedMcsAndNss());
+    start.WriteU32(GetSupportedMcsAndNss());
     // TODO: add another 32-bits field if 160 MHz channel is supported (variable length)
     // TODO: optional PPE Threshold field (variable length)
 }
@@ -161,10 +161,10 @@ uint16_t
 HeCapabilities::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
     Buffer::Iterator i = start;
-    uint32_t macCapabilities1 = i.ReadLsbtohU32();
-    uint16_t macCapabilities2 = i.ReadLsbtohU16();
-    uint64_t phyCapabilities1 = i.ReadLsbtohU64();
-    uint64_t phyCapabilities2 = i.ReadLsbtohU16();
+    uint32_t macCapabilities1 = i.ReadU32();
+    uint16_t macCapabilities2 = i.ReadU16();
+    uint64_t phyCapabilities1 = i.ReadU64();
+    uint64_t phyCapabilities2 = i.ReadU16();
     uint8_t phyCapabilities3 = i.ReadU8();
     uint32_t mcsset = i.ReadU32();
     SetHeMacCapabilitiesInfo(macCapabilities1, macCapabilities2);

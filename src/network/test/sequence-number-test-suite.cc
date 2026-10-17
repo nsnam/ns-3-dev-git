@@ -12,6 +12,8 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/traced-value.h"
 
+#include <limits>
+
 using namespace ns3;
 
 namespace
@@ -197,6 +199,60 @@ SequenceNumberTestCase::DoRun()
         SEQ_TEST_ASSERT_EQUAL(m_oldval, SequenceNumber32(0));
         SEQ_TEST_ASSERT_EQUAL(m_newval, SequenceNumber32(1));
         obj->Dispose();
+    }
+
+    {
+        SequenceNumber16 num1(0);
+        SequenceNumber16 num2(0);
+
+        for (uint32_t index = 0; index <= std::numeric_limits<uint16_t>::max(); index++)
+        {
+            NS_TEST_ASSERT_MSG_EQ(((num1 - num2) < 0 && (num1 > num2)) ||
+                                      ((num1 - num2) > 0 && (num2 > num1)),
+                                  false,
+                                  "Sequence number: difference and <=> are not agreeing for "
+                                      << num1.GetValue() << " and " << num2.GetValue());
+            num2++;
+        }
+
+        num2 = 0;
+        for (uint32_t index = 0; index <= std::numeric_limits<uint16_t>::max(); index++)
+        {
+            NS_TEST_ASSERT_MSG_EQ(((num1 - num2) < 0 && (num1 > num2)) ||
+                                      ((num1 - num2) > 0 && (num2 > num1)),
+                                  false,
+                                  "Sequence number: difference and <=> are not agreeing for "
+                                      << num1.GetValue() << " and " << num2.GetValue());
+            num1++;
+        }
+    }
+
+    {
+        SequenceNumber<uint16_t, 5> num1(0);
+        SequenceNumber<uint16_t, 5> num2 = num1;
+
+        for (uint32_t index = 0; index < (1 << 5) - 1; index++)
+        {
+            {
+                NS_TEST_ASSERT_MSG_EQ(((num1 - num2) < 0 && (num1 > num2)) ||
+                                          ((num1 - num2) > 0 && (num2 > num1)),
+                                      false,
+                                      "Sequence number: difference and <=> are not agreeing for "
+                                          << num1.GetValue() << " and " << num2.GetValue());
+            }
+            num2++;
+        }
+
+        num2 = 0;
+        for (uint32_t index = 0; index < (1 << 5) - 1; index++)
+        {
+            NS_TEST_ASSERT_MSG_EQ(((num1 - num2) < 0 && (num1 > num2)) ||
+                                      ((num1 - num2) > 0 && (num2 > num1)),
+                                  false,
+                                  "Sequence number: difference and <=> are not agreeing for "
+                                      << num1.GetValue() << " and " << num2.GetValue());
+            num1++;
+        }
     }
 }
 

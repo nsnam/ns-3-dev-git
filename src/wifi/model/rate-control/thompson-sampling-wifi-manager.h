@@ -11,6 +11,7 @@
 
 #include "ns3/random-variable-stream.h"
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3
@@ -25,7 +26,7 @@ namespace ns3
  * It was implemented for use as a baseline in
  * https://doi.org/10.1109/ACCESS.2020.3023552
  */
-class ThompsonSamplingWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT ThompsonSamplingWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

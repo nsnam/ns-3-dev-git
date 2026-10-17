@@ -24,7 +24,7 @@ namespace ns3
 {
 
 WifiTxVector::WifiTxVector()
-    : m_txPowerLevel(1),
+    : m_txPowerLevel(WIFI_MIN_TX_PWR_LEVEL),
       m_preamble(WIFI_PREAMBLE_LONG),
       m_channelWidth(MHz_u{20}),
       m_guardInterval(NanoSeconds(800)),
@@ -293,6 +293,7 @@ WifiTxVector::SetMode(WifiMode mode, uint16_t staId)
 void
 WifiTxVector::SetTxPowerLevel(uint8_t powerlevel)
 {
+    NS_ABORT_MSG_IF(powerlevel < WIFI_MIN_TX_PWR_LEVEL, "TX power level set below allowed range");
     m_txPowerLevel = powerlevel;
 }
 
@@ -419,7 +420,7 @@ WifiTxVector::SetRuAllocation(const RuAllocation& ruAlloc, uint8_t p20Index)
 const RuAllocation&
 WifiTxVector::GetRuAllocation(uint8_t p20Index) const
 {
-    if (ns3::IsDlMu(m_preamble) && m_ruAllocation.empty())
+    if (ns3::IsDlMu(m_preamble) && !m_muUserInfos.empty() && m_ruAllocation.empty())
     {
         m_ruAllocation = DeriveRuAllocation(p20Index);
     }
@@ -673,7 +674,7 @@ WifiTxVector::SetInactiveSubchannels(const std::vector<bool>& inactiveSubchannel
     NS_ABORT_MSG_IF(m_preamble < WIFI_PREAMBLE_HE_SU,
                     "Only HE (or later) authorized for preamble puncturing");
     NS_ABORT_MSG_IF(
-        m_channelWidth < MHz_u{80},
+        !inactiveSubchannels.empty() && (m_channelWidth < MHz_u{80}),
         "Preamble puncturing only possible for transmission bandwidth of 80 MHz or larger");
     NS_ABORT_MSG_IF(!inactiveSubchannels.empty() &&
                         inactiveSubchannels.size() != Count20MHzSubchannels(m_channelWidth),

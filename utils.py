@@ -27,7 +27,7 @@ def get_list_from_file(file_path, list_name):
         for line in file_in:
             # Remove any comments.
             if "#" in line:
-                (line, comment) = line.split("#", 1)
+                line, comment = line.split("#", 1)
 
             # Parse the line.
             if list_name in line or parsing_multiline_list:
@@ -63,7 +63,7 @@ def get_bool_from_file(file_path, bool_name, value_if_missing):
         for line in file_in:
             # Remove any comments.
             if "#" in line:
-                (line, comment) = line.split("#", 1)
+                line, comment = line.split("#", 1)
 
             # Parse the line.
             if bool_name in line:

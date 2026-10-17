@@ -28,7 +28,7 @@ namespace ns3
   * @see http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html
   * @see https://wiki.wireshark.org/SLL
   *
-  \verbatim
+  @verbatim
     +---------------------------+
     |         Packet type       |
     |         (2 Octets)        |
@@ -49,7 +49,7 @@ namespace ns3
     .                           .
     .                           .
     .                           .
-   \endverbatim
+   @endverbatim
   */
 class SllHeader : public Header
 {

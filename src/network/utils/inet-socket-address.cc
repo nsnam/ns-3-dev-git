@@ -83,7 +83,7 @@ bool
 InetSocketAddress::IsMatchingType(const Address& address)
 {
     NS_LOG_FUNCTION(&address);
-    return address.CheckCompatible(GetType(), 6);
+    return address.CheckCompatible(GetType(), ADDRESS_LENGTH);
 }
 
 InetSocketAddress::
@@ -96,19 +96,20 @@ Address
 InetSocketAddress::ConvertTo() const
 {
     NS_LOG_FUNCTION(this);
-    uint8_t buf[6];
+    uint8_t buf[ADDRESS_LENGTH];
     m_ipv4.Serialize(buf);
     buf[4] = m_port & 0xff;
     buf[5] = (m_port >> 8) & 0xff;
-    return Address(GetType(), buf, 6);
+    return Address(GetType(), buf, ADDRESS_LENGTH);
 }
 
 InetSocketAddress
 InetSocketAddress::ConvertFrom(const Address& address)
 {
     NS_LOG_FUNCTION(&address);
-    NS_ASSERT(address.CheckCompatible(GetType(), 6)); /* 4 (address) + 2  (port) */
-    uint8_t buf[6];
+
+    NS_ASSERT(address.CheckCompatible(GetType(), ADDRESS_LENGTH));
+    uint8_t buf[ADDRESS_LENGTH];
     address.CopyTo(buf);
     Ipv4Address ipv4 = Ipv4Address::Deserialize(buf);
     uint16_t port = buf[4] | (buf[5] << 8);
@@ -120,7 +121,7 @@ uint8_t
 InetSocketAddress::GetType()
 {
     NS_LOG_FUNCTION_NOARGS();
-    static uint8_t type = Address::Register();
+    static uint8_t type = Address::Register("IpAddress", ADDRESS_LENGTH);
     return type;
 }
 

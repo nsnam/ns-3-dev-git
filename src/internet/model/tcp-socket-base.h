@@ -370,6 +370,11 @@ class TcpSocketBase : public TcpSocket
     TracedCallback<uint32_t, uint32_t> m_bytesInFlightTrace;
 
     /**
+     * @brief Callback pointer for fackAwnd trace chaining
+     */
+    TracedCallback<uint32_t, uint32_t> m_fackAwndTrace;
+
+    /**
      * @brief Callback pointer for RTT trace chaining
      */
     TracedCallback<Time, Time> m_srttTrace;
@@ -443,6 +448,13 @@ class TcpSocketBase : public TcpSocket
      * @param newValue new bytesInFlight value
      */
     void UpdateBytesInFlight(uint32_t oldValue, uint32_t newValue) const;
+
+    /**
+     * @brief Callback function to hook to TcpSocketState awnd(FACK's inflight)
+     * @param oldValue old awnd value
+     * @param newValue new awnd value
+     */
+    void UpdateFackAwnd(uint32_t oldValue, uint32_t newValue) const;
 
     /**
      * @brief Callback function to hook to TcpSocketState rtt
@@ -579,7 +591,18 @@ class TcpSocketBase : public TcpSocket
      * @param useEcn Mode of ECN to use.
      */
     void SetUseEcn(TcpSocketState::UseEcn_t useEcn);
-
+    /**
+     * @brief Set ABE mode of use on the socket
+     *
+     * @param useAbe Mode of ABE to use.
+     */
+    void SetUseAbe(bool useAbe);
+    /**
+     * @brief Get ABE mode of use on the socket
+     *
+     * @return true if ABE is enabled, false otherwise.
+     */
+    bool GetUseAbe() const;
     /**
      * @brief Enable or disable pacing
      * @param pacing Boolean to enable or disable pacing
@@ -661,6 +684,26 @@ class TcpSocketBase : public TcpSocket
                                            const Address& peerAddr,
                                            const Ptr<const TcpSocketBase> socket);
 
+    // Variables for FACK
+    uint32_t m_sndFack;                  //!< Sequence number of the forward most acknowledgement
+    uint32_t m_outstandingRetransBytes;  //!< Number of outstanding retransmitted bytes
+    TracedValue<uint32_t> m_fackAwnd{0}; //!< Tracks the inflight data calculated by FACK algorithm.
+
+    /**
+     * @brief Get the current FACK sequence number.
+     *
+     * @return The sequence number up to which data is considered
+     *         cumulatively acknowledged by FACK.
+     */
+    uint32_t GetSndFack() const;
+
+    /**
+     * @brief Check whether Forward Acknowledgment (FACK) is enabled.
+     *
+     * @return true if FACK is enabled, false otherwise.
+     */
+    bool GetFackEnabled() const;
+
   protected:
     // Implementing ns3::TcpSocket -- Attribute get/set
     // inherited, no need to doc
@@ -691,6 +734,7 @@ class TcpSocketBase : public TcpSocket
     Time GetPersistTimeout() const override;
     bool SetAllowBroadcast(bool allowBroadcast) override;
     bool GetAllowBroadcast() const override;
+    void NotifyConstructionCompleted() override;
 
     // Helper functions: Connection set up
 
@@ -1394,6 +1438,10 @@ class TcpSocketBase : public TcpSocket
     bool m_shutdownSend{false};  //!< Send no longer allowed
     bool m_shutdownRecv{false};  //!< Receive no longer allowed
     bool m_connected{false};     //!< Connection established
+    bool m_useAbe{false};        //!< ABE mode
+                                 //!< It will override the UseEcn attribute
+                                 //!< if it is 'Off' and set it to 'On', but
+                                 //!< will leave it untouched if it is 'AcceptOnly'
     double m_msl{0.0};           //!< Max segment lifetime
 
     // Window management
@@ -1412,6 +1460,8 @@ class TcpSocketBase : public TcpSocket
     uint8_t m_sndWindShift{0};      //!< Window shift to apply to incoming segments
     bool m_timestampEnabled{true};  //!< Timestamp option enabled
     uint32_t m_timestampToEcho{0};  //!< Timestamp to echo
+
+    bool m_fackEnabled{false}; //!< flag for enabling FACK
 
     EventId m_sendPendingDataEvent{}; //!< micro-delay event to send pending data
 

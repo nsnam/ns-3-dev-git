@@ -137,6 +137,11 @@ FdNetDevice::GetTypeId()
                             "This is a non-promiscuous trace,",
                             MakeTraceSourceAccessor(&FdNetDevice::m_macRxTrace),
                             "ns3::Packet::TracedCallback")
+            .AddTraceSource("MacRxDrop",
+                            "A packet has been dropped by this device because no "
+                            "protocol handler consumed it.",
+                            MakeTraceSourceAccessor(&FdNetDevice::m_macRxDropTrace),
+                            "ns3::Packet::TracedCallback")
 
             //
             // Trace sources designed to simulate a packet sniffer facility (tcpdump).
@@ -539,7 +544,11 @@ FdNetDevice::ForwardUp()
     {
         m_snifferTrace(originalPacket);
         m_macRxTrace(originalPacket);
-        m_rxCallback(this, packet, protocol, source);
+        if (!m_rxCallback(this, packet, protocol, source))
+        {
+            NS_LOG_INFO("Drop packet due to no protocol handler");
+            m_macRxDropTrace(originalPacket);
+        }
     }
 }
 
@@ -712,6 +721,15 @@ uint16_t
 FdNetDevice::GetMtu() const
 {
     return m_mtu;
+}
+
+uint16_t
+FdNetDevice::GetPaddingThreshold() const
+{
+    // All encapsulation modes are Ethernet framings: the peer pads the
+    // data field to 46 octets and this device does not strip the padding
+    // on reception.
+    return 46;
 }
 
 bool

@@ -18,6 +18,7 @@
 #include "ns3/application.h"
 #include "ns3/ipv4-address.h"
 
+#include <limits>
 #include <map>
 
 namespace ns3
@@ -48,10 +49,10 @@ class DhcpServer : public Application
     /**
      * @brief Add a static entry to the pool.
      *
-     * @param chaddr The client chaddr.
-     * @param addr The address to handle to the client.
+     * @param macAddr The client MAC address.
+     * @param addr The IP address to handle to the client.
      */
-    void AddStaticDhcpEntry(Address chaddr, Ipv4Address addr);
+    void AddStaticDhcpEntry(Address macAddr, Ipv4Address addr);
 
   protected:
     void DoDispose() override;
@@ -97,21 +98,16 @@ class DhcpServer : public Application
     Ipv4Address m_gateway;     //!< The gateway address
 
     /// Leased address container - chaddr + IP addr / lease time
-    typedef std::map<Address, std::pair<Ipv4Address, uint32_t>> LeasedAddress;
-    /// Leased address iterator - chaddr + IP addr / lease time
-    typedef std::map<Address, std::pair<Ipv4Address, uint32_t>>::iterator LeasedAddressIter;
-    /// Leased address const iterator - chaddr + IP addr / lease time
-    typedef std::map<Address, std::pair<Ipv4Address, uint32_t>>::const_iterator LeasedAddressCIter;
+    using LeasedAddress = std::map<DhcpChaddr, std::pair<Ipv4Address, uint32_t>>;
 
     /// Expired address container - chaddr
-    typedef std::list<Address> ExpiredAddress;
-    /// Expired address iterator - chaddr
-    typedef std::list<Address>::iterator ExpiredAddressIter;
-    /// Expired address const iterator - chaddr
-    typedef std::list<Address>::const_iterator ExpiredAddressCIter;
+    using ExpiredAddress = std::list<DhcpChaddr>;
 
     /// Available address container - IP addr
-    typedef std::list<Ipv4Address> AvailableAddress;
+    using AvailableAddress = std::list<Ipv4Address>;
+
+    /// The maximum representable lease time means permanent lease.
+    static constexpr uint32_t PERMANENT_LEASE = std::numeric_limits<uint32_t>::max();
 
     LeasedAddress m_leasedAddresses;   //!< Leased address and their status (cache memory)
     ExpiredAddress m_expiredAddresses; //!< Expired addresses to be reused (chaddr of the clients)

@@ -71,26 +71,26 @@ def main(argv):
         "--constrain=performance",
         "-d",
         "--duration",
-        "-e socket-options-ipv6",
-        "--example=socket-options-ipv6",
+        "-e wifi-ap",
+        "--example=wifi-ap",
         "-u",
         "--update-data",
         "-f EXTENSIVE",
         "--fullness=EXTENSIVE",
-        "-g",
-        "--grind",
+        "-g -e wifi-ap",
+        "--grind -e wifi-ap",
         "-l",
         "--list",
         "-m",
         "--multiple",
         "-n",
         "--no-build",
-        "-p first",
-        "--pyexample=first",
+        "-p first.py",
+        "--pyexample=first.py",
         "-r",
         "--retain",
-        "-s ns3-tcp-state",
-        "--suite=ns3-tcp-state",
+        "-s wifi-channel-settings",
+        "--suite=wifi-channel-settings",
         "-t t_opt.txt",
         "--text=t_opt.txt && rm t_opt.txt",
         "-v",
@@ -105,12 +105,24 @@ def main(argv):
         '--example="wifi-phy-configuration --testCase=0"',
     ]
 
-    configure_string = sys.executable + " ns3 configure --enable-tests --enable-examples"
+    # Options that prevent test.py from building ns-3 itself, and therefore
+    # require an explicit build after the (clean) configuration step.
+    options_requiring_prior_build = ["-n", "--no-build"]
+
+    configure_string = (
+        sys.executable
+        + ' ns3 configure -d release --enable-tests --enable-examples --filter-module-examples-and-tests="wifi" --enable-python-bindings'
+    )
+    build_string = sys.executable + " ns3 build"
     clean_string = sys.executable + " ns3 clean"
-    cmd_execute_list = [
-        "%s && %s test.py %s && %s" % (configure_string, sys.executable, option, clean_string)
-        for option in test_cases
-    ]
+    cmd_execute_list = []
+    for option in test_cases:
+        setup_string = configure_string
+        if option in options_requiring_prior_build:
+            setup_string += " && " + build_string
+        cmd_execute_list.append(
+            "%s && %s test.py %s && %s" % (setup_string, sys.executable, option, clean_string)
+        )
     runner = TestBaseClass(argv[1:], "Test suite for the ns-3 unit test runner", "test-py")
     return runner.runtests(cmd_execute_list)
 

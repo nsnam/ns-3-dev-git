@@ -11,6 +11,12 @@ cpp_examples = [
     ("adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
     ("adhoc-aloha-ideal-phy-matrix-propagation-loss-model", "True", "True"),
     ("three-gpp-channel-example", "True", "True"),
+    ("three-gpp-spatiotemporal-channel-consistency-example", "True", "False", "TAKES_FOREVER"),
+    (
+        "three-gpp-inter-ue-spatial-consistency-example --spatialConsistency=true --xRes=8 --yRes=8",
+        "True",
+        "True",
+    ),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

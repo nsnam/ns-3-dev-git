@@ -11,11 +11,16 @@
 
 #include "ns3/address.h"
 #include "ns3/application.h"
+#include "ns3/traced-callback.h"
 
 #include <limits>
 
 namespace ns3
 {
+
+class Packet;
+class Address;
+class Socket;
 
 /**
  * @ingroup applications
@@ -55,10 +60,32 @@ class SinkApplication : public Application
     static constexpr uint32_t INVALID_PORT{std::numeric_limits<uint32_t>::max()}; //!< invalid port
 
   protected:
+    void DoDispose() override;
+
+    /**
+     * @brief Close all the sockets
+     * @return true if all sockets closed successfully, false otherwise
+     */
+    bool CloseAllSockets();
+
+    /// Callbacks for tracing the packet Rx events
+    ns3::TracedCallback<Ptr<const Packet>> m_rxTraceWithoutAddress;
+
+    /// Traced Callback: received packets, source address.
+    TracedCallback<Ptr<const Packet>, const Address&> m_rxTrace;
+
+    Ptr<Socket> m_socket;  //!< Socket (IPv4 or IPv6, depending on local address)
+    Ptr<Socket> m_socket6; //!< IPv6 Socket (used if only port is specified)
+
+    TypeId m_protocolTid; //!< Protocol TypeId value
+
     Address m_local; //!< Local address to bind to (address and port)
     uint32_t m_port; //!< Local port to bind to
 
   private:
+    void StartApplication() override;
+    void StopApplication() override;
+
     /**
      * @brief set the local address
      * @param addr local address
@@ -82,6 +109,23 @@ class SinkApplication : public Application
      * @return the server port
      */
     uint32_t GetPort() const;
+
+    /**
+     * @brief Close the socket
+     * @param socket the socket to close
+     * @return true if the socket closed successfully, false otherwise
+     */
+    bool CloseSocket(Ptr<Socket> socket);
+
+    /**
+     * @brief Application specific startup code for child subclasses
+     */
+    virtual void DoStartApplication();
+
+    /**
+     * @brief Application specific shutdown code for child subclasses
+     */
+    virtual void DoStopApplication();
 };
 
 } // namespace ns3

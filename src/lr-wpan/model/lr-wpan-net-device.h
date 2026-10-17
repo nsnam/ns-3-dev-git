@@ -34,7 +34,7 @@ class LrWpanCsmaCa;
  * @brief Network layer to device interface.
  *
  * The ns3::NetDevice includes IP-specific API such as GetMulticast(), Send()
- * and SendTo() methods, which do not map well the the 802.15.4 MAC MCPS
+ * and SendTo() methods, which do not map well the 802.15.4 MAC MCPS
  * DataRequest primitive.  So, the basic design is to provide, as
  * much as makes sense, the class ns3::NetDevice API, but rely on the user
  * accessing the LrWpanMac pointer to make 802.15.4-specific API calls.
@@ -294,6 +294,9 @@ class LrWpanNetDevice : public NetDevice
      * Trace source for link up/down changes.
      */
     TracedCallback<> m_linkChanges;
+
+    /// Trace fired when a received packet is dropped because no protocol handler consumed it.
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
 
     /**
      * Upper layer callback used for notification of new data packet arrivals.

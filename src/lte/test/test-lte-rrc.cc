@@ -7,10 +7,18 @@
  *         Budiarto Herman <budiarto.herman@magister.fi>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-helper.h"
+#include "ns3/lte-net-device.h"
+#include "ns3/lte-radio-bearer-info.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-ue-rrc.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/net-device.h"
+#include "ns3/object-map.h"
+#include "ns3/ptr.h"
+#include "ns3/test.h"
 
 #include <cmath>
 
@@ -300,11 +308,18 @@ LteRrcConnectionEstablishmentTestCase::DoRun()
     int64_t stream = 1;
     NetDeviceContainer enbDevs;
     enbDevs = m_lteHelper->InstallEnbDevice(enbNodes);
-    stream += m_lteHelper->AssignStreams(enbDevs, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    m_lteHelper->AssignStreams(enbDevs, stream, false);
+    stream += 1000;
 
     NetDeviceContainer ueDevs;
     ueDevs = m_lteHelper->InstallUeDevice(ueNodes);
-    stream += m_lteHelper->AssignStreams(ueDevs, stream);
+    m_lteHelper->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
 
     // custom code used for testing purposes
     // instead of lteHelper->Attach () and lteHelper->ActivateXxx
@@ -658,11 +673,18 @@ LteRrcConnectionEstablishmentErrorTestCase::DoRun()
     int64_t stream = 1;
     NetDeviceContainer enbDevs;
     enbDevs = m_lteHelper->InstallEnbDevice(enbNodes);
-    stream += m_lteHelper->AssignStreams(enbDevs, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    m_lteHelper->AssignStreams(enbDevs, stream, false);
+    stream += 1000;
 
     NetDeviceContainer ueDevs;
     ueDevs = m_lteHelper->InstallUeDevice(ueNodes);
-    stream += m_lteHelper->AssignStreams(ueDevs, stream);
+    m_lteHelper->AssignStreams(ueDevs, stream, true);
+    stream += 1000;
 
     // custom code used for testing purposes
     // instead of lteHelper->Attach () and lteHelper->ActivateXxx

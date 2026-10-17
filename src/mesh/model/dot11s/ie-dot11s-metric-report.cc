@@ -51,14 +51,14 @@ IeLinkMetricReport::SetMetric(uint32_t metric)
 void
 IeLinkMetricReport::SerializeInformationField(Buffer::Iterator i) const
 {
-    i.WriteHtolsbU32(m_metric);
+    i.WriteU32(m_metric);
 }
 
 uint16_t
 IeLinkMetricReport::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
 {
     Buffer::Iterator i = start;
-    m_metric = i.ReadLsbtohU32();
+    m_metric = i.ReadU32();
     return i.GetDistanceFrom(start);
 }
 

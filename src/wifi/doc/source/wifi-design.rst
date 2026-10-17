@@ -21,6 +21,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
 * **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac**, **802.11ax** (2.4, 5 and 6 GHz bands) and **802.11be** physical layers
+* Power Save mode (TIM element in Beacon frames, transmission of PS-Poll frames, setting PHYs of STAs to sleep to save energy and resuming them to listen to Beacon frames)
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * 802.11ax **DL OFDMA** and **UL OFDMA** (including support for the MU EDCA Parameter Set)
 * 802.11be **Multi-link** discovery and setup, **Multi-Link Operations (MLO)** in **STR** (Simultaneous Transmit Receive) mode and **EMLSR** (Enhanced Multi-Link Single-Radio) mode
@@ -32,7 +33,6 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 * various rate control algorithms including **Aarf, Arf, Cara, Onoe, Rraa,
   ConstantRate, Minstrel and Minstrel-HT**
 * 802.11s (mesh), described in another chapter
-* 802.11p and WAVE (vehicular), described in another chapter
 
 The set of 802.11 models provided in |ns3| attempts to provide an accurate
 MAC-level implementation of the 802.11 specification and to provide a
@@ -82,9 +82,11 @@ non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
 Basic Service Set (IBSS) - also commonly referred to as an ad hoc
 network (``ns3::AdhocWifiMac``).
 
-The simplest of these is ``ns3::AdhocWifiMac``, which implements a
-Wi-Fi MAC that does not perform any kind of beacon generation,
-probing, or association. The ``ns3::StaWifiMac`` class implements
+The ``ns3::AdhocWifiMac`` class implements a Wi-Fi MAC for IBSS (ad hoc)
+operation. Optional beacon generation follows the distributed IBSS
+procedure of IEEE 802.11: at each TBTT a random delay is applied, and a
+pending Beacon is cancelled if a Beacon from the same IBSS is received
+before that delay expires. The ``ns3::StaWifiMac`` class implements
 an active probing and association state machine that handles automatic
 re-association whenever too many beacons are missed. Finally,
 ``ns3::ApWifiMac`` implements an AP that generates periodic
@@ -193,6 +195,27 @@ Some implementation choices that are not imposed by the standard are listed belo
 * Once an A-MSDU is created, it is no longer modified, even before it is actually transmitted
   for the first time. This means that this A-MSDU cannot be aggregated to other MSDUs using A-MSDU
   aggregation.
+* A BlockAckReq in a frame exchange sequence involving the transmission of a data frame (e.g., a
+  BAR-BA sequence after a DL MU PPDU) is sent using the TXVECTOR that would be used to transmit a
+  BlockAck in response to that data frame.
+* A BlockAckReq in a frame exchange sequence that does not involve the transmission of a data frame
+  (e.g., a BAR scheduled to advance the recipient window) is sent using the TXVECTOR that would be
+  used to transmit a BlockAck in response to a data frame sent to the BlockAckReq receiver.
+
+The following open issues are classified as unfixed bugs in the ns-3 tracker, and users should
+be aware of them:
+
+* The default TXOP limits do not conform to the standard (e.g., 2.528 ms for AC_BE is not default); see `Issue 289 <https://gitlab.com/nsnam/ns-3-dev/-/issues/289>_` and `Merge Request 1976 <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/1976>_`.
+* CCA issues with use of ED and PD thresholds have been reported; see `Issue 1247 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1247>_` and `Issue 1056 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1056>_` and `Issue 900 <https://gitlab.com/nsnam/ns-3-dev/-/issues/900>_`.
+* Use of MLO possibly causes the WifiPhy::MonitorSniffRx trace to miss some packets; see `Issue 1179 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1179>_`.
+* MinstrelHt rate control has reported bugs; see `Issue 886 <https://gitlab.com/nsnam/ns-3-dev/-/issues/886>_` and `Issue 51 <https://gitlab.com/nsnam/ns-3-dev/-/issues/51>_` and `Merge Request 2344 <https://gitlab.com/nsnam/ns-3-dev/-/merge_requests/2344>_`.
+* The 1600ns guard interval configuration performance for 802.11ax seems to be incorrect; see `Issue 1010 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1010>_`.
+* Support for 22 MHz channels for the HE PHY is limited; see `Issue 402 <https://gitlab.com/nsnam/ns-3-dev/-/issues/402>_`.
+* HT simulations cannot use SingleModelSpectrumChannel in 2.4 GHz; see `Issue 1090 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1090>_`.
+* The spatial-reuse-example.cc produces results inconsistent with its commented expected results; see `Issue 566 <https://gitlab.com/nsnam/ns-3-dev/-/issues/566>_`.
+* There may be lingering issues with the Wi-Fi frame capture model; see `Issue 746 <https://gitlab.com/nsnam/ns-3-dev/-/issues/746>_`.
+
+The following hyperlink links to `all open wifi module issues <https://gitlab.com/nsnam/ns-3-dev/-/issues?label_name%5B%5D=module%3A%3Awifi>_`, not all of which are bugs (some are related to feature requests).
 
 Design Details
 **************
@@ -776,6 +799,26 @@ which would be ignored otherwise. This is illustrated in Figure :ref:`fig-cca-ch
 
    Illustration of signals tracking upon channel switching
 
+TX power
+########
+
+The transmission power level used by a PHY is configured via 3 attributes:
+  - ``WifiPhy::TxPowerLevels`` configures the number of power levels supported by the PHY (default 1)
+  - ``WifiPhy::TxPowerStart`` configures the minimum Tx power level supported by the PHY (default 16.0206 dBm, equivalent to 40 mW)
+  - ``WifiPhy::TxPowerEnd`` configures the maximum Tx power level supported by the PHY (default 16.0206 dBm, equivalent to 40 mW)
+
+ Even though the standard allows up to 8 different power levels, the mapping of these integers to power levels is implementation dependent.
+ The ns-3 model allows for up to 255 (1..255) power levels to be supported.
+ If only one power level is configured (the default), the transmission power is equal to ``WifiPhy::TxPowerStart``
+ (or ``WifiPhy::TxPowerEnd``, since they are equal by default).
+ If more than one power level is configured, the transmission power at a given power level is linearly interpolated in decibels
+ between ``WifiPhy::TxPowerStart`` and ``WifiPhy::TxPowerEnd`` according to the following formula:
+
+.. math::
+ txPower = WifiPhy::TxPowerStart + (powerLevel-1) \times \frac{WifiPhy::TxPowerEnd - WifiPhy::TxPowerStart}{WifiPhy::TxPowerLevels-1}
+
+where powerLevel is the requested power level and is an integer between 1 and ``WifiPhy::TxPowerLevels``.
+
 MU-MIMO PHY support
 ###################
 
@@ -856,11 +899,140 @@ interval between two consecutive Beacon frames.
 Roaming
 #######
 
-Roaming at layer-2 (i.e. a STA migrates its association from one AP to
-another) is not presently supported. Because of that, the Min/Max channel
-dwelling time implementation as described by the IEEE 802.11 standard
-[ieee80211]_ is also omitted, since it is only meaningful on the context
-of channel roaming.
+Layer-2 roaming, in which a non-AP STA migrates its association from one AP to another, can be
+modeled as a break-before-make procedure: the STA disassociates from its current AP and then uses
+the normal scanning and association procedures to connect to an AP. This procedure also supports
+roaming between AP MLDs and reassociating with the same AP, possibly using a different set of
+links.
+
+|ns3| does not provide a roaming policy that autonomously decides when a STA should leave its
+current AP. Such a decision has to be made by the simulation program, for example based on the
+position of the STA, a timer, or trace information.
+
+Triggering disassociation
+-------------------------
+
+A simulation can trigger the procedure by calling ``StaWifiMac::ForceDisassociation`` or by
+setting the ``ForceDisassociation`` attribute at run time. The boolean argument or attribute value
+controls whether the current AP is notified:
+
+* If it is true, the STA enqueues a Disassociation frame on one of the setup links. The STA remains
+  associated until the frame is acknowledged or the ``DisassocTimeout`` timer expires. The default
+  timeout is 50 ms.
+* If it is false, the STA locally disassociates immediately and does not send a Disassociation
+  frame.
+
+The request has no effect if the STA is not associated. ``ForceDisassociation`` is an action
+attribute and cannot be set when the ``StaWifiMac`` is constructed; it must be set after device
+creation, when the roam is to start. The ``DeAssoc`` and ``Assoc`` trace sources report when local
+disassociation and the subsequent association complete, respectively.
+
+Notifying the AP allows both endpoints to discard state which must not survive disassociation. If
+the AP is not notified and the STA moves to a different AP, the old AP can continue to consider the
+STA associated and can retain frames queued for it. A timeout while waiting for the acknowledgment
+of a Disassociation frame has the same local cleanup semantics as disassociating without notifying
+the AP, because the STA cannot know whether the AP received the frame.
+
+Selecting the next AP
+---------------------
+
+After local disassociation, all the STA PHY links are switched on and the Association Manager is
+asked to start scanning. While the STA is associated, Beacon frames received from other eligible
+APs are also forwarded to the Association Manager. Therefore, the default Association Manager can
+maintain candidate AP information between scanning procedures.
+
+By default, ``WifiDefaultAssocManager::SkipScanningIfApInfoAvail`` is true. If at least one
+candidate is stored when roaming starts, scanning is skipped and the candidate with the highest
+recorded SNR is selected immediately. Information from a newly received Beacon replaces older
+information for the same BSSID, but stored entries do not otherwise expire. Setting
+``SkipScanningIfApInfoAvail`` to false discards the stored candidates and performs a new active or
+passive scan, as selected by ``StaWifiMac::ActiveProbing``. This is useful when the previously
+recorded SNR values may no longer represent the position of a mobile STA.
+
+The STA sends a new Association Request to the selected AP. The Association Manager and the
+``AssocType`` attribute determine whether this results in legacy association or multi-link setup,
+as described in the previous section.
+
+Queue and Block Ack state
+-------------------------
+
+Already queued data frames are retained while the STA is unassociated, but their transmission is
+blocked. New packets passed to the MAC while the STA is unassociated cannot be forwarded and are
+reported by the ``MacTxDrop`` trace source. After successful association, queue-to-link information
+is configured for the new setup links and frames are marked as not in flight so that channel access
+can restart. If the STA has moved to a different AP, the receiver and transmitter addresses of
+queued data frames are updated to refer to the new AP and obsolete control frames are dropped.
+Management frames tied to the old association are always dropped. Block Ack agreements and other
+control frames are handled according to whether disassociation was confirmed, as summarized below.
+
+.. _table-disassoc-and-reassoc:
+
+.. table:: Disassociation and reassociation
+
+   +--------------------------------+-------------------------------------------------------------+
+   |     ``Event``                  | ``Actions``                                                 |
+   +================================+=============================================================+
+   | STA is requested to            | - Transmissions of all unicast frames, but management       |
+   | disassociate without           |   frames, on all setup links are blocked                    |
+   | notifying the AP, or the       | - Management frames are dropped                             |
+   | Disassociation frame is not    | - Control frames having link addresses are dropped if       |
+   | acknowledged before timeout    |   ML setup was performed                                    |
+   |                                | - Block Ack agreements are retained                         |
+   |                                | - A new scanning procedure is started                       |
+   +--------------------------------+-------------------------------------------------------------+
+   | STA's Disassociation frame is  | - Transmissions of all unicast frames, but management       |
+   | acknowledged                   |   frames, on all setup links are blocked                    |
+   |                                | - Management and control frames are dropped                 |
+   |                                | - Block Ack agreements are destroyed                        |
+   |                                | - A new scanning procedure is started                       |
+   +--------------------------------+-------------------------------------------------------------+
+   | AP receives a Disassociation   | - The STA is removed from the set of associated STAs        |
+   | frame from an associated STA   | - Transmissions of all unicast frames, but management       |
+   |                                |   frames, to the STA on all setup links are blocked         |
+   |                                | - Management and control frames are dropped                 |
+   |                                | - Block Ack agreements with the STA are destroyed           |
+   +--------------------------------+-------------------------------------------------------------+
+   | AP receives an Association     | - If the STA is currently associated with the AP:           |
+   | Request from a STA             |                                                             |
+   |                                |   - The previous setup links are torn down                  |
+   |                                |   - Transmissions of all unicast frames, but management     |
+   |                                |     frames, to the STA on all setup links are blocked       |
+   |                                |   - Management frames are dropped                           |
+   |                                |   - Control frames having link addresses are dropped if     |
+   |                                |     ML setup was performed                                  |
+   |                                |                                                             |
+   |                                | - Information about the STA stored in the remote station    |
+   |                                |   managers of the AP is reset                               |
+   +--------------------------------+-------------------------------------------------------------+
+   | STA that was previously        | - If the STA associates with a different AP:                |
+   | associated with an AP receives |                                                             |
+   | an Association Response in     |   - RA and TA for all queued data frames are replaced to    |
+   | response to an Association     |     match the addresses of the new AP                       |
+   | Request                        |   - Control frames are dropped                              |
+   |                                |                                                             |
+   |                                | - Link information for non-empty queues containing data     |
+   |                                |   frames and control frames is reset and reconfigured       |
+   |                                | - All queued frames are marked as not inflight              |
+   +--------------------------------+-------------------------------------------------------------+
+
+Roaming through a bridged distribution system
+----------------------------------------------
+
+When multiple APs are connected through a learning bridge, the bridge may still associate the
+STA's MAC address with the port of the old AP after a roam. Setting
+``ApWifiMac::ForwardFrameOnAssoc`` to true makes an AP forward a synthetic broadcast frame up after
+association completes, using the STA address as the source and the IEEE 802 Local Experimental
+EtherType. This causes the bridge to learn the port of the new AP without waiting for an uplink data
+packet from the STA. Enable this attribute when multiple APs are connected through a learning
+bridge or switched distribution system and immediate bridge learning after roaming is needed. The
+default value is false because other distribution systems do not require this frame.
+
+The ``wifi-roaming`` example in ``examples/wireless/wifi-roaming.cc`` demonstrates this procedure.
+It connects two APs and a server through a CSMA bridge, moves the STA from the first AP toward
+the second AP at a configurable time, and calls ``ForceDisassociation``. The example can generate
+uplink or downlink UDP or TCP traffic, can notify or not notify the old AP, supports legacy and
+multi-link configurations, and reports throughput and MAC queue drops before and after the roam.
+
 
 Channel access
 ##############
@@ -1038,16 +1210,110 @@ doxygen documentation):
   ``MpduResponseTimeout``, ``PsduResponseTimeout``, ``PsduMapResponseTimeout``
 * ``WifiMacQueue`` trace source: ``Expired``
 
-Internally, a wifi MAC queue is made of multiple sub-queues, each storing frames of
-a given type (i.e., data or management) and having a given receiver address and TID.
-For single-user transmissions, the next station to serve is determined by a wifi MAC
-queue scheduler (held by the ``WifiMac`` instance). A wifi MAC queue scheduler is
-implemented through a base class (``WifiMacQueueScheduler``) and subclasses defining
-specific scheduling policies. The default scheduler (``FcfsWifiQueueScheduler``)
-gives management frames higher priority than data frames and serves data frames in a
-first come first serve fashion. For multi-user transmissions (see below), scheduling
-is performed by a Multi-User scheduler, which may or may not consult the wifi MAC queue
-scheduler to identify the stations to serve with a Multi-User DL or UL transmission.
+The ``WifiMac`` class also provides packet-level trace sources:
+
+* ``MacTx``: A packet has been received by the WifiNetDevice and is about to be enqueued
+* ``MacTxDrop``: A packet has been dropped in the MAC layer before being queued for transmission
+* ``MacPromiscRx``: A packet has been received and is being forwarded up the local protocol stack
+  (promiscuous trace)
+* ``MacRx``: A packet has been received and is being forwarded up the local protocol stack
+  (non-promiscuous trace)
+* ``MacRxDrop``: A packet has been dropped in the MAC layer after it has been passed up from the
+  physical layer
+
+Internally, a wifi MAC queue is made of multiple *container queues*, each storing
+frames of a given type (data, management, or control) addressed to a given receiver
+and, for QoS data, a given TID. For single-user transmissions, the next container
+queue to serve among those pending for an Access Category is determined by a
+*wifi MAC queue scheduler*, held by the ``WifiMac`` instance. (For multi-user
+transmissions, see the Multi-User Scheduler section below; a Multi-User scheduler
+may or may not consult the wifi MAC queue scheduler to identify the stations to
+serve with a Multi-User DL or UL transmission.)
+
+The wifi MAC queue scheduler is pluggable. It is modeled by the abstract base
+class ``WifiMacQueueScheduler`` and a templated implementation class
+``WifiMacQueueSchedulerImpl<Priority>``, which maintains, per Access Category, a
+set of container queues sorted by a priority value of type ``Priority``. Concrete
+subclasses define how that priority is assigned and updated. The
+``WifiSchedPrecedence<Priority>`` helper wraps a user-supplied priority type and
+enforces that control frames always precede management frames, which in turn
+always precede data frames; within the same type, the user priority value
+breaks ties.
+
+The base class exposes a ``DropPolicy`` attribute (``DropOldest`` or
+``DropNewest``, default ``DropNewest``) that applies to every subclass and
+controls what happens when a data frame is enqueued into a full container
+queue. ``DropNewest`` drops the incoming frame; ``DropOldest`` drops the
+oldest non-in-flight, non-retry data frame across the queues of that AC.
+Control and management frames are never dropped by the scheduler.
+
+Two concrete schedulers are provided:
+
+* ``FcfsWifiQueueScheduler`` (the default) assigns, as the priority of each
+  container queue, the enqueue time of the head-of-queue frame. Data frames
+  are therefore served in first-come-first-serve order across all receivers
+  (and TIDs) of an AC.
+* ``RrWifiQueueScheduler`` assigns, as the priority of each container queue,
+  the last time a frame from that queue was transmitted inside a TXOP of
+  which this device is the holder. Container queues of an AC are therefore
+  sorted in increasing order of last-served time, yielding round-robin
+  service among receivers (and, for QoS data, among TIDs of the same
+  receiver).
+
+Power Save mode
+###############
+The Power Save mode feature requires support from both the APs and the non-AP STAs. The |ns3|
+implementation closely follows the 802.11 specifications (IEEE 802.11-2024, section 11.2.3
+"Power management in a non-DMG infrastructure network"), which can be summarized as follows:
+
+* As soon as one of the associated STAs switches to powersave mode, the AP buffers all the group
+  addressed frames (by blocking the corresponding queues) and transmits them immediately after a
+  Beacon frame containing a DTIM indicating the presence of buffered group addressed frames (by
+  temporarily unblocking the corresponding queues for the time required to transmit them all).
+* The AP buffers all unicast frames addressed to a non-AP STA in powersave mode or to a non-AP
+  MLD having no affiliated non-AP STA in active mode and operating on a link on which the unicast
+  frame can be sent (this is achieved by blocking the queues storing packets destined to such
+  non-AP STA for all the time during which the non-AP STA is in powersave mode). The presence of
+  buffered units for non-AP STAs in powersave mode is indicated in the TIM element of Beacon frames
+* When a non-AP STA in powersave mode receives a Beacon frame containing a TIM element indicating
+  the presence of buffered units at the AP, a PS-Poll frame is enqueued and channel access is
+  requested to transmit such a frame.
+* An AP replies to a PS-Poll frame received from a non-AP STA in powersave mode by sending a
+  buffered unit addressed to that non-AP STA.
+* When a non-AP STA in powersave mode receives a buffered unit from the AP in response to a PS-Poll
+  frame, it acknowledges its reception and enqueues another PS-Poll frame if the received buffered
+  unit indicates the presence of more buffered units at the AP.
+
+Non-AP STAs (possibly affiliated with a non-AP MLD) can be configured to switch between active and
+powersave mode by using the ``PowerSaveMode`` attribute of the ``PowerSaveManager`` class.
+``PowerSaveManager`` is an abstract base class and a default subclass (``DefaultPowerSaveManager``)
+is provided. The purpose of a Power Save Manager is to switch the state of a non-AP STA in powersave
+mode between active and doze (i.e., sleep), based on the notifications received from the other MAC
+components. The behavior of the default Power Save Manager can be summarized as follows:
+
+* A non-AP STA in powersave mode is allowed to sleep (i.e., transition to the doze state) if the
+  last Beacon frame received from the associated AP does not indicate the presence of buffered group
+  addressed frames nor the presence of buffered unicast frames addressed to the non-AP STA, and the
+  non-AP STA has no frames to transmit. Whether a non-AP STA in powersave mode can transition to the
+  doze state is checked in many situations:
+
+  * after receiving a Beacon frame
+  * upon completion of the association procedure
+  * after receiving a frame from the AP in response to a PS-Poll frame
+  * after receiving a group addressed frame from the AP
+  * when releasing the channel after completing a TXOP
+  * after dropping a PS-Poll frame (e.g., due to reaching the max retry limit)
+
+* When a non-AP STA in powersave mode is put to sleep, an event is scheduled to wake up the non-AP
+  STA right before the expected transmission time of the Beacon frame that is sent a number of
+  Beacon intervals equal to the value of the ``ListenInterval`` attribute of the ``PowerSaveManager``
+  class after the last received Beacon frame.
+* When an event (such as the enqueue of a data unit from the upper layer or the unblocking of a
+  queue) that triggers a channel access request occurs, the non-AP STA in powersave mode is awakened
+  (if in sleep mode).
+
+The wifi-power-save test suite (src/wifi/test/power-save-test.cc) contains an illustration of the
+reference frame exchanges.
 
 Multi-user transmissions
 ########################
@@ -1288,7 +1554,7 @@ AP MLD starts a transition delay timer, during which it does not attempt to star
 with the EMLSR client on any EMLSR link.
 
 When channel access is obtained on a link on which an aux PHY is operating, the behavior depends on
-whether the aux PHY is TX capable or not, as controlled via the the ``AuxPhyTxCapable`` attribute
+whether the aux PHY is TX capable or not, as controlled via the ``AuxPhyTxCapable`` attribute
 of the EMLSR Manager base class.
 
 Let us consider first the case in which the aux PHY is capable of
@@ -1386,7 +1652,7 @@ If the main PHY switches to the auxiliary link, it cannot transmit as soon as it
 channel switch, but it has to verify that the medium has been virtually and physically idle
 during a PIFS period by means of a NAV and CCA check. If the ``UseAuxPhyCca`` attribute of the
 Advanced EMLSR Manager is set to true or the maximum channel width supported by the aux PHY is at
-least equal to the the maximum channel width supported by the main PHY, then the NAV and CCA check
+least equal to the maximum channel width supported by the main PHY, then the NAV and CCA check
 is performed by the aux PHY in the PIFS period preceding the main PHY channel switch end. Otherwise,
 the NAV and CCA check is performed by the main PHY in the PIFS period following the main PHY channel
 switch end.

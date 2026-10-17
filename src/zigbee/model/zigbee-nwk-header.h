@@ -115,7 +115,7 @@ class ZigbeeNwkHeader : public Header
     bool IsSecurityEnabled() const;
 
     /**
-     * This flag is used by the NWK to indicate if the the initiator device of the
+     * This flag is used by the NWK to indicate if the initiator device of the
      * message is an end device and the nwkParentInformation field of the NIB has other value than
      * 0.
      */

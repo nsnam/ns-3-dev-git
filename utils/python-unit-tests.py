@@ -49,14 +49,12 @@ class TestSimulator(unittest.TestCase):
         ns.Simulator.Destroy()
         self._args_received = None
         self._cb_time = None
-        ns.cppyy.cppdef(
-            """
+        ns.cppyy.cppdef("""
             EventImpl* pythonMakeEvent(void (*f)(std::vector<std::string>), std::vector<std::string> l)
             {
                 return MakeEvent(f, l);
             }
-        """
-        )
+        """)
         event = ns.cppyy.gbl.pythonMakeEvent(callback, sys.argv)
         ns.Simulator.ScheduleNow(event)
         ns.Simulator.Run()
@@ -80,14 +78,12 @@ class TestSimulator(unittest.TestCase):
         ns.Simulator.Destroy()
         self._args_received = None
         self._cb_time = None
-        ns.cppyy.cppdef(
-            """
+        ns.cppyy.cppdef("""
             EventImpl* pythonMakeEvent2(void (*f)(std::vector<std::string>), std::vector<std::string> l)
             {
                 return MakeEvent(f, l);
             }
-        """
-        )
+        """)
         event = ns.cppyy.gbl.pythonMakeEvent2(callback, sys.argv)
         ns.Simulator.Schedule(ns.Seconds(123), event)
         ns.Simulator.Run()
@@ -113,14 +109,12 @@ class TestSimulator(unittest.TestCase):
         self._cb_time = None
         ns.cppyy.cppdef("void null(){ return; }")
         ns.Simulator.Schedule(ns.Seconds(123), ns.cppyy.gbl.null)
-        ns.cppyy.cppdef(
-            """
+        ns.cppyy.cppdef("""
             EventImpl* pythonMakeEvent3(void (*f)(std::vector<std::string>), std::vector<std::string> l)
             {
                 return MakeEvent(f, l);
             }
-        """
-        )
+        """)
         event = ns.cppyy.gbl.pythonMakeEvent3(callback, sys.argv)
         ns.Simulator.ScheduleDestroy(event)
         ns.Simulator.Run()
@@ -148,14 +142,12 @@ class TestSimulator(unittest.TestCase):
         self._args_received = None
         self._cb_time = None
         self._context_received = None
-        ns.cppyy.cppdef(
-            """
+        ns.cppyy.cppdef("""
             EventImpl* pythonMakeEvent4(void (*f)(uint32_t, std::vector<std::string>), uint32_t context, std::vector<std::string> l)
             {
                 return MakeEvent(f, context, l);
             }
-        """
-        )
+        """)
         event = ns.cppyy.gbl.pythonMakeEvent4(callback, 54321, sys.argv)
         ns.Simulator.ScheduleWithContext(54321, ns.Seconds(123), event)
         ns.Simulator.Run()
@@ -207,14 +199,12 @@ class TestSimulator(unittest.TestCase):
         def python_rx_callback(socket) -> None:
             self._received_packet = socket.Recv(maxSize=UINT32_MAX, flags=0)
 
-        ns.cppyy.cppdef(
-            """
+        ns.cppyy.cppdef("""
             Callback<void,ns3::Ptr<ns3::Socket> > make_rx_callback_test_socket(void(*func)(Ptr<Socket>))
             {
                 return MakeCallback(func);
             }
-        """
-        )
+        """)
 
         sink = ns.Socket.CreateSocket(node, ns.TypeId.LookupByName("ns3::UdpSocketFactory"))
         sink.Bind(ns.InetSocketAddress(ns.Ipv4Address.GetAny(), 80).ConvertTo())
@@ -368,8 +358,7 @@ class TestSimulator(unittest.TestCase):
 
         interfaces = address.Assign(devices)
 
-        ns.cppyy.cppdef(
-            """
+        ns.cppyy.cppdef("""
             namespace ns3
             {
                 Callback<void,Ptr<Socket> > make_rx_callback(void(*func)(Ptr<Socket>))
@@ -381,8 +370,7 @@ class TestSimulator(unittest.TestCase):
                     return MakeEvent(f, socket, packet, address);
                 }
             }
-        """
-        )
+        """)
 
         ## EchoServer application class
         class EchoServer(ns.Application):

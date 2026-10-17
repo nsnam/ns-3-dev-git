@@ -10,14 +10,17 @@
 #include "unistd.h"
 #endif
 
+#include "ns3/animation-interface.h"
 #include "ns3/basic-energy-source.h"
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/netanim-module.h"
-#include "ns3/network-module.h"
-#include "ns3/point-to-point-layout-module.h"
-#include "ns3/point-to-point-module.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-interface-container.h"
+#include "ns3/net-device-container.h"
+#include "ns3/point-to-point-helper.h"
 #include "ns3/simple-device-energy-model.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
 #include "ns3/udp-echo-helper.h"
 
 #include <iostream>

@@ -598,7 +598,7 @@ LrWpanMacHeader::Serialize(Buffer::Iterator start) const
     Buffer::Iterator i = start;
     uint16_t frameControl = GetFrameControl();
 
-    i.WriteHtolsbU16(frameControl);
+    i.WriteU16(frameControl);
     i.WriteU8(GetSeqNum());
 
     switch (m_fctrlDstAddrMode)
@@ -606,11 +606,11 @@ LrWpanMacHeader::Serialize(Buffer::Iterator start) const
     case NOADDR:
         break;
     case SHORTADDR:
-        i.WriteHtolsbU16(GetDstPanId());
+        i.WriteU16(GetDstPanId());
         WriteTo(i, m_addrShortDstAddr);
         break;
     case EXTADDR:
-        i.WriteHtolsbU16(GetDstPanId());
+        i.WriteU16(GetDstPanId());
         WriteTo(i, m_addrExtDstAddr);
         break;
     }
@@ -622,14 +622,14 @@ LrWpanMacHeader::Serialize(Buffer::Iterator start) const
     case SHORTADDR:
         if (!IsPanIdComp())
         {
-            i.WriteHtolsbU16(GetSrcPanId());
+            i.WriteU16(GetSrcPanId());
         }
         WriteTo(i, m_addrShortSrcAddr);
         break;
     case EXTADDR:
         if (!IsPanIdComp())
         {
-            i.WriteHtolsbU16(GetSrcPanId());
+            i.WriteU16(GetSrcPanId());
         }
         WriteTo(i, m_addrExtSrcAddr);
         break;
@@ -638,7 +638,7 @@ LrWpanMacHeader::Serialize(Buffer::Iterator start) const
     if (IsSecEnable())
     {
         i.WriteU8(GetSecControl());
-        i.WriteHtolsbU32(GetFrmCounter());
+        i.WriteU32(GetFrmCounter());
 
         switch (m_secctrlKeyIdMode)
         {
@@ -648,11 +648,11 @@ LrWpanMacHeader::Serialize(Buffer::Iterator start) const
             i.WriteU8(GetKeyIdIndex());
             break;
         case SHORTKEYSOURCE:
-            i.WriteHtolsbU32(GetKeyIdSrc32());
+            i.WriteU32(GetKeyIdSrc32());
             i.WriteU8(GetKeyIdIndex());
             break;
         case LONGKEYSOURCE:
-            i.WriteHtolsbU64(GetKeyIdSrc64());
+            i.WriteU64(GetKeyIdSrc64());
             i.WriteU8(GetKeyIdIndex());
             break;
         }
@@ -663,7 +663,7 @@ uint32_t
 LrWpanMacHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    uint16_t frameControl = i.ReadLsbtohU16();
+    uint16_t frameControl = i.ReadU16();
     SetFrameControl(frameControl);
 
     SetSeqNum(i.ReadU8());
@@ -672,11 +672,11 @@ LrWpanMacHeader::Deserialize(Buffer::Iterator start)
     case NOADDR:
         break;
     case SHORTADDR:
-        m_addrDstPanId = i.ReadLsbtohU16();
+        m_addrDstPanId = i.ReadU16();
         ReadFrom(i, m_addrShortDstAddr);
         break;
     case EXTADDR:
-        m_addrDstPanId = i.ReadLsbtohU16();
+        m_addrDstPanId = i.ReadU16();
         ReadFrom(i, m_addrExtDstAddr);
         break;
     }
@@ -688,7 +688,7 @@ LrWpanMacHeader::Deserialize(Buffer::Iterator start)
     case SHORTADDR:
         if (!IsPanIdComp())
         {
-            m_addrSrcPanId = i.ReadLsbtohU16();
+            m_addrSrcPanId = i.ReadU16();
         }
         else
         {
@@ -702,7 +702,7 @@ LrWpanMacHeader::Deserialize(Buffer::Iterator start)
     case EXTADDR:
         if (!IsPanIdComp())
         {
-            m_addrSrcPanId = i.ReadLsbtohU16();
+            m_addrSrcPanId = i.ReadU16();
         }
         else
         {
@@ -718,7 +718,7 @@ LrWpanMacHeader::Deserialize(Buffer::Iterator start)
     if (IsSecEnable())
     {
         SetSecControl(i.ReadU8());
-        SetFrmCounter(i.ReadLsbtohU32());
+        SetFrmCounter(i.ReadU32());
 
         switch (m_secctrlKeyIdMode)
         {
@@ -728,10 +728,10 @@ LrWpanMacHeader::Deserialize(Buffer::Iterator start)
             SetKeyId(i.ReadU8());
             break;
         case SHORTKEYSOURCE:
-            SetKeyId(i.ReadLsbtohU32(), i.ReadU8());
+            SetKeyId(i.ReadU32(), i.ReadU8());
             break;
         case LONGKEYSOURCE:
-            SetKeyId(i.ReadLsbtohU64(), i.ReadU8());
+            SetKeyId(i.ReadU64(), i.ReadU8());
             break;
         }
     }

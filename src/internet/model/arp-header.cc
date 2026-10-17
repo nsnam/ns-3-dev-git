@@ -10,6 +10,7 @@
 
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 
 namespace ns3
@@ -180,7 +181,7 @@ ArpHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteHtonU16(static_cast<uint16_t>(m_hardwareType));
     /* ipv4 */
-    i.WriteHtonU16(0x0800);
+    i.WriteHtonU16(iana::ieee802numbers::IPV4);
     i.WriteU8(m_macSource.GetLength());
     i.WriteU8(4);
     i.WriteHtonU16(m_type);
@@ -212,10 +213,14 @@ ArpHeader::Deserialize(Buffer::Iterator start)
     }
 
     m_type = static_cast<ArpType_e>(i.ReadNtohU16()); // Read OP
-    ReadFrom(i, m_macSource, hardwareAddressLen);     // Read SHA (size HLN)
-    ReadFrom(i, m_ipv4Source);                        // Read SPA (size PLN == 4)
-    ReadFrom(i, m_macDest, hardwareAddressLen);       // Read THA (size HLN)
-    ReadFrom(i, m_ipv4Dest);                          // Read TPA (size PLN == 4)
+
+    m_macSource.SetType("MacAddress", hardwareAddressLen);
+    m_macDest.SetType("MacAddress", hardwareAddressLen);
+
+    ReadFrom(i, m_macSource, hardwareAddressLen); // Read SHA (size HLN)
+    ReadFrom(i, m_ipv4Source);                    // Read SPA (size PLN == 4)
+    ReadFrom(i, m_macDest, hardwareAddressLen);   // Read THA (size HLN)
+    ReadFrom(i, m_ipv4Dest);                      // Read TPA (size PLN == 4)
     return GetSerializedSize();
 }
 

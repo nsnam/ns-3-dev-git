@@ -248,11 +248,11 @@ IePreq::SerializeInformationField(Buffer::Iterator i) const
     i.WriteU8(m_flags);
     i.WriteU8(m_hopCount);
     i.WriteU8(m_ttl);
-    i.WriteHtolsbU32(m_preqId);
+    i.WriteU32(m_preqId);
     WriteTo(i, m_originatorAddress);
-    i.WriteHtolsbU32(m_originatorSeqNumber);
-    i.WriteHtolsbU32(m_lifetime);
-    i.WriteHtolsbU32(m_metric);
+    i.WriteU32(m_originatorSeqNumber);
+    i.WriteU32(m_lifetime);
+    i.WriteU32(m_metric);
     i.WriteU8(m_destCount);
     int written = 0;
     for (auto j = m_destinations.begin(); j != m_destinations.end(); j++)
@@ -272,7 +272,7 @@ IePreq::SerializeInformationField(Buffer::Iterator i) const
         }
         i.WriteU8(flags);
         WriteTo(i, (*j)->GetDestinationAddress());
-        i.WriteHtolsbU32((*j)->GetDestSeqNumber());
+        i.WriteU32((*j)->GetDestSeqNumber());
         written++;
         if (written > m_maxSize)
         {
@@ -288,11 +288,11 @@ IePreq::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
     m_flags = i.ReadU8();
     m_hopCount = i.ReadU8();
     m_ttl = i.ReadU8();
-    m_preqId = i.ReadLsbtohU32();
+    m_preqId = i.ReadU32();
     ReadFrom(i, m_originatorAddress);
-    m_originatorSeqNumber = i.ReadLsbtohU32();
-    m_lifetime = i.ReadLsbtohU32();
-    m_metric = i.ReadLsbtohU32();
+    m_originatorSeqNumber = i.ReadU32();
+    m_lifetime = i.ReadU32();
+    m_metric = i.ReadU32();
     m_destCount = i.ReadU8();
     for (int j = 0; j < m_destCount; j++)
     {
@@ -317,7 +317,7 @@ IePreq::DeserializeInformationField(Buffer::Iterator start, uint16_t length)
         Mac48Address addr;
         ReadFrom(i, addr);
         new_element->SetDestinationAddress(addr);
-        new_element->SetDestSeqNumber(i.ReadLsbtohU32());
+        new_element->SetDestSeqNumber(i.ReadU32());
         m_destinations.push_back(new_element);
         NS_ASSERT(28 + j * 11 < length);
     }

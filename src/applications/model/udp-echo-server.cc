@@ -3,10 +3,12 @@
  *
  * SPDX-License-Identifier: GPL-2.0-only
  */
-
 #include "udp-echo-server.h"
 
+#include "seq-ts-echo-header.h"
+
 #include "ns3/address-utils.h"
+#include "ns3/boolean.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/ipv4-address.h"
@@ -41,10 +43,11 @@ UdpEchoServer::GetTypeId()
                           UintegerValue(0),
                           MakeUintegerAccessor(&UdpEchoServer::m_tos),
                           MakeUintegerChecker<uint8_t>())
-            .AddTraceSource("Rx",
-                            "A packet has been received",
-                            MakeTraceSourceAccessor(&UdpEchoServer::m_rxTrace),
-                            "ns3::Packet::TracedCallback")
+            .AddAttribute("EnableSeqTsEchoHeader",
+                          "Enable use of SeqTsEchoHeader for sequence number and timestamps",
+                          BooleanValue(false),
+                          MakeBooleanAccessor(&UdpEchoServer::m_enableSeqTsEchoHeader),
+                          MakeBooleanChecker())
             .AddTraceSource("RxWithAddresses",
                             "A packet has been received",
                             MakeTraceSourceAccessor(&UdpEchoServer::m_rxTraceWithAddresses),
@@ -53,61 +56,50 @@ UdpEchoServer::GetTypeId()
 }
 
 UdpEchoServer::UdpEchoServer()
-    : SinkApplication(DEFAULT_PORT),
-      m_socket{nullptr},
-      m_socket6{nullptr}
+    : SinkApplication(DEFAULT_PORT)
 {
     NS_LOG_FUNCTION(this);
+    m_protocolTid = TypeId::LookupByName("ns3::UdpSocketFactory");
+    m_enableSeqTsEchoHeader = false;
 }
 
 UdpEchoServer::~UdpEchoServer()
 {
     NS_LOG_FUNCTION(this);
-    m_socket = nullptr;
-    m_socket6 = nullptr;
 }
 
 void
-UdpEchoServer::StartApplication()
+UdpEchoServer::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
 
-    if (!m_socket)
+    auto local = m_local;
+    if (local.IsInvalid())
     {
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket = Socket::CreateSocket(GetNode(), tid);
-        auto local = m_local;
-        if (local.IsInvalid())
-        {
-            local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
-        }
-        if (m_socket->Bind(local) == -1)
-        {
-            NS_FATAL_ERROR("Failed to bind socket");
-        }
-        if (addressUtils::IsMulticast(m_local))
-        {
-            Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket>(m_socket);
-            if (udpSocket)
-            {
-                // equivalent to setsockopt (MCAST_JOIN_GROUP)
-                udpSocket->MulticastJoinGroup(0, m_local);
-            }
-            else
-            {
-                NS_FATAL_ERROR("Error: Failed to join multicast group");
-            }
-        }
-        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-        m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
+        local = InetSocketAddress(Ipv4Address::GetAny(), m_port);
     }
-
-    if (m_local.IsInvalid() && !m_socket6)
+    if (m_socket->Bind(local) == -1)
     {
-        // local address is not specified, so create another socket to also listen to all IPv6
-        // addresses
-        auto tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-        m_socket6 = Socket::CreateSocket(GetNode(), tid);
+        NS_FATAL_ERROR("Failed to bind socket");
+    }
+    if (addressUtils::IsMulticast(m_local))
+    {
+        Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket>(m_socket);
+        if (udpSocket)
+        {
+            // equivalent to setsockopt (MCAST_JOIN_GROUP)
+            udpSocket->MulticastJoinGroup(0, m_local);
+        }
+        else
+        {
+            NS_FATAL_ERROR("Error: Failed to join multicast group");
+        }
+    }
+    m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+    m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::HandleRead, this));
+
+    if (m_local.IsInvalid())
+    {
         auto local = Inet6SocketAddress(Ipv6Address::GetAny(), m_port);
         if (m_socket6->Bind(local) == -1)
         {
@@ -131,23 +123,6 @@ UdpEchoServer::StartApplication()
 }
 
 void
-UdpEchoServer::StopApplication()
-{
-    NS_LOG_FUNCTION(this);
-
-    if (m_socket)
-    {
-        m_socket->Close();
-        m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    }
-    if (m_socket6)
-    {
-        m_socket6->Close();
-        m_socket6->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-    }
-}
-
-void
 UdpEchoServer::HandleRead(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
@@ -157,7 +132,8 @@ UdpEchoServer::HandleRead(Ptr<Socket> socket)
     {
         Address localAddress;
         socket->GetSockName(localAddress);
-        m_rxTrace(packet);
+        m_rxTraceWithoutAddress(packet);
+        m_rxTrace(packet, from);
         m_rxTraceWithAddresses(packet, from, localAddress);
         if (InetSocketAddress::IsMatchingType(from))
         {
@@ -176,6 +152,15 @@ UdpEchoServer::HandleRead(Ptr<Socket> socket)
 
         packet->RemoveAllPacketTags();
         packet->RemoveAllByteTags();
+
+        if (m_enableSeqTsEchoHeader)
+        {
+            SeqTsEchoHeader header;
+            packet->RemoveHeader(header);
+            header.SetTsEchoReply(header.GetTsValue());
+            header.SetTsValue(Simulator::Now());
+            packet->AddHeader(header);
+        }
 
         NS_LOG_LOGIC("Echoing packet");
         socket->SendTo(packet, 0, from);

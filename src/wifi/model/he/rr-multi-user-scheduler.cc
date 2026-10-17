@@ -144,9 +144,14 @@ RrMultiUserScheduler::SelectTxFormat()
         return SU_TX;
     }
 
+    NS_ASSERT(m_edca);
+    auto txopStartTime = m_edca->GetTxopStartTime(m_linkId);
+    NS_ASSERT_MSG(txopStartTime.has_value(), "A TXOP must be ongoing");
+    auto initialFrame = (txopStartTime.value() == Simulator::Now());
+
     if (m_enableUlOfdma && m_enableBsrp &&
         (GetLastTxFormat(m_linkId) == DL_MU_TX ||
-         ((m_initialFrame || m_trigger.GetType() != TriggerFrameType::BSRP_TRIGGER) && !mpdu)))
+         ((initialFrame || m_trigger.GetType() != TriggerFrameType::BSRP_TRIGGER) && !mpdu)))
     {
         TxFormat txFormat = TrySendingBsrpTf();
 
@@ -320,11 +325,11 @@ RrMultiUserScheduler::CanSolicitStaInBsrpTf(const MasterInfo& info) const
     // check if the station is an EMLSR client that is using another link
     if (GetWifiRemoteStationManager(m_linkId)->GetEmlsrEnabled(info.address) &&
         (m_apMac->GetTxBlockedOnLink(AC_BE,
-                                     {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, *mldAddr, 0},
+                                     MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, *mldAddr, 0),
                                      m_linkId,
                                      WifiQueueBlockedReason::USING_OTHER_EMLSR_LINK) ||
          m_apMac->GetTxBlockedOnLink(AC_BE,
-                                     {WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, *mldAddr, 0},
+                                     MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, *mldAddr, 0),
                                      m_linkId,
                                      WifiQueueBlockedReason::WAITING_EMLSR_TRANSITION_DELAY)))
     {
@@ -405,7 +410,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
     NS_ASSERT(m_txParams.m_txDuration.has_value());
     m_triggerTxDuration = m_txParams.m_txDuration.value();
 
-    if (m_availableTime != Time::Min())
+    if (m_availableTime)
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
         NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
@@ -415,7 +420,7 @@ RrMultiUserScheduler::TrySendingBsrpTf()
 
         if (*m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // BSRP TF tx time
                 + m_apMac->GetWifiPhy(m_linkId)->GetSifs() + qosNullTxDuration >
-            m_availableTime)
+            *m_availableTime)
         {
             NS_LOG_DEBUG("Remaining TXOP duration is not enough for BSRP TF exchange");
             return NO_TX;
@@ -527,7 +532,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
     NS_ASSERT(m_txParams.m_txDuration.has_value());
     m_triggerTxDuration = m_txParams.m_txDuration.value();
 
-    if (m_availableTime != Time::Min())
+    if (m_availableTime)
     {
         // TryAddMpdu only considers the time to transmit the Trigger Frame
         NS_ASSERT(m_txParams.m_protection && m_txParams.m_protection->protectionTime.has_value());
@@ -535,7 +540,7 @@ RrMultiUserScheduler::TrySendingBasicTf()
                   m_txParams.m_acknowledgment->acknowledgmentTime.has_value());
 
         maxDuration = Min(maxDuration,
-                          m_availableTime - *m_txParams.m_protection->protectionTime -
+                          *m_availableTime - *m_txParams.m_protection->protectionTime -
                               *m_txParams.m_txDuration - m_apMac->GetWifiPhy(m_linkId)->GetSifs() -
                               *m_txParams.m_acknowledgment->acknowledgmentTime);
         if (maxDuration.IsNegative())
@@ -790,13 +795,10 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
     m_txParams.m_txVector.SetGuardInterval(heConfiguration->GetGuardInterval());
     m_txParams.m_txVector.SetBssColor(heConfiguration->m_bssColor);
 
-    // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
-    // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
-    // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016).
-    // For the moment, we are considering just one MPDU per receiver.
-    Time actualAvailableTime = (m_initialFrame ? Time::Min() : m_availableTime);
+    // The TXOP holder may exceed the TXOP limit only if it does not transmit more than one Data
+    // or Management frame in the TXOP, only if it does not transmit a DL MU-MIMO PPDU in the TXOP
+    // (Sec. 10.23.2.9 of 802.11-2024)
 
-    // iterate over the associated stations until an enough number of stations is identified
     auto staIt = m_staListDl[primaryAc].begin();
     m_candidates.clear();
 
@@ -879,7 +881,7 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                         staIt->aid,
                         {ru, suTxVector.GetMode().GetMcsValue(), suTxVector.GetNss()});
 
-                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, m_txParams, actualAvailableTime))
+                    if (!GetHeFem(m_linkId)->TryAddMpdu(mpdu, m_txParams, m_availableTime))
                     {
                         NS_LOG_DEBUG("Adding the peeked frame violates the time constraints");
                         m_txParams.m_txVector = txVectorCopy;
@@ -898,6 +900,11 @@ RrMultiUserScheduler::TrySendingDlMuPpdu()
                 {
                     NS_LOG_DEBUG("No frames to send to " << staIt->address << " with TID=" << +tid);
                 }
+            }
+            else
+            {
+                NS_LOG_DEBUG("No BA agreement established with " << staIt->address
+                                                                 << " for TID=" << +tid);
             }
         }
 
@@ -935,7 +942,8 @@ RrMultiUserScheduler::FinalizeTxVector(WifiTxVector& txVector)
                                                             nCentral26TonesRus,
                                                             txVector.GetModulationClass());
 
-    NS_LOG_DEBUG(nRusAssigned << " stations are being assigned a " << ruType << " RU");
+    NS_LOG_DEBUG(nRusAssigned << " station" << ((nRusAssigned > 1) ? "s are" : " is")
+                              << " being assigned a " << ruType << " RU");
 
     if (!m_useCentral26TonesRus || m_candidates.size() == nRusAssigned)
     {
@@ -1039,15 +1047,13 @@ RrMultiUserScheduler::ComputeDlMuInfo()
     Ptr<WifiMpdu> mpdu;
 
     // Compute the TX params (again) by using the stored MPDUs and the final TXVECTOR
-    Time actualAvailableTime = (m_initialFrame ? Time::Min() : m_availableTime);
-
     for (const auto& candidate : m_candidates)
     {
         mpdu = candidate.second;
         NS_ASSERT(mpdu);
 
         bool ret [[maybe_unused]] =
-            GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, actualAvailableTime);
+            GetHeFem(m_linkId)->TryAddMpdu(mpdu, dlMuInfo.txParams, m_availableTime);
         NS_ASSERT_MSG(ret,
                       "Weird that an MPDU does not meet constraints when "
                       "transmitted over a larger RU");

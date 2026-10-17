@@ -5,6 +5,7 @@
  *
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  *         Michele Muccio <michelemuccio@virgilio.it>
+ *         Adnan Rashid <adnanrashidpk@gmail.com>
  */
 
 #ifndef SIXLOWPAN_NET_DEVICE_H
@@ -27,6 +28,7 @@ namespace ns3
 class Node;
 class UniformRandomVariable;
 class EventId;
+class SixLowPanMeshUnderRouting;
 
 /**
  * @defgroup sixlowpan 6LoWPAN
@@ -72,12 +74,18 @@ class SixLowPanNetDevice : public NetDevice
         DROP_DISALLOWED_COMPRESSION,         //!< HC1 while in IPHC mode or vice-versa
         DROP_SATETFUL_DECOMPRESSION_PROBLEM, //!< Decompression failed due to missing or expired
                                              //!< context
+        DROP_MESH_NOT_ENABLED, //!< Mesh-under packet received with UseMeshUnder disabled
     };
 
     /**
-     * @brief The protocol number for 6LoWPAN (0xA0ED) - see \RFC{7973}.
+     * Compression type.
      */
-    static constexpr uint16_t PROT_NUMBER{0xA0ED};
+    enum CompressionType_e
+    {
+        HC1,  //!< HC1 (RFC4944)
+        IPHC, //!< IPHC (RFC6282)
+        GHC,  //!< GHC (RFC7400)
+    };
 
     /**
      * @brief Get the type ID.
@@ -148,6 +156,26 @@ class SixLowPanNetDevice : public NetDevice
     void SetNetDevice(Ptr<NetDevice> device);
 
     /**
+     * @brief Set the mesh-under forwarding policy.
+     *
+     * The forwarding policy decides whether (and when) to rebroadcast
+     * a mesh-under packet. The MeshUnderRouting attribute default gives
+     * each device its own SixLowPanSimpleFlooding instance at construction,
+     * preserving the historical unconditional-rebroadcast behavior; this
+     * method (used, e.g., by the helper) replaces that instance.
+     *
+     * @param [in] routing A smart pointer to the policy object.
+     */
+    void SetMeshUnderRouting(Ptr<SixLowPanMeshUnderRouting> routing);
+
+    /**
+     * @brief Get the current mesh-under forwarding policy.
+     *
+     * @return A smart pointer to the active policy.
+     */
+    Ptr<SixLowPanMeshUnderRouting> GetMeshUnderRouting() const;
+
+    /**
      * Assign a fixed random variable stream number to the random variables
      * used by this model.  Return the number of streams (possibly zero) that
      * have been assigned.
@@ -194,17 +222,18 @@ class SixLowPanNetDevice : public NetDevice
      *
      * A context with a zero validLifetime will be immediately removed.
      *
-     * @param [in] contextId context id (most be between 0 and 15 included).
+     * @param [in] contextId context id (must be between 0 and 15 included).
      * @param [in] contextPrefix context prefix to be used in compression/decompression.
      * @param [in] compressionAllowed compression and decompression allowed (true), decompression
      * only (false).
      * @param [in] validLifetime validity time (relative to the actual time).
-     *
+     * @param [in] source source of the context.
      */
     void AddContext(uint8_t contextId,
                     Ipv6Prefix contextPrefix,
                     bool compressionAllowed,
-                    Time validLifetime);
+                    Time validLifetime,
+                    Ipv6Address source = Ipv6Address::GetAny());
 
     /**
      * Get a context used in IPHC stateful compression.
@@ -250,6 +279,7 @@ class SixLowPanNetDevice : public NetDevice
     void RemoveContext(uint8_t contextId);
 
   protected:
+    void DoInitialize() override;
     void DoDispose() override;
 
   private:
@@ -290,6 +320,21 @@ class SixLowPanNetDevice : public NetDevice
                 bool doSendFrom);
 
     /**
+     * @brief Forward a previously assembled mesh-under packet.
+     *
+     * Used by the mesh-under routing policy. The packet must already
+     * carry MESH and BC0 headers
+     * (with the decremented hop count); this method simply hands it
+     * to the underlying NetDevice for broadcast transmission. The
+     * protocol number is bound at callback creation to the value the
+     * frame was received with.
+     *
+     * @param [in] protocol The L2 protocol number to send with.
+     * @param [in] packet The fully assembled mesh-under packet.
+     */
+    void ForwardMeshPacket(uint16_t protocol, Ptr<Packet> packet);
+
+    /**
      * The callback used to notify higher layers that a packet has been received.
      */
     NetDevice::ReceiveCallback m_rxCallback;
@@ -304,6 +349,20 @@ class SixLowPanNetDevice : public NetDevice
      * @brief Callback to trace TX (transmission) packets.
      *
      * Data passed:
+     * @li Packet received (including 6LoWPAN header)
+     * @li Ptr to SixLowPanNetDevice
+     * @li interface index
+     * @deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+     * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+     * in a future release.
+     */
+    // NS_DEPRECATED() - tag for future removal
+    TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_txTrace;
+
+    /**
+     * @brief Callback to trace TX (transmission) packets.
+     *
+     * Data passed:
      * \li Packet received (including 6LoWPAN header)
      * \li Ptr to SixLowPanNetDevice
      * \li interface index
@@ -311,8 +370,21 @@ class SixLowPanNetDevice : public NetDevice
      * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
      * in a future release.
      */
+    TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_txPreTrace;
+
+    /**
+     * @brief Callback to trace RX (reception) packets.
+     *
+     * Data passed:
+     * @li Packet received (including 6LoWPAN header)
+     * @li Ptr to SixLowPanNetDevice
+     * @li interface index
+     * @deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
+     * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
+     * in a future release.
+     */
     // NS_DEPRECATED() - tag for future removal
-    TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_txTrace;
+    TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_rxTrace;
 
     /**
      * @brief Callback to trace RX (reception) packets.
@@ -325,17 +397,16 @@ class SixLowPanNetDevice : public NetDevice
      * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
      * in a future release.
      */
-    // NS_DEPRECATED() - tag for future removal
-    TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_rxTrace;
+    TracedCallback<Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_rxPostTrace;
 
     /**
      * @brief Callback to trace drop packets.
      *
      * Data passed:
-     * \li DropReason
-     * \li Packet dropped (including 6LoWPAN header)
-     * \li Ptr to SixLowPanNetDevice
-     * \li interface index
+     * @li DropReason
+     * @li Packet dropped (including 6LoWPAN header)
+     * @li Ptr to SixLowPanNetDevice
+     * @li interface index
      * @deprecated The non-const \c Ptr<SixLowPanNetDevice> argument
      * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
      * in a future release.
@@ -343,9 +414,12 @@ class SixLowPanNetDevice : public NetDevice
     // NS_DEPRECATED() - tag for future removal
     TracedCallback<DropReason, Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_dropTrace;
 
+    /// Trace fired when a received packet is dropped because no protocol handler consumed it.
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
+
     /**
      * @brief Compress the headers according to HC1 compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be compressed.
      * @param [in] src The MAC source address.
      * @param [in] dst The MAC destination address.
      * @return The size of the removed headers.
@@ -354,7 +428,7 @@ class SixLowPanNetDevice : public NetDevice
 
     /**
      * @brief Decompress the headers according to HC1 compression.
-     * @param [in] packet the packet to be compressed.
+     * @param [in,out] packet the packet to be compressed.
      * @param [in] src the MAC source address.
      * @param [in] dst the MAC destination address.
      */
@@ -362,7 +436,7 @@ class SixLowPanNetDevice : public NetDevice
 
     /**
      * @brief Compress the headers according to IPHC compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be compressed.
      * @param [in] src The MAC source address.
      * @param [in] dst The MAC destination address.
      * @return The size of the removed headers.
@@ -374,11 +448,11 @@ class SixLowPanNetDevice : public NetDevice
      * @param [in] headerType The header kind to be compressed.
      * @return True if the header can be compressed.
      */
-    bool CanCompressLowPanNhc(uint8_t headerType);
+    bool CanCompressLowPanNhc(uint8_t headerType) const;
 
     /**
      * @brief Decompress the headers according to IPHC compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be compressed.
      * @param [in] src The MAC source address.
      * @param [in] dst The MAC destination address.
      * @return true if the packet can not be decompressed due to wrong context information.
@@ -387,7 +461,7 @@ class SixLowPanNetDevice : public NetDevice
 
     /**
      * @brief Compress the headers according to NHC compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be compressed.
      * @param [in] headerType The header type.
      * @param [in] src The MAC source address.
      * @param [in] dst The MAC destination address.
@@ -400,7 +474,7 @@ class SixLowPanNetDevice : public NetDevice
 
     /**
      * @brief Decompress the headers according to NHC compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be compressed.
      * @param [in] src The MAC source address.
      * @param [in] dst The MAC destination address.
      * @param [in] srcAddress The IPv6 source address.
@@ -416,7 +490,7 @@ class SixLowPanNetDevice : public NetDevice
 
     /**
      * @brief Compress the headers according to NHC compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be compressed.
      * @param [in] omitChecksum Omit UDP checksum (if true).
      * @return The size of the removed headers.
      */
@@ -424,11 +498,85 @@ class SixLowPanNetDevice : public NetDevice
 
     /**
      * @brief Decompress the headers according to NHC compression.
-     * @param [in] packet The packet to be compressed.
+     * @param [in,out] packet The packet to be decompressed.
      * @param [in] saddr The IPv6 source address.
      * @param [in] daddr The IPv6 destination address.
      */
     void DecompressLowPanUdpNhc(Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr);
+
+    /**
+     * @brief Compress UDP using GHC (RFC 7400).
+     * @param [in,out] packet The packet to be compressed.
+     * @param [in] omitChecksum Omit UDP checksum.
+     * @param [in] srcAddress The IPv6 source address.
+     * @param [in] dstAddress The IPv6 destination address.
+     * @return The size of the removed headers, or 0 on failure.
+     */
+    uint32_t CompressLowPanGhcUdp(Ptr<Packet> packet,
+                                  bool omitChecksum,
+                                  Ipv6Address srcAddress,
+                                  Ipv6Address dstAddress);
+
+    /**
+     * @brief Decompress the UDP header compressed with GHC (RFC 7400).
+     * @param [in,out] packet The packet to be decompressed.
+     * @param [in] saddr The IPv6 source address.
+     * @param [in] daddr The IPv6 destination address.
+     */
+    void DecompressLowPanGhcUdp(Ptr<Packet> packet, Ipv6Address saddr, Ipv6Address daddr);
+
+    /**
+     * @brief Compress an extension header using GHC (RFC 7400).
+     * @param [in,out] packet The packet to be compressed.
+     * @param [in] headerType The IPv6 next header type of the extension.
+     * @param [in] src The MAC source address.
+     * @param [in] dst The MAC destination address.
+     * @param [in] srcAddress The IPv6 source address.
+     * @param [in] dstAddress The IPv6 destination address.
+     * @return The size of the removed headers, or 0 on failure.
+     */
+    uint32_t CompressLowPanGhcNhc(Ptr<Packet> packet,
+                                  uint8_t headerType,
+                                  const Address& src,
+                                  const Address& dst,
+                                  Ipv6Address srcAddress,
+                                  Ipv6Address dstAddress);
+
+    /**
+     * @brief Decompress a GHC extension header (RFC 7400).
+     * @param [in,out] packet The packet to be decompressed.
+     * @param [in] src The MAC source address.
+     * @param [in] dst The MAC destination address.
+     * @param [in] srcAddress The IPv6 source address.
+     * @param [in] dstAddress The IPv6 destination address.
+     * @return A std::pair containing the decompressed header type and an error flag.
+     */
+    std::pair<uint8_t, bool> DecompressLowPanGhcNhc(Ptr<Packet> packet,
+                                                    const Address& src,
+                                                    const Address& dst,
+                                                    Ipv6Address srcAddress,
+                                                    Ipv6Address dstAddress);
+
+    /**
+     * @brief Compress ICMPv6 using GHC (RFC 7400).
+     * @param [in,out] packet The packet to be compressed.
+     * @param [in] srcAddress The IPv6 source address.
+     * @param [in] dstAddress The IPv6 destination address.
+     * @return The size of the removed headers, or 0 on failure.
+     */
+    uint32_t CompressLowPanGhcIcmpv6(Ptr<Packet> packet,
+                                     Ipv6Address srcAddress,
+                                     Ipv6Address dstAddress);
+
+    /**
+     * @brief Decompress a GHC ICMPv6 header (RFC 7400).
+     * @param [in,out] packet The packet to be decompressed.
+     * @param [in] srcAddress The IPv6 source address.
+     * @param [in] dstAddress The IPv6 destination address.
+     */
+    void DecompressLowPanGhcIcmpv6(Ptr<Packet> packet,
+                                   Ipv6Address srcAddress,
+                                   Ipv6Address dstAddress);
 
     /**
      * Fragment identifier type: src/dst address src/dst port.
@@ -460,7 +608,7 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * @brief A Set of Fragments.
      */
-    class Fragments : public SimpleRefCount<Fragments>
+    class Fragments
     {
       public:
         /**
@@ -595,7 +743,7 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * Container for fragment key -> fragments.
      */
-    typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
+    typedef std::map<FragmentKey_t, std::shared_ptr<Fragments>> MapFragments_t;
 
     MapFragments_t m_fragments;       //!< Fragments hold to be rebuilt.
     Time m_fragmentExpirationTimeout; //!< Time limit for fragment rebuilding.
@@ -606,16 +754,36 @@ class SixLowPanNetDevice : public NetDevice
      */
     uint16_t m_fragmentReassemblyListSize;
 
-    bool m_useIphc; //!< Use IPHC or HC1.
+    CompressionType_e m_compressionType; //!< Compression type
 
-    bool m_meshUnder;            //!< Use a mesh-under routing.
+    bool m_meshUnder;            //!< The node is part of a mesh-under network (UseMeshUnder).
+    bool m_forwardMesh;          //!< The node forwards received mesh-under packets.
     uint8_t m_bc0Serial;         //!< Serial number used in BC0 header.
     uint8_t m_meshUnderHopsLeft; //!< Start value for mesh-under hops left.
-    uint16_t m_meshCacheLength;  //!< length of the cache for each source.
-    Ptr<RandomVariableStream>
-        m_meshUnderJitter; //!< Random variable for the mesh-under packet retransmission.
-    std::map<Address /* OriginatorAddress */, std::list<uint8_t /* SequenceNumber */>>
-        m_seenPkts; //!< Seen packets, memorized by OriginatorAddress, SequenceNumber.
+    Ptr<SixLowPanMeshUnderRouting>
+        m_meshUnderRouting; //!< Pluggable mesh-under forwarding policy. The MeshUnderRouting
+                            //!< attribute default creates a SixLowPanSimpleFlooding per device.
+
+    /**
+     * @brief Set the policy's MeshUnderJitter (deprecated device attribute).
+     * @param jitter The forwarding jitter random variable.
+     */
+    void SetDeprecatedMeshUnderJitter(Ptr<RandomVariableStream> jitter);
+    /**
+     * @brief Get the policy's MeshUnderJitter (deprecated device attribute).
+     * @return The forwarding jitter random variable, or nullptr.
+     */
+    Ptr<RandomVariableStream> GetDeprecatedMeshUnderJitter() const;
+    /**
+     * @brief Set the policy's MeshCacheLength (deprecated device attribute).
+     * @param length The duplicate-cache length.
+     */
+    void SetDeprecatedMeshCacheLength(uint16_t length);
+    /**
+     * @brief Get the policy's MeshCacheLength (deprecated device attribute).
+     * @return The duplicate-cache length.
+     */
+    uint16_t GetDeprecatedMeshCacheLength() const;
 
     Ptr<Node> m_node;           //!< Smart pointer to the Node.
     Ptr<NetDevice> m_netDevice; //!< Smart pointer to the underlying NetDevice.
@@ -636,6 +804,7 @@ class SixLowPanNetDevice : public NetDevice
         bool compressionAllowed;  //!< compression and decompression allowed (true), decompression
                                   //!< only (false)
         Time validLifetime;       //!< validity period
+        Ipv6Address source;       //!< Source of the context ("::" if from the Helper)
     };
 
     std::map<uint8_t, ContextEntry>
@@ -644,8 +813,8 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * @brief Finds if the given unicast address matches a context for compression
      *
-     * \param[in] address the address to check
-     * \param[out] contextId the context found
+     * @param [in] address the address to check
+     * @param [out] contextId the context found
      * @return true if a valid context has been found
      */
     bool FindUnicastCompressionContext(Ipv6Address address, uint8_t& contextId);
@@ -653,8 +822,8 @@ class SixLowPanNetDevice : public NetDevice
     /**
      * @brief Finds if the given multicast address matches a context for compression
      *
-     * \param[in] address the address to check
-     * \param[out] contextId the context found
+     * @param [in] address the address to check
+     * @param [out] contextId the context found
      * @return true if a valid context has been found
      */
     bool FindMulticastCompressionContext(Ipv6Address address, uint8_t& contextId);

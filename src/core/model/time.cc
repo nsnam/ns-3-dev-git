@@ -11,8 +11,7 @@
 #include "log.h"
 #include "nstime.h"
 
-#include <cmath>   // pow
-#include <iomanip> // showpos
+#include <cmath> // pow
 #include <mutex>
 #include <sstream>
 
@@ -48,7 +47,7 @@ const int32_t UNIT_COEFF[Time::LAST] = {315360, 864, 36, 6, 1, 1, 1, 1, 1, 1};
 long double
 Scale(Time::Unit u)
 {
-    return UNIT_COEFF[u] * std::pow(10L, UNIT_POWER[u]);
+    return UNIT_COEFF[u] * std::pow(10.0L, UNIT_POWER[u]);
 }
 
 /**
@@ -77,8 +76,21 @@ const long double* UNIT_VALUE = InitUnitValue();
 // static
 Time::MarkedTimes* Time::g_markingTimes = nullptr;
 
-/// The static mutex for critical sections around modification of Time::g_markingTimes.
-static std::mutex g_markingMutex;
+/**
+ * Get the mutex for critical sections around modification of Time::g_markingTimes.
+ *
+ * Constructed on first use, since Time::StaticInit() runs during static
+ * initialization of other compilation units, and std::mutex is not
+ * constant-initialized on every platform (e.g. MinGW).
+ *
+ * @return The marking mutex.
+ */
+static std::mutex&
+MarkingMutex()
+{
+    static std::mutex mutex;
+    return mutex;
+}
 
 // Function called to force static initialization
 // static
@@ -87,7 +99,7 @@ Time::StaticInit()
 {
     static bool firstTime = true;
 
-    std::unique_lock lock{g_markingMutex};
+    std::unique_lock lock{MarkingMutex()};
 
     if (firstTime)
     {
@@ -219,34 +231,33 @@ Time::SetResolution(Unit unit, Resolution* resolution, const bool convert /* = t
 
     for (int i = 0; i < Time::LAST; i++)
     {
-        int shift = UNIT_POWER[i] - UNIT_POWER[(int)unit];
+        int shift = UNIT_POWER[i] - UNIT_POWER[unit];
         int quotient = 1;
-        if (UNIT_COEFF[i] > UNIT_COEFF[(int)unit])
+        if (UNIT_COEFF[i] > UNIT_COEFF[unit])
         {
-            quotient = UNIT_COEFF[i] / UNIT_COEFF[(int)unit];
-            NS_ASSERT(quotient * UNIT_COEFF[(int)unit] == UNIT_COEFF[i]);
+            quotient = UNIT_COEFF[i] / UNIT_COEFF[unit];
+            NS_ASSERT(quotient * UNIT_COEFF[unit] == UNIT_COEFF[i]);
         }
-        else if (UNIT_COEFF[i] < UNIT_COEFF[(int)unit])
+        else if (UNIT_COEFF[i] < UNIT_COEFF[unit])
         {
-            quotient = UNIT_COEFF[(int)unit] / UNIT_COEFF[i];
-            NS_ASSERT(quotient * UNIT_COEFF[i] == UNIT_COEFF[(int)unit]);
+            quotient = UNIT_COEFF[unit] / UNIT_COEFF[i];
+            NS_ASSERT(quotient * UNIT_COEFF[i] == UNIT_COEFF[unit]);
         }
-        NS_LOG_DEBUG("SetResolution for unit " << (int)unit << " loop iteration " << i
-                                               << " has shift " << shift << " has quotient "
-                                               << quotient);
+        NS_LOG_DEBUG("SetResolution for unit " << unit << " loop iteration " << i << " has shift "
+                                               << shift << " has quotient " << quotient);
 
         Information* info = &resolution->info[i];
-        if ((std::pow(10, std::fabs(shift)) * quotient) >
+        if ((std::pow(10.0, std::fabs(shift)) * quotient) >
             static_cast<double>(std::numeric_limits<int64_t>::max()))
         {
-            NS_LOG_DEBUG("SetResolution for unit " << (int)unit << " loop iteration " << i
+            NS_LOG_DEBUG("SetResolution for unit " << unit << " loop iteration " << i
                                                    << " marked as INVALID");
             info->isValid = false;
             continue;
         }
-        auto factor = static_cast<int64_t>(std::pow(10, std::fabs(shift)) * quotient);
-        double realFactor = std::pow(10, (double)shift) * static_cast<double>(UNIT_COEFF[i]) /
-                            UNIT_COEFF[(int)unit];
+        auto factor = static_cast<int64_t>(std::pow(10.0, std::fabs(shift)) * quotient);
+        double realFactor = std::pow(10.0, shift) * static_cast<double>(UNIT_COEFF[i]) /
+                            UNIT_COEFF[static_cast<int>(unit)];
         NS_LOG_DEBUG("SetResolution factor " << factor << " real factor " << realFactor);
         info->factor = factor;
         // here we could equivalently check for realFactor == 1.0 but it's better
@@ -280,11 +291,13 @@ Time::SetResolution(Unit unit, Resolution* resolution, const bool convert /* = t
     resolution->unit = unit;
 }
 
+#ifdef _WIN32
 bool
 Time::MarkingTimes()
 {
     return (g_markingTimes != nullptr);
 }
+#endif
 
 // static
 void
@@ -304,7 +317,7 @@ Time::ClearMarkedTimes()
      * Instead, we copy this body into ConvertTimes.
      */
 
-    std::unique_lock lock{g_markingMutex};
+    std::unique_lock lock{MarkingMutex()};
 
     NS_LOG_FUNCTION_NOARGS();
     if (g_markingTimes)
@@ -319,7 +332,7 @@ Time::ClearMarkedTimes()
 void
 Time::Mark(Time* const time)
 {
-    std::unique_lock lock{g_markingMutex};
+    std::unique_lock lock{MarkingMutex()};
 
     NS_LOG_FUNCTION(time);
     NS_ASSERT(time != nullptr);
@@ -342,7 +355,7 @@ Time::Mark(Time* const time)
 void
 Time::Clear(Time* const time)
 {
-    std::unique_lock lock{g_markingMutex};
+    std::unique_lock lock{MarkingMutex()};
 
     NS_LOG_FUNCTION(time);
     NS_ASSERT(time != nullptr);
@@ -370,7 +383,7 @@ Time::Clear(Time* const time)
 void
 Time::ConvertTimes(const Unit unit)
 {
-    std::unique_lock lock{g_markingMutex};
+    std::unique_lock lock{MarkingMutex()};
 
     NS_LOG_FUNCTION_NOARGS();
 

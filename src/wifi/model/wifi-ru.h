@@ -11,6 +11,7 @@
 
 #include "ns3/eht-ru.h"
 #include "ns3/he-ru.h"
+#include "ns3/wifi-export.h"
 
 #include <variant>
 
@@ -20,7 +21,7 @@ namespace ns3
 /**
  * This class handles RU variants.
  */
-class WifiRu
+class WIFI_EXPORT WifiRu
 {
   public:
     /// variant of the RU specification
@@ -29,7 +30,7 @@ class WifiRu
     /**
      * Struct providing a function call operator to compare two RUs.
      */
-    struct RuSpecCompare
+    struct WIFI_EXPORT RuSpecCompare
     {
         /**
          * Constructor.
@@ -244,7 +245,7 @@ class WifiRu
  * @param ru the RU variant
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiRu::RuSpec& ru);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiRu::RuSpec& ru);
 
 } // namespace ns3
 

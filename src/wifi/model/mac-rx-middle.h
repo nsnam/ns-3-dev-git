@@ -11,6 +11,7 @@
 
 #include "ns3/callback.h"
 #include "ns3/simple-ref-count.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 
@@ -28,7 +29,7 @@ class WifiMpdu;
  *
  * This class handles duplicate detection and recomposition of fragments.
  */
-class MacRxMiddle : public SimpleRefCount<MacRxMiddle>
+class WIFI_EXPORT MacRxMiddle : public SimpleRefCount<MacRxMiddle>
 {
   public:
     /**

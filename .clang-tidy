@@ -1,4 +1,4 @@
-Checks: >
+Checks: |
   -*,
   bugprone-argument-comment,
   bugprone-bool-pointer-implicit-conversion,
@@ -14,6 +14,7 @@ Checks: >
   bugprone-terminating-continue,
   bugprone-too-small-loop-variable,
   bugprone-virtual-near-miss,
+  misc-header-include-cycle,
   misc-redundant-expression,
   misc-static-assert,
   modernize-make-shared,
@@ -58,5 +59,5 @@ ExtraArgsBefore:
   - -Wno-unknown-warning-option
 
 FormatStyle: "file"
-HeaderFilterRegex: ".*(ns|NS).*/(contrib|examples|src|scratch|utils)/*/.*h"
-UseColor: true
+HeaderFilterRegex: "(contrib|examples|scratch|src|utils)/.*\\.h$"
+ExcludeHeaderFilterRegex: "(third-party|eigen[0-9]*)/.*"

@@ -585,8 +585,7 @@ Ping::StartApplication()
         }
         else if (Ipv6Address::IsMatchingType(m_interfaceAddress))
         {
-            Inet6SocketAddress senderInet =
-                Inet6SocketAddress(Ipv6Address::ConvertFrom(m_interfaceAddress));
+            auto senderInet = Inet6SocketAddress(Ipv6Address::ConvertFrom(m_interfaceAddress));
             int status = m_socket->Bind(senderInet);
             NS_ASSERT_MSG(status == 0, "Failed to bind IPv6 socket");
         }

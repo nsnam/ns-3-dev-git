@@ -13,6 +13,9 @@
  *
  */
 
+#ifndef WIFI_EXAMPLE_APPS_H
+#define WIFI_EXAMPLE_APPS_H
+
 #include "ns3/application.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -115,3 +118,5 @@ class Receiver : public Application
     Ptr<CounterCalculator<>> m_calc;           //!< Counter of the number of received packets
     Ptr<TimeMinMaxAvgTotalCalculator> m_delay; //!< Delay calculator
 };
+
+#endif // WIFI_EXAMPLE_APPS_H

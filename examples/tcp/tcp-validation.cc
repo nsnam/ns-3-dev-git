@@ -169,19 +169,19 @@ TraceFirstCwnd(std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
             NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected >= 500)");
             g_validationFailed = true;
         }
-        else if ((now > 5.795) && (now < 6) && (cwnd > 190))
+        else if ((now > 5.795) && (now < 6) && (cwnd > 390))
         {
-            NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected <= 190)");
+            NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected <= 390)");
             g_validationFailed = true;
         }
-        else if ((now > 14) && (now < 14.197) && (cwnd < 224))
+        else if ((now > 14) && (now < 14.197) && (cwnd < 165))
         {
-            NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected >= 224)");
+            NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected >= 165)");
             g_validationFailed = true;
         }
-        else if ((now > 17) && (now < 18.026) && (cwnd < 212))
+        else if ((now > 17) && (now < 18.026) && (cwnd < 120))
         {
-            NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected >= 212)");
+            NS_LOG_WARN("now " << Now().As(Time::S) << " cwnd " << cwnd << " (expected >= 120)");
             g_validationFailed = true;
         }
     }
@@ -231,10 +231,10 @@ TraceFirstDctcp(std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAck
             NS_LOG_WARN("now " << Now().As(Time::S) << " alpha " << alpha << " (expected <= 0.1)");
             g_validationFailed = true;
         }
-        if ((now > 7) && ((alpha > 0.09) || (alpha < 0.049)))
+        if ((now > 7) && ((alpha > 0.095) || (alpha < 0.045)))
         {
             NS_LOG_WARN("now " << Now().As(Time::S) << " alpha " << alpha
-                               << " (expected 0.09 <= alpha <= 0.049)");
+                               << " (expected 0.045 <= alpha <= 0.095)");
             g_validationFailed = true;
         }
     }

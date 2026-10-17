@@ -8,9 +8,12 @@
 
 #include "data-rate.h"
 
+#include "ns3/abort.h"
 #include "ns3/fatal-error.h"
 #include "ns3/log.h"
 #include "ns3/nstime.h"
+
+#include <cmath>
 
 namespace ns3
 {
@@ -180,42 +183,6 @@ DataRate::operator*=(uint64_t rhs)
     return *this;
 }
 
-bool
-DataRate::operator<(const DataRate& rhs) const
-{
-    return m_bps < rhs.m_bps;
-}
-
-bool
-DataRate::operator<=(const DataRate& rhs) const
-{
-    return m_bps <= rhs.m_bps;
-}
-
-bool
-DataRate::operator>(const DataRate& rhs) const
-{
-    return m_bps > rhs.m_bps;
-}
-
-bool
-DataRate::operator>=(const DataRate& rhs) const
-{
-    return m_bps >= rhs.m_bps;
-}
-
-bool
-DataRate::operator==(const DataRate& rhs) const
-{
-    return m_bps == rhs.m_bps;
-}
-
-bool
-DataRate::operator!=(const DataRate& rhs) const
-{
-    return m_bps != rhs.m_bps;
-}
-
 Time
 DataRate::CalculateBytesTxTime(uint32_t bytes) const
 {
@@ -245,6 +212,20 @@ DataRate::DataRate(std::string rate)
     {
         NS_FATAL_ERROR("Could not parse rate: " << rate);
     }
+}
+
+DataRate::DataRate(double bits, Time span)
+{
+    NS_LOG_FUNCTION(this << bits << span.As(Time::S));
+    NS_ASSERT_MSG(span.IsStrictlyPositive(), "DataRate: time span must be positive");
+    // Work in time steps rather than seconds, since a fractional number of
+    // seconds is not exactly representable in binary floating point.
+    const double numerator = bits * static_cast<double>(Seconds(1).GetTimeStep());
+    const auto denominator = static_cast<double>(span.GetTimeStep());
+    NS_ABORT_MSG_UNLESS(std::fmod(numerator, denominator) == 0.0,
+                        "DataRate: " << bits << " bits over " << span.As(Time::S)
+                                     << " is not an integral number of bits/s");
+    m_bps = static_cast<uint64_t>(numerator / denominator);
 }
 
 /* For printing of data rate */

@@ -13,7 +13,6 @@
 #include "ns3/simulator.h"
 
 #include <fstream>
-#include <limits>
 #include <sstream>
 
 #define PERIODIC_CHECK_INTERVAL (Seconds(1))
@@ -541,7 +540,7 @@ FlowMonitor::ResetAllStats()
         flowStat.jitterSum = Seconds(0);
         flowStat.lastDelay = Seconds(0);
         flowStat.maxDelay = Seconds(0);
-        flowStat.minDelay = Seconds(std::numeric_limits<double>::max());
+        flowStat.minDelay = Time::Max();
         flowStat.txBytes = 0;
         flowStat.rxBytes = 0;
         flowStat.txPackets = 0;

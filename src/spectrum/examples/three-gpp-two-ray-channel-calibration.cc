@@ -175,11 +175,14 @@ ComputeEndToEndGain(std::string cond,
     bArray->SetBeamformingVector(bArray->GetBeamformingVector(angleAtoB));
 
     // Compute the received power due to multipath fading
-    auto rxParams = threeGppSpectrumLossModel->DoCalcRxPowerSpectralDensity(signalParams,
-                                                                            aMob,
-                                                                            bMob,
-                                                                            aArray,
-                                                                            bArray);
+    auto rxParams =
+        threeGppSpectrumLossModel->DoCalcRxPowerSpectralDensity(signalParams,
+                                                                aMob,
+                                                                bMob,
+                                                                aArray,
+                                                                bArray,
+                                                                aArray->GetBeamformingVector(),
+                                                                bArray->GetBeamformingVector());
     double rxPower = ComputePowerSpectralDensityOverallPower(rxParams->psd);
 
     return rxPower / txPower;

@@ -8,6 +8,7 @@
 
 #include "ipv4-flow-classifier.h"
 
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/packet.h"
 #include "ns3/tcp-header.h"
 #include "ns3/udp-header.h"
@@ -16,10 +17,6 @@
 
 namespace ns3
 {
-
-/* see http://www.iana.org/assignments/protocol-numbers */
-const uint8_t TCP_PROT_NUMBER = 6;  //!< TCP Protocol number
-const uint8_t UDP_PROT_NUMBER = 17; //!< UDP Protocol number
 
 bool
 operator<(const Ipv4FlowClassifier::FiveTuple& t1, const Ipv4FlowClassifier::FiveTuple& t2)
@@ -101,7 +98,8 @@ Ipv4FlowClassifier::Classify(const Ipv4Header& ipHeader,
     tuple.destinationAddress = ipHeader.GetDestination();
     tuple.protocol = ipHeader.GetProtocol();
 
-    if ((tuple.protocol != UDP_PROT_NUMBER) && (tuple.protocol != TCP_PROT_NUMBER))
+    if ((tuple.protocol != iana::internetprotocolnumbers::UDP) &&
+        (tuple.protocol != iana::internetprotocolnumbers::TCP))
     {
         return false;
     }

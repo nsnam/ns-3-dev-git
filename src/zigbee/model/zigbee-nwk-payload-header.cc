@@ -597,9 +597,9 @@ ZigbeeBeaconPayload::Serialize(Buffer::Iterator start) const
     dataBundle2 |= (m_nwkUpdateId << 24) & (0xFF << 24); // Bit 24-31
 
     i.WriteU8(m_protocolId);
-    i.WriteHtolsbU16(dataBundle1);
+    i.WriteU16(dataBundle1);
     i.WriteU64(m_extPanId);
-    i.WriteHtolsbU32(dataBundle2);
+    i.WriteU32(dataBundle2);
 }
 
 uint32_t
@@ -610,9 +610,9 @@ ZigbeeBeaconPayload::Deserialize(Buffer::Iterator start)
     uint32_t dataBundle2 = 0;
 
     m_protocolId = i.ReadU8();
-    dataBundle1 = i.ReadLsbtohU16();
+    dataBundle1 = i.ReadU16();
     m_extPanId = i.ReadU64();
-    dataBundle2 = i.ReadLsbtohU32();
+    dataBundle2 = i.ReadU32();
 
     m_stackProfile = (dataBundle1) & (0x0F);         // Bit 0-3
     m_protocolVer = (dataBundle1 >> 4) & (0x0F);     // Bit 4-7

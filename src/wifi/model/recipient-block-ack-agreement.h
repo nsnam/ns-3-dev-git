@@ -11,6 +11,8 @@
 #include "block-ack-agreement.h"
 #include "block-ack-window.h"
 
+#include "ns3/wifi-export.h"
+
 #include <map>
 
 namespace ns3
@@ -25,7 +27,7 @@ class CtrlBAckResponseHeader;
  * Maintains the scoreboard and the receive reordering buffer used by a recipient
  * of a Block Ack agreement.
  */
-class RecipientBlockAckAgreement : public BlockAckAgreement
+class WIFI_EXPORT RecipientBlockAckAgreement : public BlockAckAgreement
 {
   public:
     /**
@@ -109,7 +111,7 @@ class RecipientBlockAckAgreement : public BlockAckAgreement
     typedef std::pair<uint16_t, uint16_t*> Key;
 
     /// Comparison functor used to sort the buffered MPDUs
-    struct Compare
+    struct WIFI_EXPORT Compare
     {
         /**
          * Functional operator for sorting the buffered MPDUs.

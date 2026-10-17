@@ -17,6 +17,7 @@
 #include "wifi-mpdu.h"
 
 #include "ns3/queue.h"
+#include "ns3/wifi-export.h"
 
 #include <functional>
 #include <optional>
@@ -52,7 +53,7 @@ extern template class Queue<WifiMpdu, ns3::WifiMacQueueContainer>;
  * Compiling python bindings fails if the namespace (ns3) is not
  * specified for WifiMacQueueContainerT.
  */
-class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
+class WIFI_EXPORT WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
 {
   public:
     /**
@@ -138,22 +139,27 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      */
     Ptr<WifiMpdu> Peek(std::optional<uint8_t> linkId) const;
     /**
-     * Search and return, if present in the queue, the first packet having the
-     * receiver address equal to <i>dest</i>, and TID equal to <i>tid</i>.
-     * If <i>item</i> is not a null pointer, the search starts from the packet
-     * following <i>item</i> in the queue; otherwise, the search starts from the
-     * head of the queue. This method does not remove the packet from the queue.
-     * It is typically used by ns3::QosTxop in order to perform correct MSDU aggregation
-     * (A-MSDU).
+     * Search and return, if present in the queue, the first packet having the receiver address
+     * equal to <i>dest</i>, the transmitter address equal to <i>src</i> ONLY in case the receiver
+     * is a group address, and TID equal to <i>tid</i>. If <i>item</i> is not a null pointer, the
+     * search starts from the packet following <i>item</i> in the queue; otherwise, the search
+     * starts from the head of the queue. This method does not remove the packet from the queue. It
+     * is typically used by ns3::QosTxop in order to perform correct MSDU aggregation (A-MSDU).
+     *
+     * Note that the source address is a link address and is required for group addressed packets
+     * because group addressed packets are duplicated for every link, hence the source address is
+     * needed to identify the correct queue from which the packet should be peeked.
      *
      * @param tid the given TID
      * @param dest the given destination
+     * @param src the given source link address, checked ONLY if the destination is a group address
      * @param item the item after which the search starts from
      *
      * @return the peeked packet or nullptr if no packet was found
      */
     Ptr<WifiMpdu> PeekByTidAndAddress(uint8_t tid,
                                       Mac48Address dest,
+                                      std::optional<Mac48Address> src = std::nullopt,
                                       Ptr<const WifiMpdu> item = nullptr) const;
     /**
      * Search and return the first packet present in the container queue identified
@@ -207,6 +213,13 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
     void Flush();
 
     /**
+     * Flush all the packets stored in the given container queue.
+     *
+     * @param queueId the ID of the given container queue
+     */
+    void Flush(const WifiContainerQueueId& queueId);
+
+    /**
      * Replace the given current item with the given new item. Actually, the current
      * item is dequeued and the new item is enqueued in its place. In this way,
      * statistics about queue size (in terms of bytes) are correctly updated.
@@ -215,6 +228,20 @@ class WifiMacQueue : public Queue<WifiMpdu, ns3::WifiMacQueueContainer>
      * @param newItem the given new item
      */
     void Replace(Ptr<const WifiMpdu> currentItem, Ptr<WifiMpdu> newItem);
+
+    /**
+     * Replace the addresses in the Address fields of all the MPDUs in the given container queue
+     * with the given addresses. Also, update the address in the ID of the given container queue
+     * if needed. Finally, update the queue ID held by the scheduler if the address in the queue ID
+     * has changed
+     *
+     * @param queueId the ID of the given container queue
+     * @param addr1 the address to write in the Address 1 field (if given)
+     * @param addr2 the address to write in the Address 2 field (if given)
+     */
+    void ReplaceAddresses(const WifiContainerQueueId& queueId,
+                          std::optional<Mac48Address> addr1,
+                          std::optional<Mac48Address> addr2);
 
     /**
      * Get the number of MPDUs currently stored in the container queue identified

@@ -47,7 +47,7 @@ NS_LOG_COMPONENT_DEFINE("LteHandoverTargetTest");
  * The test case will run a 1-second LTE-EPC simulation using the parameters
  * provided to the constructor function.
  *
- * \sa ns3::LteHandoverTargetTestCase
+ * @sa ns3::LteHandoverTargetTestCase
  */
 class LteHandoverTargetTestCase : public TestCase
 {

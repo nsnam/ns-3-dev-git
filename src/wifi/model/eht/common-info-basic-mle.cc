@@ -66,7 +66,7 @@ CommonInfoBasicMle::Serialize(Buffer::Iterator& start) const
             (m_emlCapabilities->emlsrTransitionDelay << 4) |
             (m_emlCapabilities->emlmrSupport << 7) | (m_emlCapabilities->emlmrDelay << 8) |
             (m_emlCapabilities->transitionTimeout << 11);
-        start.WriteHtolsbU16(val);
+        start.WriteU16(val);
     }
     if (m_mldCapabilities.has_value())
     {
@@ -74,7 +74,7 @@ CommonInfoBasicMle::Serialize(Buffer::Iterator& start) const
             m_mldCapabilities->maxNSimultaneousLinks | (m_mldCapabilities->srsSupport << 4) |
             (m_mldCapabilities->tidToLinkMappingSupport << 5) |
             (m_mldCapabilities->freqSepForStrApMld << 7) | (m_mldCapabilities->aarSupport << 12);
-        start.WriteHtolsbU16(val);
+        start.WriteU16(val);
     }
     if (m_apMldId.has_value())
     {
@@ -85,7 +85,7 @@ CommonInfoBasicMle::Serialize(Buffer::Iterator& start) const
         uint16_t val = m_extMldCapabilities->opParamUpdateSupp |
                        (m_extMldCapabilities->recommMaxSimulLinks << 1) |
                        (m_extMldCapabilities->nstrStatusUpdateSupp << 5);
-        start.WriteHtolsbU16(val);
+        start.WriteU16(val);
     }
 }
 
@@ -120,7 +120,7 @@ CommonInfoBasicMle::Deserialize(Buffer::Iterator start, uint16_t presence)
     if ((presence & 0x0008) != 0)
     {
         m_emlCapabilities = EmlCapabilities();
-        uint16_t val = i.ReadLsbtohU16();
+        uint16_t val = i.ReadU16();
         m_emlCapabilities->emlsrSupport = val & 0x0001;
         m_emlCapabilities->emlsrPaddingDelay = (val >> 1) & 0x0007;
         m_emlCapabilities->emlsrTransitionDelay = (val >> 4) & 0x0007;
@@ -132,7 +132,7 @@ CommonInfoBasicMle::Deserialize(Buffer::Iterator start, uint16_t presence)
     if ((presence & 0x0010) != 0)
     {
         m_mldCapabilities = MldCapabilities();
-        uint16_t val = i.ReadLsbtohU16();
+        uint16_t val = i.ReadU16();
         m_mldCapabilities->maxNSimultaneousLinks = val & 0x000f;
         m_mldCapabilities->srsSupport = (val >> 4) & 0x0001;
         m_mldCapabilities->tidToLinkMappingSupport = (val >> 5) & 0x0003;
@@ -148,7 +148,7 @@ CommonInfoBasicMle::Deserialize(Buffer::Iterator start, uint16_t presence)
     if ((presence & 0x0040) != 0)
     {
         m_extMldCapabilities = ExtMldCapabilities();
-        auto val = i.ReadLsbtohU16();
+        auto val = i.ReadU16();
         m_extMldCapabilities->opParamUpdateSupp = val & 0x0001;
         m_extMldCapabilities->recommMaxSimulLinks = (val >> 1) & 0x000f;
         m_extMldCapabilities->nstrStatusUpdateSupp = (val >> 5) & 0x0001;

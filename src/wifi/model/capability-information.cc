@@ -129,14 +129,14 @@ CapabilityInformation::GetSerializedSize() const
 Buffer::Iterator
 CapabilityInformation::Serialize(Buffer::Iterator start) const
 {
-    start.WriteHtolsbU16(m_capability);
+    start.WriteU16(m_capability);
     return start;
 }
 
 Buffer::Iterator
 CapabilityInformation::Deserialize(Buffer::Iterator start)
 {
-    m_capability = start.ReadLsbtohU16();
+    m_capability = start.ReadU16();
     return start;
 }
 

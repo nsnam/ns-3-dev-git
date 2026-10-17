@@ -9,6 +9,7 @@
 #ifndef HT_OPERATION_H
 #define HT_OPERATION_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-information-element.h"
 
 /**
@@ -36,7 +37,7 @@ enum HtProtectionType
  * This class knows how to serialize and deserialize
  * the HT Operation Information Element
  */
-class HtOperation : public WifiInformationElement
+class WIFI_EXPORT HtOperation : public WifiInformationElement
 {
   public:
     HtOperation();

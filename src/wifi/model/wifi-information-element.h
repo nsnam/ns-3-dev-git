@@ -10,6 +10,7 @@
 #define WIFI_INFORMATION_ELEMENT_H
 
 #include "ns3/header.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 
@@ -281,7 +282,7 @@ typedef uint8_t WifiInformationElementId;
  * This class is pure virtual and acts as base for classes which know
  * how to serialize specific IEs.
  */
-class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
+class WIFI_EXPORT WifiInformationElement : public SimpleRefCount<WifiInformationElement>
 {
   public:
     virtual ~WifiInformationElement();
@@ -410,7 +411,7 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
  * @param element the Information Element
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiInformationElement& element);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiInformationElement& element);
 
 } // namespace ns3
 

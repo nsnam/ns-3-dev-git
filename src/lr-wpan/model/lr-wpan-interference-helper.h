@@ -40,6 +40,10 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
 
     ~LrWpanInterferenceHelper();
 
+    // Delete copy constructor and assignment operator to avoid misuse
+    LrWpanInterferenceHelper(const LrWpanInterferenceHelper&) = delete;
+    LrWpanInterferenceHelper& operator=(const LrWpanInterferenceHelper&) = delete;
+
     /**
      * Add the given signal to the set of accumulated signals. Never add the same
      * signal more than once. The SpectrumModels of the signal and the one used
@@ -80,16 +84,6 @@ class LrWpanInterferenceHelper : public SimpleRefCount<LrWpanInterferenceHelper>
     Ptr<const SpectrumModel> GetSpectrumModel() const;
 
   private:
-    // Disable implicit copy constructors
-    /**
-     * @brief Copy constructor - defined and not implemented.
-     */
-    LrWpanInterferenceHelper(const LrWpanInterferenceHelper&);
-    /**
-     * @brief Copy constructor - defined and not implemented.
-     * @returns
-     */
-    LrWpanInterferenceHelper& operator=(const LrWpanInterferenceHelper&);
     /**
      * The helpers SpectrumModel.
      */

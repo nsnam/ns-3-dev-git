@@ -14,6 +14,7 @@
 #include "ipv4.h"
 
 #include "ns3/deprecated.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device.h"
 #include "ns3/nstime.h"
@@ -78,7 +79,8 @@ class Ipv4L3Protocol : public Ipv4
      */
     static TypeId GetTypeId();
 
-    static constexpr uint16_t PROT_NUMBER = 0x0800; //!< Protocol number
+    NS_DEPRECATED_3_49("Use the numbers defined in iana-ieee802-numbers.h")
+    static constexpr uint16_t PROT_NUMBER = iana::ieee802numbers::IPV4; //!< Protocol number
 
     Ipv4L3Protocol();
     ~Ipv4L3Protocol() override;
@@ -364,6 +366,16 @@ class Ipv4L3Protocol : public Ipv4
                          Socket::SocketErrno sockErrno);
 
     /**
+     * @brief Return an ICMP Destination Unreachable (net unreachable) to the
+     * source of a datagram that this router could not forward for lack of a
+     * route. No message is generated unless this node is a forwarder, and never
+     * for a multicast or broadcast destination (see @issueid{825}).
+     * @param ipHeader IPv4 header of the undeliverable datagram
+     * @param packet the undeliverable datagram payload
+     */
+    void SendIcmpNoRoute(const Ipv4Header& ipHeader, Ptr<const Packet> packet);
+
+    /**
      * @brief Add an IPv4 interface to the stack.
      * @param interface interface to add
      * @return index of newly added interface
@@ -535,7 +547,7 @@ class Ipv4L3Protocol : public Ipv4
     /**
      * @brief A Set of Fragment belonging to the same packet (src, dst, identification and proto)
      */
-    class Fragments : public SimpleRefCount<Fragments>
+    class Fragments
     {
       public:
         /**
@@ -599,7 +611,7 @@ class Ipv4L3Protocol : public Ipv4
     };
 
     /// Container of fragments, stored as pairs(src+dst addr, src+dst port) / fragment
-    typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
+    typedef std::map<FragmentKey_t, std::shared_ptr<Fragments>> MapFragments_t;
 
     MapFragments_t m_fragments;       //!< Fragmented packets.
     Time m_fragmentExpirationTimeout; //!< Expiration timeout

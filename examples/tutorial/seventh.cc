@@ -107,6 +107,20 @@ main(int argc, char* argv[])
     devices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
 
     InternetStackHelper stack;
+
+    if (useV6)
+    {
+        // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+        // Note: Normal networks typically have both IPv4 and IPv6 enabled.
+        stack.SetIpv4StackInstall(false);
+    }
+    else
+    {
+        // Disabling IPv4 because it is not necessary to show what we want to demonstrate here.
+        // Note: Normal networks typically have both IPv4 and IPv6 enabled.
+        stack.SetIpv6StackInstall(false);
+    }
+
     stack.Install(nodes);
 
     uint16_t sinkPort = 8080;
@@ -155,7 +169,7 @@ main(int argc, char* argv[])
 
     PcapHelper pcapHelper;
     Ptr<PcapFileWrapper> file =
-        pcapHelper.CreateFile("seventh.pcap", std::ios::out, PcapHelper::DLT_PPP);
+        pcapHelper.CreateFile("seventh.pcap", std::ios::out, iana::linktype::PPP);
     devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
     // Use GnuplotHelper to plot the packet byte count over time

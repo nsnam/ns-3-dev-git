@@ -1,7 +1,7 @@
 # ##############################################################################
 # Required CMake version            #
 # ##############################################################################
-cmake_minimum_required(VERSION 3.20..3.20)
+cmake_minimum_required(VERSION 3.25..3.25)
 
 # ##############################################################################
 # Project name                        #
@@ -11,7 +11,7 @@ project(NS3 CXX)
 file(STRINGS VERSION NS3_VER)
 
 # minimum compiler versions
-set(AppleClang_MinVersion 15.0.0)
+set(AppleClang_MinVersion 17.0.0)
 set(Clang_MinVersion 17.0.0)
 set(GNU_MinVersion 11.0.0)
 
@@ -30,8 +30,16 @@ option(NS3_DPDK "Enable fd-net-device DPDK features" OFF)
 # maintenance and documentation
 option(NS3_CLANG_FORMAT "Enforce cody style with clang-format" OFF)
 option(NS3_CLANG_TIDY "Use clang-tidy static analysis" OFF)
+option(NS3_CLANG_TIDY_FIX
+       "Use clang-tidy static analysis and apply automatic fixes" OFF
+)
 option(NS3_CLANG_TIMETRACE
        "Collect compilation statistics to analyze the build process" OFF
+)
+option(
+  NS3_CLANGCL_STLCHECKS
+  "Redirect MSVC CRT debug reports (e.g. checked-iterator assertions) to stderr with a stack trace instead of a message box; only effective in debug builds with MSVC-compatible toolchains (cl, clang-cl)"
+  OFF
 )
 option(NS3_COLORED_OUTPUT "Colorize CMake messages" OFF)
 option(NS3_COVERAGE "Enable code coverage measurements and report generation"

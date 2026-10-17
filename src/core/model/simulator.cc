@@ -7,9 +7,8 @@
  */
 #include "simulator.h"
 
-#include "assert.h"
-#include "des-metrics.h"
 #include "event-impl.h"
+#include "fatal-error.h"
 #include "global-value.h"
 #include "log.h"
 #include "map-scheduler.h"
@@ -19,14 +18,9 @@
 #include "simulator-impl.h"
 #include "string.h"
 
-#include "ns3/core-config.h"
-
-#include <cmath>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <vector>
+#ifdef ENABLE_DES_METRICS
+#include "des-metrics.h"
+#endif
 
 /**
  * @file

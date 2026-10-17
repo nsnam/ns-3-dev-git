@@ -38,7 +38,7 @@ namespace ns3
  * we can still achieve a linear complexity by copying the elements in a vector and shuffling the
  * elements of the vector.
  *
- * @tparam RND_ACCESS_ITER \deduced the iterator type (must be a random access iterator)
+ * @tparam RND_ACCESS_ITER @deduced the iterator type (must be a random access iterator)
  * @param first an iterator pointing to the first element in the range to shuffle
  * @param last an iterator pointing to past-the-last element in the range to shuffle
  * @param rv pointer to a uniform random variable

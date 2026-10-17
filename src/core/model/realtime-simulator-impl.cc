@@ -7,19 +7,16 @@
 #include "realtime-simulator-impl.h"
 
 #include "assert.h"
-#include "boolean.h"
 #include "enum.h"
 #include "event-impl.h"
 #include "fatal-error.h"
 #include "log.h"
-#include "pointer.h"
 #include "ptr.h"
 #include "scheduler.h"
 #include "simulator.h"
 #include "synchronizer.h"
 #include "wall-clock-synchronizer.h"
 
-#include <cmath>
 #include <mutex>
 #include <thread>
 
@@ -281,7 +278,8 @@ RealtimeSimulatorImpl::ProcessOneEvent()
         //
         if (m_synchronizer->Synchronize(tsNow, tsDelay))
         {
-            NS_LOG_LOGIC("Interrupted ...");
+            // Synchronize returned true: the wait completed, so break.
+            NS_LOG_LOGIC("Synchronized");
             break;
         }
 
@@ -514,7 +512,7 @@ RealtimeSimulatorImpl::Schedule(const Time& delay, EventImpl* impl)
         Time tAbsolute = Simulator::Now() + delay;
         NS_ASSERT_MSG(delay.IsPositive(), "RealtimeSimulatorImpl::Schedule(): Negative delay");
         ev.impl = impl;
-        ev.key.m_ts = (uint64_t)tAbsolute.GetTimeStep();
+        ev.key.m_ts = static_cast<uint64_t>(tAbsolute.GetTimeStep());
         ev.key.m_context = GetContext();
         ev.key.m_uid = m_uid;
         m_uid++;

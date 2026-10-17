@@ -11,9 +11,13 @@
 
 #include "ns3/address.h"
 #include "ns3/application.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3
 {
+
+class Packet;
+class Socket;
 
 /**
  * @ingroup applications
@@ -40,7 +44,11 @@ class SourceApplication : public Application
      */
     static TypeId GetTypeId();
 
-    SourceApplication();
+    /**
+     * @brief Constructor
+     * @param allowPacketSocket flag whether the application should allow the use of packet sockets
+     */
+    explicit SourceApplication(bool allowPacketSocket = true);
     ~SourceApplication() override;
 
     /**
@@ -55,10 +63,95 @@ class SourceApplication : public Application
      */
     Address GetRemote() const;
 
+    /**
+     * @brief Get the socket this application is attached to.
+     * @return pointer to associated socket
+     */
+    Ptr<Socket> GetSocket() const;
+
   protected:
+    void DoDispose() override;
+
+    /**
+     * @brief Close the socket
+     * @return true if the socket was closed, false if there was no socket to close
+     */
+    bool CloseSocket();
+
+    /// Traced Callback: transmitted packets.
+    TracedCallback<Ptr<const Packet>> m_txTrace;
+
+    /**
+     * TracedCallback signature for connection success/failure event.
+     *
+     * @param [in] socket The socket for which connection succeeded/failed.
+     * @param [in] local The local address.
+     * @param [in] remote The remote address.
+     */
+    typedef void (*ConnectionEventCallback)(Ptr<Socket> socket,
+                                            const Address& local,
+                                            const Address& remote);
+
+    /// Traced Callback: connection success event.
+    TracedCallback<Ptr<Socket>, const Address&, const Address&> m_connectionSuccess;
+
+    /// Traced Callback: connection failure event.
+    TracedCallback<Ptr<Socket>, const Address&, const Address&> m_connectionFailure;
+
+    Ptr<Socket> m_socket; //!< Socket
+
+    TypeId m_protocolTid; //!< Protocol TypeId value
+
     Address m_peer;  //!< Peer address
     Address m_local; //!< Local address to bind to
     uint8_t m_tos;   //!< The packets Type of Service
+
+    bool m_connected{false}; //!< flag whether socket is connected
+
+  private:
+    void StartApplication() override;
+    void StopApplication() override;
+
+    /**
+     * @brief Handle a Connection Succeed event
+     * @param socket the connected socket
+     */
+    void ConnectionSucceeded(Ptr<Socket> socket);
+
+    /**
+     * @brief Handle a Connection Failed event
+     * @param socket the not connected socket
+     */
+    void ConnectionFailed(Ptr<Socket> socket);
+
+    /**
+     * @brief Application specific startup code for child subclasses
+     */
+    virtual void DoStartApplication();
+
+    /**
+     * @brief Application specific shutdown code for child subclasses
+     */
+    virtual void DoStopApplication();
+
+    /**
+     * @brief Application specific code for child subclasses upon a Connection Succeed event
+     * @param socket the connected socket
+     */
+    virtual void DoConnectionSucceeded(Ptr<Socket> socket);
+
+    /**
+     * @brief Application specific code for child subclasses upon a Connection Failed event
+     * @param socket the not connected socket
+     */
+    virtual void DoConnectionFailed(Ptr<Socket> socket);
+
+    /**
+     * @brief Cancel all pending events.
+     */
+    virtual void CancelEvents() = 0;
+
+    bool m_allowPacketSocket; //!< Allow use of packet socket
 };
 
 } // namespace ns3

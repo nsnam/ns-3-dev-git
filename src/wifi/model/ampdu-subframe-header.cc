@@ -51,7 +51,7 @@ AmpduSubframeHeader::GetSerializedSize() const
 void
 AmpduSubframeHeader::Serialize(Buffer::Iterator i) const
 {
-    i.WriteHtolsbU16((m_eof << 15) | m_length);
+    i.WriteU16((m_eof << 15) | m_length);
     i.WriteU8(1); // not used, CRC always set to 1
     i.WriteU8(m_signature);
 }
@@ -60,7 +60,7 @@ uint32_t
 AmpduSubframeHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    uint16_t field = i.ReadLsbtohU16();
+    uint16_t field = i.ReadU16();
     m_eof = (field & 0x8000) >> 15;
     m_length = (field & 0x3fff);
     i.ReadU8();               // CRC

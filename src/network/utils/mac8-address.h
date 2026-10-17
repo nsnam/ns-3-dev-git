@@ -11,6 +11,7 @@
 
 #include "ns3/address.h"
 
+#include <compare>
 #include <iostream>
 
 namespace ns3
@@ -32,6 +33,9 @@ class Address;
 class Mac8Address
 {
   public:
+    /// Address length when converted to an Address [bytes].
+    static constexpr uint8_t ADDRESS_LENGTH = 1;
+
     Mac8Address() = default;
     /**
      * Create Mac8Address object with address addr.
@@ -118,6 +122,15 @@ class Mac8Address
      */
     static void ResetAllocationIndex();
 
+    /**
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * @param other address to compare to this one
+     * @returns The result of the comparison.
+     */
+    constexpr std::strong_ordering operator<=>(const Mac8Address& other) const = default;
+
   private:
     static uint8_t m_allocationIndex; //!< Address allocation index
     uint8_t m_address{255};           //!< The address.
@@ -129,39 +142,9 @@ class Mac8Address
      */
     static uint8_t GetType();
 
-    friend bool operator<(const Mac8Address& a, const Mac8Address& b);
-    friend bool operator==(const Mac8Address& a, const Mac8Address& b);
-    friend bool operator!=(const Mac8Address& a, const Mac8Address& b);
     friend std::ostream& operator<<(std::ostream& os, const Mac8Address& address);
     friend std::istream& operator>>(std::istream& is, Mac8Address& address);
 };
-
-/**
- * Address comparison, less than.
- *
- * @param a First address to compare.
- * @param b Second address to compare.
- * @return True if a < b.
- */
-bool operator<(const Mac8Address& a, const Mac8Address& b);
-
-/**
- * Address comparison, equality.
- *
- * @param a First address to compare.
- * @param b Second address to compare.
- * @return True if a == b.
- */
-bool operator==(const Mac8Address& a, const Mac8Address& b);
-
-/**
- * Address comparison, unequal.
- *
- * @param a First address to compare.
- * @param b Second address to compare.
- * @return True if a != b.
- */
-bool operator!=(const Mac8Address& a, const Mac8Address& b);
 
 /**
  * Write \pname{address} to stream \pname{os} as 8 bit integer.

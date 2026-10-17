@@ -6,15 +6,28 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/boolean.h"
+#include "ns3/config.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-static-routing.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-helper.h"
+#include "ns3/lte-radio-bearer-info.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/lte-ue-rrc.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/object-map.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/packet-sink.h"
-#include "ns3/point-to-point-module.h"
+#include "ns3/point-to-point-epc-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/rng-seed-manager.h"
+#include "ns3/string.h"
+#include "ns3/test.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/uinteger.h"
 
 using namespace ns3;
 
@@ -264,7 +277,13 @@ LteX2HandoverTestCase::DoRun()
 
     NetDeviceContainer enbDevices;
     enbDevices = m_lteHelper->InstallEnbDevice(enbNodes);
-    stream += m_lteHelper->AssignStreams(enbDevices, stream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    m_lteHelper->AssignStreams(enbDevices, stream, false);
+    stream += 1000;
     for (auto it = enbDevices.Begin(); it != enbDevices.End(); ++it)
     {
         Ptr<LteEnbRrc> enbRrc = (*it)->GetObject<LteEnbNetDevice>()->GetRrc();
@@ -273,7 +292,8 @@ LteX2HandoverTestCase::DoRun()
 
     NetDeviceContainer ueDevices;
     ueDevices = m_lteHelper->InstallUeDevice(ueNodes);
-    stream += m_lteHelper->AssignStreams(ueDevices, stream);
+    m_lteHelper->AssignStreams(ueDevices, stream, true);
+    stream += 1000;
 
     Ipv4Address remoteHostAddr;
     Ipv4StaticRoutingHelper ipv4RoutingHelper;
@@ -522,7 +542,6 @@ LteX2HandoverTestCase::CheckConnected(Ptr<NetDevice> ueDevice, Ptr<NetDevice> en
 
     UeManager::State ueManagerState = ueManager->GetState();
     NS_TEST_ASSERT_MSG_EQ(ueManagerState, UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
-    NS_ASSERT_MSG(ueManagerState == UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
 
     uint16_t ueCellId = ueRrc->GetCellId();
     uint16_t enbCellId = enbLteDevice->GetCellId();

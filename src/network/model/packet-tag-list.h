@@ -213,22 +213,22 @@ class PacketTagList
      * @returns number of bytes required for packet serialization
      */
     uint32_t GetSerializedSize() const;
+
     /**
      * Serialize the tag list into a byte buffer.
      *
      * @param [in,out] buffer The byte buffer to which the tag list will be serialized
      * @param [in] maxSize Max The max size of the buffer for bounds checking
-     *
-     * @returns zero if complete tag list is not serialized
+     * @return number of serialized bytes on success, 0 on failure
      */
     uint32_t Serialize(uint32_t* buffer, uint32_t maxSize) const;
+
     /**
      * Deserialize tag list from the provided buffer.
      *
      * @param [in] buffer The buffer to read from.
      * @param [in] size The number of bytes to deserialize.
-     *
-     * @returns zero if complete tag list is not deserialized
+     * @return number of deserialized bytes on success, 0 on failure
      */
     uint32_t Deserialize(const uint32_t* buffer, uint32_t size);
 

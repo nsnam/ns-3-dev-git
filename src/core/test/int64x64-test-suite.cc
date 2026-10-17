@@ -335,7 +335,10 @@ Int64x64InputTestCase::DoRun()
     Check("-1.0", -1, 0, tolerance);
     Check("-1.0000", -1, 0, tolerance);
     Check(" 1.000000000000000000054", 1, 1, tolerance);
-    Check("-1.000000000000000000054", (int64_t)-2, (uint64_t)-1, tolerance);
+    Check("-1.000000000000000000054",
+          static_cast<int64_t>(-2),
+          std::numeric_limits<uint64_t>::max(),
+          tolerance);
 }
 
 /**

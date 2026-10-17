@@ -262,8 +262,8 @@ class GcrUrTest : public GcrTestBase
     struct GcrUrParameters
     {
         uint8_t nGcrRetries{7}; ///< number of solicited retries to use for GCR-UR
-        uint8_t expectedSkippedRetries{
-            0}; ///< the number of skipped retries because of lifetime expiry
+        uint8_t expectedMinSkippedRetries{
+            0}; ///< the minimum number of skipped retries because of lifetime expiry
         std::optional<uint16_t>
             packetsPauzeAggregation{}; ///< the amount of generated packets after which MPDU
                                        ///< aggregation should not be used by limiting the queue to
@@ -288,6 +288,9 @@ class GcrUrTest : public GcrTestBase
               const GcrUrParameters& gcrUrParams);
     ~GcrUrTest() override = default;
 
+  protected:
+    void DoSetup() override;
+
   private:
     void ConfigureGcrManager(WifiMacHelper& macHelper) override;
     void CheckResults() override;
@@ -306,7 +309,11 @@ class GcrUrTest : public GcrTestBase
                              ///< (including retries) per original groupcast frame
 
     Ptr<WifiMpdu> m_currentMpdu; ///< current MPDU
-    uint64_t m_currentUid;       ///< current UID
+    std::optional<uint16_t>
+        m_currentSeqNo; ///< sequence number of the groupcast frame currently being
+                        ///< (re)transmitted (empty if none); used to tell the initial
+                        ///< transmission of a new groupcast frame apart from its
+                        ///< retries, robustly against packet UID reuse
 };
 
 /**

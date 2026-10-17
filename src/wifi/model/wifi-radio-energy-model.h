@@ -17,6 +17,7 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/traced-value.h"
+#include "ns3/wifi-export.h"
 
 namespace ns3
 {
@@ -29,7 +30,7 @@ class WifiTxCurrentModel;
  * state change.
  *
  */
-class WifiRadioEnergyModelPhyListener : public WifiPhyListener
+class WIFI_EXPORT WifiRadioEnergyModelPhyListener : public WifiPhyListener
 {
   public:
     /**
@@ -137,7 +138,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
  * transmit power can also be achieved through a wifi TX current model.
  *
  */
-class WifiRadioEnergyModel : public energy::DeviceEnergyModel
+class WIFI_EXPORT WifiRadioEnergyModel : public energy::DeviceEnergyModel
 {
   public:
     /**

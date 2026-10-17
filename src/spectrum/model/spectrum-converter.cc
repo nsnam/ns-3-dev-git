@@ -18,9 +18,61 @@ namespace ns3
 
 NS_LOG_COMPONENT_DEFINE("SpectrumConverter");
 
-SpectrumConverter::SpectrumConverter()
+namespace
 {
+
+/**
+ * This method converts the transmitted PSD from the TX SpectrumModel to the RX SpectrumModel in the
+ * case the two models are fully aligned, i.e., each band in the TX model has a corresponding band
+ * in the RX model with the same boundaries and hence the conversion is just a matter of copying
+ * values in the overlapping bands and setting to zero the values in the non-overlapping bands.
+ *
+ * @param txPsd the transmitted PSD to be converted
+ * @param txSpectrumModel the SpectrumModel over which the transmitted PSD is defined
+ * @param rxSpectrumModel the SpectrumModel over which the converted PSD should be defined
+ * @return the converted PSD
+ */
+Ptr<SpectrumValue>
+ConvertAlignedSpectrumModels(Ptr<const SpectrumValue> txPsd,
+                             Ptr<const SpectrumModel> txSpectrumModel,
+                             Ptr<const SpectrumModel> rxSpectrumModel)
+{
+    // Create a new SpectrumValue with zeroes
+    auto convertedPsd = Create<SpectrumValue>(rxSpectrumModel);
+
+    // Copy values in the overlapping bands
+    auto fromIt = txPsd->ConstValuesBegin();
+    auto toIt = convertedPsd->ValuesBegin();
+    auto fromBandIt = txSpectrumModel->Begin();
+    auto toBandIt = rxSpectrumModel->Begin();
+
+    while (fromBandIt != txSpectrumModel->End() && toBandIt != rxSpectrumModel->End())
+    {
+        if (fromBandIt->fh <= toBandIt->fl)
+        {
+            ++fromBandIt;
+            ++fromIt;
+        }
+        else if (toBandIt->fh <= fromBandIt->fl)
+        {
+            ++toBandIt;
+            ++toIt;
+        }
+        else
+        {
+            // overlapping bands
+            *toIt = *fromIt;
+            ++fromBandIt;
+            ++fromIt;
+            ++toBandIt;
+            ++toIt;
+        }
+    }
+
+    return convertedPsd;
 }
+
+} // namespace
 
 SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
                                      Ptr<const SpectrumModel> toSpectrumModel)
@@ -29,13 +81,32 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
     m_fromSpectrumModel = fromSpectrumModel;
     m_toSpectrumModel = toSpectrumModel;
 
+    if (fromSpectrumModel->IsOrthogonal(*toSpectrumModel) ||
+        fromSpectrumModel->IsAligned(*toSpectrumModel))
+    {
+        // no conversion matrix needed
+        return;
+    }
+
     size_t rowPtr = 0;
+    m_conversionMatrix.reserve(fromSpectrumModel->GetNumBands() * toSpectrumModel->GetNumBands());
+    m_conversionColInd.reserve(fromSpectrumModel->GetNumBands() * toSpectrumModel->GetNumBands());
+    m_conversionRowPtr.reserve(toSpectrumModel->GetNumBands());
     for (auto toit = toSpectrumModel->Begin(); toit != toSpectrumModel->End(); ++toit)
     {
         size_t colInd = 0;
+        auto bandInv = 1.0 / (toit->fh - toit->fl);
         for (auto fromit = fromSpectrumModel->Begin(); fromit != fromSpectrumModel->End(); ++fromit)
         {
-            double c = GetCoefficient(*fromit, *toit);
+            if (fromit->fh <= toit->fl || toit->fh <= fromit->fl)
+            {
+                ++colInd;
+                continue;
+            }
+            const auto maxLow = (fromit->fl > toit->fl) ? fromit->fl : toit->fl;
+            const auto minHigh = (fromit->fh < toit->fh) ? fromit->fh : toit->fh;
+            const auto coeff = (minHigh - maxLow) * bandInv;
+            const auto c = (coeff > 1.0) ? 1.0 : coeff;
             NS_LOG_LOGIC("(" << fromit->fl << "," << fromit->fh << ")"
                              << " --> "
                              << "(" << toit->fl << "," << toit->fh << ")"
@@ -44,30 +115,32 @@ SpectrumConverter::SpectrumConverter(Ptr<const SpectrumModel> fromSpectrumModel,
             {
                 m_conversionMatrix.push_back(c);
                 m_conversionColInd.push_back(colInd);
-                rowPtr++;
+                ++rowPtr;
             }
-            colInd++;
+            ++colInd;
         }
         m_conversionRowPtr.push_back(rowPtr);
     }
 }
 
-double
-SpectrumConverter::GetCoefficient(const BandInfo& from, const BandInfo& to) const
-{
-    NS_LOG_FUNCTION(this);
-    double coeff = std::min(from.fh, to.fh) - std::max(from.fl, to.fl);
-    coeff = std::max(0.0, coeff);
-    coeff = std::min(1.0, coeff / (to.fh - to.fl));
-    return coeff;
-}
-
 Ptr<SpectrumValue>
 SpectrumConverter::Convert(Ptr<const SpectrumValue> fvvf) const
 {
+    if (m_fromSpectrumModel->IsOrthogonal(*m_toSpectrumModel))
+    {
+        // orthogonal models, return zeroed SpectrumValue
+        return Create<SpectrumValue>(m_toSpectrumModel);
+    }
+
+    if (m_fromSpectrumModel->IsAligned(*m_toSpectrumModel))
+    {
+        // aligned models, simply opy values in overlapping bands
+        return ConvertAlignedSpectrumModels(fvvf, m_fromSpectrumModel, m_toSpectrumModel);
+    }
+
     NS_ASSERT(*(fvvf->GetSpectrumModel()) == *m_fromSpectrumModel);
 
-    Ptr<SpectrumValue> tvvf = Create<SpectrumValue>(m_toSpectrumModel);
+    auto tvvf = Create<SpectrumValue>(m_toSpectrumModel);
 
     auto tvit = tvvf->ValuesBegin();
     size_t i = 0; // Index of conversion coefficient
@@ -77,8 +150,8 @@ SpectrumConverter::Convert(Ptr<const SpectrumValue> fvvf) const
         double sum = 0;
         while (i < *convIt)
         {
-            sum += (*fvvf)[m_conversionColInd.at(i)] * m_conversionMatrix.at(i);
-            i++;
+            sum += (*fvvf)[m_conversionColInd[i]] * m_conversionMatrix[i];
+            ++i;
         }
         *tvit = sum;
         ++tvit;

@@ -7,7 +7,7 @@
  * Original Work Authors:
  *      Marco Mezzavilla <mezzavil@dei.unipd.it>
  *      Giovanni Tomasi <tomasigv@gmail.com>
- * Original Work Acknowldegments:
+ * Original Work Acknowledgments:
  *      This work was supported by the MEDIEVAL (MultiMEDia transport
  *      for mobIlE Video AppLications) project, which is a
  *      medium-scale focused research project (STREP) of the 7th

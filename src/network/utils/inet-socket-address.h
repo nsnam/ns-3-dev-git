@@ -31,6 +31,12 @@ class InetSocketAddress
 {
   public:
     /**
+     * Address length when converted to an Address[bytes].
+     * In this case it's 6: 4 (IPv4 address) + 2 (port)
+     */
+    static constexpr uint8_t ADDRESS_LENGTH = 6;
+
+    /**
      * @param ipv4 the ipv4 address
      * @param port the port number
      */
@@ -94,6 +100,7 @@ class InetSocketAddress
      *
      * @param address the Address instance to convert from.
      * @returns an InetSocketAddress
+     * @hidecaller
      */
     static InetSocketAddress ConvertFrom(const Address& address);
 

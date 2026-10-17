@@ -84,4 +84,5 @@ build_lib(
     test/basic-data-calculators-test-suite.cc
     test/double-probe-test-suite.cc
     test/histogram-test-suite.cc
+    test/stats-traced-callback-typedef-test-suite.cc
 )

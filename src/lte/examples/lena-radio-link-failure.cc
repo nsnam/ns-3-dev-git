@@ -470,9 +470,16 @@ main(int argc, char* argv[])
     int64_t randomStream = 1;
 
     enbDevs = lteHelper->InstallEnbDevice(enbNodes);
-    randomStream += lteHelper->AssignStreams(enbDevs, randomStream);
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
+    lteHelper->AssignStreams(enbDevs, randomStream, false);
+    randomStream += 1000;
     ueDevs = lteHelper->InstallUeDevice(ueNodes);
-    randomStream += lteHelper->AssignStreams(ueDevs, randomStream);
+    lteHelper->AssignStreams(ueDevs, randomStream, true);
+    randomStream += 1000;
 
     NS_LOG_INFO("Install the IP stack on the UEs");
     internet.Install(ueNodes);

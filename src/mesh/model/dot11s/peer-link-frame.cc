@@ -99,7 +99,7 @@ PeerLinkOpenStart::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
 
-    i.WriteHtolsbU16(m_capability);
+    i.WriteU16(m_capability);
     i = m_rates.Serialize(i);
     if (m_extendedRates)
     {
@@ -114,7 +114,7 @@ PeerLinkOpenStart::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
 
-    m_capability = i.ReadLsbtohU16();
+    m_capability = i.ReadU16();
     i = m_rates.Deserialize(i);
     m_extendedRates.emplace();
     auto tmp = m_extendedRates->DeserializeIfPresent(i);
@@ -311,8 +311,8 @@ PeerLinkConfirmStart::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
 
-    i.WriteHtolsbU16(m_capability);
-    i.WriteHtolsbU16(m_aid);
+    i.WriteU16(m_capability);
+    i.WriteU16(m_aid);
     i = m_rates.Serialize(i);
     if (m_extendedRates)
     {
@@ -326,8 +326,8 @@ PeerLinkConfirmStart::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
 
-    m_capability = i.ReadLsbtohU16();
-    m_aid = i.ReadLsbtohU16();
+    m_capability = i.ReadU16();
+    m_aid = i.ReadU16();
     i = m_rates.Deserialize(i);
     m_extendedRates.emplace();
     auto tmp = m_extendedRates->DeserializeIfPresent(i);

@@ -96,6 +96,8 @@ function(write_lock)
     string(APPEND lock_contents "VALGRIND_FOUND = True \n")
   endif()
 
+  string(APPEND lock_contents "CMAKE_PRESET = '${NS3_CMAKE_PRESET}'\n")
+
   # Contents previously in ns-3-dev/build/build-status.py
   string(APPEND lock_contents "\n\n")
   string(APPEND lock_contents "ns3_runnable_programs = [")

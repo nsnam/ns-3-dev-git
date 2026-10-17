@@ -79,4 +79,5 @@ build_lib(
     test/flame/flame-test-suite.cc
     test/flame/regression.cc
     test/mesh-information-element-vector-test-suite.cc
+    test/mesh-traced-callback-typedef-test-suite.cc
 )

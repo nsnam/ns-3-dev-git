@@ -177,7 +177,7 @@ QosTxop::GetLink(uint8_t linkId) const
 uint8_t
 QosTxop::GetQosQueueSize(uint8_t tid, Mac48Address receiver) const
 {
-    WifiContainerQueueId queueId{WIFI_QOSDATA_QUEUE, WifiRcvAddr::UNICAST, receiver, tid};
+    const auto queueId = MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, receiver, tid);
     uint32_t bufferSize = m_queue->GetNBytes(queueId);
     // A queue size value of 254 is used for all sizes greater than 64 768 octets.
     uint8_t queueSize = static_cast<uint8_t>(std::ceil(std::min(bufferSize, 64769U) / 256.0));
@@ -392,11 +392,13 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
         {
             return m_queue->PeekFirstAvailable(linkId, mpdu);
         }
-        WifiContainerQueueId queueId(WIFI_QOSDATA_QUEUE,
-                                     recipient.IsGroup() ? WifiRcvAddr::GROUPCAST
-                                                         : WifiRcvAddr::UNICAST,
-                                     recipient,
-                                     tid);
+        const auto queueId =
+            recipient.IsGroup()
+                ? MakeWifiGroupcastQueueId(WIFI_QOSDATA_QUEUE,
+                                           recipient,
+                                           m_mac->GetFrameExchangeManager(linkId)->GetAddress(),
+                                           tid)
+                : MakeWifiUnicastQueueId(WIFI_QOSDATA_QUEUE, recipient, tid);
         if (auto mask = m_mac->GetMacQueueScheduler()->GetQueueLinkMask(m_ac, queueId, linkId);
             mask && mask->none())
         {
@@ -410,7 +412,7 @@ QosTxop::PeekNextMpdu(uint8_t linkId, uint8_t tid, Mac48Address recipient, Ptr<c
     // not get a sequence number assigned)
     while (item && !item->IsFragment())
     {
-        if (item->GetHeader().IsCtl())
+        if (item->GetHeader().IsCtl() && !item->GetHeader().IsPsPoll())
         {
             NS_LOG_DEBUG("Skipping control frame: " << *item);
             mpdu = item;
@@ -521,19 +523,19 @@ Ptr<WifiMpdu>
 QosTxop::GetNextMpdu(uint8_t linkId,
                      Ptr<WifiMpdu> peekedItem,
                      WifiTxParameters& txParams,
-                     Time availableTime,
-                     bool initialFrame)
+                     const std::optional<Time>& availableTime)
 {
     NS_ASSERT(peekedItem);
-    NS_LOG_FUNCTION(this << +linkId << *peekedItem << &txParams << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this << +linkId << *peekedItem << &txParams << availableTime);
 
     Mac48Address recipient = peekedItem->GetHeader().GetAddr1();
 
     // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
     // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
     // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016)
-    Time actualAvailableTime =
-        (initialFrame && txParams.GetSize(recipient) == 0 ? Time::Min() : availableTime);
+    const auto canExceedTxopLimit =
+        GetTxopStartTime(linkId) == Simulator::Now() && txParams.GetSize(recipient) == 0;
+    auto actualAvailableTime = (canExceedTxopLimit ? std::nullopt : availableTime);
 
     auto qosFem = StaticCast<QosFrameExchangeManager>(m_mac->GetFrameExchangeManager(linkId));
     if (!qosFem->TryAddMpdu(peekedItem, txParams, actualAvailableTime))
@@ -655,11 +657,20 @@ QosTxop::NotifyChannelReleased(uint8_t linkId)
         GenerateBackoff(linkId);
         if (!m_queue->IsEmpty())
         {
-            Simulator::ScheduleNow(&QosTxop::RequestAccess, this, linkId);
+            // if the channel released notification (below) leads the power save manager to put the
+            // PHY in sleep state, do not request channel access (which would wake up the PHY)
+            Simulator::ScheduleNow([=, this]() {
+                if (auto phy = m_mac->GetWifiPhy(linkId); phy && !phy->IsStateSleep())
+                {
+                    NS_LOG_DEBUG("Request channel access again after releasing the channel");
+                    RequestAccess(linkId);
+                }
+            });
         }
     }
     link.startTxop.reset();
-    GetLink(linkId).access = NOT_REQUESTED;
+    GetLink(linkId).access = WifiChannelAccessStatus::NOT_REQUESTED;
+    m_mac->NotifyChannelReleased(this, linkId);
 }
 
 Time
@@ -700,10 +711,15 @@ QosTxop::GotAddBaResponse(const MgtAddBaResponseHeader& respHdr, Mac48Address re
         // be set equal to the sequence number of such packet.
         const auto queueRecipient = respHdr.GetGcrGroupAddress().value_or(recipient);
         auto startingSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress(tid, queueRecipient);
-        auto peekedItem = m_queue->PeekByTidAndAddress(tid, queueRecipient);
-        if (peekedItem && peekedItem->HasSeqNoAssigned())
+        for (const auto linkId : m_mac->GetLinkIds())
         {
-            startingSeq = peekedItem->GetHeader().GetSequenceNumber();
+            const auto src = m_mac->GetFrameExchangeManager(linkId)->GetAddress();
+            auto peekedItem = m_queue->PeekByTidAndAddress(tid, queueRecipient, src);
+            if (peekedItem && peekedItem->HasSeqNoAssigned())
+            {
+                startingSeq = peekedItem->GetHeader().GetSequenceNumber();
+                break;
+            }
         }
         m_baManager->UpdateOriginatorAgreement(respHdr, recipient, startingSeq);
     }

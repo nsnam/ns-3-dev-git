@@ -7,5 +7,6 @@ Internet Models (IP, TCP, Routing, UDP)
    ipv4
    ipv6
    routing-overview
+   global-routing
    tcp
    udp

@@ -18,7 +18,7 @@
 #define NS_LOG_APPEND_CONTEXT                                                                      \
     if (GetObject<Node>())                                                                         \
     {                                                                                              \
-        std::clog << "[node " << GetObject<Node>()->GetId() << "] ";                               \
+        ns3LogStream << "[node " << GetObject<Node>()->GetId() << "] ";                            \
     }
 
 #include "olsr-routing-protocol.h"

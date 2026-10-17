@@ -116,7 +116,6 @@ AredQueueDiscTestCase::RunAredDiscTest(QueueSizeUnit mode)
     double minTh = 70;
     double maxTh = 150;
     uint32_t qSize = 300;
-    Address dest;
 
     // test 1: Verify automatic setting of QW. [QW = 0.0 with default LinkBandwidth]
     Ptr<RedQueueDisc> queue = CreateObject<RedQueueDisc>();
@@ -378,7 +377,6 @@ AredQueueDiscTestCase::Enqueue(Ptr<RedQueueDisc> queue, uint32_t size, uint32_t 
 void
 AredQueueDiscTestCase::EnqueueWithDelay(Ptr<RedQueueDisc> queue, uint32_t size, uint32_t nPkt)
 {
-    Address dest;
     double delay = 0.01; // enqueue packets with delay to allow m_curMaxP to adapt
     for (uint32_t i = 0; i < nPkt; i++)
     {

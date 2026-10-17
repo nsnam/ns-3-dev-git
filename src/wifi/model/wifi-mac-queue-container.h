@@ -10,9 +10,11 @@
 #define WIFI_MAC_QUEUE_CONTAINER_H
 
 #include "wifi-mac-queue-elem.h"
+#include "wifi-utils.h"
 
 #include "ns3/deprecated.h"
 #include "ns3/mac48-address.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -52,15 +54,14 @@ NS_DEPRECATED_3_46("Use WifiRcvAddr::BROADCAST instead")
 static constexpr auto WIFI_BROADCAST = WifiRcvAddr::BROADCAST;
 NS_DEPRECATED_3_46("Use WifiRcvAddr::GROUPCAST instead")
 static constexpr auto WIFI_GROUPCAST = WifiRcvAddr::GROUPCAST;
+
 /**@}*/
 
 /**
- * Tuple (queue type, receiver address type, Address, TID) identifying a container queue.
+ * Structure identifying a container queue.
  *
- * @note that Address has a different meaning depending on container queue type:
- *
- * - for container queue types holding unicast frames, Address is the Receiver Address (RA)
- *   of the frames stored in the queue. For 11be MLDs, it is expected that:
+ * - for container queue types holding unicast frames, the Receiver Address (RA) of the frames
+ *   stored in the queue needs to be specified. For 11be MLDs, it is expected that:
  *   + the RA of unicast management frames are link addresses (indicating the link on which
  *     they must be sent)
  *   + the RA of unicast QoS data frames are MLD addresses (indicating that they can be sent
@@ -69,8 +70,8 @@ static constexpr auto WIFI_GROUPCAST = WifiRcvAddr::GROUPCAST;
  *     sent on the corresponding link; if the RA is an MLD address, that control frame can be
  *     sent on any link
  *
- * - for container queue types holding broadcast frames, Address is the Transmitter Address (TA)
- *   of the frames stored in the queue. For 11be MLDs, it is expected that:
+ * - for container queue types holding broadcast frames, the Transmitter Address (TA) of the frames
+ *   stored in the queue needs to be specified. For 11be MLDs, it is expected that:
  *   + the TA of broadcast management frames are link addresses (indicating the link on which
  *     they must be sent)
  *   + the TA of broadcast QoS data frames are MLD addresses (indicating that they can be sent
@@ -79,10 +80,155 @@ static constexpr auto WIFI_GROUPCAST = WifiRcvAddr::GROUPCAST;
  *     sent on the corresponding link; if the TA is an MLD address, that control frame can be
  *     sent on any link
  *
+ * - for container queue types holding groupcast frames, both the RA and TA of the frames
+ *   stored in the queue need to be specified. The RA is used to identify the group address, while
+ *   the TA is used to identify the link on which the frames must be sent (and is always a link
+ *   address).
+ *
  * The TID is only specified for container queue types holding QoS data frames.
  */
-using WifiContainerQueueId =
-    std::tuple<WifiContainerQueueType, WifiRcvAddr, Mac48Address, std::optional<uint8_t>>;
+struct WIFI_EXPORT WifiContainerQueueId
+{
+    /**
+     * Constructor.
+     * @param type the container queue type
+     * @param addrType the type of receiver address (unicast, broadcast, or groupcast)
+     * @param addr1 the RA for unicast and groupcast queues, or nullopt otherwise
+     * @param addr2 the TA for broadcast and groupcast queues, or nullopt otherwise
+     * @param tid the TID for QoS data queues, or nullopt otherwise
+     */
+    WifiContainerQueueId(WifiContainerQueueType type,
+                         WifiRcvAddr addrType,
+                         std::optional<Mac48Address> addr1,
+                         std::optional<Mac48Address> addr2,
+                         std::optional<tid_t> tid)
+        : type(type),
+          addrType(addrType),
+          addr1(addr1),
+          addr2(addr2),
+          tid(tid)
+    {
+    }
+
+    /**
+     * Three-way comparison operator
+     *
+     * @param rhs right hand side
+     * @return deduced comparison type
+     */
+    auto operator<=>(const WifiContainerQueueId& rhs) const = default;
+
+    WifiContainerQueueType type;       ///< the container queue type
+    WifiRcvAddr addrType;              ///< the type of receiver address
+    std::optional<Mac48Address> addr1; ///< the receiver address for unicast and groupcast queues,
+                                       ///< or nullopt otherwise
+    std::optional<Mac48Address> addr2; ///< the transmitter address for broadcast and groupcast
+                                       ///< queues, or nullopt otherwise
+    std::optional<tid_t> tid;          ///< the TID for QoS data queues, or nullopt otherwise
+};
+
+/**
+ * @ingroup wifi
+ * Helper function to create WifiContainerQueueId for unicast queues.
+ *
+ * @param type the container queue type
+ * @param addr1 the receiver address for unicast queues
+ * @param tid the TID for QoS data queues, or nullopt otherwise
+ * @return the created WifiContainerQueueId
+ */
+inline WifiContainerQueueId
+MakeWifiUnicastQueueId(WifiContainerQueueType type,
+                       Mac48Address addr1,
+                       std::optional<tid_t> tid = std::nullopt)
+{
+    return WifiContainerQueueId(type, WifiRcvAddr::UNICAST, addr1, std::nullopt, tid);
+}
+
+/**
+ * @ingroup wifi
+ * Helper function to create WifiContainerQueueId for broadcast queues.
+ *
+ * @param type the container queue type
+ * @param addr2 the transmitter address for broadcast queues
+ * @param tid the TID for QoS data queues, or nullopt otherwise
+ * @return the created WifiContainerQueueId
+ */
+inline WifiContainerQueueId
+MakeWifiBroadcastQueueId(WifiContainerQueueType type,
+                         Mac48Address addr2,
+                         std::optional<tid_t> tid = std::nullopt)
+{
+    return WifiContainerQueueId(type, WifiRcvAddr::BROADCAST, std::nullopt, addr2, tid);
+}
+
+/**
+ * @ingroup wifi
+ * Helper function to create WifiContainerQueueId for groupcast queues.
+ *
+ * @param type the container queue type
+ * @param addr1 the receiver address for groupcast queues
+ * @param addr2 the transmitter address for groupcast queues (always a link address)
+ * @param tid the TID for QoS data queues, or nullopt otherwise
+ * @return the created WifiContainerQueueId
+ */
+inline WifiContainerQueueId
+MakeWifiGroupcastQueueId(WifiContainerQueueType type,
+                         Mac48Address addr1,
+                         Mac48Address addr2,
+                         std::optional<tid_t> tid = std::nullopt)
+{
+    return WifiContainerQueueId(type, WifiRcvAddr::GROUPCAST, addr1, addr2, tid);
+}
+
+/**
+ * Return the queue ID obtained after replacing the addresses carried by frames in the
+ * queue identified by the given queue ID. Address fields that are not part of a queue ID
+ * for the given receiver address type are kept unset.
+ *
+ * @param queueId the original queue ID
+ * @param addr1 the new Address 1, if it has to be replaced
+ * @param addr2 the new Address 2, if it has to be replaced
+ * @return the updated queue ID
+ */
+inline WifiContainerQueueId
+GetQueueIdWithReplacedAddresses(const WifiContainerQueueId& queueId,
+                                std::optional<Mac48Address> addr1,
+                                std::optional<Mac48Address> addr2)
+{
+    auto newQueueId = queueId;
+
+    switch (queueId.addrType)
+    {
+    case WifiRcvAddr::UNICAST:
+        if (addr1)
+        {
+            newQueueId.addr1 = *addr1;
+        }
+        newQueueId.addr2 = std::nullopt;
+        break;
+    case WifiRcvAddr::BROADCAST:
+        newQueueId.addr1 = std::nullopt;
+        if (addr2)
+        {
+            newQueueId.addr2 = *addr2;
+        }
+        break;
+    case WifiRcvAddr::GROUPCAST:
+        if (addr1)
+        {
+            newQueueId.addr1 = *addr1;
+        }
+        if (addr2)
+        {
+            newQueueId.addr2 = *addr2;
+        }
+        break;
+    case WifiRcvAddr::COUNT:
+        NS_ABORT_MSG("Invalid receiver address type");
+    }
+
+    return newQueueId;
+}
 
 } // namespace ns3
 
@@ -103,7 +249,7 @@ struct std::hash<ns3::WifiContainerQueueId>
      * @param queueId The QueueId value to hash.
      * @return the hash
      */
-    std::size_t operator()(ns3::WifiContainerQueueId queueId) const;
+    WIFI_EXPORT std::size_t operator()(ns3::WifiContainerQueueId queueId) const;
 };
 
 namespace ns3
@@ -116,7 +262,7 @@ namespace ns3
  * This container holds multiple container queues organized in an hash table
  * whose keys are WifiContainerQueueId tuples identifying the container queues.
  */
-class WifiMacQueueContainer
+class WIFI_EXPORT WifiMacQueueContainer
 {
   public:
     /// Type of a queue held by the container
@@ -185,6 +331,19 @@ class WifiMacQueueContainer
     uint32_t GetNBytes(const WifiContainerQueueId& queueId) const;
 
     /**
+     * Replace the addresses in the Address fields of all the MPDUs in the given container queue
+     * with the given addresses. Also, update the address in the ID of the given container queue
+     * if needed.
+     *
+     * @param queueId the ID of the given container queue
+     * @param addr1 the address to write in the Address 1 field (if given)
+     * @param addr2 the address to write in the Address 2 field (if given)
+     */
+    void ReplaceAddresses(const WifiContainerQueueId& queueId,
+                          std::optional<Mac48Address> addr1,
+                          std::optional<Mac48Address> addr2) const;
+
+    /**
      * Transfer non-inflight MPDUs with expired lifetime in the container queue identified by
      * the given QueueId to the container queue storing MPDUs with expired lifetime.
      *
@@ -227,6 +386,30 @@ class WifiMacQueueContainer
     mutable std::unordered_map<WifiContainerQueueId, uint32_t>
         m_nBytesPerQueue; //!< size in bytes of the container queues
 };
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os the reference to the output stream
+ * @param [in] queueType the container queue type
+ * @return a reference to the output stream
+ */
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiContainerQueueType queueType);
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os the reference to the output stream
+ * @param [in] rcvAddrType the receiver address type
+ * @return a reference to the output stream
+ */
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, WifiRcvAddr rcvAddrType);
+
+/**
+ * @brief Stream insertion operator.
+ * @param [in] os the reference to the output stream
+ * @param [in] queueId the container queue ID
+ * @return a reference to the output stream
+ */
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiContainerQueueId& queueId);
 
 } // namespace ns3
 

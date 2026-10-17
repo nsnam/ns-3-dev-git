@@ -13,6 +13,7 @@
 
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-units.h"
 
 namespace ns3
@@ -33,7 +34,7 @@ class WifiNetDevice;
  * OBSS_PD is an 802.11ax feature that allows a STA, under specific
  * conditions, to ignore an inter-BSS PPDU.
  */
-class ObssPdAlgorithm : public Object
+class WIFI_EXPORT ObssPdAlgorithm : public Object
 {
   public:
     /**
@@ -65,17 +66,17 @@ class ObssPdAlgorithm : public Object
     /**
      * TracedCallback signature for OBSS_PD reset events.
      *
-     * @param [in] bssColor The BSS color of frame triggering the reset
-     * @param [in] rssiDbm The RSSI (dBm) of frame triggering the reset
+     * @param [in] bssColor The BSS color of the frame triggering the reset
+     * @param [in] rssiDbm The RSSI of the frame triggering the reset
      * @param [in] powerRestricted Whether a TX power restriction is triggered
-     * @param [in] txPowerMaxDbmSiso The SISO TX power restricted level (dBm)
-     * @param [in] txPowerMaxDbmMimo The MIMO TX power restricted level (dBm)
+     * @param [in] txPowerMaxDbmSiso The SISO TX power restricted level
+     * @param [in] txPowerMaxDbmMimo The MIMO TX power restricted level
      */
     typedef void (*ResetTracedCallback)(uint8_t bssColor,
-                                        double rssiDbm,
+                                        dBm_u rssiDbm,
                                         bool powerRestricted,
-                                        double txPowerMaxDbmSiso,
-                                        double txPowerMaxDbmMimo);
+                                        dBm_u txPowerMaxDbmSiso,
+                                        dBm_u txPowerMaxDbmMimo);
 
     /**
      * @param level the current OBSS PD level
@@ -101,7 +102,7 @@ class ObssPdAlgorithm : public Object
     /**
      * TracedCallback signature for PHY reset events.
      */
-    TracedCallback<uint8_t, double, bool, double, double> m_resetEvent;
+    TracedCallback<uint8_t, dBm_u, bool, dBm_u, dBm_u> m_resetEvent;
 };
 
 } // namespace ns3

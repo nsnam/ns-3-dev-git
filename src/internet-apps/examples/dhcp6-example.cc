@@ -69,6 +69,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
+#include "ns3/enum.h"
 #include "ns3/internet-apps-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
@@ -82,12 +83,30 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("Dhcp6Example");
 
+/**
+ * @brief Brings down an IPv6 interface on a given node.
+ *
+ * Retrieves the Ipv6 object aggregated to the specified node and marks
+ * the given interface as down, disabling it from sending or receiving packets.
+ *
+ * @param node Pointer to the ns-3 Node whose interface will be set down.
+ * @param interface Index of the IPv6 interface to disable.
+ */
 void
 SetInterfaceDown(Ptr<Node> node, uint32_t interface)
 {
     node->GetObject<Ipv6>()->SetDown(interface);
 }
 
+/**
+ * @brief Brings up an IPv6 interface on a given node.
+ *
+ * Retrieves the Ipv6 object aggregated to the specified node and marks
+ * the given interface as up, enabling it to send and receive packets.
+ *
+ * @param node Pointer to the ns-3 Node whose interface will be set up.
+ * @param interface Index of the IPv6 interface to enable.
+ */
 void
 SetInterfaceUp(Ptr<Node> node, uint32_t interface)
 {
@@ -169,6 +188,13 @@ main(int argc, char* argv[])
     dhcp6Helper.SetServerAttribute("RebindTime", StringValue("16s"));
     dhcp6Helper.SetServerAttribute("PreferredLifetime", StringValue("18s"));
     dhcp6Helper.SetServerAttribute("ValidLifetime", StringValue("20s"));
+    // We set an arbitrary DUID type for the server.
+    // There is no universal standard for the server's DUID type.
+    dhcp6Helper.SetServerAttribute("DuidType", StringValue("LLT"));
+    // We set an arbitrary DUID type for the client.
+    // There is no universal standard for the client's DUID type,
+    // but usually OSes setup the DUID during the OS installation.
+    dhcp6Helper.SetClientAttribute("DuidType", StringValue("UUID"));
 
     // DHCPv6 clients
     NodeContainer nodes = NodeContainer(nonRouterNodes.Get(1), nonRouterNodes.Get(2));

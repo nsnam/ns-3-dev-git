@@ -75,7 +75,7 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     void SetChannel(std::string channelName);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -85,7 +85,7 @@ class LrWpanHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevic
     void AddPropagationLossModel(std::string name, Ts&&... args);
 
     /**
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param name the name of the model to set
      * @param [in] args Name and AttributeValue pairs to set.
      *

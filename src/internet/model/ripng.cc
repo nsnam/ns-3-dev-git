@@ -1046,7 +1046,7 @@ RipNg::HandleResponses(RipNgHeader hdr,
 
     for (auto iter = rtes.begin(); iter != rtes.end(); iter++)
     {
-        Ipv6Prefix rtePrefix = Ipv6Prefix(iter->GetPrefixLen());
+        auto rtePrefix = Ipv6Prefix(iter->GetPrefixLen());
         Ipv6Address rteAddr = iter->GetPrefix().CombinePrefix(rtePrefix);
 
         NS_LOG_LOGIC("Processing RTE " << *iter);

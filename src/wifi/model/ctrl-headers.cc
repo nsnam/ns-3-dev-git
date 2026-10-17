@@ -86,19 +86,19 @@ void
 CtrlBAckRequestHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
-    i.WriteHtolsbU16(GetBarControl());
+    i.WriteU16(GetBarControl());
     switch (m_barType.m_variant)
     {
     case BlockAckReqType::BASIC:
     case BlockAckReqType::COMPRESSED:
     case BlockAckReqType::EXTENDED_COMPRESSED:
-        i.WriteHtolsbU16(GetStartingSequenceControl());
+        i.WriteU16(GetStartingSequenceControl());
         break;
     case BlockAckReqType::MULTI_TID:
         NS_FATAL_ERROR("Multi-tid block ack is not supported.");
         break;
     case BlockAckReqType::GCR:
-        i.WriteHtolsbU16(GetStartingSequenceControl());
+        i.WriteU16(GetStartingSequenceControl());
         WriteTo(i, m_gcrAddress);
         break;
     default:
@@ -111,19 +111,19 @@ uint32_t
 CtrlBAckRequestHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    SetBarControl(i.ReadLsbtohU16());
+    SetBarControl(i.ReadU16());
     switch (m_barType.m_variant)
     {
     case BlockAckReqType::BASIC:
     case BlockAckReqType::COMPRESSED:
     case BlockAckReqType::EXTENDED_COMPRESSED:
-        SetStartingSequenceControl(i.ReadLsbtohU16());
+        SetStartingSequenceControl(i.ReadU16());
         break;
     case BlockAckReqType::MULTI_TID:
         NS_FATAL_ERROR("Multi-tid block ack is not supported.");
         break;
     case BlockAckReqType::GCR:
-        SetStartingSequenceControl(i.ReadLsbtohU16());
+        SetStartingSequenceControl(i.ReadU16());
         ReadFrom(i, m_gcrAddress);
         break;
     default:
@@ -381,36 +381,36 @@ void
 CtrlBAckResponseHeader::Serialize(Buffer::Iterator start) const
 {
     Buffer::Iterator i = start;
-    i.WriteHtolsbU16(GetBaControl());
+    i.WriteU16(GetBaControl());
     switch (m_baType.m_variant)
     {
     case BlockAckType::BASIC:
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
-        i.WriteHtolsbU16(GetStartingSequenceControl());
+        i.WriteU16(GetStartingSequenceControl());
         i = SerializeBitmap(i);
         break;
     case BlockAckType::GCR:
-        i.WriteHtolsbU16(GetStartingSequenceControl());
+        i.WriteU16(GetStartingSequenceControl());
         WriteTo(i, m_baInfo[0].m_address);
         i = SerializeBitmap(i);
         break;
     case BlockAckType::MULTI_STA:
         for (std::size_t index = 0; index < m_baInfo.size(); index++)
         {
-            i.WriteHtolsbU16(m_baInfo[index].m_aidTidInfo);
+            i.WriteU16(m_baInfo[index].m_aidTidInfo);
             if (GetAid11(index) != 2045)
             {
                 if (!m_baInfo[index].m_bitmap.empty())
                 {
-                    i.WriteHtolsbU16(GetStartingSequenceControl(index));
+                    i.WriteU16(GetStartingSequenceControl(index));
                     i = SerializeBitmap(i, index);
                 }
             }
             else
             {
                 uint32_t reserved = 0;
-                i.WriteHtolsbU32(reserved);
+                i.WriteU32(reserved);
                 WriteTo(i, m_baInfo[index].m_address);
             }
         }
@@ -428,17 +428,17 @@ uint32_t
 CtrlBAckResponseHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
-    SetBaControl(i.ReadLsbtohU16());
+    SetBaControl(i.ReadU16());
     switch (m_baType.m_variant)
     {
     case BlockAckType::BASIC:
     case BlockAckType::COMPRESSED:
     case BlockAckType::EXTENDED_COMPRESSED:
-        SetStartingSequenceControl(i.ReadLsbtohU16());
+        SetStartingSequenceControl(i.ReadU16());
         i = DeserializeBitmap(i);
         break;
     case BlockAckType::GCR:
-        SetStartingSequenceControl(i.ReadLsbtohU16());
+        SetStartingSequenceControl(i.ReadU16());
         ReadFrom(i, m_baInfo[0].m_address);
         i = DeserializeBitmap(i);
         break;
@@ -449,7 +449,7 @@ CtrlBAckResponseHeader::Deserialize(Buffer::Iterator start)
             m_baInfo.emplace_back();
             m_baType.m_bitmapLen.push_back(0); // updated by next call to SetStartingSequenceControl
 
-            m_baInfo.back().m_aidTidInfo = i.ReadLsbtohU16();
+            m_baInfo.back().m_aidTidInfo = i.ReadU16();
 
             if (GetAid11(index) != 2045)
             {
@@ -458,13 +458,13 @@ CtrlBAckResponseHeader::Deserialize(Buffer::Iterator start)
                 // subfield is set to 0 and the TID subfield is set to a value from 0 to 7.
                 if (!GetAckType(index) && GetTidInfo(index) < 8)
                 {
-                    SetStartingSequenceControl(i.ReadLsbtohU16(), index);
+                    SetStartingSequenceControl(i.ReadU16(), index);
                     i = DeserializeBitmap(i, index);
                 }
             }
             else
             {
-                i.ReadLsbtohU32(); // next 4 bytes are reserved
+                i.ReadU32(); // next 4 bytes are reserved
                 ReadFrom(i, m_baInfo.back().m_address);
                 // the length of this Per AID TID Info subfield is 12, so set
                 // the bitmap length to 8 to simulate the correct size
@@ -1288,7 +1288,7 @@ CtrlTriggerUserInfoField::Serialize(Buffer::Iterator start) const
         userInfo |= (m_bits26To31.raRuInformation.moreRaRu ? 1 << 31 : 0);
     }
 
-    i.WriteHtolsbU32(userInfo);
+    i.WriteU32(userInfo);
     // Here we need to write 8 bits covering the UL Target RSSI (7 bits) and B39, which is
     // reserved in the HE variant and the PS160 subfield in the EHT variant.
     uint8_t bit32To39 = m_ulTargetRxPower;
@@ -1324,7 +1324,7 @@ CtrlTriggerUserInfoField::Deserialize(Buffer::Iterator start)
 
     Buffer::Iterator i = start;
 
-    uint32_t userInfo = i.ReadLsbtohU32();
+    uint32_t userInfo = i.ReadU32();
 
     m_aid12 = userInfo & 0x0fff;
     NS_ABORT_MSG_IF(m_aid12 == 4095, "Cannot deserialize a Padding field");
@@ -1824,7 +1824,7 @@ CtrlTriggerSpecialUserInfoField::Serialize(Buffer::Iterator start) const
     uint32_t userInfo = 0;
     userInfo |= (AID_SPECIAL_USER & 0x0fff);
     userInfo |= (static_cast<uint32_t>(m_ulBwExt) << 15);
-    i.WriteHtolsbU32(userInfo);
+    i.WriteU32(userInfo);
     i.WriteU8(0);
     // TODO: EHT Spatial Reuse and U-SIG Disregard And Validate
 
@@ -1855,7 +1855,7 @@ CtrlTriggerSpecialUserInfoField::Deserialize(Buffer::Iterator start)
 
     Buffer::Iterator i = start;
 
-    const auto userInfo = i.ReadLsbtohU32();
+    const auto userInfo = i.ReadU32();
     i.ReadU8();
     // TODO: EHT Spatial Reuse and U-SIG Disregard And Validate
 
@@ -2049,7 +2049,7 @@ CtrlTriggerHeader::GetInstanceTypeId() const
 void
 CtrlTriggerHeader::Print(std::ostream& os) const
 {
-    os << "TriggerType=" << GetTypeString() << ", Bandwidth=" << +GetUlBandwidth()
+    os << "TriggerType=" << GetTypeString() << ", Bandwidth=" << GetUlBandwidth()
        << ", UL Length=" << m_ulLength;
 
     for (auto& ui : m_userInfoFields)
@@ -2132,7 +2132,7 @@ CtrlTriggerHeader::Serialize(Buffer::Iterator start) const
         commonInfo |= ulHeSigA2 << 54;
     }
 
-    i.WriteHtolsbU64(commonInfo);
+    i.WriteU64(commonInfo);
 
     if (m_specialUserInfoField)
     {
@@ -2156,7 +2156,7 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
 {
     Buffer::Iterator i = start;
 
-    uint64_t commonInfo = i.ReadLsbtohU64();
+    uint64_t commonInfo = i.ReadU64();
 
     m_triggerType = static_cast<TriggerFrameType>(commonInfo & 0x0f);
     m_ulLength = (commonInfo >> 4) & 0x0fff;
@@ -2181,7 +2181,7 @@ CtrlTriggerHeader::Deserialize(Buffer::Iterator start)
     if (m_variant == TriggerFrameVariant::EHT)
     {
         m_specialUserInfoField.reset();
-        const auto userInfo = i.ReadLsbtohU16();
+        const auto userInfo = i.ReadU16();
         i.Prev(2);
         if (const auto aid12 = userInfo & 0x0fff; aid12 == AID_SPECIAL_USER)
         {

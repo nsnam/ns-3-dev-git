@@ -330,7 +330,7 @@ class Ipv6ExtensionFragment : public Ipv6Extension
      *
      * @brief This class stores the fragments of a packet waiting to be rebuilt.
      */
-    class Fragments : public SimpleRefCount<Fragments>
+    class Fragments
     {
       public:
         /**
@@ -436,7 +436,7 @@ class Ipv6ExtensionFragment : public Ipv6Extension
     /**
      * @brief Container for the packet fragments.
      */
-    typedef std::map<FragmentKey_t, Ptr<Fragments>> MapFragments_t;
+    typedef std::map<FragmentKey_t, std::shared_ptr<Fragments>> MapFragments_t;
 
     /**
      * @brief The hash of fragmented packets.
@@ -578,6 +578,14 @@ class Ipv6ExtensionRoutingDemux : public Object
      * @param extensionRouting pointer on the extension to remove
      */
     void Remove(Ptr<Ipv6ExtensionRouting> extensionRouting);
+
+    /**
+     * Assigns stream numbers to the registered extensions of this IPv6 routing demux object
+     *
+     * @param stream the first stream number to assign
+     * @returns the number of assigned streams
+     */
+    int64_t AssignStreams(int64_t stream);
 
   protected:
     /**

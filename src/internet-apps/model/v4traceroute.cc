@@ -15,7 +15,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/boolean.h"
-#include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/iana-internet-protocol-numbers.h"
 #include "ns3/icmpv4.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-address.h"
@@ -90,6 +90,7 @@ V4TraceRoute::V4TraceRoute()
       m_socket(nullptr),
       m_seq(0),
       m_verbose(true),
+      m_traceComplete(false),
       m_probeCount(0),
       m_maxProbes(3),
       m_ttl(1),
@@ -115,9 +116,10 @@ V4TraceRoute::StartApplication()
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_LOGIC("Application started");
+    m_traceComplete = false;
     m_started = Simulator::Now();
 
-    NS_ABORT_MSG_IF(!m_remote.IsInitialized(), "'Remote' attribute not properly set");
+    NS_ABORT_MSG_IF(m_remote.IsAny(), "'Remote' attribute not properly set");
 
     if (m_verbose)
     {
@@ -132,7 +134,7 @@ V4TraceRoute::StartApplication()
     }
 
     m_socket = Socket::CreateSocket(GetNode(), TypeId::LookupByName("ns3::Ipv4RawSocketFactory"));
-    m_socket->SetAttribute("Protocol", UintegerValue(Icmpv4L4Protocol::PROT_NUMBER));
+    m_socket->SetAttribute("Protocol", UintegerValue(iana::internetprotocolnumbers::ICMP));
     m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
 
     NS_ASSERT(m_socket);
@@ -151,6 +153,21 @@ V4TraceRoute::StopApplication()
 {
     NS_LOG_FUNCTION(this);
 
+    if (!m_traceComplete)
+    {
+        if (m_verbose)
+        {
+            NS_LOG_UNCOND("\nTrace Complete");
+        }
+
+        if (m_printStream)
+        {
+            *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
+        }
+
+        m_traceComplete = true;
+    }
+
     if (m_next.IsPending())
     {
         m_next.Cancel();
@@ -164,16 +181,6 @@ V4TraceRoute::StopApplication()
     if (m_socket)
     {
         m_socket->Close();
-    }
-
-    if (m_verbose)
-    {
-        NS_LOG_UNCOND("\nTrace Complete");
-    }
-
-    if (m_printStream)
-    {
-        *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
     }
 }
 
@@ -222,7 +229,7 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
         NS_ASSERT(realFrom.GetPort() == 1);
         Ipv4Header ipv4;
         p->RemoveHeader(ipv4);
-        NS_ASSERT(ipv4.GetProtocol() == Icmpv4L4Protocol::PROT_NUMBER);
+        NS_ASSERT(ipv4.GetProtocol() == iana::internetprotocolnumbers::ICMP);
         Icmpv4Header icmp;
         p->RemoveHeader(icmp);
 
@@ -326,7 +333,9 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
                                                             << " " << m_osRoute.str() << "\n";
                             }
 
+                            m_osRoute.str("");
                             m_osRoute.clear();
+                            m_routeIpv4.str("");
                             m_routeIpv4.clear();
                         }
                         else
@@ -340,16 +349,19 @@ V4TraceRoute::Receive(Ptr<Socket> socket)
             m_waitIcmpReplyTimer.Cancel();
             if (m_probeCount == m_maxProbes)
             {
-                if (m_verbose)
+                if (!m_traceComplete)
                 {
-                    NS_LOG_UNCOND("\nTrace Complete");
+                    if (m_verbose)
+                    {
+                        NS_LOG_UNCOND("\nTrace Complete");
+                    }
+                    if (m_printStream)
+                    {
+                        *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
+                    }
+                    m_traceComplete = true;
+                    Simulator::ScheduleNow(&V4TraceRoute::StopApplication, this);
                 }
-
-                if (m_printStream)
-                {
-                    *m_printStream->GetStream() << "Trace Complete\n" << std::endl;
-                }
-                Simulator::ScheduleNow(&V4TraceRoute::StopApplication, this);
             }
             else if (m_ttl < m_maxTtl + 1)
             {

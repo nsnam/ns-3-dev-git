@@ -517,7 +517,7 @@ main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////
     // command-line argument parsing                          //
     ////////////////////////////////////////////////////////////
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.AddValue("n0TcpType", "n0 TCP type (bic, dctcp, or reno)", n0TcpType);
     cmd.AddValue("n1TcpType", "n1 TCP type (bic, dctcp, or reno)", n1TcpType);
     cmd.AddValue("scenarioNum",

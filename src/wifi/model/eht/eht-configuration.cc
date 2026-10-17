@@ -203,4 +203,10 @@ EhtConfiguration::SetTidLinkMapping(WifiDirection dir,
     }
 }
 
+bool
+EhtConfiguration::GetEmlsrActivated() const
+{
+    return m_emlsrActivated;
+}
+
 } // namespace ns3

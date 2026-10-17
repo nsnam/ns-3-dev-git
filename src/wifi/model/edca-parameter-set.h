@@ -11,6 +11,8 @@
 
 #include "wifi-information-element.h"
 
+#include "ns3/wifi-export.h"
+
 namespace ns3
 {
 
@@ -20,7 +22,7 @@ namespace ns3
  *
  * This class knows how to serialize and deserialize the EDCA Parameter Set.
  */
-class EdcaParameterSet : public WifiInformationElement
+class WIFI_EXPORT EdcaParameterSet : public WifiInformationElement
 {
   public:
     EdcaParameterSet();

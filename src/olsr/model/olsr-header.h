@@ -31,7 +31,7 @@ uint8_t SecondsToEmf(double seconds);
  *
  * The basic layout of any packet in OLSR is as follows (omitting IP and
  * UDP headers):
-  \verbatim
+  @verbatim
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -59,7 +59,7 @@ uint8_t SecondsToEmf(double seconds);
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    :                                                               :
             (etc.)
-  \endverbatim
+  @endverbatim
   *
   * This header only holds the common part of a message group, i.e.,
   * the first 4 bytes.
@@ -130,7 +130,7 @@ class PacketHeader : public Header
  * The header size is variable, and depends on the
  * actual message type.
  *
-  \verbatim
+  @verbatim
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -144,7 +144,7 @@ class PacketHeader : public Header
    :                            MESSAGE                            :
    |                                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
+  @endverbatim
  */
 class MessageHeader : public Header
 {
@@ -296,7 +296,7 @@ class MessageHeader : public Header
      * @ingroup olsr
      * MID Message Format
      *
-    \verbatim
+    @verbatim
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -306,7 +306,7 @@ class MessageHeader : public Header
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |                              ...                              |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    \endverbatim
+    @endverbatim
     */
     struct Mid
     {
@@ -345,7 +345,7 @@ class MessageHeader : public Header
      * @ingroup olsr
      * HELLO Message Format
      *
-    \verbatim
+    @verbatim
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 
@@ -369,7 +369,7 @@ class MessageHeader : public Header
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      :                                                               :
        (etc.)
-    \endverbatim
+    @endverbatim
     */
     struct Hello
     {
@@ -441,7 +441,7 @@ class MessageHeader : public Header
      * @ingroup olsr
      * TC Message Format
      *
-     \verbatim
+     @verbatim
        0                   1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -453,7 +453,7 @@ class MessageHeader : public Header
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       |                              ...                              |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     \endverbatim
+     @endverbatim
      */
     struct Tc
     {
@@ -494,7 +494,7 @@ class MessageHeader : public Header
      * @ingroup olsr
      * HNA (Host Network Association) Message Format
      *
-     \verbatim
+     @verbatim
        0                   1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -508,7 +508,7 @@ class MessageHeader : public Header
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       |                              ...                              |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     \endverbatim
+     @endverbatim
      */
     struct Hna
     {

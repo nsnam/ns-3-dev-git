@@ -12,17 +12,20 @@
 #include "fatal-error.h"
 #include "string.h"
 
-#include "ns3/core-config.h"
-
 #include <algorithm> // transform
-#include <cstring>   // strlen
+#include <ctype.h>   // toupper
 #include <iostream>
-#include <list>
-#include <locale> // toupper
 #include <map>
-#include <numeric> // accumulate
+#include <memory>
 #include <stdexcept>
 #include <utility>
+#include <vector>
+
+#ifdef _WIN32
+#include <io.h> // _write
+#else
+#include <unistd.h> // write
+#endif
 
 /**
  * @file
@@ -183,6 +186,210 @@ GetLogComponent(const std::string name)
     return *ret;
 }
 
+/** Unnamed namespace for log line assembly buffers. */
+namespace
+{
+
+/**
+ * A streambuf appending to a std::string whose capacity is reused
+ * between log lines, so steady-state logging does not allocate.
+ */
+class LogLineBuf : public std::streambuf
+{
+  public:
+    LogLineBuf()
+    {
+        m_line.reserve(1000);
+    }
+
+    /** @return The log line being assembled. */
+    std::string& Line()
+    {
+        return m_line;
+    }
+
+  protected:
+    /**
+     * Append a character sequence to the line.
+     *
+     * @param s The characters to append.
+     * @param n The number of characters to append.
+     * @return The number of characters appended.
+     */
+    std::streamsize xsputn(const char* s, std::streamsize n) override
+    {
+        m_line.append(s, static_cast<std::size_t>(n));
+        return n;
+    }
+
+    /**
+     * Append a single character to the line.
+     *
+     * @param c The character to append, or EOF.
+     * @return A value other than EOF on success.
+     */
+    int_type overflow(int_type c) override
+    {
+        if (!traits_type::eq_int_type(c, traits_type::eof()))
+        {
+            m_line.push_back(traits_type::to_char_type(c));
+        }
+        return traits_type::not_eof(c);
+    }
+
+  private:
+    std::string m_line; //!< The log line being assembled.
+};
+
+/**
+ * Write an assembled log line to std::clog, terminated by a newline,
+ * and empty it.
+ *
+ * @param [in,out] line The line to emit.
+ */
+void
+EmitLine(std::string& line)
+{
+    line.push_back('\n');
+    std::clog.write(line.data(), static_cast<std::streamsize>(line.size()));
+    std::clog.flush();
+    line.clear();
+}
+
+/**
+ * Whether this thread's LogLine has been destroyed.
+ *
+ * Trivially destructible, so it remains readable during program shutdown,
+ * after the buffer's own thread_local destructor has run.  Core itself logs
+ * during static destruction (e.g. Time::Clear() from ~Time of static
+ * attribute defaults), so this must be handled.
+ */
+thread_local bool g_logLineDestroyed = false;
+
+/** A memory buffer and the ostream assembling a log line into it. */
+struct LogLine
+{
+    LogLineBuf buf;        //!< The line buffer.
+    std::ostream os{&buf}; //!< The stream assembling the line.
+
+    /**
+     * Arm g_logLineDestroyed, emitting any partially assembled line first
+     * so it is not lost.
+     */
+    ~LogLine()
+    {
+        g_logLineDestroyed = true;
+        auto& partial = buf.Line();
+        if (!partial.empty())
+        {
+            EmitLine(partial);
+        }
+    }
+};
+
+/**
+ * The thread's log line, once created.
+ *
+ * A plain pointer, so a signal handler can reach the line being assembled
+ * without running the thread_local initialization it may have interrupted.
+ */
+thread_local LogLine* g_logLine = nullptr;
+
+/** @return The thread-local log line buffer. */
+LogLine&
+GetLogLine()
+{
+    thread_local LogLine line;
+    g_logLine = &line;
+    return line;
+}
+
+} // unnamed namespace
+
+std::ostream&
+LogLineBegin()
+{
+    if (g_logLineDestroyed)
+    {
+        // Logging during program shutdown, after this thread's buffer is
+        // gone: stream directly to std::clog, which is kept alive by
+        // std::ios_base::Init.
+        return std::clog;
+    }
+    // The buffer is empty here except for nested logging (a user-defined
+    // operator<< that itself logs while a log message is being assembled);
+    // then the inner line is appended to the outer line in progress and
+    // LogLineCommit() flushes both, matching the historical interleaving of
+    // direct std::clog streaming.
+    return GetLogLine().os;
+}
+
+void
+LogLineCommit(std::ostream& os)
+{
+    if (&os == &std::clog)
+    {
+        std::clog << std::endl;
+        return;
+    }
+    EmitLine(static_cast<LogLineBuf*>(os.rdbuf())->Line());
+    // A failed insertion (e.g. an operator<< that threw) sets badbit on the
+    // stream; clear it so the failure does not silence every later line.
+    os.clear();
+}
+
+void
+LogLineFlushPartial()
+{
+    if (g_logLineDestroyed)
+    {
+        return;
+    }
+    auto& line = GetLogLine().buf.Line();
+    if (line.empty())
+    {
+        return;
+    }
+    EmitLine(line);
+}
+
+namespace
+{
+
+/**
+ * Write to the standard error file descriptor, bypassing std::clog.
+ *
+ * @param [in] s The characters to write.
+ * @param [in] n The number of characters to write.
+ */
+void
+WriteStdErr(const char* s, std::size_t n)
+{
+#ifdef _WIN32
+    _write(2, s, static_cast<unsigned int>(n));
+#else
+    [[maybe_unused]] auto written = write(2, s, n);
+#endif
+}
+
+} // unnamed namespace
+
+void
+LogLineFlushPartialFromSignal()
+{
+    if (g_logLineDestroyed || g_logLine == nullptr)
+    {
+        return;
+    }
+    const auto& line = g_logLine->buf.Line();
+    if (line.empty())
+    {
+        return;
+    }
+    WriteStdErr(line.data(), line.size());
+    WriteStdErr("\n", 1);
+}
+
 void
 LogComponent::EnvVarCheck()
 {
@@ -229,7 +436,7 @@ LogComponent::EnvVarCheck()
         }
         pre_pipe = false;
     }
-    Enable((LogLevel)level);
+    Enable(static_cast<LogLevel>(level));
 }
 
 bool
@@ -364,21 +571,21 @@ LogComponentPrintList()
             {
                 std::cout << "|warn";
             }
-            if (component->IsEnabled(LOG_DEBUG))
-            {
-                std::cout << "|debug";
-            }
             if (component->IsEnabled(LOG_INFO))
             {
                 std::cout << "|info";
             }
-            if (component->IsEnabled(LOG_FUNCTION))
-            {
-                std::cout << "|function";
-            }
             if (component->IsEnabled(LOG_LOGIC))
             {
                 std::cout << "|logic";
+            }
+            if (component->IsEnabled(LOG_DEBUG))
+            {
+                std::cout << "|debug";
+            }
+            if (component->IsEnabled(LOG_FUNCTION))
+            {
+                std::cout << "|function";
             }
         }
         if (component->IsEnabled(LOG_PREFIX_ALL))
@@ -505,6 +712,20 @@ LogGetNodePrinter()
 ParameterLogger::ParameterLogger(std::ostream& os)
     : m_os(os)
 {
+}
+
+std::size_t ParameterLogger::m_maxLoggedContainerElements = 10;
+
+void
+ParameterLogger::SetMaxLoggedContainerElements(std::size_t max)
+{
+    m_maxLoggedContainerElements = max;
+}
+
+std::size_t
+ParameterLogger::GetMaxLoggedContainerElements() const
+{
+    return m_maxLoggedContainerElements;
 }
 
 void

@@ -503,7 +503,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     uint64_t GetExtPanId() const;
 
     /**
-     * Get the logical channel used by the the neighbor in this entry.
+     * Get the logical channel used by the neighbor in this entry.
      *
      * @return The channel number used by this neighbor.
      */
@@ -525,7 +525,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     uint8_t GetBeaconOrder() const;
 
     /**
-     * Get the the value of the potential parent field.
+     * Get the value of the potential parent field.
      *
      * @return A confirmation of whether of not the device has been discarded a potential parent.
      */
@@ -656,7 +656,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     void SetExtPanId(uint64_t extPanId);
 
     /**
-     * Set the logical channel used by the the neighbor in this entry.
+     * Set the logical channel used by the neighbor in this entry.
      *
      * @param channel The channel number used by this neighbor.
      */
@@ -678,7 +678,7 @@ class NeighborTableEntry : public SimpleRefCount<NeighborTableEntry>
     void SetBeaconOrder(uint8_t bo);
 
     /**
-     * Set the the value of the potential parent field.
+     * Set the value of the potential parent field.
      *
      * @param confirm A confirm of whether or not the device has been discarded a potential parent.
      */
@@ -1326,6 +1326,65 @@ class BroadcastTransactionTable
     std::deque<Ptr<BroadcastTransactionRecord>>
         m_broadcastTransactionTable; //!< The list object representing the broadcast transaction
                                      //!< table (BTT)
+};
+
+/**
+ * A table that keeps record of the mapping between the 64 bit IEEE address and the 16 bit
+ * network address. This table is used to keep track of the mapping between the two addresses
+ * and is used to look up for the network address based on the IEEE address and vice versa
+ */
+class NwkAddressMap
+{
+  public:
+    /**
+     * Update the mapping between the IEEE address and the network address.
+     * @param ieeeAddr The IEEE address to update
+     * @param nwkAddr The network address to update
+     * @return True if the mapping was updated successfully, false otherwise
+     */
+    bool Update(Mac64Address ieeeAddr, Mac16Address nwkAddr);
+
+    /**
+     * Look up for the network address based on the IEEE address.
+     *
+     * @param ieeeAddr The IEEE address to look up
+     * @param nwkAddr The network address to return
+     * @return True if the mapping was found, false otherwise
+     */
+    bool LookupNwkAddress(Mac64Address ieeeAddr, Mac16Address& nwkAddr) const;
+
+    /**
+     * Look up for the IEEE address based on the network address.
+     *
+     * @param nwkAddr The network address to look up
+     * @param ieeeAddr The IEEE address to return
+     * @return True if the mapping was found, false otherwise
+     */
+    bool LookupIeeeAddress(Mac16Address nwkAddr, Mac64Address& ieeeAddr) const;
+
+    /**
+     * Dispose of the table and all its elements
+     */
+    void Dispose();
+
+    /**
+     * Remove the mapping between the IEEE address and the network address.
+     *
+     * @param ieeeAddr The IEEE address to remove
+     */
+    void Remove(Mac64Address ieeeAddr);
+
+    /**
+     * Remove the mapping between the network address and the IEEE address.
+     *
+     * @param nwkAddr The network address to remove
+     */
+    void Remove(Mac16Address nwkAddr);
+
+  private:
+    std::unordered_map<uint64_t, uint16_t>
+        m_ieeeToNwk; //!< IEEE Address (EUI-64) to Network Address (16-bit).
+    std::unordered_map<uint16_t, uint64_t> m_nwkToIeee; //!< Network Address (16-bit).
 };
 
 } // namespace zigbee

@@ -490,7 +490,7 @@ template <typename TxopType>
 void
 TxopTest<TxopType>::NotifyChannelAccessed(uint8_t linkId, Time txopDuration)
 {
-    Txop::GetLink(0).access = Txop::NOT_REQUESTED;
+    Txop::GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED;
     m_test->NotifyAccessGranted(m_i);
 }
 
@@ -593,7 +593,7 @@ ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching()
                                   MicroSeconds(expected.second),
                                   "Expected grant is now");
         }
-        state->Txop::GetLink(0).access = Txop::NOT_REQUESTED;
+        state->Txop::GetLink(0).access = WifiChannelAccessStatus::NOT_REQUESTED;
     }
 }
 
@@ -2046,15 +2046,6 @@ BackoffGenerationTest::DoSetup()
     m_client->SetRemote(remoteAddr);
     m_client->SetStartTime(Seconds(0));
     m_client->SetStopTime(Seconds(1));
-
-    // Block VO queue so that the AP does not send QoS data frames
-    m_apMac->GetMacQueueScheduler()->BlockQueues(WifiQueueBlockedReason::TID_NOT_MAPPED,
-                                                 AC_VO,
-                                                 {WIFI_QOSDATA_QUEUE},
-                                                 m_staMac->GetAddress(),
-                                                 m_apMac->GetAddress(),
-                                                 {m_tid},
-                                                 {SINGLE_LINK_OP_ID});
 }
 
 void
@@ -2106,10 +2097,19 @@ BackoffGenerationTest::Transmit(WifiConstPsduMap psduMap, WifiTxVector txVector,
             {
                 // generate a packet destined to the non-AP station (this packet is held because
                 // the queue is blocked) as soon as association is completed
-                Simulator::Schedule(txDuration,
-                                    &Node::AddApplication,
-                                    m_apMac->GetDevice()->GetNode(),
-                                    m_client);
+                Simulator::Schedule(txDuration + TimeStep(1), [this] {
+                    // Block VO queue so that the AP does not send QoS data frames
+                    m_apMac->GetMacQueueScheduler()->BlockQueues(
+                        WifiQueueBlockedReason::TID_NOT_MAPPED,
+                        AC_VO,
+                        {WIFI_QOSDATA_QUEUE},
+                        m_staMac->GetAddress(),
+                        m_apMac->GetAddress(),
+                        {m_tid},
+                        {SINGLE_LINK_OP_ID});
+                    // generate a packet
+                    m_apMac->GetDevice()->GetNode()->AddApplication(m_client);
+                });
             }
         }
         else if (psdu->GetHeader(0).IsQosData())
@@ -2238,10 +2238,10 @@ BackoffGenerationTest::BackoffGenerated(AcIndex ac, uint32_t backoff, uint8_t li
 
         if (m_nGenBackoff == 1)
         {
-            // we have to wait an AIFS before invoking backoff
-            delay = m_apMac->GetWifiPhy(linkId)->GetSifs() +
-                    m_apMac->GetQosTxop(AC_VO)->GetAifsn(linkId) *
-                        m_apMac->GetWifiPhy(linkId)->GetSlot();
+            // we have to wait an AIFS before invoking backoff because we get here when a backoff
+            // value is generated upon the reception of the Ack in response to the Assoc Response
+            delay = m_apMac->GetQosTxop(AC_VO)->GetAifsn(linkId) *
+                    m_apMac->GetWifiPhy(linkId)->GetSlot();
         }
         else if (m_nGenBackoff <= nValues)
         {

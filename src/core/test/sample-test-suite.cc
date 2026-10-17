@@ -25,35 +25,35 @@
  *
  * Add it to the groups module-tests and class-tests:
  *
- * @verbatim /// \file
+ * @verbatim /// @file
 /// @ingroup module-tests
 /// @ingroup class-tests
-/// Class test suite. \endverbatim
+/// Class test suite. @endverbatim
  *
  * Define the class-tests group:
- * @verbatim /// \ingroup module-tests
-/// @defgroup class-tests Class test suite \endverbatim
+ * @verbatim /// @ingroup module-tests
+/// @defgroup class-tests Class test suite @endverbatim
  *
  * Make sure test.h is included:
- * @verbatim #include "ns3/test.h" \endverbatim
+ * @verbatim #include "ns3/test.h" @endverbatim
  *
  * Put the test code in namespace ns3::tests.
  * @verbatim namespace ns3 {
-  namespace tests { \endverbatim
+  namespace tests { @endverbatim
  *
  * Write your test cases and final test suite, and put them in
  * your test group:
- * @verbatim /// \ingroup class-tests
-class ClassTestSuite : public TestSuite {...}; \endverbatim
+ * @verbatim /// @ingroup class-tests
+class ClassTestSuite : public TestSuite {...}; @endverbatim
  *
  * Create a static variable to hold the instance of your test suite:
- * @verbatim /// \ingroup class-tests
+ * @verbatim /// @ingroup class-tests
 /// ClassTestSuite instance variable.
-static ClassTestSuite g_classTestSuite; \endverbatim
+static ClassTestSuite g_classTestSuite; @endverbatim
  *
  * Finally, close the ingroup and namespace blocks:
  * @verbatim   }  // namespace tests
-}  // namespace ns3 \endverbatim
+}  // namespace ns3 @endverbatim
 */
 
 /**

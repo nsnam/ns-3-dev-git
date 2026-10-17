@@ -128,7 +128,7 @@ int64x64_t::Udiv(const cairo_uint128_t a, const cairo_uint128_t b)
 
     // Now, manage the remainder
     const uint64_t DIGITS = 64; // Number of fraction digits (bits) we need
-    const cairo_uint128_t ZERO = _cairo_uint32_to_uint128((uint32_t)0);
+    const cairo_uint128_t ZERO = _cairo_uint32_to_uint128(0U);
 
     NS_ASSERT_MSG(_cairo_uint128_lt(rem, den), "Remainder not less than divisor");
 

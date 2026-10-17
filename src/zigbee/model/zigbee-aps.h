@@ -179,7 +179,7 @@ struct ApsdeDataIndicationParams
     uint8_t m_srcEndpoint{0xF0};            //!< The application source endpoint
     uint16_t m_profileId{0xC0DE};           //!< The application profile ID
     uint16_t m_clusterId{0x0000};           //!< The application cluster ID
-    uint8_t asduLength{0};                  //!< The size of the the ASDU packet
+    uint8_t asduLength{0};                  //!< The size of the ASDU packet
     ApsStatus m_status{ApsStatus::SUCCESS}; //!< The data indication status
     ApsSecurityStatus m_securityStatus{ApsSecurityStatus::UNSECURED}; //!< Security status
     uint8_t m_linkQuality{0}; //!< The link quality indication value
@@ -320,7 +320,7 @@ class ZigbeeAps : public Object
 
     /**
      * This callback is called to confirm a successfully removal of an endpoint from
-     * all the the groups.
+     * all the groups.
      */
     using ApsmeRemoveAllGroupsConfirmCallback = Callback<void, ApsmeRemoveAllGroupsConfirmParams>;
 

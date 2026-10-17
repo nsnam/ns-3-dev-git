@@ -41,7 +41,7 @@ class SimpleNetDeviceHelper
      * This method allows one to set the type of the queue that is automatically
      * created when the device is created and attached to a node.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of queue
      * @param [in] args Name and AttributeValue pairs to set.
      *
@@ -56,7 +56,7 @@ class SimpleNetDeviceHelper
      * This method allows one to set the type of the channel that is automatically
      * created when the device is created and attached to a node.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of channel
      * @param [in] args Name and AttributeValue pairs to set.
      *

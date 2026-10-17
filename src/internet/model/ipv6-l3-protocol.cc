@@ -24,6 +24,7 @@
 
 #include "ns3/boolean.h"
 #include "ns3/callback.h"
+#include "ns3/iana-ieee802-numbers.h"
 #include "ns3/log.h"
 #include "ns3/mac16-address.h"
 #include "ns3/mac64-address.h"
@@ -192,11 +193,11 @@ Ipv6L3Protocol::AddInterface(Ptr<NetDevice> device)
     NS_ASSERT(tc);
 
     m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                    Ipv6L3Protocol::PROT_NUMBER,
+                                    iana::ieee802numbers::IPV6,
                                     device);
 
     tc->RegisterProtocolHandler(MakeCallback(&Ipv6L3Protocol::Receive, this),
-                                Ipv6L3Protocol::PROT_NUMBER,
+                                iana::ieee802numbers::IPV6,
                                 device);
 
     interface->SetNode(m_node);
@@ -604,7 +605,7 @@ Ipv6L3Protocol::SetupLoopback()
     uint32_t index = AddIpv6Interface(interface);
     Ptr<Node> node = GetObject<Node>();
     node->RegisterProtocolHandler(MakeCallback(&Ipv6L3Protocol::Receive, this),
-                                  Ipv6L3Protocol::PROT_NUMBER,
+                                  iana::ieee802numbers::IPV6,
                                   device);
     interface->SetUp();
 
@@ -1428,7 +1429,6 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
     Ptr<IpL4Protocol> protocol = nullptr;
     Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
     Ptr<Ipv6Extension> ipv6Extension = nullptr;
-    Ipv6Address src = ip.GetSource();
     Ipv6Address dst = ip.GetDestination();
     uint8_t nextHeader = ip.GetNextHeader();
     uint8_t nextHeaderPosition = 0;
@@ -1515,7 +1515,6 @@ Ipv6L3Protocol::LocalDeliver(Ptr<const Packet> packet, const Ipv6Header& ip, uin
             else
             {
                 p->RemoveAtStart(nextHeaderPosition);
-                /* protocol->Receive (p, src, dst, incomingInterface); */
 
                 // Options have been processed, and the packet is good.
                 // We need to adjust the IP header fields

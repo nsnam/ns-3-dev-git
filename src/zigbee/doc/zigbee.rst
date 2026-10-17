@@ -35,8 +35,14 @@ This is the case of ``NetDevices`` such as the ``LrWpanNetDevice``.
 While other technologies like 6loWPAN can interact with the underlying MAC layer through general-purpose ``NetDevice`` interfaces, Zigbee has specific requirements that necessitate certain features from a lr-wpan MAC.
 Consequently, the |ns3| Zigbee implementation directly accesses the aggregated ``LrWpanMacBase`` and interfaces with it accordingly.
 
-The current scope of the project includes **only the NWK layer and the APS layer in the Zigbee stack**. However, the project can be later extended
+The current scope of the project includes **the NWK layer, the APS layer and the ZDO in the Zigbee stack**. However, the project can be later extended
 to support higher layers like the application framework (AF) or services like the Zigbee Cluster Library (ZCL).
+
+By default, the NWK and APS layers along with the ZDO are integrated and active within the Zigbee stack.
+However, users can choose to work solely with the NWK layer, bypassing the use of the APS layer and the ZDO
+or with the NWK and APS layer without the ZDO.
+To define the parts of the stack to include, use the ``SetLayers(StackLayers::<option>)`` function in the Zigbee helper.
+Available options are: ``NWK_ONLY``, ``NWK_AND_APS``, and ``FULL_STACK``. Not selecting any option will default to ``FULL_STACK``.
 
 
 Scope and Limitations
@@ -54,24 +60,25 @@ The NWK has the following limitations:
 - Data broadcast to low power routers is not supported as the underlying lr-wpan netdevice has no concept of energy consumption.
 - Address duplication detection is not supported.
 - Beacon mode is not througly tested.
-- 16-bit address resolution from a IEEE address at NWK layer is not supported.
 - Route Maintenance is not supported.
 
 
 The APS has the following limitations:
 
-- No binding table support
+- No binding transmission support
 - No security handling
 - No fragmentation support
 - No duplicates detection
 - No acknowledged transmissions
-- No extenended address (64-bit) destinations supported
 - No trace sources
+
+The ZDO has the following limitations:
+
+- Only ``NWK_addr_req`` command is supported.
 
 The following Zigbee layers or services are not supported yet:
 
 - Zigbee Cluster Library (ZCL)
-- Zigbee Device Object (ZDO)
 - Application Framework (AF)
 
 To see a list of |ns3| Zigbee undergoing development efforts check issue `#1165 <https://gitlab.com/nsnam/ns-3-dev/-/issues/1165>`_
@@ -131,8 +138,9 @@ As a result of this joining process, devices are assigned a short address (16-bi
 7. Short addresses are assigned by the coordinator randomly, which means there could be instances of address duplication. Although the Zigbee specification includes a mechanism for detecting address duplication, this feature is not currently supported in this implementation.
 8. If the association request fails, the device will receive a confirmation with a status indicating failure, rather than ``SUCCESSFUL``, and the short address FF:FF will be received (indicating that the device is not associated).
 
-Note: The process described above outlines the steps for joining the network using a MAC association join.
-However, devices that are required to act as routers must also issue an additional ``NLME-START-ROUTER.request`` primitive after joining the network in order to begin functioning as routers.
+.. note::
+    The process described above outlines the steps for joining the network using a MAC association join.
+    However, devices that are required to act as routers must also issue an additional ``NLME-START-ROUTER.request`` primitive after joining the network in order to begin functioning as routers.
 
 In |ns3|, Zigbee NWK, coordinators or routers can be found using the following primitive::
 
@@ -342,9 +350,6 @@ Similarly, the APS layer can transmit data that includes information about sourc
 This implementation provides only the most basic functions of the APS, enabling data transmission using 16-bit or group address destinations.
 Features such as transmission to IEEE addresses (64-bit address destinations), fragmentation, duplication detection, and security are not currently supported.
 
-By default, the APS layer is integrated and active within the Zigbee stack.
-However, users can choose to work solely with the NWK layer.
-To do this, they must disable the APS by using the ``SetNwkLayerOnly()`` function in the Zigbee helper.
 
 
 The following is a list of APS primitives are included:
@@ -364,7 +369,7 @@ The APS layer must transmit data using the ``APSD-DATA.request`` primitive. This
 - **0x00**: No address (Use Binding table to establish destinations) <Not supported>
 - **0x01**: Group address (Groupcasting)
 - **0x02**: 16-bit address with destination endpoint present (Regular Unicast or Broadcast)
-- **0x03**: 64-bit address with destination endpoint not present (Regular Unicast) <Not supported>
+- **0x03**: 64-bit address with destination endpoint not present (Regular Unicast)
 
 
 GroupCasting (Address Mode: 0x01)
@@ -415,8 +420,8 @@ This change improves the efficiency of groupcasting by reducing unnecessary broa
 
 
 
-UniCasting (Address Mode: 0x02)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UniCasting using 16-bit (Address Mode: 0x02)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Unicasting is a method of transmitting data to a single specific device endpoint.
 In Zigbee, this is achieved by using the ``APSDE-DATA.request`` primitive with the appropriate destination address mode and address information.
@@ -438,6 +443,51 @@ The following example demonstrates how to send data to a specific device endpoin
     dataReqParams.m_dstAddr16 = Mac16Address("AB:1C"); // The destination device address
     dataReqParams.m_dstEndPoint = 5; // The destination endpoint, must not be 0
     zstack->GetNwk()->GetAps()->ApsdeDataRequest(dataReqParams, p);
+
+UniCasting using 64-bit destinations(Address Mode: 0x03)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Under some circumstances, it possible to transmit data using a IEEE 64-bit address destination.
+Because the NWK layer does not transmit using IEEE addresses,
+internally the APS layer must first attempt to find the corresponding 16-bit address destination
+for the IEEE address and then pass this network address to the NWK layer.
+The APS layer does this by searching in the ``nwkAddressMap`` contained in the NWK layer.
+
+This mode of transmission is a best effort approach and it is not guaranteed that the IEEE address
+will be found in the device ``nwkAddressMap``. Typically, the usage of this mode of transmission is
+preceded by the usage of multiple ZDO commands that help to populate the network devices ``nwkAddressMaps``.
+
+Usage is similar to previous examples, in the following snippet only relevant parameters are shown::
+
+    dataReqParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR64_DST_ENDPOINT_PRESENT; // dstAddrMode 0x03
+    dataReqParams.m_dstAddr64 = Mac64Address("00:00:00:00:00:00:00:01"); // The destination device IEEE address
+    zstack->GetNwk()->GetAps()->ApsdeDataRequest(dataReqParams, p);
+
+
+Zigbee Device Object (ZDO)
+--------------------------
+
+Zigbee Device Object (ZDO) is a specialized entity within the Zigbee stack that serves as middleware
+to perform various management and control functions. It providing essential services that facilitate the operation of Zigbee devices within a network.
+From a design perspective, it is similar to an application layer, but it is not considered a part of the application framework (AF) in the Zigbee stack.
+
+The ZDO is responsible for several key functions, including:
+- **Device Discovery:** The ZDO enables devices to discover each other within the Zigbee network, facilitating the establishment of communication links.
+- **Network Management:** The ZDO manages network parameters, such as device roles, network addresses, and routing information, ensuring efficient operation of the Zigbee network
+- **Security Management:** It handles security-related tasks, including key management and authentication, to ensure secure communication between devices.
+- **Binding Management:** The ZDO manages the binding of devices, allowing them to establish relationships and communicate effectively based on their roles and capabilities.
+
+ZDO implements the Zigbee Device Profile (ZDP), which defines a set of standardized commands and responses that devices can use to interact with the ZDO.
+Furthermore, ZDO use the APS layer to transmit and receive ZDP commands, which are encapsulated within APS frames for communication between devices.
+In this regard, it uses the endpoint 0 (zero) exclusively and the profile ID 0x0000 (ZDP ID) to identify ZDP commands and responses.
+
+Because the APS layer is connected to ZDO and other components, a demultiplexer is used to route incoming APS frames to the appropriate destination based on the endpoint.
+
+Transmission of ZDO commands is similar to the usage of primitives in other layers. For further details on how to use ZDO,
+please refer to the ``zigbee-zdo-test.cc`` example in the |ns3| source code.
+
+.. note::
+    Only a small list of ZDO commands are currently supported.
 
 Usage
 -----
@@ -528,7 +578,8 @@ All the examples listed here shows scenarios in which a quasi-layer implementati
 The following unit test have been developed to ensure the correct behavior of the module:
 
 * ``zigbee-rreq-test``: Test some situations in which RREQ messages should be retried during a route discovery process.
-* ``zigbee-aps-data-test``: Test the APS data transmission
+* ``zigbee-aps-data-test``: Test the APS data transmission using 16-bit and 64-bit destinations.
+* ``zigbee-zdo-test``: Test the use of ZDO commands.
 
 Validation
 ----------

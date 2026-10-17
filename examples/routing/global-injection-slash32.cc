@@ -11,9 +11,9 @@
 #include "ns3/core-module.h"
 #include "ns3/csma-net-device.h"
 #include "ns3/global-router-interface.h"
+#include "ns3/global-routing.h"
 #include "ns3/internet-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
-#include "ns3/ipv4-global-routing.h"
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-routing-table-entry.h"
@@ -110,7 +110,7 @@ main(int argc, char* argv[])
     // Populate routing tables for nodes nA and nB
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     // Inject global routes from Node B, including transit network...
-    Ptr<GlobalRouter> globalRouterB = nB->GetObject<GlobalRouter>();
+    Ptr<Ipv4GlobalRouter> globalRouterB = nB->GetObject<Ipv4GlobalRouter>();
     globalRouterB->InjectRoute("10.1.1.4", "255.255.255.252");
     // ...and the host in network "C"
     globalRouterB->InjectRoute("192.168.1.1", "255.255.255.255");

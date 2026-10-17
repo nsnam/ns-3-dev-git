@@ -9,21 +9,6 @@
             Ptr<Packet> padd = Create<Packet>(buffer, 46 - p->GetSize());
             p->AddAtEnd(padd);
 
-#epc-gtpu-header.h: 236
-     * This field is used to co-ordinate the data transmission for acknowledged mode
-
-#mobility-model.cc:100, 102
-    Vector oPosition = other->DoGetPosition();
-    return CalculateDistance(position, oPosition);
-
-#statistics.rst:299-300
-    read ANS
-    if [ "$ANS" = "yes" -o "$ANS" = "y" ]
-
-#wifi-example-db.sh:34-35
-  read ANS
-  if [ "$ANS" = "yes" -o "$ANS" = "y" ]
-
 #doxygen.warnings.report.sh:483, 485, 544, 549, 556, 561
 filterin=
     filterin=$(              \
@@ -36,14 +21,8 @@ if [ "$filterin" != "" ] ; then
             tbe = math.log10(dx_over_ndiv)
             div = pow(10, rint(tbe))
 
-#./utils/tests/test-ns3.py:2944
-            'convert {image} -colorspace HSI -channel b -separate +channel -scale 1x1 -format "%[fx:100*u]" info:'
-
 #./doc/tutorial/source/introduction.rst:80
 Network Animator nam.  It is not possible to run a simulation
-
-#./src/internet-apps/model/v4ping.h:37
- * \brief an application which sends one ICMP ECHO request, waits for a REPLYs
 
 #./src/openflow/model/openflow-switch-net-device.cc:544, 548
                 arp_h->ar_tha);                                       // Target hardware address.
@@ -64,73 +43,26 @@ Network Animator nam.  It is not possible to run a simulation
  * Author: Jaume Nin <jaume.nin@cttc.es>
  * Author: Jaume Nin <jnin@cttc.es>
  *   Jaume Nin <jnin@cttc.es>
- * Copyright (c) 2014 Universita' degli Studi di Napoli "Federico II"
- *               2014 Universita' degli Studi di Napoli "Federico II"
- * Copyright (c) 2015 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2015 Universita' degli Studi di Napoli "Federico II"
- *               2015 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2017 Universita' degli Studi di Napoli Federico II
- *               2017 Università' degli Studi di Napoli Federico II
- *               2017 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2018 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2019 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2020 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2021 2020 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2021 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2022 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2022 Universita' degli Studi di Napoli "Federico II"
- * Copyright (c) 2023 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2024 Universita' degli Studi di Napoli Federico II
- * Copyright (c) 2025 Universita' degli Studi di Napoli Federico II
 
-./src/core/examples/hash-example.cc
+#./src/core/examples/hash-example.cc
 6ed21de2  brand-newness       peripherial
 
-./src/core/model/trickle-timer.cc:120
-    return std::countr_zero(m_ticks);
-
-./src/dsr/model/dsr-routing.cc:243, 246, 3360, 3363
-            .AddAttribute("GratReplyHoldoff",
-                          MakeTimeAccessor(&DsrRouting::m_gratReplyHoldoff),
-                                   m_gratReplyHoldoff))) // Find the gratuitous reply entry
-        GraReplyEntry graReplyEntry(source, srcAddress, m_gratReplyHoldoff + Simulator::Now());
-
-./src/dsr/model/dsr-routing.h:882
-    Time m_gratReplyHoldoff; ///< The max gratuitous reply hold off time
-
-./src/dsr/model/dsr-gratuitous-reply-table.cc:75, 76
-            i->m_gratReplyHoldoff =
-                std::max(gratReplyHoldoff + Simulator::Now(), i->m_gratReplyHoldoff);
-
-./src/dsr/model/dsr-gratuitous-reply-table.h:54, 66, 137
-    Time m_gratReplyHoldoff; ///< gratuitous reply holdoff time
-          m_gratReplyHoldoff(h)
-            return (b.m_gratReplyHoldoff < Simulator::Now());
-
-./RELEASE_NOTES.md:1087
+#./RELEASE_NOTES.md:1087
 - Bug 2530 - aodv: Rename aodv::SetBalckListTimeout to aodv::SetBlackListTimeout
 
-./doc/installation/source/linux.rst:122
+#./doc/installation/source/linux.rst:122
   apt install gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3
 
-./doc/tutorial/source/getting-started.rst:347:
-  >> Searching for system dependency gir-bindings - OK
-
-./src/wave/examples/vanet-routing-compare.cc:1565, 1971
-static ns3::GlobalValue g_rate("VRCrate",
-    GlobalValue::GetValueByName("VRCrate", stringValue);
-
-./src/lte/model/lte-mi-error-model.h:23:
+#./src/lte/model/lte-mi-error-model.h:23:
  *      for mobIlE Video AppLications) project, which is a
 
-./src/traffic-control/doc/tbf.rst:84:
+#./src/traffic-control/doc/tbf.rst:84:
 .. [Ref2] J. Vehent; Journey to the Center of the Linux Kernel: Traffic Control, Shaping and QoS; Available online at `<https://web.archive.org/web/20190930031243/http://wiki.linuxwall.info/doku.php/en:ressources:dossiers:networking:traffic_control#tbf_-_token_bucket_filter>`_.
 
-./src/traffic-control/model/codel-queue-disc.h:17:
+#./src/traffic-control/model/codel-queue-disc.h:17:
  * Codel, the COntrolled DELay Queueing discipline
 
-./CHANGES.md:
+#./CHANGES.md:
   * (dsr) Class `DsrOptionRerrUnsupportHeader` from `dsr-option-header.h` was renamed `DsrOptionRerrUnsupportedHeader`.
   * (internet) Enumerated value `IPV6_EXT_AUTHENTIFICATION` from `ipv6-header.h` was renamed `IPV6_EXT_AUTHENTICATION`.
   * (lr-wpan) Constant `aMaxBeaconPayloadLenght` from `lr-wpan-constants.h` was renamed `aMaxBeaconPayloadLength`.
@@ -158,19 +90,13 @@ static ns3::GlobalValue g_rate("VRCrate",
 * The spelling of the attribute `IntialCellVoltage` from `LiIonEnergySource` was corrected to `InitialCellVoltage`; this will affect existing users who were using the attribute with the misspelling.
 * The attribute `Recievers` in class `YansWifiPhy` was misspelled, so this has been corrected to `Receivers`.
 
-./doc/manual/source/working-with-docker.rst
+#./doc/manual/source/working-with-docker.rst
     067a8b748816715d93ede9099132d943c04b13fcc23b3b8a7e21d23c1096cc2a
 
-./src/lte/model/cqa-ff-mac-scheduler.cc
+#./src/lte/model/cqa-ff-mac-scheduler.cc
     std::map<LteFlowId_t, int> UEtoHOL;
         UEtoHOL.insert(std::pair<LteFlowId_t, int>(itLogicalChannels->first, delay));
                 int hol = UEtoHOL.find(flowId)->second;
 
-./src/mesh/doc/source/mesh-design.rst
-contribution in [Hep15]_.
-when forwarding a frame (e.g., [Hep16]_), but current wifi module maintainers
-value was chosen based on the measurement results reported in [Hep16]_ which
-
-./src/mesh/doc/source/mesh-references.rst
-.. [Hep15] \C. Hepner and \A. Witt and \R. Muenzner, `Validation of the ns-3 802.11s model and proposed changes compliant to IEEE 802.11-2012 <https://www.nsnam.org/wp-content/uploads/2015/05/WNS3_2015_submission_33.pdf>`_, Poster at 2015 Workshop on ns-3, May 2015.
-.. [Hep16] \C. Hepner and \S. Moll and \R. Muenzner, `Influence of Processing Delays on the VoIP Performance for IEEE 802.11s Multihop Wireless Mesh Networks:  Comparison of ns-3 Network Simulations with Hardware Measurements <http://dl.acm.org/citation.cfm?id=3021439>`_, Proceedings of SIMUTOOLS 16, August, 2016.
+#./src/mobility/model/steady-state-random-waypoint-mobility-model.cc
+    // Serie II, Tomo XLVIII (1999), p. 163.

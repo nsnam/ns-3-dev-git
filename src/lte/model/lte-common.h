@@ -12,6 +12,7 @@
 #include "ns3/uinteger.h"
 
 #include <cmath>
+#include <cstddef>
 
 // see 36.213 section 8
 #define UL_PUSCH_TTIS_DELAY 4
@@ -20,6 +21,15 @@
 
 namespace ns3
 {
+
+/**
+ * Get the Type 0 resource block group (RBG) size for a downlink bandwidth,
+ * according to 3GPP TS 36.213, table 7.1.6.1-1.
+ *
+ * @param dlBandwidth Downlink bandwidth, in number of resource blocks.
+ * @return The RBG size, in number of resource blocks.
+ */
+std::size_t GetLteRbgSize(uint16_t dlBandwidth);
 
 /// Minimum number of carrier components allowed by 3GPP up to R13
 constexpr uint32_t MIN_NO_CC = 1;
@@ -309,7 +319,7 @@ class EutranMeasurementMapping
      *
      * The allowed values for hysteresis IE value are between 0 and 30.
      *
-     * \sa LteRrcSap::ReportConfigEutra
+     * @sa LteRrcSap::ReportConfigEutra
      */
     static double IeValue2ActualHysteresis(uint8_t hysteresisIeValue);
 
@@ -321,7 +331,7 @@ class EutranMeasurementMapping
      *
      * The allowed values for hysteresis are between 0 and 15 dB.
      *
-     * \sa LteRrcSap::ReportConfigEutra
+     * @sa LteRrcSap::ReportConfigEutra
      */
     static uint8_t ActualHysteresis2IeValue(double hysteresisDb);
 
@@ -334,7 +344,7 @@ class EutranMeasurementMapping
      *
      * The allowed values for a3-Offset IE value are between -30 and 30.
      *
-     * \sa LteRrcSap::ReportConfigEutra
+     * @sa LteRrcSap::ReportConfigEutra
      */
     static double IeValue2ActualA3Offset(int8_t a3OffsetIeValue);
 
@@ -346,7 +356,7 @@ class EutranMeasurementMapping
      *
      * The allowed values for A3 Offset are between -15 and 15 dB.
      *
-     * \sa LteRrcSap::ReportConfigEutra
+     * @sa LteRrcSap::ReportConfigEutra
      */
     static int8_t ActualA3Offset2IeValue(double a3OffsetDb);
 
@@ -357,7 +367,7 @@ class EutranMeasurementMapping
      *
      * As per section 6.3.4 of 3GPP TS 36.331.
      *
-     * \sa LteRrcSap::CellSelectionInfo
+     * @sa LteRrcSap::CellSelectionInfo
      */
     static double IeValue2ActualQRxLevMin(int8_t qRxLevMinIeValue);
 
@@ -368,7 +378,7 @@ class EutranMeasurementMapping
      *
      * As per section 6.3.4 of 3GPP TS 36.331.
      *
-     * \sa LteRrcSap::CellSelectionInfo
+     * @sa LteRrcSap::CellSelectionInfo
      */
     static double IeValue2ActualQQualMin(int8_t qQualMinIeValue);
 };

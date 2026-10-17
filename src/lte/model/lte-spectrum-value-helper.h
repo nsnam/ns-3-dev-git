@@ -128,9 +128,13 @@ class LteSpectrumValueHelper
      * @param bandwidth the Transmission Bandwidth Configuration in
      * number of resource blocks
      * @param powerTx the total power in dBm over the whole bandwidth
-     * @param powerTxMap the map of power in dBm for each RB,
-     * if map contain power for RB, powerTx is not used for this RB,
-     * otherwise powerTx is set for this RB
+     * @param powerTxMap map from RB index to transmit power in dBm.
+     * Each mapped value is interpreted like powerTx, i.e., as total transmit
+     * power over the configured bandwidth, and is used instead of powerTx to
+     * compute the PSD for that RB. RBs not present in the map use powerTx.
+     * This is used, for example, when the LTE eNB transmits PDSCH RBs, and
+     * it needs to apply UE specific downlink power offsets from
+     * PdschConfigDedicated::Pa.
      * @param activeRbs the list of Active Resource Blocks (PRBs)
      *
      * @return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral

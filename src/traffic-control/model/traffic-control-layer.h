@@ -52,26 +52,26 @@ class NetDeviceQueueInterface;
  * their Receive callback through RegisterProtocolHandler) and NetDevices.
  *
  * An example of the IN connection between this layer and IP layer is the following:
- * \code{.cpp}
+ * @code{.cpp}
    Ptr<TrafficControlLayer> tc = m_node->GetObject<TrafficControlLayer>();
 
    NS_ASSERT(tc != nullptr);
 
    m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                   Ipv4L3Protocol::PROT_NUMBER,
+                                   iana::ieee802numbers::IPV4,
                                    device);
    m_node->RegisterProtocolHandler(MakeCallback(&TrafficControlLayer::Receive, tc),
-                                   ArpL3Protocol::PROT_NUMBER,
+                                   iana::ieee802numbers::ARP,
                                    device);
 
    tc->RegisterProtocolHandler(MakeCallback(&Ipv4L3Protocol::Receive, this),
-                               Ipv4L3Protocol::PROT_NUMBER,
+                               iana::ieee802numbers::IPV4,
                                device);
    tc->RegisterProtocolHandler(
        MakeCallback(&ArpL3Protocol::Receive, PeekPointer(GetObject<ArpL3Protocol>())),
-       ArpL3Protocol::PROT_NUMBER,
+       iana::ieee802numbers::ARP,
        device);
-   \endcode
+   @endcode
  * On the node, for IPv4 and ARP packet, is registered the
  * TrafficControlLayer::Receive callback. At the same time, on the TrafficControlLayer
  * object, is registered the callbacks associated to the upper layers (IPv4 or ARP).

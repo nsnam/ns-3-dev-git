@@ -76,6 +76,7 @@ class TcpL4Protocol : public IpL4Protocol
     static TypeId GetTypeId();
 
     /// Protocol number (see http://www.iana.org/assignments/protocol-numbers)
+    NS_DEPRECATED_3_49("Use the numbers in iana-intenernet-protocols-numbers.h instead")
     static constexpr uint8_t PROT_NUMBER = 6;
 
     TcpL4Protocol();

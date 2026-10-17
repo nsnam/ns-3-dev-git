@@ -12,6 +12,7 @@
 #define MAC_TX_MIDDLE_H
 
 #include "ns3/simple-ref-count.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 
@@ -26,7 +27,7 @@ class Mac48Address;
  *
  * Handles sequence numbering of IEEE 802.11 data frames
  */
-class MacTxMiddle : public SimpleRefCount<MacTxMiddle>
+class WIFI_EXPORT MacTxMiddle : public SimpleRefCount<MacTxMiddle>
 {
   public:
     MacTxMiddle();

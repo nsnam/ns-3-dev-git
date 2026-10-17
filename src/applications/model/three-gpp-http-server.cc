@@ -34,15 +34,13 @@ NS_OBJECT_ENSURE_REGISTERED(ThreeGppHttpServer);
 
 ThreeGppHttpServer::ThreeGppHttpServer()
     : SinkApplication(HTTP_DEFAULT_PORT),
-      m_state{NOT_STARTED},
-      m_initialSocket{nullptr},
       m_txBuffer{Create<ThreeGppHttpServerTxBuffer>()},
       m_httpVariables{CreateObject<ThreeGppHttpVariables>()},
-      m_optPort{},
       m_mtuSize{m_httpVariables->GetMtuSize()}
 {
     NS_LOG_FUNCTION(this);
     NS_LOG_INFO(this << " MTU size for this server application is " << m_mtuSize << " bytes.");
+    m_protocolTid = TypeId::LookupByName("ns3::TcpSocketFactory");
 }
 
 // static
@@ -109,10 +107,6 @@ ThreeGppHttpServer::GetTypeId()
                             "A packet has been sent.",
                             MakeTraceSourceAccessor(&ThreeGppHttpServer::m_txTrace),
                             "ns3::Packet::TracedCallback")
-            .AddTraceSource("Rx",
-                            "A packet has been received.",
-                            MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxTrace),
-                            "ns3::Packet::AddressTracedCallback")
             .AddTraceSource("RxWithAddresses",
                             "A packet has been received.",
                             MakeTraceSourceAccessor(&ThreeGppHttpServer::m_rxTraceWithAddresses),
@@ -172,7 +166,7 @@ ThreeGppHttpServer::SetMtuSize(uint32_t mtuSize)
 Ptr<Socket>
 ThreeGppHttpServer::GetSocket() const
 {
-    return m_initialSocket;
+    return m_socket;
 }
 
 ThreeGppHttpServer::State_t
@@ -212,14 +206,14 @@ ThreeGppHttpServer::DoDispose()
 
     if (!Simulator::IsFinished())
     {
-        StopApplication();
+        CloseAllSockets();
     }
 
-    Application::DoDispose(); // Chain up.
+    SinkApplication::DoDispose(); // Chain up.
 }
 
 void
-ThreeGppHttpServer::StartApplication()
+ThreeGppHttpServer::DoStartApplication()
 {
     NS_LOG_FUNCTION(this);
 
@@ -229,68 +223,50 @@ ThreeGppHttpServer::StartApplication()
     }
 
     m_httpVariables->Initialize();
-    if (!m_initialSocket)
+
+    m_socket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
+
+    NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
+    if (InetSocketAddress::IsMatchingType(m_local))
     {
-        // Find the current default MTU value of TCP sockets.
-        Ptr<const ns3::AttributeValue> previousSocketMtu;
-        const TypeId tcpSocketTid = TcpSocket::GetTypeId();
-        for (uint32_t i = 0; i < tcpSocketTid.GetAttributeN(); i++)
-        {
-            TypeId::AttributeInformation attrInfo = tcpSocketTid.GetAttribute(i);
-            if (attrInfo.name == "SegmentSize")
-            {
-                previousSocketMtu = attrInfo.initialValue;
-            }
-        }
-
-        // Creating a TCP socket to connect to the server.
-        m_initialSocket = Socket::CreateSocket(GetNode(), TcpSocketFactory::GetTypeId());
-        m_initialSocket->SetAttribute("SegmentSize", UintegerValue(m_mtuSize));
-
-        NS_ABORT_MSG_IF(m_local.IsInvalid(), "Local address not properly set");
-        if (InetSocketAddress::IsMatchingType(m_local))
-        {
-            const auto ipv4 [[maybe_unused]] = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
-            m_initialSocket->SetIpTos(m_tos); // Affects only IPv4 sockets.
-            NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
-                             << ".");
-        }
-        else if (Inet6SocketAddress::IsMatchingType(m_local))
-        {
-            const auto ipv6 [[maybe_unused]] = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
-            NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
-                             << ".");
-        }
-        else
-        {
-            NS_ABORT_MSG("Incompatible local address");
-        }
-
-        auto ret [[maybe_unused]] = m_initialSocket->Bind(m_local);
-        NS_LOG_DEBUG(this << " Bind() return value= " << ret
-                          << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
-
-        ret = m_initialSocket->Listen();
-        NS_LOG_DEBUG(this << " Listen () return value= " << ret
-                          << " GetErrNo= " << m_initialSocket->GetErrno() << ".");
-
-        NS_ASSERT_MSG(m_initialSocket, "Failed creating socket.");
-        m_initialSocket->SetAcceptCallback(
-            MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
-            MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
-        m_initialSocket->SetCloseCallbacks(
-            MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
-            MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
-        m_initialSocket->SetRecvCallback(
-            MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
-        m_initialSocket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
+        const auto ipv4 [[maybe_unused]] = InetSocketAddress::ConvertFrom(m_local).GetIpv4();
+        m_socket->SetIpTos(m_tos); // Affects only IPv4 sockets.
+        NS_LOG_INFO(this << " Binding on " << ipv4 << " port " << m_port << " / " << m_local
+                         << ".");
     }
+    else if (Inet6SocketAddress::IsMatchingType(m_local))
+    {
+        const auto ipv6 [[maybe_unused]] = Inet6SocketAddress::ConvertFrom(m_local).GetIpv6();
+        NS_LOG_INFO(this << " Binding on " << ipv6 << " port " << m_port << " / " << m_local
+                         << ".");
+    }
+    else
+    {
+        NS_ABORT_MSG("Incompatible local address");
+    }
+
+    auto ret [[maybe_unused]] = m_socket->Bind(m_local);
+    NS_LOG_DEBUG(this << " Bind() return value= " << ret << " GetErrNo= " << m_socket->GetErrno()
+                      << ".");
+
+    ret = m_socket->Listen();
+    NS_LOG_DEBUG(this << " Listen () return value= " << ret << " GetErrNo= " << m_socket->GetErrno()
+                      << ".");
+
+    NS_ASSERT_MSG(m_socket, "Failed creating socket.");
+    m_socket->SetAcceptCallback(
+        MakeCallback(&ThreeGppHttpServer::ConnectionRequestCallback, this),
+        MakeCallback(&ThreeGppHttpServer::NewConnectionCreatedCallback, this));
+    m_socket->SetCloseCallbacks(MakeCallback(&ThreeGppHttpServer::NormalCloseCallback, this),
+                                MakeCallback(&ThreeGppHttpServer::ErrorCloseCallback, this));
+    m_socket->SetRecvCallback(MakeCallback(&ThreeGppHttpServer::ReceivedDataCallback, this));
+    m_socket->SetSendCallback(MakeCallback(&ThreeGppHttpServer::SendCallback, this));
 
     SwitchToState(STARTED);
 }
 
 void
-ThreeGppHttpServer::StopApplication()
+ThreeGppHttpServer::DoStopApplication()
 {
     NS_LOG_FUNCTION(this);
 
@@ -298,18 +274,6 @@ ThreeGppHttpServer::StopApplication()
 
     // Close all accepted sockets.
     m_txBuffer->CloseAllSockets();
-
-    // Stop listening.
-    if (m_initialSocket)
-    {
-        m_initialSocket->Close();
-        m_initialSocket->SetAcceptCallback(MakeNullCallback<bool, Ptr<Socket>, const Address&>(),
-                                           MakeNullCallback<void, Ptr<Socket>, const Address&>());
-        m_initialSocket->SetCloseCallbacks(MakeNullCallback<void, Ptr<Socket>>(),
-                                           MakeNullCallback<void, Ptr<Socket>>());
-        m_initialSocket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>>());
-        m_initialSocket->SetSendCallback(MakeNullCallback<void, Ptr<Socket>, uint32_t>());
-    }
 }
 
 bool
@@ -350,7 +314,7 @@ ThreeGppHttpServer::NormalCloseCallback(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    if (socket == m_initialSocket)
+    if (socket == m_socket)
     {
         if (m_state == STARTED)
         {
@@ -386,7 +350,7 @@ ThreeGppHttpServer::ErrorCloseCallback(Ptr<Socket> socket)
 {
     NS_LOG_FUNCTION(this << socket);
 
-    if (socket == m_initialSocket)
+    if (socket == m_socket)
     {
         if (m_state == STARTED)
         {
@@ -436,6 +400,7 @@ ThreeGppHttpServer::ReceivedDataCallback(Ptr<Socket> socket)
         packet->PeekHeader(httpHeader);
 
         // Fire trace sources.
+        m_rxTraceWithoutAddress(packet);
         m_rxTrace(packet, from);
         m_rxTraceWithAddresses(packet, from, m_local);
         m_rxDelayTrace(Simulator::Now() - httpHeader.GetClientTs(), from);

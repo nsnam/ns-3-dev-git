@@ -20,6 +20,7 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <map>
 #include <optional>
@@ -38,7 +39,7 @@ class MacRxMiddle;
  * @brief Manages all block ack agreements for an originator station.
  * @ingroup wifi
  */
-class BlockAckManager : public Object
+class WIFI_EXPORT BlockAckManager : public Object
 {
   private:
     /**

@@ -383,6 +383,35 @@ With this, we can point to the real ns-3-dev directory and work as usual.
     /usr/bin/cmake3 -S /ns-3-dev -B /ns-3-dev/cmake-cache -DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF -DNS3_NATIVE_OPTIMIZATIONS=OFF -G Ninja -
     -warn-uninitialized
 
+In case SELinux is enabled, in additional to the mapped volume,
+you also need to add a ``:z`` suffix to explicitly give permissions
+for the container to access the files in the volume, as shown below.
+
+.. sourcecode:: console
+
+    $ docker run -it -v ./ns-3-dev:/ns-3-dev:z fedoradebugging:37
+
+    [root@067a8b748816 /]# cd ns-3-dev/
+
+    [root@067a8b748816 ns-3-dev]# ./ns3 configure
+    Warn about uninitialized values.
+    -- The CXX compiler identification is GNU 12.3.1
+    ...
+    -- ---- Summary of ns-3 settings:
+    Build profile                 : default
+    Build directory               : /ns-3-dev/build
+    Build with runtime asserts    : ON
+    Build with runtime logging    : ON
+    Build version embedding       : OFF (not requested)
+    ...
+    -- Configuring done (26.5s)
+    -- Generating done (11.6s)
+    -- Build files have been written to: /ns-3-dev/cmake-cache
+    Finished executing the following commands:
+    /usr/bin/cmake3 -S /ns-3-dev -B /ns-3-dev/cmake-cache -DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=OFF -DNS3_NATIVE_OPTIMIZATIONS=OFF -G Ninja -
+    -warn-uninitialized
+
+
 The container will be automatically stopped after exiting.
 
 .. sourcecode:: console
@@ -571,6 +600,13 @@ You can install it and set up an alias using the following command.
 .. sourcecode:: console
 
     echo alias docker=podman >> ~/.bashrc
+
+You can alternatively create a symbolic link, in case your program
+does not load definitions from bashrc.
+
+.. sourcecode:: console
+
+    ln -sf /usr/bin/podman /home/username/.local/bin/docker
 
 To get a docker-like experience, you might want to
 also change a few settings, such as search repositories for unqualified

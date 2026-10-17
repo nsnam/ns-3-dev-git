@@ -53,7 +53,7 @@ static const double RequestedTimeoutField
 
 /**
  * @ingroup zigbee
- * Represent the the Capability Information Bit fields
+ * Represent the Capability Information Bit fields
  * See zigbe Specification r22.1.0, Table 3-62
  */
 class CapabilityInformation

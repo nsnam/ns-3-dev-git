@@ -17,7 +17,7 @@ using namespace ns3;
 /**
  * @brief Test suite for executing carrier aggregation throughput scaling test case.
  *
- * \sa ns3::LteAggregationThroughputScaleTestCase
+ * @sa ns3::LteAggregationThroughputScaleTestCase
  */
 class LteAggregationThroughputScaleTestSuite : public TestSuite
 {

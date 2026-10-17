@@ -44,6 +44,18 @@
 
 using namespace ns3;
 
+namespace
+{
+
+/// Map standard to aPSDUMaxLength
+const std::map<WifiStandard, uint32_t> maxPsduLengths = {
+    {WIFI_STANDARD_80211n, WIFI_PSDU_MAX_LENGTH_HT},
+    {WIFI_STANDARD_80211ac, WIFI_PSDU_MAX_LENGTH_VHT},
+    {WIFI_STANDARD_80211ax, WIFI_PSDU_MAX_LENGTH_HE},
+    {WIFI_STANDARD_80211be, WIFI_PSDU_MAX_LENGTH_EHT},
+};
+} // namespace
+
 /**
  * @ingroup wifi-test
  * @ingroup tests
@@ -91,6 +103,14 @@ class AmpduAggregationTest : public TestCase
      * @param dest the destination address
      */
     void EnqueuePkts(std::size_t count, uint32_t size, const Mac48Address& dest);
+
+    /**
+     * Check the maximum PSDU size
+     *
+     * @param phy the PHY
+     * @param fem the HT frame exchange manager
+     */
+    void CheckMaxPsduSize(Ptr<WifiPhy> phy, Ptr<HtFrameExchangeManager> fem);
 
     /**
      * @return the Best Effort QosTxop
@@ -388,14 +408,41 @@ AmpduAggregationTest::EnqueuePkts(std::size_t count, uint32_t size, const Mac48A
 }
 
 void
+AmpduAggregationTest::CheckMaxPsduSize(Ptr<WifiPhy> phy, Ptr<HtFrameExchangeManager> fem)
+{
+    const auto expectedMaxPsduLength = maxPsduLengths.at(phy->GetStandard());
+    const auto mc = phy->GetMaxModulationClassSupported();
+
+    NS_TEST_EXPECT_MSG_EQ(phy->GetMaxPsduSize(mc),
+                          expectedMaxPsduLength,
+                          "Unexpected aPSDUMaxLength");
+
+    const auto maxAmpduSize = std::min(m_params.maxAmpduSize, expectedMaxPsduLength);
+    const auto recipient = Mac48Address("00:00:00:00:00:02");
+
+    auto isWithinAmpduSizeLimit = fem->IsWithinAmpduSizeLimit(maxAmpduSize, recipient, 0, mc);
+    NS_TEST_EXPECT_MSG_EQ(isWithinAmpduSizeLimit,
+                          true,
+                          "A-MPDU size limit check failed when the size is smaller than the limit");
+
+    isWithinAmpduSizeLimit = fem->IsWithinAmpduSizeLimit(maxAmpduSize + 1, recipient, 0, mc);
+    NS_TEST_EXPECT_MSG_EQ(isWithinAmpduSizeLimit,
+                          false,
+                          "A-MPDU size limit check failed when the size is larger than the limit");
+}
+
+void
 AmpduAggregationTest::DoRun()
 {
     /*
      * Test behavior when no other packets are in the queue
      */
+    auto phy = m_phys.at(SINGLE_LINK_OP_ID);
     auto fem = m_mac->GetFrameExchangeManager(SINGLE_LINK_OP_ID);
     auto htFem = DynamicCast<HtFrameExchangeManager>(fem);
     auto mpduAggregator = htFem->GetMpduAggregator();
+
+    CheckMaxPsduSize(phy, htFem);
 
     /*
      * Create a dummy packet of 1500 bytes and fill mac header fields.
@@ -404,12 +451,12 @@ AmpduAggregationTest::DoRun()
 
     auto peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     WifiTxParameters txParams;
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
-    auto item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
+    auto item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), true, "a single packet should not result in an A-MPDU");
 
@@ -424,8 +471,8 @@ AmpduAggregationTest::DoRun()
      */
     EnqueuePkts(2, 1500, Mac48Address("00:00:00:00:00:02"));
 
-    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
-    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
+    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), false, "MPDU aggregation failed");
 
@@ -455,12 +502,12 @@ AmpduAggregationTest::DoRun()
 
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
-    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(),
                           true,
@@ -470,12 +517,12 @@ AmpduAggregationTest::DoRun()
 
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
-    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(),
                           true,
@@ -549,18 +596,21 @@ TwoLevelAggregationTest::DoRun()
      * is such that only two MSDUs can be aggregated. Therefore, the first MPDU we get contains
      * an A-MSDU of 2 MSDUs.
      */
+    auto phy = m_phys.at(SINGLE_LINK_OP_ID);
     auto fem = m_mac->GetFrameExchangeManager(SINGLE_LINK_OP_ID);
     auto htFem = DynamicCast<HtFrameExchangeManager>(fem);
     auto msduAggregator = htFem->GetMsduAggregator();
     auto mpduAggregator = htFem->GetMpduAggregator();
 
+    CheckMaxPsduSize(phy, htFem);
+
     auto peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     WifiTxParameters txParams;
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
-    htFem->TryAddMpdu(peeked, txParams, Time::Min());
-    auto item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
+    htFem->TryAddMpdu(peeked, txParams, std::nullopt);
+    auto item = msduAggregator->GetNextAmsdu(peeked, txParams, std::nullopt);
 
     bool result{item};
     NS_TEST_EXPECT_MSG_EQ(result, true, "aggregation failed");
@@ -581,11 +631,11 @@ TwoLevelAggregationTest::DoRun()
 
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
-    htFem->TryAddMpdu(peeked, txParams, Time::Min());
-    item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
+    htFem->TryAddMpdu(peeked, txParams, std::nullopt);
+    item = msduAggregator->GetNextAmsdu(peeked, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(item, nullptr, "A-MSDU aggregation did not fail");
 
@@ -607,13 +657,13 @@ TwoLevelAggregationTest::DoRun()
 
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
 
     // Compute the first MPDU to be aggregated in an A-MPDU. It must contain an A-MSDU
     // aggregating two MSDUs
-    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, m_params.txopLimit, true);
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, m_params.txopLimit);
 
     NS_TEST_EXPECT_MSG_EQ(std::distance(item->begin(), item->end()),
                           2,
@@ -657,13 +707,13 @@ TwoLevelAggregationTest::DoRun()
     // prepare another A-MPDU (e.g., for transmission on another link)
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID, 0, psdu->GetAddr1(), mpduList.at(2));
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
 
     // Compute the first MPDU to be aggregated in an A-MPDU. It must contain an A-MSDU
     // aggregating two MSDUs
-    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, m_params.txopLimit, true);
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, m_params.txopLimit);
 
     NS_TEST_EXPECT_MSG_EQ(std::distance(item->begin(), item->end()),
                           2,
@@ -691,12 +741,12 @@ TwoLevelAggregationTest::DoRun()
     // A-MSDU aggregation now fails because the first item in the queue contain A-MSDUs
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
 
-    htFem->TryAddMpdu(peeked, txParams, Time::Min());
-    item = msduAggregator->GetNextAmsdu(peeked, txParams, Time::Min());
+    htFem->TryAddMpdu(peeked, txParams, std::nullopt);
+    item = msduAggregator->GetNextAmsdu(peeked, txParams, std::nullopt);
 
     NS_TEST_EXPECT_MSG_EQ(item, nullptr, "Expecting not to be able to aggregate A-MSDUs");
 
@@ -710,15 +760,15 @@ TwoLevelAggregationTest::DoRun()
 
     peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     txParams.Clear();
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
 
     NS_TEST_EXPECT_MSG_EQ(peeked->GetHeader().IsQosAmsdu(),
                           false,
                           "Expecting the peeked MPDU not to contain an A-MSDU");
 
-    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
+    item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
     // A-MSDU aggregation is not attempted because the next item contains an A-MSDU
     NS_TEST_EXPECT_MSG_EQ(item->GetHeader().IsQosAmsdu(),
@@ -748,15 +798,16 @@ class HeAggregationTest : public AmpduAggregationTest
 };
 
 HeAggregationTest::HeAggregationTest(uint16_t bufferSize)
-    : AmpduAggregationTest("Check the correctness of 802.11ax aggregation operations, size=" +
-                               std::to_string(bufferSize),
-                           Params{.standard = WIFI_STANDARD_80211ax,
-                                  .nLinks = 1,
-                                  .dataMode = "HeMcs11",
-                                  .bufferSize = bufferSize,
-                                  .maxAmsduSize = 0,
-                                  .maxAmpduSize = 65535,
-                                  .txopLimit = Seconds(0)})
+    : AmpduAggregationTest(
+          "Check the correctness of 802.11ax aggregation operations, buffer size=" +
+              std::to_string(bufferSize),
+          Params{.standard = WIFI_STANDARD_80211ax,
+                 .nLinks = 1,
+                 .dataMode = "HeMcs11",
+                 .bufferSize = bufferSize,
+                 .maxAmsduSize = 0,
+                 .maxAmpduSize = 6500631,
+                 .txopLimit = Seconds(0)})
 {
 }
 
@@ -766,27 +817,31 @@ HeAggregationTest::DoRun()
     /*
      * Test behavior when 300 packets are ready for transmission
      */
-    EnqueuePkts(300, 100, Mac48Address("00:00:00:00:00:02"));
+    const std::size_t numPackets = 300;
+    EnqueuePkts(numPackets, 100, Mac48Address("00:00:00:00:00:02"));
 
+    auto phy = m_phys.at(SINGLE_LINK_OP_ID);
     auto fem = m_mac->GetFrameExchangeManager(SINGLE_LINK_OP_ID);
     auto htFem = DynamicCast<HtFrameExchangeManager>(fem);
     auto mpduAggregator = htFem->GetMpduAggregator();
 
+    CheckMaxPsduSize(phy, htFem);
+
     auto peeked = GetBeQueue()->PeekNextMpdu(SINGLE_LINK_OP_ID);
     WifiTxParameters txParams;
-    txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-        peeked->GetHeader(),
-        m_phys.at(SINGLE_LINK_OP_ID)->GetChannelWidth());
-    auto item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, Time::Min(), true);
+    txParams.m_txVector =
+        m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                              phy->GetChannelWidth());
+    auto item = GetBeQueue()->GetNextMpdu(SINGLE_LINK_OP_ID, peeked, txParams, {});
 
-    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+    auto mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
     DequeueMpdus(mpduList);
 
     NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), false, "MPDU aggregation failed");
     NS_TEST_EXPECT_MSG_EQ(mpduList.size(),
                           m_params.bufferSize,
                           "A-MPDU contains an unexpected number of MPDUs");
-    uint16_t expectedRemainingPacketsInQueue = 300 - m_params.bufferSize;
+    uint16_t expectedRemainingPacketsInQueue = numPackets - m_params.bufferSize;
     NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
                           expectedRemainingPacketsInQueue,
                           "Queue contains an unexpected number of MPDUs");
@@ -806,23 +861,25 @@ class EhtAggregationTest : public AmpduAggregationTest
      * Constructor.
      *
      * @param bufferSize the size (in number of MPDUs) of the BlockAck buffer
+     * @param maxAmpduSize the maximum size (in bytes) allowed per A-MPDU
      */
-    EhtAggregationTest(uint16_t bufferSize);
+    EhtAggregationTest(uint16_t bufferSize, uint32_t maxAmpduSize);
 
   private:
     void DoRun() override;
 };
 
-EhtAggregationTest::EhtAggregationTest(uint16_t bufferSize)
-    : AmpduAggregationTest("Check the correctness of 802.11be aggregation operations, size=" +
-                               std::to_string(bufferSize),
-                           Params{.standard = WIFI_STANDARD_80211be,
-                                  .nLinks = 2,
-                                  .dataMode = "EhtMcs13",
-                                  .bufferSize = bufferSize,
-                                  .maxAmsduSize = 0,
-                                  .maxAmpduSize = 102000,
-                                  .txopLimit = Seconds(0)})
+EhtAggregationTest::EhtAggregationTest(uint16_t bufferSize, uint32_t maxAmpduSize)
+    : AmpduAggregationTest(
+          "Check the correctness of 802.11be aggregation operations, buffer size=" +
+              std::to_string(bufferSize) + ", max A-MPDU size=" + std::to_string(maxAmpduSize),
+          Params{.standard = WIFI_STANDARD_80211be,
+                 .nLinks = 2,
+                 .dataMode = "EhtMcs13",
+                 .bufferSize = bufferSize,
+                 .maxAmsduSize = 0,
+                 .maxAmpduSize = maxAmpduSize,
+                 .txopLimit = Seconds(0)})
 {
 }
 
@@ -830,36 +887,43 @@ void
 EhtAggregationTest::DoRun()
 {
     /*
-     * Test behavior when 1200 packets of 100 bytes each are ready for transmission. The max
-     * A-MPDU size limit (102000 B) is computed to have at most 750 MPDUs aggregated in a single
-     * A-MPDU (each MPDU is 130 B, plus 4 B of A-MPDU subframe header, plus 2 B of padding).
+     * Test behavior when 1200 packets of 100 bytes each are ready for transmission. In the first
+     * tests, the max A-MPDU size limit (102000 B) is computed to have at most 750 MPDUs aggregated
+     * in a single A-MPDU (each MPDU is 130 B, plus 4 B of A-MPDU subframe header, plus 2 B of
+     * padding). In the last test, the max A-MPDU size limit is the upper bound allowed by the
+     * standard (6500631 B), which allows to aggregate 1024 MPDUs (the buffer size) in a single
+     * A-MPDU.
      */
-    EnqueuePkts(1200, 100, Mac48Address("00:00:00:00:00:02"));
-    const std::size_t maxNMpdus = 750;
+    const std::size_t numPackets = 1200;
+    EnqueuePkts(numPackets, 100, Mac48Address("00:00:00:00:00:02"));
+    const auto maxNMpdus = std::min<std::size_t>(m_params.maxAmpduSize / 136, m_params.bufferSize);
 
     for (uint8_t linkId = 0; linkId < m_params.nLinks; linkId++)
     {
+        auto phy = m_phys.at(linkId);
         auto fem = m_mac->GetFrameExchangeManager(linkId);
         auto htFem = DynamicCast<HtFrameExchangeManager>(fem);
         auto mpduAggregator = htFem->GetMpduAggregator();
         std::vector<Ptr<WifiMpdu>> mpduList;
 
+        CheckMaxPsduSize(phy, htFem);
+
         auto peeked = GetBeQueue()->PeekNextMpdu(linkId);
         if (peeked)
         {
             WifiTxParameters txParams;
-            txParams.m_txVector = m_mac->GetWifiRemoteStationManager()->GetDataTxVector(
-                peeked->GetHeader(),
-                m_phys.at(linkId)->GetChannelWidth());
-            auto item = GetBeQueue()->GetNextMpdu(linkId, peeked, txParams, Time::Min(), true);
+            txParams.m_txVector =
+                m_mac->GetWifiRemoteStationManager()->GetDataTxVector(peeked->GetHeader(),
+                                                                      phy->GetChannelWidth());
+            auto item = GetBeQueue()->GetNextMpdu(linkId, peeked, txParams, {});
 
-            mpduList = mpduAggregator->GetNextAmpdu(item, txParams, Time::Min());
+            mpduList = mpduAggregator->GetNextAmpdu(item, txParams, std::nullopt);
             DequeueMpdus(mpduList);
         }
 
         uint16_t expectedRemainingPacketsInQueue;
 
-        if (m_params.bufferSize >= maxNMpdus)
+        if (m_params.bufferSize > maxNMpdus)
         {
             // two A-MPDUs are transmitted concurrently on the two links and together saturate
             // the transmit window
@@ -871,7 +935,7 @@ EhtAggregationTest::DoRun()
                 NS_TEST_EXPECT_MSG_EQ(mpduList.size(),
                                       maxNMpdus,
                                       "A-MPDU contains an unexpected number of MPDUs");
-                expectedRemainingPacketsInQueue = 1200 - maxNMpdus;
+                expectedRemainingPacketsInQueue = numPackets - maxNMpdus;
                 NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
                                       expectedRemainingPacketsInQueue,
                                       "Queue contains an unexpected number of MPDUs");
@@ -882,7 +946,7 @@ EhtAggregationTest::DoRun()
                 NS_TEST_EXPECT_MSG_EQ(mpduList.size(),
                                       m_params.bufferSize - maxNMpdus,
                                       "A-MPDU contains an unexpected number of MPDUs");
-                expectedRemainingPacketsInQueue = 1200 - m_params.bufferSize;
+                expectedRemainingPacketsInQueue = numPackets - m_params.bufferSize;
                 NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
                                       expectedRemainingPacketsInQueue,
                                       "Queue contains an unexpected number of MPDUs");
@@ -902,7 +966,7 @@ EhtAggregationTest::DoRun()
                 NS_TEST_EXPECT_MSG_EQ(mpduList.size(),
                                       m_params.bufferSize,
                                       "A-MPDU contains an unexpected number of MPDUs");
-                expectedRemainingPacketsInQueue = 1200 - m_params.bufferSize;
+                expectedRemainingPacketsInQueue = numPackets - m_params.bufferSize;
                 NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
                                       expectedRemainingPacketsInQueue,
                                       "Queue contains an unexpected number of MPDUs");
@@ -910,7 +974,7 @@ EhtAggregationTest::DoRun()
             case 1:
                 // no more MPDUs can be sent, aggregation fails
                 NS_TEST_EXPECT_MSG_EQ(mpduList.empty(), true, "MPDU aggregation did not fail");
-                expectedRemainingPacketsInQueue = 1200 - m_params.bufferSize;
+                expectedRemainingPacketsInQueue = numPackets - m_params.bufferSize;
                 NS_TEST_EXPECT_MSG_EQ(GetBeQueue()->GetWifiMacQueue()->GetNPackets(),
                                       expectedRemainingPacketsInQueue,
                                       "Queue contains an unexpected number of MPDUs");
@@ -1242,8 +1306,9 @@ WifiAggregationTestSuite::WifiAggregationTestSuite()
     AddTestCase(new TwoLevelAggregationTest, TestCase::Duration::QUICK);
     AddTestCase(new HeAggregationTest(64), TestCase::Duration::QUICK);
     AddTestCase(new HeAggregationTest(256), TestCase::Duration::QUICK);
-    AddTestCase(new EhtAggregationTest(512), TestCase::Duration::QUICK);
-    AddTestCase(new EhtAggregationTest(1024), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(512, 102000), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024, 102000), TestCase::Duration::QUICK);
+    AddTestCase(new EhtAggregationTest(1024, 15523200), TestCase::Duration::QUICK);
     AddTestCase(new PreservePacketsInAmpdus(true), TestCase::Duration::QUICK);
     AddTestCase(new PreservePacketsInAmpdus(false), TestCase::Duration::QUICK);
 }

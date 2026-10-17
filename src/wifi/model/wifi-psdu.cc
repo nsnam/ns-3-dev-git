@@ -143,7 +143,7 @@ WifiPsdu::GetDuration() const
     {
         if (m_mpduList.at(i)->GetHeader().GetDuration() != duration)
         {
-            NS_ABORT_MSG("MPDUs in an A-AMPDU must have the same Duration/ID");
+            NS_ABORT_MSG("MPDUs in an A-MPDU must have the same Duration/ID");
         }
     }
     return duration;

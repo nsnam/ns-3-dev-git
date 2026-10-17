@@ -13,6 +13,7 @@
 #include "wifi-tx-vector.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <memory>
 #include <optional>
@@ -27,7 +28,7 @@ namespace ns3
  * method and stores the information needed to perform protection according to
  * that method.
  */
-struct WifiProtection
+struct WIFI_EXPORT WifiProtection
 {
     /**
      * @enum Method
@@ -69,7 +70,7 @@ struct WifiProtection
  *
  * WifiNoProtection specifies that no protection method is used.
  */
-struct WifiNoProtection : public WifiProtection
+struct WIFI_EXPORT WifiNoProtection : public WifiProtection
 {
     WifiNoProtection();
 
@@ -82,7 +83,7 @@ struct WifiNoProtection : public WifiProtection
  *
  * WifiRtsCtsProtection specifies that RTS/CTS protection method is used.
  */
-struct WifiRtsCtsProtection : public WifiProtection
+struct WIFI_EXPORT WifiRtsCtsProtection : public WifiProtection
 {
     WifiRtsCtsProtection();
 
@@ -98,7 +99,7 @@ struct WifiRtsCtsProtection : public WifiProtection
  *
  * WifiCtsToSelfProtection specifies that CTS-to-self protection method is used.
  */
-struct WifiCtsToSelfProtection : public WifiProtection
+struct WIFI_EXPORT WifiCtsToSelfProtection : public WifiProtection
 {
     WifiCtsToSelfProtection();
 
@@ -113,7 +114,7 @@ struct WifiCtsToSelfProtection : public WifiProtection
  *
  * WifiMuRtsCtsProtection specifies that MU-RTS/CTS protection method is used.
  */
-struct WifiMuRtsCtsProtection : public WifiProtection
+struct WIFI_EXPORT WifiMuRtsCtsProtection : public WifiProtection
 {
     WifiMuRtsCtsProtection();
 
@@ -132,7 +133,7 @@ struct WifiMuRtsCtsProtection : public WifiProtection
  * @param protection the protection method
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiProtection* protection);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiProtection* protection);
 
 } // namespace ns3
 

@@ -18,6 +18,7 @@
 
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -33,7 +34,7 @@ namespace ns3
  * Tag used to allow (only) WifiMacQueue to access the queue iterator stored
  * by a WifiMpdu.
  */
-class WmqIteratorTag
+class WIFI_EXPORT WmqIteratorTag
 {
     friend class WifiMacQueue;
     WmqIteratorTag() = default;
@@ -47,7 +48,7 @@ class WmqIteratorTag
  * is added. A WifiMpdu alias stores its own MAC header and a pointer to the original
  * copy of the WifiMpdu.
  */
-class WifiMpdu : public SimpleRefCount<WifiMpdu>
+class WIFI_EXPORT WifiMpdu : public SimpleRefCount<WifiMpdu>
 {
   public:
     /**
@@ -282,7 +283,7 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
     /**
      * Information stored by the original copy only.
      */
-    struct OriginalInfo
+    struct WIFI_EXPORT OriginalInfo
     {
         Ptr<const Packet> m_packet;        //!< MSDU or A-MSDU contained in this queue item
         Time m_timestamp;                  //!< construction time
@@ -317,7 +318,7 @@ class WifiMpdu : public SimpleRefCount<WifiMpdu>
  * @param item the WifiMpdu
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const WifiMpdu& item);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const WifiMpdu& item);
 
 } // namespace ns3
 

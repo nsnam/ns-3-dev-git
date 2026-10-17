@@ -9,6 +9,7 @@
 #ifndef CONSTANT_RATE_WIFI_MANAGER_H
 #define CONSTANT_RATE_WIFI_MANAGER_H
 
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-remote-station-manager.h"
 
 namespace ns3
@@ -21,7 +22,7 @@ namespace ns3
  * This class uses always the same transmission rate for every
  * packet sent.
  */
-class ConstantRateWifiManager : public WifiRemoteStationManager
+class WIFI_EXPORT ConstantRateWifiManager : public WifiRemoteStationManager
 {
   public:
     /**

@@ -13,6 +13,7 @@
 #include "wifi-tx-vector.h"
 
 #include "ns3/nstime.h"
+#include "ns3/wifi-export.h"
 
 #include <list>
 #include <optional>
@@ -43,7 +44,7 @@ typedef std::unordered_map<uint16_t /* STA-ID */, Ptr<const WifiPsdu> /* PSDU */
  * WifiPpdu stores a preamble, a modulation class, PHY headers and a PSDU.
  * This class should be subclassed for each amendment.
  */
-class WifiPpdu : public SimpleRefCount<WifiPpdu>
+class WIFI_EXPORT WifiPpdu : public SimpleRefCount<WifiPpdu>
 {
   public:
     /**
@@ -228,7 +229,7 @@ class WifiPpdu : public SimpleRefCount<WifiPpdu>
  * @param ppdu the const pointer to the PPDU
  * @returns a reference to the stream
  */
-std::ostream& operator<<(std::ostream& os, const Ptr<const WifiPpdu>& ppdu);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const Ptr<const WifiPpdu>& ppdu);
 
 } // namespace ns3
 

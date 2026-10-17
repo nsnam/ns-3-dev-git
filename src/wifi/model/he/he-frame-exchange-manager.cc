@@ -84,11 +84,10 @@ void
 HeFrameExchangeManager::Reset()
 {
     NS_LOG_FUNCTION(this);
-    if (m_intraBssNavResetEvent.IsPending())
-    {
-        m_intraBssNavResetEvent.Cancel();
-    }
+    m_intraBssNavResetEvent.Cancel();
     m_intraBssNavEnd = Simulator::Now();
+    m_psduMap.clear();
+    m_multiStaBaEvent.Cancel();
     VhtFrameExchangeManager::Reset();
 }
 
@@ -124,9 +123,9 @@ HeFrameExchangeManager::SetMultiUserScheduler(const Ptr<MultiUserScheduler> muSc
 }
 
 bool
-HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime, bool initialFrame)
+HeFrameExchangeManager::StartFrameExchange()
 {
-    NS_LOG_FUNCTION(this << edca << availableTime << initialFrame);
+    NS_LOG_FUNCTION(this);
 
     MultiUserScheduler::TxFormat txFormat = MultiUserScheduler::SU_TX;
     Ptr<const WifiMpdu> mpdu;
@@ -139,22 +138,20 @@ HeFrameExchangeManager::StartFrameExchange(Ptr<QosTxop> edca, Time availableTime
      *   or the next frame in the AC queue is a non-broadcast QoS data frame addressed to
      *   a receiver with which a BA agreement has been already established
      */
-    if (m_muScheduler && !GetBar(edca->GetAccessCategory()) &&
-        (!(mpdu = edca->PeekNextMpdu(m_linkId)) ||
+    if (m_muScheduler && !GetBar(m_edca->GetAccessCategory()) &&
+        (!(mpdu = m_edca->PeekNextMpdu(m_linkId)) ||
          (mpdu->GetHeader().IsQosData() && !mpdu->GetHeader().GetAddr1().IsGroup() &&
           m_mac->GetBaAgreementEstablishedAsOriginator(mpdu->GetHeader().GetAddr1(),
                                                        mpdu->GetHeader().GetQosTid()))))
     {
-        txFormat = m_muScheduler->NotifyAccessGranted(edca,
-                                                      availableTime,
-                                                      initialFrame,
-                                                      m_allowedWidth,
-                                                      m_linkId);
+        const auto availableTime = GetAvailTxopTime();
+        txFormat =
+            m_muScheduler->NotifyAccessGranted(m_edca, availableTime, m_allowedWidth, m_linkId);
     }
 
     if (txFormat == MultiUserScheduler::SU_TX)
     {
-        return VhtFrameExchangeManager::StartFrameExchange(edca, availableTime, initialFrame);
+        return VhtFrameExchangeManager::StartFrameExchange();
     }
 
     if (txFormat == MultiUserScheduler::DL_MU_TX)
@@ -308,8 +305,7 @@ HeFrameExchangeManager::ProtectionCompleted()
                     SendCfEndIfNeeded();
                     return;
                 }
-                NotifyChannelReleased(m_edca);
-                m_edca = nullptr;
+                NotifyChannelReleased();
                 return;
             }
         }
@@ -490,8 +486,7 @@ HeFrameExchangeManager::TransmissionSucceeded()
     {
         NS_LOG_DEBUG("Schedule another transmission in a SIFS after successful BSRP TF");
         Simulator::Schedule(m_phy->GetSifs(), [=, this]() {
-            // TXOP limit is null, hence the txopDuration parameter is unused
-            if (!StartTransmission(m_edca, Seconds(0)))
+            if (!StartTransmission())
             {
                 SendCfEndIfNeeded();
             }
@@ -1260,6 +1255,25 @@ HeFrameExchangeManager::GetCtsTxVectorAfterMuRts(const CtrlTriggerHeader& trigge
     return txVector;
 }
 
+WifiTxVector
+HeFrameExchangeManager::GetBlockAckReqTxVector(Mac48Address to) const
+{
+    if (m_txParams.m_acknowledgment &&
+        m_txParams.m_acknowledgment->method == WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE)
+    {
+        auto acknowledgment =
+            static_cast<WifiDlMuBarBaSequence*>(m_txParams.m_acknowledgment.get());
+        if (acknowledgment->stationsSendBlockAckReqTo.contains(to))
+        {
+            NS_LOG_DEBUG("Acknowledging a DL MU PPDU with DL_MU_BAR_BA_SEQUENCE sequence");
+            return GetWifiRemoteStationManager()->GetBlockAckReqTxVector(to, m_txParams.m_txVector);
+        }
+    }
+
+    // check the parent class implementation
+    return VhtFrameExchangeManager::GetBlockAckReqTxVector(to);
+}
+
 Time
 HeFrameExchangeManager::GetTxDuration(uint32_t ppduPayloadSize,
                                       Mac48Address receiver,
@@ -1516,7 +1530,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     {
         NS_LOG_LOGIC("AP requested using the max transmit power (" << m_phy->GetTxPowerEnd()
                                                                    << " dBm)");
-        v.SetTxPowerLevel(m_phy->GetNTxPower());
+        v.SetTxPowerLevel(m_phy->GetNTxPowerLevels());
         return v;
     }
 
@@ -1547,7 +1561,7 @@ HeFrameExchangeManager::GetHeTbTxVector(CtrlTriggerHeader trigger, Mac48Address 
     auto reqTxPower = dBm_u{static_cast<double>(userInfoIt->GetUlTargetRxPower() + pathLossDb)};
 
     // Convert the transmit power to a power level
-    uint8_t numPowerLevels = m_phy->GetNTxPower();
+    const auto numPowerLevels = m_phy->GetNTxPowerLevels();
     if (numPowerLevels > 1)
     {
         dBm_u step = (m_phy->GetTxPowerEnd() - m_phy->GetTxPowerStart()) / (numPowerLevels - 1);
@@ -1859,7 +1873,7 @@ HeFrameExchangeManager::ReceiveBasicTrigger(const CtrlTriggerHeader& trigger,
         if (auto mpdu = edca->PeekNextMpdu(m_linkId, tid, receiver))
         {
             mpdu = CreateAliasIfNeeded(mpdu);
-            if (auto item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration, false))
+            if (auto item = edca->GetNextMpdu(m_linkId, mpdu, txParams, ppduDuration))
             {
                 // try A-MPDU aggregation
                 std::vector<Ptr<WifiMpdu>> mpduList =

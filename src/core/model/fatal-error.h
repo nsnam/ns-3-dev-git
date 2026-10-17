@@ -10,23 +10,26 @@
 #define NS3_FATAL_ERROR_H
 
 #include "fatal-impl.h"
-#include "log.h" // NS_LOG_APPEND...
+#include "log.h" // LogGetTimePrinter, LogGetNodePrinter, LogLineFlushPartial
 
 #include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <string_view>
 
-// If stacktrace is available, print it on fatal errors
 #ifdef STACKTRACE_LIBRARY_IS_LINKED
-#include <stacktrace>
 /**
  * @brief Macro prints the current stack trace to standard error.
  *
  * This macro is defined only if the stacktrace library is linked.
+ *
+ * @internal Delegates to ns3::FatalImpl::PrintStackTrace(), which is defined out-of-line
+ * (in fatal-impl.cc) so that the heavy \c <stacktrace> header -- and the
+ * \c <format> / \c <charconv> machinery it transitively drags in on some
+ * standard libraries -- stays out of this ubiquitously included header. The
+ * call is a no-op at runtime if the stacktrace library is not linked.
  */
-
-#define PRINT_STACKTRACE std::cerr << std::stacktrace::current() << std::endl
+#define PRINT_STACKTRACE ::ns3::FatalImpl::PrintStackTrace()
 #else
 /**
  * @brief Macro does nothing if stacktrace library is not available.
@@ -90,12 +93,28 @@ constexpr std::string_view NS_FATAL_MSG{"NS_FATAL, terminating"};
  *
  * This macro is enabled unconditionally in all builds,
  * including debug and optimized builds.
+ *
+ * The time and node prefixes are streamed directly to std::clog rather
+ * than through the buffered log line of NS_LOG (see ns3::LogLineBegin()),
+ * because the buffer may allocate memory, which we want to avoid on a
+ * fatal path.  Keep the prefix format in sync with
+ * NS_LOG_APPEND_TIME_PREFIX and NS_LOG_APPEND_NODE_PREFIX in
+ * log-macros-enabled.h, so fatal messages and log lines look alike.
  */
 #define NS_FATAL_ERROR_IMPL_NO_MSG(fatal)                                                          \
     do                                                                                             \
     {                                                                                              \
-        NS_LOG_APPEND_TIME_PREFIX_IMPL;                                                            \
-        NS_LOG_APPEND_NODE_PREFIX_IMPL;                                                            \
+        ::ns3::LogLineFlushPartial();                                                              \
+        if (ns3::TimePrinter printer = ns3::LogGetTimePrinter(); printer != nullptr)               \
+        {                                                                                          \
+            (*printer)(std::clog);                                                                 \
+            std::clog << " ";                                                                      \
+        }                                                                                          \
+        if (ns3::NodePrinter printer = ns3::LogGetNodePrinter(); printer != nullptr)               \
+        {                                                                                          \
+            (*printer)(std::clog);                                                                 \
+            std::clog << " ";                                                                      \
+        }                                                                                          \
         std::cerr << "file=" << __FILE__ << ", line=" << __LINE__ << std::endl;                    \
         ::ns3::FatalImpl::FlushStreams();                                                          \
         if (fatal)                                                                                 \
@@ -127,6 +146,7 @@ constexpr std::string_view NS_FATAL_MSG{"NS_FATAL, terminating"};
 #define NS_FATAL_ERROR_IMPL(msg, fatal)                                                            \
     do                                                                                             \
     {                                                                                              \
+        ::ns3::LogLineFlushPartial();                                                              \
         std::cerr << "msg=\"" << msg << "\", ";                                                    \
         NS_FATAL_ERROR_IMPL_NO_MSG(fatal);                                                         \
     } while (false)

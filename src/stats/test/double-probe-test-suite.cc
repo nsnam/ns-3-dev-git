@@ -41,7 +41,7 @@ class SampleEmitter : public Object
         Reschedule();
     }
 
-    /// Reschedule a report \sa Report
+    /// Reschedule a report @sa Report
     void Reschedule()
     {
         m_time = m_var->GetValue();
@@ -62,7 +62,7 @@ class SampleEmitter : public Object
     }
 
   private:
-    /// Reports a new value and reschedules \sa Reschedule
+    /// Reports a new value and reschedules @sa Reschedule
     void Report()
     {
         aux = m_var->GetValue();

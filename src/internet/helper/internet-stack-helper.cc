@@ -12,6 +12,8 @@
 #include "ipv4-global-routing-helper.h"
 #include "ipv4-list-routing-helper.h"
 #include "ipv4-static-routing-helper.h"
+#include "ipv6-global-routing-helper.h"
+#include "ipv6-list-routing-helper.h"
 #include "ipv6-static-routing-helper.h"
 
 #include "ns3/arp-l3-protocol.h"
@@ -19,8 +21,9 @@
 #include "ns3/callback.h"
 #include "ns3/config.h"
 #include "ns3/global-router-interface.h"
+#include "ns3/global-routing.h"
+#include "ns3/iana-link-type-numbers.h"
 #include "ns3/icmpv6-l4-protocol.h"
-#include "ns3/ipv4-global-routing.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6-extension-demux.h"
 #include "ns3/ipv6-extension-header.h"
@@ -121,11 +124,15 @@ InternetStackHelper::Initialize()
     Ipv4StaticRoutingHelper staticRouting;
     Ipv4GlobalRoutingHelper globalRouting;
     Ipv4ListRoutingHelper listRouting;
-    Ipv6StaticRoutingHelper staticRoutingv6;
+    Ipv6StaticRoutingHelper staticRouting6;
+    Ipv6GlobalRoutingHelper globalRouting6;
+    Ipv6ListRoutingHelper listRouting6;
     listRouting.Add(staticRouting, 0);
     listRouting.Add(globalRouting, -10);
     SetRoutingHelper(listRouting);
-    SetRoutingHelper(staticRoutingv6);
+    listRouting6.Add(staticRouting6, 0);
+    listRouting6.Add(globalRouting6, -10);
+    SetRoutingHelper(listRouting6);
 }
 
 InternetStackHelper::~InternetStackHelper()
@@ -215,10 +222,10 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
     for (auto i = c.Begin(); i != c.End(); ++i)
     {
         Ptr<Node> node = *i;
-        Ptr<GlobalRouter> router = node->GetObject<GlobalRouter>();
-        if (router)
+        Ptr<GlobalRouter<Ipv4Manager>> routerv4 = node->GetObject<GlobalRouter<Ipv4Manager>>();
+        if (routerv4)
         {
-            Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol();
+            Ptr<Ipv4GlobalRouting> gr = routerv4->GetRoutingProtocol();
             if (gr)
             {
                 currentStream += gr->AssignStreams(currentStream);
@@ -229,7 +236,12 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
         {
             Ptr<Ipv6Extension> fe = demux->GetExtension(Ipv6ExtensionFragment::EXT_NUMBER);
             NS_ASSERT(fe); // should always exist in the demux
-            currentStream += fe->AssignStreams(currentStream);
+            currentStream += demux->AssignStreams(currentStream);
+        }
+        Ptr<Ipv6ExtensionRoutingDemux> demuxRouter = node->GetObject<Ipv6ExtensionRoutingDemux>();
+        if (demuxRouter)
+        {
+            currentStream += demuxRouter->AssignStreams(currentStream);
         }
         Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
         if (ipv4)
@@ -247,6 +259,22 @@ InternetStackHelper::AssignStreams(NodeContainer c, int64_t stream)
             if (icmpv6L4Protocol)
             {
                 currentStream += icmpv6L4Protocol->AssignStreams(currentStream);
+            }
+        }
+    }
+    // The below is intentionally left out of the above loop, to avoid some stream
+    // assignment perturbations on existing programs due to adding IPv6 global routing.
+    // Future extensions of this method should also copy this approach.
+    for (auto i = c.Begin(); i != c.End(); ++i)
+    {
+        Ptr<Node> node = *i;
+        Ptr<GlobalRouter<Ipv6Manager>> routerv6 = node->GetObject<GlobalRouter<Ipv6Manager>>();
+        if (routerv6)
+        {
+            Ptr<GlobalRouting<Ipv6RoutingProtocol>> gr = routerv6->GetRoutingProtocol();
+            if (gr)
+            {
+                currentStream += gr->AssignStreams(currentStream);
             }
         }
     }
@@ -435,7 +463,7 @@ InternetStackHelper::EnablePcapIpv4Internal(std::string prefix,
         filename = pcapHelper.GetFilenameFromInterfacePair(prefix, ipv4, interface);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_RAW);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::RAW);
 
     //
     // However, we only hook the trace source once to avoid multiple trace sink
@@ -541,7 +569,7 @@ InternetStackHelper::EnablePcapIpv6Internal(std::string prefix,
         filename = pcapHelper.GetFilenameFromInterfacePair(prefix, ipv6, interface);
     }
 
-    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, PcapHelper::DLT_RAW);
+    Ptr<PcapFileWrapper> file = pcapHelper.CreateFile(filename, std::ios::out, iana::linktype::RAW);
 
     //
     // However, we only hook the trace source once to avoid multiple trace sink

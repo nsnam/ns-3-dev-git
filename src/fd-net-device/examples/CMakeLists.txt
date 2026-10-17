@@ -1,4 +1,7 @@
-include_directories(${DPDK_INCLUDE_DIRS})
+include_directories(
+  SYSTEM
+  ${DPDK_INCLUDE_DIRS}
+)
 
 build_lib_example(
   NAME dummy-network

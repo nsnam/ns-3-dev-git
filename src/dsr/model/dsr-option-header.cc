@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-only
  *
  * Author: Yufei Cheng   <yfcheng@ittc.ku.edu>
+ * Modified by: Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *              Lorenzo Bartolini <l.bartolini02@gmail.com>
  *
  * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
  * ResiliNets Research Group  https://resilinets.org/
@@ -18,6 +20,8 @@
  */
 
 #include "dsr-option-header.h"
+
+#include "dsr-options.h"
 
 #include "ns3/address-utils.h"
 #include "ns3/assert.h"
@@ -96,7 +100,7 @@ DsrOptionHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionHeader::GetSerializedSize() const
 {
-    return m_length + 2;
+    return m_length + 2; // 2 bytes for type and length fields
 }
 
 void
@@ -154,7 +158,7 @@ DsrOptionPad1Header::GetInstanceTypeId() const
 
 DsrOptionPad1Header::DsrOptionPad1Header()
 {
-    SetType(224);
+    SetType(DsrOptionPad1::OPT_NUMBER);
 }
 
 DsrOptionPad1Header::~DsrOptionPad1Header()
@@ -229,7 +233,7 @@ DsrOptionPadnHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionPadnHeader::GetSerializedSize() const
 {
-    return GetLength() + 2;
+    return GetLength() + 2; // 2 bytes for type and length fields
 }
 
 void
@@ -278,7 +282,7 @@ DsrOptionRreqHeader::GetInstanceTypeId() const
 DsrOptionRreqHeader::DsrOptionRreqHeader()
     : m_ipv4Address(0)
 {
-    SetType(1);
+    SetType(DsrOptionRreq::OPT_NUMBER);
     SetLength(6 + m_ipv4Address.size() * 4);
 }
 
@@ -371,6 +375,7 @@ DsrOptionRreqHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionRreqHeader::GetSerializedSize() const
 {
+    // 8 bytes for option type, length, target address and identification fields
     return 8 + m_ipv4Address.size() * 4;
 }
 
@@ -441,7 +446,7 @@ DsrOptionRrepHeader::GetInstanceTypeId() const
 DsrOptionRrepHeader::DsrOptionRrepHeader()
     : m_ipv4Address(0)
 {
-    SetType(2);
+    SetType(DsrOptionRrep::OPT_NUMBER);
     SetLength(2 + m_ipv4Address.size() * 4);
 }
 
@@ -503,7 +508,8 @@ DsrOptionRrepHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionRrepHeader::GetSerializedSize() const
 {
-    return 4 + m_ipv4Address.size() * 4;
+    // 3 bytes for option type, length and reserved fields
+    return 3 + m_ipv4Address.size() * 4;
 }
 
 void
@@ -514,7 +520,6 @@ DsrOptionRrepHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteU8(GetType());
     i.WriteU8(GetLength());
-    i.WriteU8(0);
     i.WriteU8(0);
 
     for (auto it = m_ipv4Address.begin(); it != m_ipv4Address.end(); it++)
@@ -532,7 +537,6 @@ DsrOptionRrepHeader::Deserialize(Buffer::Iterator start)
 
     SetType(i.ReadU8());
     SetLength(i.ReadU8());
-    i.ReadU8();
     i.ReadU8();
 
     for (std::size_t index = 0; index < m_ipv4Address.size(); index++)
@@ -574,7 +578,7 @@ DsrOptionSRHeader::DsrOptionSRHeader()
     : m_segmentsLeft(0),
       m_ipv4Address(0)
 {
-    SetType(96);
+    SetType(DsrOptionSR::OPT_NUMBER);
     SetLength(2 + m_ipv4Address.size() * 4);
 }
 
@@ -660,6 +664,7 @@ DsrOptionSRHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionSRHeader::GetSerializedSize() const
 {
+    // 4 bytes for option type, length, reserved, salvage and segments left fields
     return 4 + m_ipv4Address.size() * 4;
 }
 
@@ -691,6 +696,10 @@ DsrOptionSRHeader::Deserialize(Buffer::Iterator start)
     SetLength(i.ReadU8());
     m_salvage = i.ReadU8();
     m_segmentsLeft = i.ReadU8();
+
+    uint8_t listSize = (GetLength() - 2) / 4;
+    m_ipv4Address.clear();
+    m_ipv4Address.assign(listSize, Ipv4Address());
 
     for (std::size_t index = 0; index < m_ipv4Address.size(); index++)
     {
@@ -732,7 +741,7 @@ DsrOptionRerrHeader::DsrOptionRerrHeader()
       m_salvage(0),
       m_errorLength(4)
 {
-    SetType(3);
+    SetType(DsrOptionRerr::OPT_NUMBER);
     SetLength(18);
 }
 
@@ -866,7 +875,7 @@ DsrOptionRerrUnreachHeader::GetInstanceTypeId() const
 DsrOptionRerrUnreachHeader::DsrOptionRerrUnreachHeader()
     : m_salvage(0)
 {
-    SetType(3);
+    SetType(DsrOptionRerr::OPT_NUMBER);
     SetLength(18);
     SetErrorType(1);
 }
@@ -1010,7 +1019,7 @@ DsrOptionRerrUnsupportedHeader::GetInstanceTypeId() const
 DsrOptionRerrUnsupportedHeader::DsrOptionRerrUnsupportedHeader()
     : m_salvage(0)
 {
-    SetType(3);
+    SetType(DsrOptionRerr::OPT_NUMBER);
     SetLength(14);
     SetErrorType(3);
 }
@@ -1093,7 +1102,7 @@ DsrOptionRerrUnsupportedHeader::Serialize(Buffer::Iterator start) const
     i.WriteU8(m_salvage);
     WriteTo(i, m_errorSrcAddress);
     WriteTo(i, m_errorDstAddress);
-    i.WriteU16(m_unsupported);
+    i.WriteHtonU16(m_unsupported);
 }
 
 uint32_t
@@ -1107,7 +1116,7 @@ DsrOptionRerrUnsupportedHeader::Deserialize(Buffer::Iterator start)
     m_salvage = i.ReadU8();
     ReadFrom(i, m_errorSrcAddress);
     ReadFrom(i, m_errorDstAddress);
-    m_unsupported = i.ReadU16();
+    m_unsupported = i.ReadNtohU16();
 
     return GetSerializedSize();
 }
@@ -1141,7 +1150,7 @@ DsrOptionAckReqHeader::DsrOptionAckReqHeader()
     : m_identification(0)
 
 {
-    SetType(160);
+    SetType(DsrOptionAckReq::OPT_NUMBER);
     SetLength(2);
 }
 
@@ -1171,6 +1180,7 @@ DsrOptionAckReqHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionAckReqHeader::GetSerializedSize() const
 {
+    // 2 bytes for option type and length fields, 2 bytes for identification field
     return 4;
 }
 
@@ -1181,7 +1191,7 @@ DsrOptionAckReqHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteU8(GetType());
     i.WriteU8(GetLength());
-    i.WriteU16(m_identification);
+    i.WriteHtonU16(m_identification);
 }
 
 uint32_t
@@ -1191,7 +1201,7 @@ DsrOptionAckReqHeader::Deserialize(Buffer::Iterator start)
 
     SetType(i.ReadU8());
     SetLength(i.ReadU8());
-    m_identification = i.ReadU16();
+    m_identification = i.ReadNtohU16();
 
     return GetSerializedSize();
 }
@@ -1224,7 +1234,7 @@ DsrOptionAckHeader::GetInstanceTypeId() const
 DsrOptionAckHeader::DsrOptionAckHeader()
     : m_identification(0)
 {
-    SetType(32);
+    SetType(DsrOptionAck::OPT_NUMBER);
     SetLength(10);
 }
 
@@ -1279,6 +1289,7 @@ DsrOptionAckHeader::Print(std::ostream& os) const
 uint32_t
 DsrOptionAckHeader::GetSerializedSize() const
 {
+    // option type, length, identification, ack source and ack destination addresses
     return 12;
 }
 
@@ -1289,7 +1300,7 @@ DsrOptionAckHeader::Serialize(Buffer::Iterator start) const
 
     i.WriteU8(GetType());
     i.WriteU8(GetLength());
-    i.WriteU16(m_identification);
+    i.WriteHtonU16(m_identification);
     WriteTo(i, m_realSrcAddress);
     WriteTo(i, m_realDstAddress);
 }
@@ -1301,7 +1312,7 @@ DsrOptionAckHeader::Deserialize(Buffer::Iterator start)
 
     SetType(i.ReadU8());
     SetLength(i.ReadU8());
-    m_identification = i.ReadU16();
+    m_identification = i.ReadNtohU16();
     ReadFrom(i, m_realSrcAddress);
     ReadFrom(i, m_realDstAddress);
 

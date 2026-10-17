@@ -147,17 +147,24 @@ ZigbeeAps::ApsdeDataRequest(ApsdeDataRequestParams params, Ptr<Packet> asdu)
         break;
     }
     case ApsDstAddressMode::DST_ADDR64_DST_ENDPOINT_PRESENT: {
-        // TODO: Add Extended address transmission support.
-        // The NWK do not accept direct extended address transmissions,
+        // The nwk layer do not accept direct extended address transmissions,
         // therefore, the APS must translate the extended address
-        // to a short address using the nwkAddressMap NIB.
-        if (!m_apsdeDataConfirmCallback.IsNull())
+        // to a short address destination using its nwkAddressMap.
+        Mac16Address obtainedNwkAddr;
+        if (m_nwk->GetNwkAddrByIeeeAddr(params.m_dstAddr64, obtainedNwkAddr))
         {
-            confirmParams.m_status = ApsStatus::NO_SHORT_ADDRESS;
-            confirmParams.m_txTime = Simulator::Now();
-            m_apsdeDataConfirmCallback(confirmParams);
+            params.m_dstAddr16 = obtainedNwkAddr;
+            SendDataUcstBcst(params, asdu);
         }
-        NS_LOG_WARN("Extended address mode not supported");
+        else
+        {
+            if (!m_apsdeDataConfirmCallback.IsNull())
+            {
+                confirmParams.m_status = ApsStatus::NO_SHORT_ADDRESS;
+                confirmParams.m_txTime = Simulator::Now();
+                m_apsdeDataConfirmCallback(confirmParams);
+            }
+        }
         break;
     }
     default:
@@ -589,11 +596,7 @@ ZigbeeAps::ReceiveData(const ZigbeeApsHeader& apsHeader,
     {
         if (!m_apsdeDataIndicationCallback.IsNull())
         {
-            // Note: Extracting the Address directly from the NWK, creates a dependency on this NWK
-            // implementation. This is not a very good design, but in practice, it is unavoidable
-            // due to the quasi cross-layer design of the specification
-            //(tigly coupled design of the APS in respect to the NWK).
-            indicationParams.m_dstAddr16 = m_nwk->GetNetworkAddress();
+            indicationParams.m_dstAddr16 = params.m_dstAddr;
             indicationParams.m_dstAddrMode = ApsDstAddressMode::DST_ADDR16_DST_ENDPOINT_PRESENT;
             indicationParams.m_dstEndPoint = apsHeader.GetDstEndpoint();
             indicationParams.m_srcAddrMode = ApsSrcAddressMode::SRC_ADDR16_SRC_ENDPOINT_PRESENT;

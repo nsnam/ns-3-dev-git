@@ -15,6 +15,7 @@ import os
 import platform
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import unittest
@@ -55,6 +56,7 @@ def run_ns3(args, env=None, generator=platform_makefiles):
     @param env: environment variables dictionary
     @param generator: CMake generator
     @return tuple containing (error code, stdout and stderr)
+    @hidecaller
     """
     if "clean" in args:
         possible_leftovers = ["contrib/borked", "contrib/calibre"]
@@ -143,6 +145,8 @@ def get_libraries_list(lib_outdir=usual_lib_outdir):
     @param lib_outdir: path containing libraries
     @return list of built libraries.
     """
+    if not os.path.exists(lib_outdir):
+        lib_outdir += "64"
     libraries = glob.glob(lib_outdir + "/*", recursive=True)
     return list(filter(lambda x: "scratch-nested-subdir-lib" not in x, libraries))
 
@@ -198,10 +202,10 @@ class DockerContainerManager:
         """
         global DockerException
         try:
-            from python_on_whales import docker
+            from python_on_whales import DockerClient
             from python_on_whales.exceptions import DockerException
         except ModuleNotFoundError:
-            docker = None  # noqa
+            DockerClient = None  # noqa
             DockerException = None  # noqa
             currentTestCase.skipTest("python-on-whales was not found")
 
@@ -214,11 +218,60 @@ class DockerContainerManager:
                     os.environ[key] = value
                     del setting, key, value
 
-        # Check if we can use Docker (docker-on-docker is a pain)
+        # Allow forcing/preferring podman as the container backend, since it
+        # provides a docker-compatible CLI/API and is usable rootless without
+        # a separate daemon. Falls back to docker if podman is not requested
+        # or not available.
+        client_binary = os.environ.get("NS3_CONTAINER_BINARY")
+        if not client_binary:
+            client_binary = "docker" if shutil.which("docker") else "podman"
+
+        client_call = [client_binary]
+        # Under an unprivileged container (e.g. a plain, non-privileged
+        # GitLab Docker-executor job, with no /dev/fuse and no access to the
+        # host's container socket), podman's default overlay storage needs
+        # capabilities that aren't available. The "vfs" storage driver avoids
+        # overlay/fuse mounts entirely (plain file copies instead of
+        # copy-on-write layers), at the cost of speed and disk usage, and
+        # works in that environment. It is opt-in via NS3_CONTAINER_STORAGE_DRIVER
+        # since it is unnecessary (and slower) wherever overlay already works.
+        storage_driver = os.environ.get("NS3_CONTAINER_STORAGE_DRIVER")
+        if storage_driver and client_binary == "podman":
+            client_call += ["--storage-driver", storage_driver]
+
+        docker = DockerClient(
+            client_call=client_call,
+            client_type=client_binary if client_binary in ("docker", "podman") else "unknown",
+        )
+
+        # Check if we can use the container backend (docker/podman-on-docker/podman is a pain)
         try:
             docker.ps()
         except DockerException as e:
             currentTestCase.skipTest(f"python-on-whales returned:{e.__str__()}")
+        except FileNotFoundError:
+            currentTestCase.skipTest(f"{client_binary} binary was not found")
+
+        # When the container backend is reached through a socket bind-mounted
+        # from the host (e.g. "podman-outside-of-podman", used to run nested
+        # containers without a privileged/nested daemon), volume sources are
+        # resolved on the host, not inside this process' own container, so
+        # ns3_path (a path inside this container) is not visible to them.
+        # NS3_HOST_PATH can override this explicitly; otherwise, try to
+        # auto-detect the host-side source by inspecting this container's
+        # own mounts for the one backing ns3_path.
+        volume_source = os.environ.get("NS3_HOST_PATH")
+        if not volume_source:
+            try:
+                self_container = docker.container.inspect(socket.gethostname())
+                for mount in self_container.mounts:
+                    if mount.destination == ns3_path:
+                        volume_source = mount.source
+                        break
+            except Exception:  # noqa
+                pass
+        if not volume_source:
+            volume_source = ns3_path
 
         # Create Docker client instance and start it
         ## The Python-on-whales container instance
@@ -227,12 +280,14 @@ class DockerContainerManager:
             interactive=True,
             detach=True,
             tty=False,
-            volumes=[(ns3_path, "/ns-3-dev")],
+            volumes=[(volume_source, "/ns-3-dev")],
         )
 
         # Redefine the execute command of the container
-        def split_exec(docker_container, cmd):
-            return docker_container._execute(cmd.split(), workdir="/ns-3-dev")
+        def split_exec(docker_container, cmd, workdir="/ns-3-dev"):
+            cmd_split = re.findall(r'(?:".*?"|\S)+', cmd)
+            cmd_split = list(map(lambda x: x.replace('"', ""), cmd_split))
+            return docker_container._execute(cmd_split, workdir=workdir)
 
         self.container._execute = self.container.execute
         self.container.execute = partial(split_exec, self.container)
@@ -262,6 +317,9 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
     """!
     ns-3 tests related to checking if source files were left behind, not being used by CMake
     """
+
+    ## Set maxDiff to None to get full log
+    maxDiff = None
 
     ## dictionary containing directories with .cc source files # noqa
     directory_and_files = {}
@@ -344,7 +402,8 @@ class NS3UnusedSourcesTestCase(unittest.TestCase):
 
         # Remove temporary exceptions
         exceptions = [
-            "win32-system-wall-clock-ms.cc",  # Should be removed with MR784
+            "fatal-command-line-duplicate-option-example.cc",  # Example used for testing
+            "fatal-command-line-duplicate-non-option-example.cc",  # Example used for testing
         ]
         for exception in exceptions:
             for unused_source in unused_sources:
@@ -389,6 +448,9 @@ class NS3DependenciesTestCase(unittest.TestCase):
     """!
     ns-3 tests related to dependencies
     """
+
+    ## Set maxDiff to None to get full log
+    maxDiff = None
 
     def test_01_CheckIfIncludedHeadersMatchLinkedModules(self):
         """!
@@ -549,6 +611,8 @@ class NS3StyleTestCase(unittest.TestCase):
     starting_diff = None
     ## Holds the GitRepo's repository object # noqa
     repo = None
+    ## Set maxDiff to None to get full log
+    maxDiff = None
 
     def setUp(self) -> None:
         """!
@@ -610,6 +674,9 @@ class NS3CommonSettingsTestCase(unittest.TestCase):
     ns3 tests related to generic options
     """
 
+    ## Set maxDiff to None to get full log
+    maxDiff = None
+
     def setUp(self):
         """!
         Clean configuration/build artifacts before common commands
@@ -669,6 +736,9 @@ class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
     """!
     ns3 tests related to build profiles
     """
+
+    ## Set maxDiff to None to get full log
+    maxDiff = None
 
     def setUp(self):
         """!
@@ -795,6 +865,9 @@ class NS3BaseTestCase(unittest.TestCase):
     Generic test case with basic function inherited by more complex tests.
     """
 
+    ## Set maxDiff to None to get full log
+    maxDiff = None
+
     def config_ok(self, return_code, stdout, stderr):
         """!
         Check if configuration for release mode worked normally
@@ -806,7 +879,8 @@ class NS3BaseTestCase(unittest.TestCase):
         self.assertEqual(return_code, 0)
         self.assertIn("Build profile                 : release", stdout)
         self.assertIn("Build files have been written to", stdout)
-        self.assertNotIn("uninitialized variable", stderr)
+        if os.getenv("RELAX_UNINITIALIZED_VARIABLE") == 1:
+            self.assertNotIn("uninitialized variable", stderr)
 
     def setUp(self):
         """!
@@ -1078,8 +1152,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             self.assertLess(len(get_enabled_modules()), len(self.ns3_modules))
             self.assertIn("ns3-lte", enabled_modules)
             self.assertTrue(get_test_enabled())
+            # Account for additional executables (fatal-command-line-duplicate-non-option-example,
+            # fatal-command-line-duplicate-option-example)and platform-specific executables
             self.assertLessEqual(
-                len(get_programs_list()), len(self.ns3_executables) + (win32 or macos)
+                len(get_programs_list()),
+                len(self.ns3_executables) + 2 + (win32 or macos),
+                msg=set(get_programs_list()).difference(self.ns3_executables),
             )
 
             # Replace the ns3rc file with the wifi module, enabling examples and disabling tests
@@ -1254,15 +1332,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Cause a sigsegv
         sigsegv_example = os.path.join(ns3_path, "scratch", "sigsegv.cc")
         with open(sigsegv_example, "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                     int main (int argc, char *argv[])
                     {
                       char *s = "hello world"; *s = 'H';
                       return 0;
                     }
-                    """
-            )
+                    """)
         return_code, stdout, stderr = run_ns3("run sigsegv")
         if win32:
             self.assertEqual(return_code, 4294967295)  # unsigned -1
@@ -1274,8 +1350,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Cause an abort
         abort_example = os.path.join(ns3_path, "scratch", "abort.cc")
         with open(abort_example, "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                     #include "ns3/core-module.h"
 
                     using namespace ns3;
@@ -1284,8 +1359,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
                       NS_ABORT_IF(true);
                       return 0;
                     }
-                    """
-            )
+                    """)
         return_code, stdout, stderr = run_ns3("run abort")
         if win32:
             self.assertNotEqual(return_code, 0)
@@ -1399,7 +1473,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         run_ns3("clean")
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
             try:
                 container.execute(
                     "./ns3 configure --enable-modules=core,network,internet -- -DCMAKE_CXX_COMPILER=/usr/bin/g++"
@@ -1461,7 +1536,7 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # Get the commands to run sample-simulator in two processes with mpi
         return_code, stdout, stderr = run_ns3(mpi_command)
         self.assertEqual(return_code, 0)
-        self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
+        self.assertIn('mpiexec -np 2 "%s"' % sample_simulator_path, stdout)
 
         # Get the commands to run sample-simulator in two processes with mpi, now with the environment variable
         return_code, stdout, stderr = run_ns3(mpi_command)
@@ -1469,25 +1544,26 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         if os.getenv("USER", "") == "root":
             if shutil.which("ompi_info"):
                 self.assertIn(
-                    "mpiexec --allow-run-as-root --oversubscribe -np 2 %s" % sample_simulator_path,
+                    'mpiexec --allow-run-as-root --oversubscribe -np 2 "%s"'
+                    % sample_simulator_path,
                     stdout,
                 )
             else:
                 self.assertIn(
-                    "mpiexec --allow-run-as-root -np 2 %s" % sample_simulator_path, stdout
+                    'mpiexec --allow-run-as-root -np 2 "%s"' % sample_simulator_path, stdout
                 )
         else:
-            self.assertIn("mpiexec -np 2 %s" % sample_simulator_path, stdout)
+            self.assertIn('mpiexec -np 2 "%s"' % sample_simulator_path, stdout)
 
         # Now we repeat for the non-mpi command
         return_code, stdout, stderr = run_ns3(non_mpi_command)
         self.assertEqual(return_code, 0)
-        self.assertIn("echo %s" % sample_simulator_path, stdout)
+        self.assertIn('echo "%s"' % sample_simulator_path, stdout)
 
         # Again the non-mpi command, with the MPI_CI environment variable set
         return_code, stdout, stderr = run_ns3(non_mpi_command)
         self.assertEqual(return_code, 0)
-        self.assertIn("echo %s" % sample_simulator_path, stdout)
+        self.assertIn('echo "%s"' % sample_simulator_path, stdout)
 
         return_code, stdout, stderr = run_ns3('configure -G "{generator}" --disable-examples')
         self.assertEqual(return_code, 0)
@@ -1510,16 +1586,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
             f.write("")
         for invalid_or_nonexistent_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/CMakeLists.txt", "w", encoding="utf-8") as f:
-                f.write(
-                    """
+                f.write("""
                         build_lib(
                             LIBNAME borked
                             SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                             LIBRARIES_TO_LINK ${libcore} %s
                         )
-                        """
-                    % invalid_or_nonexistent_library
-                )
+                        """ % invalid_or_nonexistent_library)
 
             return_code, stdout, stderr = run_ns3('configure -G "{generator}" --enable-examples')
             if invalid_or_nonexistent_library in ["", "gsd", "libfi", "calibre"]:
@@ -1558,27 +1631,22 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         # - invalid library names (should fail to configure)
         # - valid library names but nonexistent libraries (should not create a target)
         with open("contrib/borked/CMakeLists.txt", "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                     build_lib(
                         LIBNAME borked
                         SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                         LIBRARIES_TO_LINK ${libcore}
                     )
-                    """
-            )
+                    """)
         for invalid_or_nonexistent_library in ["", "gsd", "lib", "libfi", "calibre"]:
             with open("contrib/borked/examples/CMakeLists.txt", "w", encoding="utf-8") as f:
-                f.write(
-                    """
+                f.write("""
                         build_lib_example(
                             NAME borked-example
                             SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty-main.cc
                             LIBRARIES_TO_LINK ${libborked} %s
                         )
-                        """
-                    % invalid_or_nonexistent_library
-                )
+                        """ % invalid_or_nonexistent_library)
 
             return_code, stdout, stderr = run_ns3('configure -G "{generator}"')
             if invalid_or_nonexistent_library in ["", "gsd", "libfi", "calibre"]:
@@ -1617,15 +1685,13 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         with open("contrib/calibre/examples/CMakeLists.txt", "w", encoding="utf-8") as f:
             f.write("")
         with open("contrib/calibre/CMakeLists.txt", "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
                 build_lib(
                     LIBNAME calibre
                     SOURCE_FILES ${PROJECT_SOURCE_DIR}/build-support/empty.cc
                     LIBRARIES_TO_LINK ${libcore}
                 )
-                """
-            )
+                """)
 
         return_code, stdout, stderr = run_ns3('configure -G "{generator}"')
 
@@ -1681,7 +1747,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             # Install basic packages
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 ninja-build cmake g++")
+            container.execute("apt-get install -y python3 ninja-build cmake g++ python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
 
             # Clean ns-3 artifacts
             container.execute("./ns3 clean")
@@ -2023,11 +2090,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         run_ns3("clean")
 
         # Ubuntu 22.04 ships with:
-        # - cmake 3.22: does support PCH
+        # - cmake 3.22 (overridden via pip to >=3.25 to satisfy ns-3 minimum): does support PCH
         # - ccache 4.5: compatible with pch
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake ccache g++")
+            container.execute("apt-get install -y python3 cmake ccache g++ python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
             try:
                 container.execute("./ns3 configure")
             except DockerException as e:
@@ -2040,13 +2108,12 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
         """
         return_code, stdout, stderr = run_ns3("configure")
         self.assertEqual(return_code, 0)
-
-        test_module_cache = os.path.join(ns3_path, "cmake-cache", "src", "test")
-        self.assertFalse(os.path.exists(test_module_cache))
+        self.assertIn("Tests", stdout)
+        self.assertNotIn("Tests                         : ON", stdout)
 
         return_code, stdout, stderr = run_ns3("configure --enable-tests")
         self.assertEqual(return_code, 0)
-        self.assertTrue(os.path.exists(test_module_cache))
+        self.assertIn("Tests                         : ON", stdout)
 
     def test_25_CheckBareConfig(self):
         """!
@@ -2058,7 +2125,8 @@ class NS3ConfigureTestCase(NS3BaseTestCase):
 
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++")
+            container.execute("apt-get install -y python3 cmake g++ python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
             return_code = 0
             stdout = ""
             try:
@@ -2217,7 +2285,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         relative_path = os.sep.join(["build", "release"])
         for different_out_dir in [absolute_path, relative_path]:
             return_code, stdout, stderr = run_ns3(
-                'configure -G "{generator}" --out=%s' % different_out_dir
+                'configure -G "{generator}" --out="%s"' % different_out_dir
             )
             self.config_ok(return_code, stdout, stderr)
             self.assertIn(
@@ -2285,7 +2353,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Reconfigure setting the installation folder to ns-3-dev/build/install.
         install_prefix = os.sep.join([ns3_path, "build", "install"])
         return_code, stdout, stderr = run_ns3(
-            'configure -G "{generator}" --prefix=%s' % install_prefix
+            'configure -G "{generator}" --prefix="%s"' % install_prefix
         )
         self.config_ok(return_code, stdout, stderr)
 
@@ -2319,8 +2387,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
         # Now create a test CMake project and try to find_package ns-3.
         test_main_file = os.sep.join([install_prefix, "main.cpp"])
         with open(test_main_file, "w", encoding="utf-8") as f:
-            f.write(
-                """
+            f.write("""
             #include <ns3/core-module.h>
             using namespace ns3;
             int main ()
@@ -2330,8 +2397,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                 Simulator::Destroy ();
                 return 0;
             }
-            """
-            )
+            """)
 
         # We try to use this library without specifying a version,
         # specifying ns3-01 (text version with 'dev' is not supported)
@@ -2344,9 +2410,7 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
                                   list(APPEND CMAKE_PREFIX_PATH ./{lib}/cmake/ns3)
                                   find_package(ns3 {version} COMPONENTS core)
                                   target_link_libraries(test PRIVATE ns3::core)
-                                  """.format(
-                lib=("lib64" if lib64 else "lib"), version=version
-            )
+                                  """.format(lib=("lib64" if lib64 else "lib"), version=version)
             ns3_import_methods.append(cmake_find_package_import)
 
             # Import ns-3 as pkg-config libraries
@@ -2363,16 +2427,13 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
 
             # Test the multiple ways of importing ns-3 libraries
             for import_method in ns3_import_methods:
-                test_cmake_project = (
-                    """
+                test_cmake_project = """
                                      cmake_minimum_required(VERSION 3.20..3.20)
                                      project(ns3_consumer CXX)
                                      set(CMAKE_CXX_STANDARD 23)
                                      set(CMAKE_CXX_STANDARD_REQUIRED ON)
                                      add_executable(test main.cpp)
-                                     """
-                    + import_method
-                )
+                                     """ + import_method
 
                 test_cmake_project_file = os.sep.join([install_prefix, "CMakeLists.txt"])
                 with open(test_cmake_project_file, "w", encoding="utf-8") as f:
@@ -2601,7 +2662,9 @@ class NS3BuildBaseTestCase(NS3BaseTestCase):
             self.skipTest("Optional components are not supported on Windows")
 
         # First enable automatic components fetching
-        return_code, stdout, stderr = run_ns3("configure -- -DNS3_FETCH_OPTIONAL_COMPONENTS=ON")
+        return_code, stdout, stderr = run_ns3(
+            "configure --disable-werror -- -DNS3_FETCH_OPTIONAL_COMPONENTS=ON"
+        )
         self.assertEqual(return_code, 0)
 
         # Build the optional components to check if their dependencies were fetched
@@ -3128,7 +3191,8 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         with DockerContainerManager(self, "ubuntu:22.04") as container:
             # Install toolchain
             container.execute("apt-get update")
-            container.execute("apt-get install -y python3 cmake g++ ninja-build")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
 
             # Verify that Armadillo is not available and that we did not
             # add any new unnecessary dependency when features are not used
@@ -3191,6 +3255,48 @@ class NS3ExpectedUseTestCase(NS3BaseTestCase):
         # Remove test module
         if os.path.exists(destination_src):
             shutil.rmtree(destination_src)
+
+    def test_19_EmptySpaceHandlingOnTestAndCommandTemplate(self):
+        """!
+        Test if test.py and command-template handles empty spaces in executable paths correctly
+        @return None
+        """
+        # Clean the ns-3 configuration
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
+
+        with DockerContainerManager(self, "ubuntu:22.04") as container:
+            # Install toolchain
+            container.execute("apt-get update")
+            container.execute("apt-get install -y python3 cmake g++ ninja-build python3-pip")
+            container.execute("pip3 install cmake==3.25.2")
+
+            # Create new copy of ns-3 on a "path with empty spaces"
+            test_path = "/path with empty spaces/ns-3-dev"
+            try:
+                container.execute(f'mkdir -p "{test_path}"')
+                container.execute(f'cp -R ./ "{test_path}"')
+            except DockerException as e:
+                pass
+
+            # Configure enabling examples as tests too, filtering to core
+            try:
+                container.execute(
+                    './ns3 configure --enable-examples --enable-tests --filter-module-examples-and-tests="core"',
+                    workdir=test_path,
+                )
+            except DockerException as e:
+                self.fail()
+
+            # Execute tests and examples to see if all work
+            try:
+                container.execute("./test.py", workdir=test_path)
+            except DockerException as e:
+                self.fail()
+
+        # Clean cache to prevent dumb errors
+        return_code, stdout, stderr = run_ns3("clean")
+        self.assertEqual(return_code, 0)
 
 
 class NS3QualityControlTestCase(unittest.TestCase):

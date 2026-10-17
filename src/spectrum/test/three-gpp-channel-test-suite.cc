@@ -1,14 +1,16 @@
 /*
  * Copyright (c) 2019 SIGNET Lab, Department of Information Engineering,
- *
+ * Copyright (c) 2026, Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  * SPDX-License-Identifier: GPL-2.0-only
  */
 
 #include "ns3/abort.h"
 #include "ns3/angles.h"
+#include "ns3/boolean.h"
 #include "ns3/channel-condition-model.h"
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"
+#include "ns3/constant-velocity-mobility-model.h"
 #include "ns3/double.h"
 #include "ns3/ism-spectrum-value-helper.h"
 #include "ns3/isotropic-antenna-model.h"
@@ -27,6 +29,10 @@
 #include "ns3/uinteger.h"
 #include "ns3/uniform-planar-array.h"
 
+#include <cmath>
+#include <complex>
+#include <limits>
+#include <string>
 #include <valarray>
 
 using namespace ns3;
@@ -52,11 +58,15 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
      * of the transmitter
      * @param rxPorts the number of vertical and horizontal ports of the antenna
      * array of the receiver
+     * @param largeBandwidth enable the large bandwidth modeling of TR 38.901 Sec. 7.6.2.2,
+     * checking that each ray becomes an individually delayed tap and that the channel
+     * normalization is preserved
      */
     ThreeGppChannelMatrixComputationTest(uint32_t txAntennaElements = 2,
                                          uint32_t rxAntennaElements = 2,
                                          uint32_t txPorts = 1,
-                                         uint32_t rxPorts = 1);
+                                         uint32_t rxPorts = 1,
+                                         bool largeBandwidth = false);
 
     /**
      * Destructor
@@ -86,21 +96,24 @@ class ThreeGppChannelMatrixComputationTest : public TestCase
     std::vector<double> m_normVector; //!< each element is the norm of a channel realization
     uint32_t m_txAntennaElements{4};  //!< number of rows and columns of tx antenna array
     uint32_t m_rxAntennaElements{4};  //!< number of rows and columns of rx antenna array
-    uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
-    uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
+    uint32_t m_txPorts{1};        //!< number of horizontal and vertical ports of tx antenna array
+    uint32_t m_rxPorts{1};        //!< number of horizontal and vertical ports of rx antenna array
+    bool m_largeBandwidth{false}; //!< enable the TR 38.901 Sec. 7.6.2.2 modeling
 };
 
 ThreeGppChannelMatrixComputationTest::ThreeGppChannelMatrixComputationTest(
     uint32_t txAntennaElements,
     uint32_t rxAntennaElements,
     uint32_t txPorts,
-    uint32_t rxPorts)
+    uint32_t rxPorts,
+    bool largeBandwidth)
     : TestCase("Check the dimensions and the norm of the channel matrix")
 {
     m_txAntennaElements = txAntennaElements;
     m_rxAntennaElements = rxAntennaElements;
     m_txPorts = txPorts;
     m_rxPorts = rxPorts;
+    m_largeBandwidth = largeBandwidth;
 }
 
 ThreeGppChannelMatrixComputationTest::~ThreeGppChannelMatrixComputationTest()
@@ -148,41 +161,37 @@ ThreeGppChannelMatrixComputationTest::DoRun()
 
     // create the channel condition model
     Ptr<ChannelConditionModel> channelConditionModel =
-        CreateObject<NeverLosChannelConditionModel>();
+        CreateObject<AlwaysLosChannelConditionModel>();
 
     // create the ThreeGppChannelModel object used to generate the channel matrix
     Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
     channelModel->SetAttribute("Frequency", DoubleValue(60.0e9));
     channelModel->SetAttribute("Scenario", StringValue("RMa"));
     channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
-    channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs - 1)));
+    channelModel->SetAttribute("UpdatePeriod", TimeValue(MilliSeconds(updatePeriodMs)));
+    if (m_largeBandwidth)
+    {
+        channelModel->SetAttribute("LargeBandwidthArrayModeling", BooleanValue(true));
+        channelModel->SetAttribute("ChannelBandwidth", DoubleValue(400e6));
+    }
     channelModel->AssignStreams(1);
 
     // create the tx and rx nodes
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models and set their positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
-    Ptr<MobilityModel> rxMob = CreateObject<ConstantPositionMobilityModel>();
-    rxMob->SetPosition(Vector(100.0, 0.0, 10.0));
+    Ptr<ConstantVelocityMobilityModel> rxMob = CreateObject<ConstantVelocityMobilityModel>();
+    rxMob->SetPosition(Vector(30.0, 0.0, 10.0));
+    rxMob->SetVelocity(Vector(50, 0, 0));
 
     // associate the nodes and the mobility models
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -220,11 +229,22 @@ ThreeGppChannelMatrixComputationTest::DoRun()
         m_rxAntennaElements * m_rxAntennaElements,
         "The second dimension of H should be equal to the number of rx antenna elements");
 
+    if (m_largeBandwidth)
+    {
+        // Under TR 38.901 Sec. 7.6.2.2 each of the at-least-20 rays of every cluster is
+        // expanded into its own individually delayed tap, so the number of taps is far
+        // larger than the standard per-cluster (plus sub-cluster) count.
+        NS_TEST_ASSERT_MSG_GT_OR_EQ(channelMatrix->m_channel.GetNumPages(),
+                                    40,
+                                    "With the large bandwidth modeling every cluster should be "
+                                    "expanded into at least 20 single-ray taps");
+    }
+
     // test if the channel matrix is correctly generated
-    uint16_t numIt = 1000;
+    uint16_t numIt = 2000;
     for (uint16_t i = 0; i < numIt; i++)
     {
-        Simulator::Schedule(MilliSeconds(updatePeriodMs * i),
+        Simulator::Schedule(MilliSeconds(updatePeriodMs * i + i),
                             &ThreeGppChannelMatrixComputationTest::DoComputeNorm,
                             this,
                             channelModel,
@@ -248,25 +268,34 @@ ThreeGppChannelMatrixComputationTest::DoRun()
     double sampleStd = 0;
     for (auto i : m_normVector)
     {
-        sampleStd += ((i - sampleMean) * (i - sampleMean));
+        const double diff = i - sampleMean;
+        sampleStd += diff * diff;
     }
     sampleStd = std::sqrt(sampleStd / (numIt - 1));
 
-    // perform the one sample t-test with a significance level of 0.05 to test
-    // the hypothesis "E [|H|^2] = M*N, where |H| indicates the Frobenius norm of
-    // H, M is the number of transmit antenna elements, and N is the number of
-    // the receive antenna elements"
-    double t = (sampleMean - m_txAntennaElements * m_txAntennaElements * m_rxAntennaElements *
-                                 m_rxAntennaElements) /
-               (sampleStd / std::sqrt(numIt));
+    NS_TEST_ASSERT_MSG_NE(sampleStd,
+                          0,
+                          "The STD should be different from zero. Channel matrix not updated");
 
-    // Using a significance level of 0.05, we reject the null hypothesis if |t| is
-    // greater than the critical value from a t-distribution with df = numIt-1
-    NS_TEST_ASSERT_MSG_EQ_TOL(
-        std::abs(t),
-        0,
-        1.65,
-        "We reject the hypothesis E[|H|^2] = M*N with a significance level of 0.05");
+    if (sampleStd != 0)
+    {
+        // perform the one sample t-test with a significance level of 0.05 to test
+        // the hypothesis "E [|H|^2] = M*N, where |H| indicates the Frobenius norm of
+        // H, M is the number of transmit antenna elements, and N is the number of
+        // the receive antenna elements"
+        double t = (sampleMean - m_txAntennaElements * m_txAntennaElements * m_rxAntennaElements *
+                                     m_rxAntennaElements) /
+                   (sampleStd / std::sqrt(numIt));
+
+        // Using a significance level of 0.05, we reject the null hypothesis if |t| is
+        // greater than the critical value from a t-distribution with df = numIt-1
+
+        NS_TEST_ASSERT_MSG_EQ_TOL(
+            std::abs(t),
+            0,
+            1.65,
+            "We reject the hypothesis E[|H|^2] = M*N with a significance level of 0.05");
+    }
 
     Simulator::Destroy();
 }
@@ -308,8 +337,10 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
     void DoRun() override;
 
     /**
-     * This method is used to schedule the channel matrix computation at different
-     * time instants and to check if it correctly updated
+     * This method first slightly moves the user and then calculates the channel matrix.
+     * This function is used for channel matrix computation at different time instants
+     * and to check if whether the channel matrix is updated following the updatePeriod
+     * configuration.
      * @param channelModel the ThreeGppChannelModel object used to generate the channel matrix
      * @param txMob the mobility model of the first node
      * @param rxMob the mobility model of the second node
@@ -317,17 +348,19 @@ class ThreeGppChannelMatrixUpdateTest : public TestCase
      * @param rxAntenna the antenna object associated to the second node
      * @param update whether if the channel matrix should be updated or not
      */
-    void DoGetChannel(Ptr<ThreeGppChannelModel> channelModel,
-                      Ptr<MobilityModel> txMob,
-                      Ptr<MobilityModel> rxMob,
-                      Ptr<PhasedArrayModel> txAntenna,
-                      Ptr<PhasedArrayModel> rxAntenna,
-                      bool update);
+    void MoveRxAndComputerSnr(Ptr<ThreeGppChannelModel> channelModel,
+                              Ptr<MobilityModel> txMob,
+                              Ptr<MobilityModel> rxMob,
+                              Ptr<PhasedArrayModel> txAntenna,
+                              Ptr<PhasedArrayModel> rxAntenna,
+                              bool update);
 
     Ptr<const ThreeGppChannelModel::ChannelMatrix>
-        m_currentChannel;            //!< used by DoGetChannel to store the current channel matrix
-    uint32_t m_txAntennaElements{4}; //!< number of rows and columns of tx antenna array
-    uint32_t m_rxAntennaElements{4}; //!< number of rows and columns of rx antenna array
+        m_currentChannel;      //!< used by DoGetChannel to store the current channel matrix
+    bool m_initialized{false}; //!< tracks whether previous matrix snapshot is set
+    ComplexMatrixArray m_previousChannelMatrix; //!< snapshot of previous channel matrix
+    uint32_t m_txAntennaElements{4};            //!< number of rows and columns of tx antenna array
+    uint32_t m_rxAntennaElements{4};            //!< number of rows and columns of rx antenna array
     uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
     uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
 };
@@ -349,36 +382,60 @@ ThreeGppChannelMatrixUpdateTest::~ThreeGppChannelMatrixUpdateTest()
 }
 
 void
-ThreeGppChannelMatrixUpdateTest::DoGetChannel(Ptr<ThreeGppChannelModel> channelModel,
-                                              Ptr<MobilityModel> txMob,
-                                              Ptr<MobilityModel> rxMob,
-                                              Ptr<PhasedArrayModel> txAntenna,
-                                              Ptr<PhasedArrayModel> rxAntenna,
-                                              bool update)
+ThreeGppChannelMatrixUpdateTest::MoveRxAndComputerSnr(Ptr<ThreeGppChannelModel> channelModel,
+                                                      Ptr<MobilityModel> txMob,
+                                                      Ptr<MobilityModel> rxMob,
+                                                      Ptr<PhasedArrayModel> txAntenna,
+                                                      Ptr<PhasedArrayModel> rxAntenna,
+                                                      bool update)
 {
+    // 3GPP channel update is activated only if the UE displacement is at least 1e-6, hence we
+    // add this minor movement to allow triggering of the channel update per the configured channel
+    // update period
+    rxMob->SetPosition(Vector(rxMob->GetPosition().x + 0.01,
+                              rxMob->GetPosition().y + 0.01,
+                              rxMob->GetPosition().z));
+
     // retrieve the channel matrix
-    Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> newChannelMatrix =
         channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
 
-    if (!m_currentChannel)
+    // For in-place updates, the ChannelMatrix pointer may remain the same.
+    // Deep-compare the matrix values with a small tolerance.
+    if (!m_initialized)
     {
-        // this is the first time we compute the channel matrix, we initialize
-        // m_currentChannel
-        m_currentChannel = channelMatrix;
+        m_previousChannelMatrix = newChannelMatrix->m_channel; // deep copy
+        m_currentChannel = newChannelMatrix;
+        m_initialized = true;
+        return;
     }
-    else
+
+    // Use absolute tolerance on complex values (magnitude comparison)
+    std::complex<double> tol(1e-12, 0.0);
+    bool equal = m_previousChannelMatrix.IsAlmostEqual(newChannelMatrix->m_channel, tol);
+    bool changed = !equal;
+
+    NS_TEST_ASSERT_MSG_EQ(
+        changed,
+        update,
+        Simulator::Now().GetMilliSeconds()
+            << " The channel matrix is not updated respecting the updatePeriod configuration");
+
+    // Update the previous snapshot if an update was expected and occurred
+    if (changed)
     {
-        // compare the old and the new channel matrices
-        NS_TEST_ASSERT_MSG_EQ((m_currentChannel->m_channel != channelMatrix->m_channel),
-                              update,
-                              Simulator::Now().GetMilliSeconds()
-                                  << " The channel matrix is not correctly updated");
+        m_previousChannelMatrix = newChannelMatrix->m_channel;
+        m_currentChannel = newChannelMatrix;
     }
 }
 
 void
 ThreeGppChannelMatrixUpdateTest::DoRun()
 {
+    m_initialized = false;
+    m_previousChannelMatrix = ComplexMatrixArray();
+    m_currentChannel = nullptr;
+
     // Build the scenario for the test
     uint32_t updatePeriodMs = 100; // update period in ms
 
@@ -397,16 +454,6 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models and set their positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
@@ -417,7 +464,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -448,7 +495,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     uint32_t firstTimeMs =
         1; // time instant at which the channel matrix is generated for the first time
     Simulator::Schedule(MilliSeconds(firstTimeMs),
-                        &ThreeGppChannelMatrixUpdateTest::DoGetChannel,
+                        &ThreeGppChannelMatrixUpdateTest::MoveRxAndComputerSnr,
                         this,
                         channelModel,
                         txMob,
@@ -460,7 +507,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     // call GetChannel before the update period is exceeded, the channel matrix
     // should not be updated
     Simulator::Schedule(MilliSeconds(firstTimeMs + updatePeriodMs / 2),
-                        &ThreeGppChannelMatrixUpdateTest::DoGetChannel,
+                        &ThreeGppChannelMatrixUpdateTest::MoveRxAndComputerSnr,
                         this,
                         channelModel,
                         txMob,
@@ -472,7 +519,7 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
     // call GetChannel when the update period is exceeded, the channel matrix
     // should be recomputed
     Simulator::Schedule(MilliSeconds(firstTimeMs + updatePeriodMs + 1),
-                        &ThreeGppChannelMatrixUpdateTest::DoGetChannel,
+                        &ThreeGppChannelMatrixUpdateTest::MoveRxAndComputerSnr,
                         this,
                         channelModel,
                         txMob,
@@ -482,6 +529,469 @@ ThreeGppChannelMatrixUpdateTest::DoRun()
                         true);
 
     Simulator::Run();
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case for channel consistency Procedure A (according to 3GPP 38.901 Section 7.6.3.)
+ *
+ * This test verifies that the consistent channel updates produce smoother changes in the channel
+ * matrix than generating a completely new channel. The test checks both channel condition LOS and
+ * NLOS. This is very important because, according to the Procedure A, the per-cluster variables
+ * updates are performed differently for LOS and NLOS. For example, there are different formulas for
+ * different channel conditions for cluster delay update (eq. 7.6-9) and cluster departure/arrival
+ * angles (eq. 7.6-10b and 7.6-10c). The test allows configuring different speeds and frequencies.
+ * Based on these parameters is calculated the channel coherence time and the channel update period
+ * is set based on this value.
+ *
+ * The test verifies that the evolution of the general metric like the Frobenius channel norm, and
+ * per-cluster variables such as cluster delay, cluster power, and cluster angles (AOA and ZOA) is
+ * smoother with channel updates than with the new channel realizations. For the cluster metrics is
+ * selected the third cluster as defined in Table 7.8.5 for the calibration of the channel
+ * consistency.
+ *
+ * The test checks that the channel consistent updates according 3GPP 38.901 Procedure A result in a
+ * channel that evolves more smoothly than generating a completely new channel. Variations are at
+ * least 5 times lower than these of new channel realizations.
+ *
+ * To be able to get the results not only for the updated channel but also for the new channel
+ * realizations, we create new nodes that are tracking the update positions of the original node for
+ * which the channel updates are being generated. New nodes are forcing new channel realizations.
+ */
+class ThreeGppChannelConsistencyTest : public TestCase
+{
+  public:
+    /**
+     *Constructor
+     */
+    ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue losCondition,
+                                   double speedKmh,
+                                   double freqHz);
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppChannelConsistencyTest() override;
+
+    /**
+     * ChannelConsistencyMetrics structure contains the metrics that are needed to test the channel
+     * consistency.
+     */
+    struct ChannelConsistencyMetrics
+    {
+        //! the channel norm value
+        double channelNorm;
+        //! the third cluster power in dB
+        double thirdClusterPower_dB;
+        //! the third cluster delay
+        double thirdClusterDelay;
+        //! the third cluster AOA
+        double thirdClusterAoa;
+        //! the third cluster ZOA
+        double thirdClusterZoa;
+
+        /**
+         * Operator + for easier calculations of the other metrics (e.g., mean values).
+         * @param other the other object of ChannelConsistencyMetrics
+         * @return the sum of the metrics
+         */
+        ChannelConsistencyMetrics operator+(const ChannelConsistencyMetrics& other) const
+        {
+            return ChannelConsistencyMetrics{channelNorm + other.channelNorm,
+                                             thirdClusterPower_dB + other.thirdClusterPower_dB,
+                                             thirdClusterDelay + other.thirdClusterDelay,
+                                             thirdClusterAoa + other.thirdClusterAoa,
+                                             thirdClusterZoa + other.thirdClusterZoa};
+        }
+
+        /**
+         * Operator += for easier calculations of the other metrics (e.g., mean)
+         * @param other the other object of the  channel consistency metrics
+         * @return the sum of the metrics
+         */
+        ChannelConsistencyMetrics operator+=(const ChannelConsistencyMetrics& other)
+        {
+            this->channelNorm = this->channelNorm + other.channelNorm;
+            this->thirdClusterPower_dB = this->thirdClusterPower_dB + other.thirdClusterPower_dB;
+            this->thirdClusterDelay = this->thirdClusterDelay + other.thirdClusterDelay;
+            this->thirdClusterAoa = this->thirdClusterAoa + other.thirdClusterAoa;
+            this->thirdClusterZoa = this->thirdClusterZoa + other.thirdClusterZoa;
+            return *this;
+        }
+
+        /**
+         * Operator / used for easier calculations of the statistics, and test conditions.
+         * @param iterations The value with which will be divided each metric.
+         * @return the new object with the metrics that are divided by the given value.
+         */
+        ChannelConsistencyMetrics operator/(double iterations) const
+        {
+            ChannelConsistencyMetrics result;
+            result.channelNorm = this->channelNorm / iterations;
+            result.thirdClusterPower_dB = this->thirdClusterPower_dB / iterations;
+            result.thirdClusterDelay = this->thirdClusterDelay / iterations;
+            result.thirdClusterAoa = this->thirdClusterAoa / iterations;
+            result.thirdClusterZoa = this->thirdClusterZoa / iterations;
+            return result;
+        }
+
+        /**
+         * Operator /= used for easier calculations of the statistics, and test conditions.
+         * @param iterations The value with which will be divided each metric.
+         * @return the new object with the metrics that are divided by the given value.s
+         */
+        ChannelConsistencyMetrics operator/=(double iterations)
+        {
+            *this = *this / iterations;
+            return *this;
+        }
+
+        /**
+         *Used for easier calculations of the statistics, and test conditions.
+         *@return the new object with the absolute values of all the metrics
+         */
+        ChannelConsistencyMetrics abs() const
+        {
+            return ChannelConsistencyMetrics{std::abs(channelNorm),
+                                             std::abs(thirdClusterPower_dB),
+                                             std::abs(thirdClusterDelay),
+                                             std::abs(thirdClusterAoa),
+                                             std::abs(thirdClusterZoa)};
+        }
+
+        /**
+         * Used for checking the channel consistency test condition.
+         * @param other the values of the object containing the set of consistency metric
+         * @return true if the metrics of this object have lower values than these of the other
+         * object
+         */
+        bool operator<(const ChannelConsistencyMetrics& other) const
+        {
+            return (this->channelNorm < other.channelNorm) &&
+                   (this->thirdClusterPower_dB < other.thirdClusterPower_dB) &&
+                   (this->thirdClusterDelay < other.thirdClusterDelay) &&
+                   (this->thirdClusterAoa < other.thirdClusterAoa) &&
+                   (this->thirdClusterZoa < other.thirdClusterZoa);
+        }
+    };
+
+    /**
+     * Used for the calculation of the delta of all the metrics between 2 channel consistency metric
+     * objects. Returns a new object containing these delta values for each of the metrics.
+     * @param metrics1 The first channel consistency metrics object.
+     * @param metrics2 The second channel consistency metrics object.
+     * @return The channel consistency object containing the deltas of each of the metrics between
+     * the first and the second object.
+     */
+    ChannelConsistencyMetrics ComputeDeltas(ChannelConsistencyMetrics metrics1,
+                                            ChannelConsistencyMetrics metrics2)
+    {
+        ChannelConsistencyMetrics deltas;
+        deltas.channelNorm = metrics1.channelNorm - metrics2.channelNorm;
+        deltas.thirdClusterPower_dB = metrics1.thirdClusterPower_dB - metrics2.thirdClusterPower_dB;
+        deltas.thirdClusterDelay = metrics1.thirdClusterDelay - metrics2.thirdClusterDelay;
+        deltas.thirdClusterAoa = metrics1.thirdClusterAoa - metrics2.thirdClusterAoa;
+        deltas.thirdClusterZoa = metrics1.thirdClusterZoa - metrics2.thirdClusterZoa;
+        return deltas;
+    }
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+
+    /**
+     * Compute the channel consistency metrics to evaluate the varying rate of general channel
+     * metrics like:
+     *    - Frobenius norm of the channel matrix and stores it in m_normVector, and per-cluster
+     * metrics like:
+     *    - Cluster power (of the third cluster as per Table 7.8.5 from 38.901 for the calibration
+     * of the channel consistency)
+     *    - Cluster delay (of the third cluster as per Table 7.8.5 from 38.901 for the calibration
+     * of the channel consistency)
+     *    - Cluster AOA and ZOA (of the third cluster as per Table 7.8.5 from 38.901 for the
+     * calibration of the channel consistency)
+     *
+     * @param channelModel the ThreeGppChannelModel object used to generate the channel matrix
+     * @param txMob the mobility model of the first node
+     * @param rxMob the mobility model of the second node
+     * @param txAntenna the antenna object associated to the first node
+     * @param rxAntenna the antenna object associated to the second node
+     * @param metricsVectorToBeUsed the metrics vector to be used as the output of the function
+     * @param distancesVectorToBeUsed the metrics distances vector to be used as the output of the
+     * function
+     */
+    void DoComputeConsistencyMetrics(
+        Ptr<ThreeGppChannelModel> channelModel,
+        Ptr<MobilityModel> txMob,
+        Ptr<MobilityModel> rxMob,
+        Ptr<PhasedArrayModel> txAntenna,
+        Ptr<PhasedArrayModel> rxAntenna,
+        std::vector<ChannelConsistencyMetrics>* metricsVectorToBeUsed,
+        std::vector<ChannelConsistencyMetrics>* distancesVectorToBeUsed);
+
+    //! consistency metrics for the channel updates
+    std::vector<ChannelConsistencyMetrics> m_consistencyMetricsChannelUpdates;
+    //! consistency metrics for the new channel realizations
+    std::vector<ChannelConsistencyMetrics> m_consistencyMetricsNewChannelRealizations;
+    //! consistency metric deltas for the channel updates
+    std::vector<ChannelConsistencyMetrics> m_consistencyMetricsDeltasChannelUpdates;
+    //! consistency metric deltas for the new channel realizations
+    std::vector<ChannelConsistencyMetrics> m_consistencyMetricsDeltasNewChannelRealizations;
+
+    uint32_t m_txAntennaElements{4}; //!< number of rows and columns of tx antenna array
+    uint32_t m_rxAntennaElements{4}; //!< number of rows and columns of rx antenna array
+    //! The type of channel condition to be set; can be LOS or NLOS
+    ChannelCondition::LosConditionValue m_losCondition{ChannelCondition::LOS};
+    //! The speed of the user to be used in the test case
+    double m_speedKmh{30.0};
+    //! The carrier frequency to be used in the test case
+    double m_freqHz{4.0e9};
+};
+
+/**
+ * ThreeGppChannelConsistency constructor
+ * @param losCondition the LOS condition to be used in the test setup
+ * @param speedKmh the speed of the user to be used in the test setup
+ * @param freqHz the central carrier frequency to be used in the test setup
+ */
+ThreeGppChannelConsistencyTest::ThreeGppChannelConsistencyTest(
+    ChannelCondition::LosConditionValue losCondition,
+    double speedKmh,
+    double freqHz)
+    : TestCase(std::string("Check the channel consistency feature for losCondition ") +
+               ((losCondition == ChannelCondition::LOS) ? "LOS" : "NLOS") +
+               ", speed=" + std::to_string(speedKmh) +
+               " kmph, and freq=" + std::to_string(freqHz / 1e9) + " GHz.")
+{
+    m_losCondition = losCondition;
+    m_speedKmh = speedKmh;
+    m_freqHz = freqHz;
+}
+
+ThreeGppChannelConsistencyTest::~ThreeGppChannelConsistencyTest()
+{
+}
+
+void
+ThreeGppChannelConsistencyTest::DoComputeConsistencyMetrics(
+    Ptr<ThreeGppChannelModel> channelModel,
+    Ptr<MobilityModel> txMob,
+    Ptr<MobilityModel> rxMob,
+    Ptr<PhasedArrayModel> txAntenna,
+    Ptr<PhasedArrayModel> rxAntenna,
+    std::vector<ChannelConsistencyMetrics>* metricsVectorToBeUsed,
+    std::vector<ChannelConsistencyMetrics>* distancesVectorToBeUsed)
+{
+    uint64_t txAntennaElements = txAntenna->GetNumElems();
+    uint64_t rxAntennaElements = rxAntenna->GetNumElems();
+
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix =
+        channelModel->GetChannel(txMob, rxMob, txAntenna, rxAntenna);
+
+    double channelNorm = 0;
+    uint16_t numTotalClusters = channelMatrix->m_channel.GetNumPages();
+    for (uint16_t cIndex = 0; cIndex < numTotalClusters; cIndex++)
+    {
+        double clusterNorm = 0;
+        for (uint64_t sIndex = 0; sIndex < txAntennaElements; sIndex++)
+        {
+            for (uint64_t uIndex = 0; uIndex < rxAntennaElements; uIndex++)
+            {
+                clusterNorm +=
+                    std::pow(std::abs(channelMatrix->m_channel(uIndex, sIndex, cIndex)), 2);
+            }
+        }
+        channelNorm += clusterNorm;
+    }
+
+    Ptr<const MatrixBasedChannelModel::ChannelParams> baseParams =
+        channelModel->GetParams(txMob, rxMob);
+    Ptr<const ThreeGppChannelModel::ThreeGppChannelParams> channelParams =
+        DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(baseParams);
+
+    double thirdClusterPower_dB = std::numeric_limits<double>::quiet_NaN();
+    // delay of the third cluster
+    double thirdClusterDelay = std::numeric_limits<double>::quiet_NaN();
+    // AOA of the third cluster
+    double thirdClusterAoa = std::numeric_limits<double>::quiet_NaN();
+    // ZOA of the third cluster
+    double thirdClusterZoa = std::numeric_limits<double>::quiet_NaN();
+
+    if (channelParams->m_clusterPower.size() > 2)
+    {
+        uint8_t thirdClusterIndex = 2; // the index of the third cluster
+        thirdClusterPower_dB = 10 * log10(channelParams->m_clusterPower.at(thirdClusterIndex));
+        // delay of the third cluster
+        thirdClusterDelay = channelParams->m_delay.at(thirdClusterIndex);
+        // AOA of the third cluster
+        thirdClusterAoa = channelParams->m_angle.at(0).at(thirdClusterIndex);
+        // ZOA of the third cluster
+        thirdClusterZoa = channelParams->m_angle.at(1).at(thirdClusterIndex);
+    }
+
+    metricsVectorToBeUsed->push_back(
+        {channelNorm, thirdClusterPower_dB, thirdClusterDelay, thirdClusterAoa, thirdClusterZoa});
+
+    if (metricsVectorToBeUsed->size() > 1)
+    {
+        ChannelConsistencyMetrics deltas =
+            ComputeDeltas(metricsVectorToBeUsed->at(metricsVectorToBeUsed->size() - 2),
+                          metricsVectorToBeUsed->at(metricsVectorToBeUsed->size() - 1));
+        // we calculate the absolute value of the difference between the last two norms
+        distancesVectorToBeUsed->push_back(deltas);
+    }
+}
+
+void
+ThreeGppChannelConsistencyTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    double speedMps = m_speedKmh * 1000 / 3600;
+    // calculate doppler spread
+    double fDoppler = (speedMps * m_freqHz) / 3e8;
+    // calculate channel coherence time
+    Time cTime = Seconds(1 / fDoppler);
+    // set update period
+    const Time& updatePeriod = cTime;
+
+    uint16_t iterations = 100;
+    m_consistencyMetricsChannelUpdates.reserve(iterations);
+    m_consistencyMetricsNewChannelRealizations.reserve(iterations);
+    m_consistencyMetricsDeltasChannelUpdates.reserve(iterations - 1);
+    m_consistencyMetricsDeltasNewChannelRealizations.reserve(iterations - 1);
+
+    // create the channel condition model
+    Ptr<ChannelConditionModel> channelConditionModel;
+
+    if (m_losCondition == ChannelCondition::LOS)
+    {
+        channelConditionModel = CreateObject<AlwaysLosChannelConditionModel>();
+    }
+    else
+    {
+        channelConditionModel = CreateObject<NeverLosChannelConditionModel>();
+    }
+
+    // create the ThreeGppChannelModel object used to generate the channel matrix
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(m_freqHz));
+    channelModel->SetAttribute("Scenario", StringValue("RMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    channelModel->SetAttribute("UpdatePeriod", TimeValue(updatePeriod));
+    channelModel->AssignStreams(1);
+
+    // create the tx and rx nodes
+    NodeContainer nodeTx;
+    NodeContainer nodeRx;
+    NodeContainer nodesRxOther;
+    // we compare the channel update between the TX1 and RX1, and the independent channel
+    // generations between the same TX and 100 different RX that are at the time instant of the
+    // channel generation at the same position as the RX1
+    nodeTx.Create(1);
+    nodeRx.Create(1);
+    nodesRxOther.Create(100);
+
+    // create the tx and rx mobility models and set their positions
+    Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
+    txMob->SetPosition(Vector(0.0, 0.0, 10.0));
+    Ptr<ConstantVelocityMobilityModel> rxMob = CreateObject<ConstantVelocityMobilityModel>();
+    rxMob->SetPosition(Vector(30.0, 0.0, 1.0));
+    rxMob->SetVelocity(Vector(speedMps, 0, 0));
+
+    // associate the nodes and the mobility models
+    nodeTx.Get(0)->AggregateObject(txMob);
+    nodeRx.Get(0)->AggregateObject(rxMob);
+
+    std::vector<Ptr<ConstantVelocityMobilityModel>> rxMobCopies{100};
+    rxMobCopies.reserve(100);
+
+    for (uint32_t i = 0; i < 100; i++)
+    {
+        Ptr<ConstantVelocityMobilityModel> rxMobCopy =
+            CreateObject<ConstantVelocityMobilityModel>();
+        rxMobCopy->SetPosition(Vector(30.0, 0.0, 1.0));
+        rxMobCopy->SetVelocity(Vector(speedMps, 0, 0));
+        nodesRxOther.Get(i)->AggregateObject(rxMobCopy);
+        rxMobCopies[i] = rxMobCopy;
+    }
+
+    // create the tx and rx antennas and set their dimensions
+    Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(m_txAntennaElements),
+        "NumRows",
+        UintegerValue(m_txAntennaElements),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "BearingAngle",
+        DoubleValue(0));
+
+    Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
+        "NumColumns",
+        UintegerValue(m_rxAntennaElements),
+        "NumRows",
+        UintegerValue(m_rxAntennaElements),
+        "AntennaElement",
+        PointerValue(CreateObject<IsotropicAntennaModel>()),
+        "BearingAngle",
+        DoubleValue(M_PI));
+
+    // test if the channel matrix is correctly updated
+    for (uint16_t i = 0; i < iterations; i++)
+    {
+        Simulator::Schedule(updatePeriod * i + NanoSeconds(1),
+                            &ThreeGppChannelConsistencyTest::DoComputeConsistencyMetrics,
+                            this,
+                            channelModel,
+                            txMob,
+                            rxMob,
+                            txAntenna,
+                            rxAntenna,
+                            &m_consistencyMetricsChannelUpdates,
+                            &m_consistencyMetricsDeltasChannelUpdates);
+
+        Simulator::Schedule(updatePeriod * i + NanoSeconds(1),
+                            &ThreeGppChannelConsistencyTest::DoComputeConsistencyMetrics,
+                            this,
+                            channelModel,
+                            txMob,
+                            rxMobCopies[i],
+                            txAntenna,
+                            rxAntenna,
+                            &m_consistencyMetricsNewChannelRealizations,
+                            &m_consistencyMetricsDeltasNewChannelRealizations);
+    }
+
+    Simulator::Run();
+
+    // compute the sample mean of the channel updates
+    ChannelConsistencyMetrics metricMeanChannelUpdates =
+        m_consistencyMetricsDeltasChannelUpdates.at(0).abs();
+    ChannelConsistencyMetrics metricMeanNewChannelRealizations =
+        m_consistencyMetricsDeltasNewChannelRealizations.at(0).abs();
+
+    for (auto i : m_consistencyMetricsDeltasChannelUpdates)
+    {
+        metricMeanChannelUpdates += i.abs();
+    }
+    metricMeanChannelUpdates /= m_consistencyMetricsDeltasChannelUpdates.size();
+
+    for (auto i : m_consistencyMetricsDeltasNewChannelRealizations)
+    {
+        metricMeanNewChannelRealizations += i.abs();
+    }
+    metricMeanNewChannelRealizations /= m_consistencyMetricsDeltasNewChannelRealizations.size();
+
+    NS_TEST_ASSERT_MSG_EQ(metricMeanChannelUpdates < metricMeanNewChannelRealizations / 5,
+                          true,
+                          "Check that the average distances between the consistency metrics of "
+                          "the consecutive channel updates "
+                          " are lower than of the consecutive new channel generations.");
     Simulator::Destroy();
 }
 
@@ -590,16 +1100,6 @@ ThreeGppAntennaSetupChangedTest::DoRun()
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models and set their positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
@@ -610,7 +1110,7 @@ ThreeGppAntennaSetupChangedTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
@@ -727,9 +1227,360 @@ struct CheckLongTermUpdateParams
     Ptr<MobilityModel> txMob;               //!< the mobility model of the tx device
     Ptr<MobilityModel> rxMob;               //!< the mobility model of the rx device
     Ptr<SpectrumValue> rxPsdOld;            //!< the previously received PSD
-    Ptr<PhasedArrayModel> txAntenna;        //!< the antenna array of the tx device
-    Ptr<PhasedArrayModel> rxAntenna;        //!< the antenna array of the rx device
+    Ptr<const ComplexMatrixArray>
+        rxSpectrumChannelMatrix;     //!< the spectrum channel matrix of the received signal
+    Ptr<PhasedArrayModel> txAntenna; //!< the antenna array of the tx device
+    Ptr<PhasedArrayModel> rxAntenna; //!< the antenna array of the rx device
 };
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case for the large bandwidth and large antenna array modeling of
+ * TR 38.901 Sec. 7.6.2.2. The same link is generated with and without the
+ * modeling from identical RNG streams, so the cluster-level steps (delays,
+ * powers, mean angles) coincide, and the expanded per-ray taps are checked
+ * against them:
+ * 1) the number of rays per cluster follows Equation (7.6-8), including the
+ *    lower bound of 20 and the MaxRaysPerCluster cap;
+ * 2) every cluster is expanded into one single-ray tap per ray, with no
+ *    sub-cluster mapping;
+ * 3) the ray delays are within [0, 2 cDS] of the cluster delay and the
+ *    earliest ray sits at the cluster delay;
+ * 4) the ray angle offsets are within +-2 intra-cluster spreads of the
+ *    cluster mean angles, Equation (7.6-5);
+ * 5) the ray powers follow Equation (7.6-6) and sum to the cluster power.
+ */
+class ThreeGppLargeBandwidthModelingTest : public TestCase
+{
+  public:
+    /// Configuration of one test case.
+    struct Config
+    {
+        std::string scenario{"RMa"};    //!< 3GPP scenario
+        uint32_t columns{1};            //!< columns of the multi-element array
+        uint32_t rows{1};               //!< rows of the multi-element array
+        double downtiltDeg{0.0};        //!< downtilt of the multi-element array in degrees
+        uint32_t expectedRaysBw{20};    //!< ray count of the bandwidth term of (7.6-8) to yield
+        uint8_t maxRaysPerCluster{255}; //!< the MaxRaysPerCluster attribute
+        /**
+         * Place the multi-element array at the rx end (the higher node id) instead
+         * of the tx end; the ray count must not change, since (7.6-8) uses the
+         * maximum aperture over both ends.
+         */
+        bool largeArrayAtRx{false};
+    };
+
+    /**
+     * Constructor
+     * @param config the test case configuration
+     */
+    ThreeGppLargeBandwidthModelingTest(const Config& config);
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Difference between two angles in degrees, wrapped to [-180, 180).
+     * @param a the first angle
+     * @param b the second angle
+     * @return a - b wrapped
+     */
+    static double AngleDiff(double a, double b);
+
+    Config m_config; //!< test case configuration
+};
+
+ThreeGppLargeBandwidthModelingTest::ThreeGppLargeBandwidthModelingTest(const Config& config)
+    : TestCase("Check the large bandwidth modeling of TR 38.901 Sec. 7.6.2.2, " + config.scenario +
+               ", array " + std::to_string(config.columns) + "x" + std::to_string(config.rows) +
+               ", downtilt " + std::to_string(static_cast<int>(config.downtiltDeg)) +
+               " deg, expectedRaysBw=" + std::to_string(config.expectedRaysBw) +
+               ", maxRaysPerCluster=" + std::to_string(config.maxRaysPerCluster) +
+               (config.largeArrayAtRx ? ", array at rx" : "")),
+      m_config(config)
+{
+}
+
+double
+ThreeGppLargeBandwidthModelingTest::AngleDiff(double a, double b)
+{
+    return std::fmod(a - b + 540.0, 360.0) - 180.0;
+}
+
+void
+ThreeGppLargeBandwidthModelingTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // NLOS keeps the cluster delays unscaled and the LOS ray out of the first tap.
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, m_config.scenario == "RMa" ? 35.0 : 25.0));
+    nodes.Get(0)->AggregateObject(aMob);
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(80.0, 30.0, 1.5));
+    nodes.Get(1)->AggregateObject(bMob);
+
+    auto makeAntenna = [this](bool multiElement) {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(multiElement ? m_config.columns : 1),
+            "NumRows",
+            UintegerValue(multiElement ? m_config.rows : 1),
+            "DowntiltAngle",
+            DoubleValue(multiElement ? DegreesToRadians(m_config.downtiltDeg) : 0.0),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+    // PhasedArrayModel tracks per-pair channel state, so each channel model
+    // gets its own antenna pair of the same geometry.
+    Ptr<PhasedArrayModel> aAntennaPlain = makeAntenna(!m_config.largeArrayAtRx);
+    Ptr<PhasedArrayModel> bAntennaPlain = makeAntenna(m_config.largeArrayAtRx);
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna(!m_config.largeArrayAtRx);
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna(m_config.largeArrayAtRx);
+
+    Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
+    auto makeModel = [&](bool largeBandwidth, double bandwidth) {
+        Ptr<ThreeGppChannelModel> model = CreateObject<ThreeGppChannelModel>();
+        model->SetAttribute("Frequency", DoubleValue(3.5e9));
+        model->SetAttribute("Scenario", StringValue(m_config.scenario));
+        model->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+        model->SetAttribute("LargeBandwidthArrayModeling", BooleanValue(largeBandwidth));
+        model->SetAttribute("ChannelBandwidth", DoubleValue(bandwidth));
+        model->SetAttribute("MaxRaysPerCluster", UintegerValue(m_config.maxRaysPerCluster));
+        model->AssignStreams(100);
+        return model;
+    };
+
+    // The cluster-level steps 5-7 draw from the same streams before the two
+    // models diverge, so the plain model provides the cluster delays, powers
+    // and mean angles the expanded taps must be checked against.
+    Ptr<ThreeGppChannelModel> plainModel = makeModel(false, 0.0);
+    plainModel->GetChannel(aMob, bMob, aAntennaPlain, bAntennaPlain);
+    const auto plain = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        plainModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(plain, nullptr, "Channel params not found for the plain link");
+    const auto table =
+        plainModel->GetThreeGppTable(aMob, bMob, condModel->GetChannelCondition(aMob, bMob));
+    const double cDS = table->m_cDS;
+    const double cASA = table->m_cASA;
+    const double cASD = table->m_cASD;
+    const double cZSA = table->m_cZSA;
+    const double cZSD = 0.375 * std::pow(10.0, table->m_uLgZSD); // (7.6-7)
+    const uint16_t nClusters = plain->m_reducedClusterNumber;
+
+    // Bandwidth chosen so the delay-resolution term of (7.6-8), ceil(2 cDS B),
+    // equals expectedRaysBw (2 cDS B is set just below the integer to avoid
+    // rounding to the next one).
+    const double bandwidth = (m_config.expectedRaysBw - 0.2) / (2.0 * cDS);
+    const double mT = std::ceil(2.0 * cDS * bandwidth);
+    NS_TEST_ASSERT_MSG_EQ(mT, m_config.expectedRaysBw, "Bandwidth term of (7.6-8)");
+    // Angle-resolution terms of (7.6-8) for half-wavelength spaced elements: the
+    // apertures are the panel extents, (columns - 1) / 2 and (rows - 1) / 2
+    // wavelengths, whatever the downtilt of the panel.
+    const double dHOverLambda = 0.5 * (m_config.columns - 1);
+    const double dVOverLambda = 0.5 * (m_config.rows - 1);
+    const double mAod = std::max(std::ceil(2.0 * cASD * M_PI * dHOverLambda / 180.0), 1.0);
+    const double mZod = std::max(std::ceil(2.0 * cZSD * M_PI * dVOverLambda / 180.0), 1.0);
+    const uint32_t expectedRays =
+        std::min<uint32_t>(std::max<uint32_t>(mT * mAod * mZod, 20), m_config.maxRaysPerCluster);
+
+    Ptr<ThreeGppChannelModel> lbModel = makeModel(true, bandwidth);
+    const auto channelMatrix = lbModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    const auto lb = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        lbModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(lb, nullptr, "Channel params not found for the large bandwidth link");
+
+    // 1) and 2): one single-ray tap per (cluster, ray), no sub-clusters.
+    const uint32_t numTaps = expectedRays * nClusters;
+    NS_TEST_ASSERT_MSG_EQ(+lb->m_numRaysPerCluster, 1, "Each tap should hold a single ray");
+    NS_TEST_ASSERT_MSG_EQ(+lb->m_reducedClusterNumber, numTaps, "Number of taps, (7.6-8)");
+    NS_TEST_ASSERT_MSG_EQ(lb->m_delay.size(), numTaps, "Number of tap delays");
+    NS_TEST_ASSERT_MSG_EQ(lb->m_clusterPower.size(), numTaps, "Number of tap powers");
+    NS_TEST_ASSERT_MSG_EQ(lb->m_rayAoaRadian.size(), numTaps, "Number of tap ray angles");
+    NS_TEST_ASSERT_MSG_EQ(channelMatrix->m_channel.GetNumPages(),
+                          numTaps,
+                          "The channel matrix should have one page per tap, no sub-clusters");
+    if (lb->m_delay.size() != numTaps || lb->m_clusterPower.size() != numTaps ||
+        lb->m_rayAoaRadian.size() != numTaps || lb->m_angle[0].size() != numTaps)
+    {
+        // The per-tap checks below index the taps by the expected count.
+        return;
+    }
+
+    for (uint16_t n = 0; n < nClusters; n++)
+    {
+        const double clusterDelay = plain->m_delay[n];
+        const double clusterPower = plain->m_clusterPower[n];
+        double minRayDelay = std::numeric_limits<double>::max();
+        double maxRayDelay = 0.0;
+        double powerSum = 0.0;
+        // Ray powers of (7.6-6) relative to the first ray of the cluster.
+        double refPower = 0.0;
+        double refLaw = 0.0;
+        for (uint32_t m = 0; m < expectedRays; m++)
+        {
+            const uint32_t tap = n * expectedRays + m;
+            const double rayDelay = lb->m_delay[tap] - clusterDelay;
+            minRayDelay = std::min(minRayDelay, rayDelay);
+            maxRayDelay = std::max(maxRayDelay, rayDelay);
+            powerSum += lb->m_clusterPower[tap];
+
+            // 4): offsets of (7.6-5) recovered from the tap angles, in units of
+            // the intra-cluster spreads, must lie in [-2, 2].
+            const double alphaAoa = AngleDiff(lb->m_angle[ThreeGppChannelModel::AOA_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::AOA_INDEX][n]) /
+                                    cASA;
+            const double alphaAod = AngleDiff(lb->m_angle[ThreeGppChannelModel::AOD_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::AOD_INDEX][n]) /
+                                    cASD;
+            const double alphaZoa = AngleDiff(lb->m_angle[ThreeGppChannelModel::ZOA_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::ZOA_INDEX][n]) /
+                                    cZSA;
+            const double alphaZod = AngleDiff(lb->m_angle[ThreeGppChannelModel::ZOD_INDEX][tap],
+                                              plain->m_angle[ThreeGppChannelModel::ZOD_INDEX][n]) /
+                                    cZSD;
+            for (double alpha : {alphaAoa, alphaAod, alphaZoa, alphaZod})
+            {
+                NS_TEST_ASSERT_MSG_LT_OR_EQ(std::abs(alpha),
+                                            2.0 + 1e-9,
+                                            "Ray angle offset of (7.6-5) out of range, cluster "
+                                                << +n << " ray " << m);
+            }
+            NS_TEST_ASSERT_MSG_EQ_TOL(
+                lb->m_rayAoaRadian[tap][0],
+                DegreesToRadians(lb->m_angle[ThreeGppChannelModel::AOA_INDEX][tap]),
+                1e-9,
+                "Tap ray AOA should match the tap angle");
+
+            // 5): Equation (7.6-6).
+            const double law = std::exp(-rayDelay / cDS) *
+                               std::exp(-M_SQRT2 * std::abs(alphaAoa) / cASA) *
+                               std::exp(-M_SQRT2 * std::abs(alphaAod) / cASD) *
+                               std::exp(-M_SQRT2 * std::abs(alphaZoa) / cZSA) *
+                               std::exp(-M_SQRT2 * std::abs(alphaZod) / cZSD);
+            if (m == 0)
+            {
+                refPower = lb->m_clusterPower[tap];
+                refLaw = law;
+                continue;
+            }
+            NS_TEST_ASSERT_MSG_EQ_TOL(lb->m_clusterPower[tap] / refPower,
+                                      law / refLaw,
+                                      1e-6 * law / refLaw,
+                                      "Ray power ratio of (7.6-6), cluster " << +n << " ray " << m);
+        }
+        // 3): ray delays relative to the cluster delay.
+        NS_TEST_ASSERT_MSG_EQ_TOL(minRayDelay,
+                                  0.0,
+                                  1e-15,
+                                  "The earliest ray of cluster "
+                                      << +n << " should sit at the cluster delay");
+        NS_TEST_ASSERT_MSG_LT_OR_EQ(maxRayDelay,
+                                    2.0 * cDS,
+                                    "Ray delays of cluster " << +n << " exceed 2 cDS");
+        NS_TEST_ASSERT_MSG_GT(maxRayDelay, 0.0, "Rays of cluster " << +n << " are not spread");
+        // 5): the ray powers sum to the cluster power.
+        NS_TEST_ASSERT_MSG_EQ_TOL(powerSum,
+                                  clusterPower,
+                                  1e-9 * clusterPower,
+                                  "Ray powers of cluster " << +n << " should sum to its power");
+    }
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case for the cross-polarization power ratios of TR 38.901 Step 9: the
+ * ratios of the generated rays, in dB, must follow the normal distribution
+ * with the mean and standard deviation of Table 7.5-6, which are given in dB.
+ */
+class ThreeGppXprDistributionTest : public TestCase
+{
+  public:
+    ThreeGppXprDistributionTest();
+
+  private:
+    void DoRun() override;
+};
+
+ThreeGppXprDistributionTest::ThreeGppXprDistributionTest()
+    : TestCase("Check the dB distribution of the 3GPP cross-polarization power ratios")
+{
+}
+
+void
+ThreeGppXprDistributionTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    nodes.Get(0)->AggregateObject(aMob);
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(70.0, 20.0, 1.5));
+    nodes.Get(1)->AggregateObject(bMob);
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna();
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna();
+
+    channelModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        channelModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+    const auto table =
+        channelModel->GetThreeGppTable(aMob, bMob, condModel->GetChannelCondition(aMob, bMob));
+
+    // Sample moments of the ratios in dB over all rays of all clusters.
+    double sum = 0.0;
+    double sum2 = 0.0;
+    uint32_t count = 0;
+    for (const auto& clusterXpr : params->m_crossPolarizationPowerRatios)
+    {
+        for (double xpr : clusterXpr)
+        {
+            const double xprDb = 10.0 * std::log10(xpr);
+            sum += xprDb;
+            sum2 += xprDb * xprDb;
+            count++;
+        }
+    }
+    NS_TEST_ASSERT_MSG_GT_OR_EQ(count, 200, "Too few rays to estimate the XPR distribution");
+    const double mean = sum / count;
+    const double std = std::sqrt(sum2 / count - mean * mean);
+    // The standard errors of the mean and standard deviation estimates are
+    // sigma / sqrt(n) and sigma / sqrt(2 n); the tolerances are about four
+    // standard errors for the smallest Table 7.5-6 sigma.
+    NS_TEST_ASSERT_MSG_EQ_TOL(mean,
+                              table->m_uXpr,
+                              4.0 * table->m_sigXpr / std::sqrt(count),
+                              "XPR mean in dB should match the Table 7.5-6 mean");
+    NS_TEST_ASSERT_MSG_EQ_TOL(std,
+                              table->m_sigXpr,
+                              4.0 * table->m_sigXpr / std::sqrt(2.0 * count),
+                              "XPR standard deviation in dB should match Table 7.5-6");
+}
 
 /**
  * @ingroup spectrum-tests
@@ -771,29 +1622,39 @@ class ThreeGppSpectrumPropagationLossModelTest : public TestCase
     void DoRun() override;
 
     /**
-     * Points the beam of thisDevice towards otherDevice
-     * @param thisDevice the device to configure
+     * Perform beamforming from this node towards the other node
+     * @param thisMob the mobility model of this device
      * @param thisAntenna the antenna object associated to thisDevice
-     * @param otherDevice the device to communicate with
-     * @param otherAntenna the antenna object associated to otherDevice
+     * @param otherMob the mobility model of the other device
+     * @param otherAntenna the antenna array object of to otherDevice
      */
-    void DoBeamforming(Ptr<NetDevice> thisDevice,
+    void DoBeamforming(Ptr<MobilityModel> thisMob,
                        Ptr<PhasedArrayModel> thisAntenna,
-                       Ptr<NetDevice> otherDevice,
+                       Ptr<MobilityModel> otherMob,
                        Ptr<PhasedArrayModel> otherAntenna);
 
     /**
-     * Test of the long term component is correctly updated when the channel
-     * matrix is recomputed
+     *  Test of the long-term component is correctly updated when the positions and beamforming
+     * change
+     * @param params a structure that contains the set of parameters needed by
+     * CheckUpdateAfterChangingPositionsAndBeamforming in order to perform calculations
+     */
+    void CheckUpdateAfterChangingPositionsAndBeamforming(const CheckLongTermUpdateParams& params);
+
+    /**
+     * Test of the long-term component is correctly updated when the update period expires.
+     * This function slightly moves the position of the tx node to allow the update to be performed.
      * @param params a structure that contains the set of parameters needed by CheckLongTermUpdate
      * in order to perform calculations
      */
-    void CheckLongTermUpdate(const CheckLongTermUpdateParams& params);
+    void CheckLongTermUpdate(CheckLongTermUpdateParams& params);
 
     uint32_t m_txAntennaElements{4}; //!< number of rows and columns of tx antenna array
     uint32_t m_rxAntennaElements{4}; //!< number of rows and columns of rx antenna array
     uint32_t m_txPorts{1}; //!< number of horizontal and vertical ports of tx antenna array
     uint32_t m_rxPorts{1}; //!< number of horizontal and vertical ports of rx antenna array
+    //! used as the input for the long-term update check after the update period expires
+    Ptr<SpectrumSignalParameters> m_rxParamsOld;
 };
 
 ThreeGppSpectrumPropagationLossModelTest::ThreeGppSpectrumPropagationLossModelTest(
@@ -814,13 +1675,13 @@ ThreeGppSpectrumPropagationLossModelTest::~ThreeGppSpectrumPropagationLossModelT
 }
 
 void
-ThreeGppSpectrumPropagationLossModelTest::DoBeamforming(Ptr<NetDevice> thisDevice,
+ThreeGppSpectrumPropagationLossModelTest::DoBeamforming(Ptr<MobilityModel> thisMob,
                                                         Ptr<PhasedArrayModel> thisAntenna,
-                                                        Ptr<NetDevice> otherDevice,
+                                                        Ptr<MobilityModel> otherMob,
                                                         Ptr<PhasedArrayModel> otherAntenna)
 {
-    Vector aPos = thisDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
-    Vector bPos = otherDevice->GetNode()->GetObject<MobilityModel>()->GetPosition();
+    Vector aPos = thisMob->GetPosition();
+    Vector bPos = otherMob->GetPosition();
 
     // compute the azimuth and the elevation angles
     Angles completeAngle(bPos, aPos);
@@ -831,15 +1692,49 @@ ThreeGppSpectrumPropagationLossModelTest::DoBeamforming(Ptr<NetDevice> thisDevic
 }
 
 void
-ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate(
+ThreeGppSpectrumPropagationLossModelTest::CheckUpdateAfterChangingPositionsAndBeamforming(
     const CheckLongTermUpdateParams& params)
 {
-    auto rxPsdNewParams = params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
-                                                                         params.txMob,
-                                                                         params.rxMob,
-                                                                         params.txAntenna,
-                                                                         params.rxAntenna);
+    // Reciprocity check: evaluate reverse direction after changing positions/beamforming.
+    auto rxPsdNewParams =
+        params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
+                                                       params.rxMob,
+                                                       params.txMob,
+                                                       params.rxAntenna,
+                                                       params.txAntenna,
+                                                       params.rxAntenna->GetBeamformingVector(),
+                                                       params.txAntenna->GetBeamformingVector());
+
     NS_TEST_ASSERT_MSG_EQ((*params.rxPsdOld == *rxPsdNewParams->psd),
+                          false,
+                          "Changing the positions and BF vectors the rx PSD does not change");
+
+    NS_TEST_ASSERT_MSG_EQ(
+        (*params.rxSpectrumChannelMatrix == *rxPsdNewParams->spectrumChannelMatrix),
+        false,
+        "Changing the BF should change de frequency domain channel matrix");
+
+    m_rxParamsOld = rxPsdNewParams;
+}
+
+void
+ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate(CheckLongTermUpdateParams& params)
+{
+    // we need to slightly move the node to allow the channel to be updated upon the update period,
+    // but less than 1 meter, which would trigger new channel generation
+    params.txMob->SetPosition(Vector(params.txMob->GetPosition().x + 0.1,
+                                     params.txMob->GetPosition().y,
+                                     params.txMob->GetPosition().z));
+
+    auto rxPsdNewParams =
+        params.lossModel->DoCalcRxPowerSpectralDensity(params.txParams,
+                                                       params.txMob,
+                                                       params.rxMob,
+                                                       params.txAntenna,
+                                                       params.rxAntenna,
+                                                       params.txAntenna->GetBeamformingVector(),
+                                                       params.rxAntenna->GetBeamformingVector());
+    NS_TEST_ASSERT_MSG_EQ((*m_rxParamsOld->psd == *rxPsdNewParams->psd),
                           false,
                           "The long term is not updated when the channel matrix is recomputed");
 }
@@ -869,16 +1764,6 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models and set their positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
@@ -890,12 +1775,12 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(m_txAntennaElements),
         "NumRows",
-        UintegerValue(m_rxAntennaElements),
+        UintegerValue(m_txAntennaElements),
         "AntennaElement",
         PointerValue(CreateObject<IsotropicAntennaModel>()),
         "NumVerticalPorts",
@@ -916,8 +1801,8 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
         UintegerValue(m_rxPorts));
 
     // set the beamforming vectors
-    DoBeamforming(txDev, txAntenna, rxDev, rxAntenna);
-    DoBeamforming(rxDev, rxAntenna, txDev, txAntenna);
+    DoBeamforming(txMob, txAntenna, rxMob, rxAntenna);
+    DoBeamforming(rxMob, rxAntenna, txMob, txAntenna);
 
     // create the tx psd
     SpectrumValue5MhzFactory sf;
@@ -928,12 +1813,22 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     txParams->psd = txPsd->Copy();
 
     // compute the rx psd
-    auto rxParamsOld =
-        lossModel->DoCalcRxPowerSpectralDensity(txParams, txMob, rxMob, txAntenna, rxAntenna);
+    auto rxParamsOld = lossModel->DoCalcRxPowerSpectralDensity(txParams,
+                                                               txMob,
+                                                               rxMob,
+                                                               txAntenna,
+                                                               rxAntenna,
+                                                               txAntenna->GetBeamformingVector(),
+                                                               rxAntenna->GetBeamformingVector());
 
-    // 1) check that the rx PSD is equal for both the direct and the reverse channel
-    auto rxParamsNew =
-        lossModel->DoCalcRxPowerSpectralDensity(txParams, rxMob, txMob, rxAntenna, txAntenna);
+    // 1) check reciprocity: rx PSD is equal for both the direct and the reverse channel
+    auto rxParamsNew = lossModel->DoCalcRxPowerSpectralDensity(txParams,
+                                                               rxMob,
+                                                               txMob,
+                                                               rxAntenna,
+                                                               txAntenna,
+                                                               rxAntenna->GetBeamformingVector(),
+                                                               txAntenna->GetBeamformingVector());
     if ((rxParamsOld->spectrumChannelMatrix->GetNumCols() ==
          rxParamsNew->spectrumChannelMatrix->GetNumCols()) &&
         (rxParamsOld->spectrumChannelMatrix->GetNumRows() ==
@@ -964,25 +1859,30 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun()
     PhasedArrayModel::ComplexVector txBfVector = txAntenna->GetBeamformingVector();
     txBfVector[0] = std::complex<double>(0.0, 0.0);
     txAntenna->SetBeamformingVector(txBfVector);
-
-    rxParamsNew =
-        lossModel->DoCalcRxPowerSpectralDensity(txParams, rxMob, txMob, rxAntenna, txAntenna);
-    NS_TEST_ASSERT_MSG_EQ((*rxParamsOld->psd == *rxParamsNew->psd),
-                          false,
-                          "Changing the BF vectors the rx PSD does not change");
-
-    NS_TEST_ASSERT_MSG_EQ(
-        (*rxParamsOld->spectrumChannelMatrix == *rxParamsNew->spectrumChannelMatrix),
-        false,
-        "Changing the BF should change de frequency domain channel matrix");
-
-    // update rxPsdOld
-    rxParamsOld = rxParamsNew;
+    CheckLongTermUpdateParams paramsPositionUpdate{lossModel,
+                                                   txParams,
+                                                   rxMob,
+                                                   txMob,
+                                                   rxParamsOld->psd,
+                                                   rxParamsOld->spectrumChannelMatrix,
+                                                   rxAntenna,
+                                                   txAntenna};
+    Simulator::Schedule(
+        MilliSeconds(50),
+        &ThreeGppSpectrumPropagationLossModelTest::CheckUpdateAfterChangingPositionsAndBeamforming,
+        this,
+        paramsPositionUpdate);
 
     // 3) check if the long term is updated when the channel matrix is recomputed
-    CheckLongTermUpdateParams
-        params{lossModel, txParams, txMob, rxMob, rxParamsOld->psd, txAntenna, rxAntenna};
-    Simulator::Schedule(MilliSeconds(101),
+    CheckLongTermUpdateParams params{lossModel,
+                                     txParams,
+                                     txMob,
+                                     rxMob,
+                                     rxParamsOld->psd,
+                                     rxParamsOld->spectrumChannelMatrix,
+                                     txAntenna,
+                                     rxAntenna};
+    Simulator::Schedule(MilliSeconds(151),
                         &ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate,
                         this,
                         params);
@@ -1064,16 +1964,6 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models and set their positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(Vector(0.0, 0.0, 10.0));
@@ -1084,7 +1974,7 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna1 = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(8),
@@ -1126,9 +2016,13 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
         CreateObject<ThreeGppSpectrumPropagationLossModel>();
 
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixA =
-        threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna1, rxAntenna1);
+        threeGppSplm->CalcLongTerm(channelMatrixM0,
+                                   txAntenna1,
+                                   rxAntenna1,
+                                   txAntenna1->GetBeamformingVector(),
+                                   rxAntenna1->GetBeamformingVector());
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna2 = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(8),
@@ -1157,9 +2051,13 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     rxAntenna2->SetBeamformingVector(rxAntenna2->GetBeamformingVector(completeAngleRxTx));
 
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixB =
-        threeGppSplm->CalcLongTerm(channelMatrixM0, txAntenna2, rxAntenna2);
+        threeGppSplm->CalcLongTerm(channelMatrixM0,
+                                   txAntenna2,
+                                   rxAntenna2,
+                                   txAntenna2->GetBeamformingVector(),
+                                   rxAntenna2->GetBeamformingVector());
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna3 = CreateObjectWithAttributes<UniformPlanarArray>(
         "NumColumns",
         UintegerValue(4),
@@ -1196,7 +2094,11 @@ ThreeGppCalcLongTermMultiPortTest::DoRun()
     rxAntenna3->SetBeamformingVector(rxAntenna3->GetBeamformingVector(completeAngleRxTx));
 
     Ptr<const MatrixBasedChannelModel::Complex3DVector> matrixC =
-        threeGppSplm->CalcLongTerm(channelMatrixMA, txAntenna3, rxAntenna3);
+        threeGppSplm->CalcLongTerm(channelMatrixMA,
+                                   txAntenna3,
+                                   rxAntenna3,
+                                   txAntenna3->GetBeamformingVector(),
+                                   rxAntenna3->GetBeamformingVector());
 
     NS_TEST_ASSERT_MSG_EQ(matrixB->IsAlmostEqual(*matrixC, 1e-6),
                           true,
@@ -1350,7 +2252,7 @@ ThreeGppMimoPolarizationTest::CreateAndConfigureAntenna(const MimoPolarizationAn
     {
         antenna = CreateObject<ThreeGppAntennaModel>();
     }
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     return CreateObjectWithAttributes<UniformPlanarArray>("NumColumns",
                                                           UintegerValue(params.m_cols),
                                                           "NumRows",
@@ -1388,16 +2290,6 @@ ThreeGppMimoPolarizationTest::DoRun()
     NodeContainer nodes;
     nodes.Create(2);
 
-    // create the tx and rx devices
-    Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice>();
-    Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice>();
-
-    // associate the nodes and the devices
-    nodes.Get(0)->AddDevice(txDev);
-    txDev->SetNode(nodes.Get(0));
-    nodes.Get(1)->AddDevice(rxDev);
-    rxDev->SetNode(nodes.Get(1));
-
     // create the tx and rx mobility models and set their positions
     Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
     txMob->SetPosition(m_txLoc);
@@ -1408,7 +2300,7 @@ ThreeGppMimoPolarizationTest::DoRun()
     nodes.Get(0)->AggregateObject(txMob);
     nodes.Get(1)->AggregateObject(rxMob);
 
-    // create the tx and rx antennas and set the their dimensions
+    // create the tx and rx antennas and set their dimensions
     Ptr<PhasedArrayModel> txAntenna = CreateAndConfigureAntenna(m_txParams);
     Ptr<PhasedArrayModel> rxAntenna = CreateAndConfigureAntenna(m_rxParams);
 
@@ -1453,6 +2345,863 @@ ThreeGppMimoPolarizationTest::DoRun()
 /**
  * @ingroup spectrum-tests
  *
+ * Test case for the inter-UE (drop-based) spatially consistent LSP generation
+ * of ThreeGppChannelModel (3GPP TR 38.901, Sec. 7.6.3.1), enabled through the
+ * InterUeSpatialConsistency attribute of the channel condition model. The site
+ * is created after the UEs, so it is only identified by its net device type,
+ * see the SiteNetDeviceTypes attribute of ChannelConditionModel.
+ *
+ * One site serves pairs of UEs placed 1 m apart, with different pairs placed
+ * hundreds of meters apart (far beyond the Table 7.5-6 correlation
+ * distances). With the attribute enabled, the two UEs of a pair sample almost
+ * the same point of the spatially-correlated LSP fields and must obtain
+ * nearly identical delay spreads, while distant UEs must keep decorrelated
+ * draws. With the attribute disabled, nearby UEs draw i.i.d. LSPs and their
+ * delay-spread difference is statistically as large as that of distant UEs.
+ */
+class ThreeGppInterUeSpatialConsistencyTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppInterUeSpatialConsistencyTest();
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+
+    /**
+     * Generate the channel from a single site to pairs of closely spaced UEs
+     * scattered over the deployment and measure the delay-spread differences.
+     *
+     * @param interUeSpatialConsistency Value for the InterUeSpatialConsistency attribute.
+     * @param meanNearDelta Output mean |delta log10(DS)| over the 1 m-spaced UE pairs.
+     * @param meanFarDelta Output mean |delta log10(DS)| across distant UEs.
+     */
+    void ComputeLgDsDeltas(bool interUeSpatialConsistency,
+                           double* meanNearDelta,
+                           double* meanFarDelta);
+};
+
+ThreeGppInterUeSpatialConsistencyTest::ThreeGppInterUeSpatialConsistencyTest()
+    : TestCase("Check inter-UE spatially consistent LSP generation")
+{
+}
+
+void
+ThreeGppInterUeSpatialConsistencyTest::ComputeLgDsDeltas(bool interUeSpatialConsistency,
+                                                         double* meanNearDelta,
+                                                         double* meanFarDelta)
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    Ptr<ChannelConditionModel> channelConditionModel =
+        CreateObject<AlwaysLosChannelConditionModel>();
+    channelConditionModel->SetAttribute("InterUeSpatialConsistency",
+                                        BooleanValue(interUeSpatialConsistency));
+    channelConditionModel->SetAttribute("SiteNetDeviceTypes", StringValue("ns3::SimpleNetDevice"));
+
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    channelModel->AssignStreams(1);
+
+    // The UEs take node ids 0 to 2 * nPairs - 1 and the site the last one.
+    constexpr uint32_t nPairs = 16;
+    NodeContainer nodes;
+    nodes.Create(1 + 2 * nPairs);
+    Ptr<Node> siteNode = nodes.Get(2 * nPairs);
+    Ptr<SimpleNetDevice> siteDev = CreateObject<SimpleNetDevice>();
+    siteNode->AddDevice(siteDev);
+    siteDev->SetNode(siteNode);
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    Ptr<MobilityModel> siteMob = CreateObject<ConstantPositionMobilityModel>();
+    siteMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    siteNode->AggregateObject(siteMob);
+    Ptr<PhasedArrayModel> siteAntenna = makeAntenna();
+
+    std::vector<double> lgDsA(nPairs);
+    std::vector<double> lgDsB(nPairs);
+    for (uint32_t p = 0; p < nPairs; p++)
+    {
+        // Pair centers on a 4x4 grid with 500 m spacing; the two UEs of a
+        // pair are 1 m apart along x.
+        const Vector center(200.0 + 500.0 * (p % 4), 200.0 + 500.0 * (p / 4), 1.5);
+        for (uint32_t m = 0; m < 2; m++)
+        {
+            Ptr<MobilityModel> ueMob = CreateObject<ConstantPositionMobilityModel>();
+            ueMob->SetPosition(Vector(center.x + m, center.y, center.z));
+            nodes.Get(2 * p + m)->AggregateObject(ueMob);
+            channelModel->GetChannel(siteMob, ueMob, siteAntenna, makeAntenna());
+            const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+                channelModel->GetParams(siteMob, ueMob));
+            NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+            (m == 0 ? lgDsA : lgDsB)[p] = std::log10(params->m_DS);
+        }
+    }
+
+    *meanNearDelta = 0;
+    *meanFarDelta = 0;
+    for (uint32_t p = 0; p < nPairs; p++)
+    {
+        *meanNearDelta += std::abs(lgDsA[p] - lgDsB[p]);
+        *meanFarDelta += std::abs(lgDsA[p] - lgDsA[(p + 1) % nPairs]);
+    }
+    *meanNearDelta /= nPairs;
+    *meanFarDelta /= nPairs;
+
+    Simulator::Destroy();
+}
+
+void
+ThreeGppInterUeSpatialConsistencyTest::DoRun()
+{
+    double meanNearDeltaOn;
+    double meanFarDeltaOn;
+    ComputeLgDsDeltas(true, &meanNearDeltaOn, &meanFarDeltaOn);
+
+    double meanNearDeltaOff;
+    double meanFarDeltaOff;
+    ComputeLgDsDeltas(false, &meanNearDeltaOff, &meanFarDeltaOff);
+
+    // UMa-LOS DS correlation distance is 30 m: at 1 m spacing the field
+    // correlation is close to 1, at 500 m it is negligible.
+    NS_TEST_ASSERT_MSG_LT(meanNearDeltaOn,
+                          0.2 * meanFarDeltaOn,
+                          "With InterUeSpatialConsistency, nearby UEs should obtain nearly "
+                          "identical delay spreads while distant UEs decorrelate");
+    NS_TEST_ASSERT_MSG_GT(meanFarDeltaOn,
+                          0.0,
+                          "Distant UEs should not obtain identical delay spreads");
+    NS_TEST_ASSERT_MSG_GT(meanNearDeltaOff,
+                          0.3 * meanFarDeltaOff,
+                          "Without InterUeSpatialConsistency, nearby UEs should draw "
+                          "independent delay spreads");
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case that the total channel power is independent of the order in which
+ * the two endpoints are passed to ThreeGppChannelModel::GetChannel, when a
+ * DIRECTIONAL antenna element is used (channel reciprocity of the Frobenius
+ * norm).
+ *
+ * Channel parameters are generated once per node pair, in canonical node-id
+ * order. GetNewChannel then builds a per-query matrix and, when the query order
+ * differs from the generation order (a "reversed-direction" link), it must swap
+ * the stored departure/arrival ray angles. This is a regression guard for a bug
+ * where the element field pattern (TR 38.901 7.5-22 F_tx/F_rx) was evaluated
+ * with the raw, un-swapped angles while the array phase geometry used the
+ * swapped angles. With a directional element that mispairing applies the
+ * back-null gain to the NLOS clusters and collapses the channel power by ~30 dB
+ * on reversed-direction links. Isotropic elements are direction-independent and
+ * therefore immune, so the other tests in this suite (all isotropic) cannot
+ * detect it.
+ */
+class ThreeGppReversedDirectionFieldPatternTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppReversedDirectionFieldPatternTest();
+
+    /**
+     * Destructor
+     */
+    ~ThreeGppReversedDirectionFieldPatternTest() override;
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+
+    /**
+     * Compute the squared Frobenius norm (total power) of a channel matrix,
+     * summed over all clusters and all tx/rx element pairs.
+     * @param m the channel matrix
+     * @return the squared Frobenius norm
+     */
+    static double FrobeniusNormSq(Ptr<const ThreeGppChannelModel::ChannelMatrix> m);
+};
+
+ThreeGppReversedDirectionFieldPatternTest::ThreeGppReversedDirectionFieldPatternTest()
+    : TestCase("Directional-element channel power is reciprocal w.r.t. GetChannel endpoint order")
+{
+}
+
+ThreeGppReversedDirectionFieldPatternTest::~ThreeGppReversedDirectionFieldPatternTest()
+{
+}
+
+double
+ThreeGppReversedDirectionFieldPatternTest::FrobeniusNormSq(
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> m)
+{
+    double normSq = 0;
+    const uint16_t numClusters = m->m_channel.GetNumPages();
+    const uint64_t numRows = m->m_channel.GetNumRows();
+    const uint64_t numCols = m->m_channel.GetNumCols();
+    for (uint16_t c = 0; c < numClusters; c++)
+    {
+        for (uint64_t u = 0; u < numRows; u++)
+        {
+            for (uint64_t s = 0; s < numCols; s++)
+            {
+                normSq += std::pow(std::abs(m->m_channel(u, s, c)), 2);
+            }
+        }
+    }
+    return normSq;
+}
+
+void
+ThreeGppReversedDirectionFieldPatternTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // Always-NLOS so the directional element field pattern (not a dominant LOS
+    // ray) drives the result; this is where the reversed-direction bug shows.
+    Ptr<ChannelConditionModel> channelConditionModel =
+        CreateObject<NeverLosChannelConditionModel>();
+
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(28.0e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    channelModel->AssignStreams(1);
+
+    // Node 0 is the gNB (lower id => canonical "first" endpoint), node 1 the UE.
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> gnbMob = CreateObject<ConstantPositionMobilityModel>();
+    gnbMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    Ptr<MobilityModel> ueMob = CreateObject<ConstantPositionMobilityModel>();
+    ueMob->SetPosition(Vector(60.0, 0.0, 1.5));
+    nodes.Get(0)->AggregateObject(gnbMob);
+    nodes.Get(1)->AggregateObject(ueMob);
+
+    // gNB: 8x8 array with a DIRECTIONAL 3GPP element (front-to-back ~30 dB).
+    // UE: 2x4 isotropic. Two independent antenna objects per side are created so
+    // that the forward and reversed queries use distinct channel-matrix cache
+    // keys (the key GetKey(antA,antB) is reciprocal) and therefore both invoke
+    // GetNewChannel, one with isSameDirection == true and one with == false.
+    auto makeGnbAntenna = [&]() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumRows",
+            UintegerValue(8),
+            "NumColumns",
+            UintegerValue(8),
+            "AntennaElement",
+            PointerValue(CreateObject<ThreeGppAntennaModel>()));
+    };
+    auto makeUeAntenna = [&]() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumRows",
+            UintegerValue(2),
+            "NumColumns",
+            UintegerValue(4),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    Ptr<PhasedArrayModel> gnbAntFwd = makeGnbAntenna();
+    Ptr<PhasedArrayModel> ueAntFwd = makeUeAntenna();
+    Ptr<PhasedArrayModel> gnbAntRev = makeGnbAntenna();
+    Ptr<PhasedArrayModel> ueAntRev = makeUeAntenna();
+
+    // Forward query: endpoints in canonical (gNB=0, UE=1) order
+    // => isSameDirection == true.
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> chanFwd =
+        channelModel->GetChannel(gnbMob, ueMob, gnbAntFwd, ueAntFwd);
+    // Reversed query: endpoints in (UE=1, gNB=0) order, reusing the same cached
+    // channel parameters but a different antenna pair => isSameDirection == false.
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> chanRev =
+        channelModel->GetChannel(ueMob, gnbMob, ueAntRev, gnbAntRev);
+
+    const double normFwd = FrobeniusNormSq(chanFwd);
+    const double normRev = FrobeniusNormSq(chanRev);
+
+    NS_TEST_ASSERT_MSG_GT(normFwd, 0.0, "Forward channel power must be non-zero");
+    NS_TEST_ASSERT_MSG_GT(normRev, 0.0, "Reversed channel power must be non-zero");
+
+    // The two queries describe the same physical channel, so by reciprocity the
+    // total power is identical regardless of endpoint order. The pre-fix bug
+    // collapses the reversed direction by ~30 dB; require the two to agree to
+    // within 1 dB.
+    const double ratioDb = 10.0 * std::log10(normFwd / normRev);
+    NS_TEST_ASSERT_MSG_EQ_TOL(
+        ratioDb,
+        0.0,
+        1.0,
+        "Channel power must be independent of GetChannel endpoint order with "
+        "a directional element (reversed-direction field-pattern regression)");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case for the channel reciprocity of the ThreeGppChannelModel class, as assumed for
+ * instance by TDD systems. Checks that:
+ * 1) querying the channel in the reverse direction reuses the same stored realization
+ *    (transposed by the consumers through ChannelMatrix::IsReverse) instead of generating a
+ *    direction-dependent one, and that IsReverse reports the direction correctly;
+ * 2) an identically seeded model instance queried only in the reverse direction generates the
+ *    transposed channel matrix, with the same number of taps. With the large bandwidth
+ *    modeling of TR 38.901 Sec. 7.6.2.2 and antenna arrays of different apertures at the two
+ *    ends, this verifies in particular that the number of rays per cluster of Equation
+ *    (7.6-8) derives from the maximum aperture over the two arrays and not from the query
+ *    direction, which would otherwise break reciprocity.
+ *
+ * With single-polarized arrays the reverse matrix is checked element by element against the
+ * transpose of the forward one. With dual-polarized arrays the coefficients are not element
+ * wise reciprocal, since TR 38.901 draws the two cross-polar initial phases of Step 10
+ * independently; the realization is still shared between the directions, and the test checks
+ * that the total transferred power (the Frobenius norm of the matrix) of the reverse
+ * generation matches the forward one exactly, per realization.
+ */
+class ThreeGppChannelReciprocityTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     * @param largeBandwidth enable the large bandwidth modeling of TR 38.901 Sec. 7.6.2.2
+     * @param dualPolarized use dual-polarized arrays at both ends
+     */
+    ThreeGppChannelReciprocityTest(bool largeBandwidth, bool dualPolarized = false);
+
+  private:
+    void DoRun() override;
+
+    /**
+     * Create a ThreeGppChannelModel with the test configuration.
+     * @param channelConditionModel the channel condition model
+     * @return the channel model
+     */
+    Ptr<ThreeGppChannelModel> CreateChannelModel(
+        Ptr<ChannelConditionModel> channelConditionModel) const;
+
+    bool m_largeBandwidth; //!< enable the TR 38.901 Sec. 7.6.2.2 modeling
+    bool m_dualPolarized;  //!< use dual-polarized arrays
+};
+
+ThreeGppChannelReciprocityTest::ThreeGppChannelReciprocityTest(bool largeBandwidth,
+                                                               bool dualPolarized)
+    : TestCase("Check the channel matrix reciprocity between the two link directions"),
+      m_largeBandwidth(largeBandwidth),
+      m_dualPolarized(dualPolarized)
+{
+}
+
+Ptr<ThreeGppChannelModel>
+ThreeGppChannelReciprocityTest::CreateChannelModel(
+    Ptr<ChannelConditionModel> channelConditionModel) const
+{
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(30.0e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(channelConditionModel));
+    if (m_largeBandwidth)
+    {
+        channelModel->SetAttribute("LargeBandwidthArrayModeling", BooleanValue(true));
+        channelModel->SetAttribute("ChannelBandwidth", DoubleValue(400e6));
+    }
+    channelModel->AssignStreams(1);
+    return channelModel;
+}
+
+void
+ThreeGppChannelReciprocityTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    NodeContainer nodes;
+    nodes.Create(2);
+
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(50.0, 0.0, 1.5));
+    nodes.Get(0)->AggregateObject(aMob);
+    nodes.Get(1)->AggregateObject(bMob);
+
+    // Arrays with different apertures at the two ends, so a direction-dependent
+    // aperture term in Equation (7.6-8) would yield different tap counts. Each
+    // channel model gets its own pair, since a PhasedArrayModel pair tracks
+    // whether its channel matrix is up to date and a channel model expects a
+    // not-yet-generated pair on the first query.
+    auto createAntennas = [this]() {
+        Ptr<PhasedArrayModel> aAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(4),
+            "NumRows",
+            UintegerValue(4),
+            "IsDualPolarized",
+            BooleanValue(m_dualPolarized),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+        Ptr<PhasedArrayModel> bAntenna = CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(2),
+            "NumRows",
+            UintegerValue(2),
+            "IsDualPolarized",
+            BooleanValue(m_dualPolarized),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+        return std::make_pair(aAntenna, bAntenna);
+    };
+    auto [aAntenna, bAntenna] = createAntennas();
+
+    Ptr<ChannelConditionModel> conditionModel = CreateObject<AlwaysLosChannelConditionModel>();
+
+    // 1) One model queried in both directions: the reverse query must reuse the same
+    // stored realization, flagged as reversed.
+    Ptr<ThreeGppChannelModel> channelModel = CreateChannelModel(conditionModel);
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> hAb =
+        channelModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> hBa =
+        channelModel->GetChannel(bMob, aMob, bAntenna, aAntenna);
+    NS_TEST_ASSERT_MSG_EQ(hAb,
+                          hBa,
+                          "The reverse-direction query should reuse the same channel realization");
+    NS_TEST_ASSERT_MSG_EQ(hAb->IsReverse(aAntenna->GetId(), bAntenna->GetId()),
+                          false,
+                          "The realization was generated in the a-to-b direction");
+    NS_TEST_ASSERT_MSG_EQ(hAb->IsReverse(bAntenna->GetId(), aAntenna->GetId()),
+                          true,
+                          "The b-to-a query must be flagged as reversed");
+
+    // 2) An identically seeded model queried only in the reverse direction must generate
+    // the transposed matrix with the same tap structure.
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+    Ptr<ChannelConditionModel> conditionModelRev = CreateObject<AlwaysLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModelRev = CreateChannelModel(conditionModelRev);
+    auto [aAntennaRev, bAntennaRev] = createAntennas();
+    Ptr<const ThreeGppChannelModel::ChannelMatrix> hRev =
+        channelModelRev->GetChannel(bMob, aMob, bAntennaRev, aAntennaRev);
+
+    NS_TEST_ASSERT_MSG_EQ(hRev->m_channel.GetNumPages(),
+                          hAb->m_channel.GetNumPages(),
+                          "The number of taps should not depend on the link direction");
+    NS_TEST_ASSERT_MSG_EQ(hRev->m_channel.GetNumRows(),
+                          hAb->m_channel.GetNumCols(),
+                          "The reverse matrix rows should equal the forward matrix columns");
+    NS_TEST_ASSERT_MSG_EQ(hRev->m_channel.GetNumCols(),
+                          hAb->m_channel.GetNumRows(),
+                          "The reverse matrix columns should equal the forward matrix rows");
+
+    double forwardNorm = 0;
+    double reverseNorm = 0;
+    double maxElementDiff = 0;
+    for (size_t page = 0; page < hAb->m_channel.GetNumPages(); page++)
+    {
+        for (size_t row = 0; row < hAb->m_channel.GetNumRows(); row++)
+        {
+            for (size_t col = 0; col < hAb->m_channel.GetNumCols(); col++)
+            {
+                const std::complex<double> fwd = hAb->m_channel(row, col, page);
+                const std::complex<double> rev = hRev->m_channel(col, row, page);
+                forwardNorm += std::norm(fwd);
+                reverseNorm += std::norm(rev);
+                maxElementDiff = std::max(maxElementDiff, std::abs(fwd - rev));
+            }
+        }
+    }
+
+    if (!m_dualPolarized)
+    {
+        NS_TEST_ASSERT_MSG_LT(maxElementDiff,
+                              1e-6,
+                              "The reverse-direction channel matrix should be the transpose of "
+                              "the forward one");
+    }
+    else
+    {
+        // The coefficients are not element-wise reciprocal (independent cross-polar initial
+        // phases), but the total transferred power of the shared realization is.
+        NS_TEST_ASSERT_MSG_EQ_TOL(reverseNorm / forwardNorm,
+                                  1.0,
+                                  1e-9,
+                                  "The total power of the reverse-direction channel matrix "
+                                  "should match the forward one");
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case that the fixed ray-to-subcluster mapping of the two strongest
+ * clusters follows Table 7.5-5 of 3GPP TR 38.901: sub-cluster 2 holds rays
+ * 9-12, 17, 18 and sub-cluster 3 rays 13-16 (1-based ray numbers).
+ *
+ * With single-element isotropic arrays at both ends, every per-ray channel
+ * coefficient of (7.5-22) collapses to sqrt(Pn/M) * exp(j Phi_theta_theta),
+ * with the initial phase taken from the channel parameters: each sub-cluster
+ * entry of the channel matrix can be recomputed by hand from the generated
+ * parameters and compared against the matrix produced by the model.
+ */
+class ThreeGppSubClusterMappingTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppSubClusterMappingTest();
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+};
+
+ThreeGppSubClusterMappingTest::ThreeGppSubClusterMappingTest()
+    : TestCase("Check the Table 7.5-5 ray-to-subcluster mapping against manually computed values")
+{
+}
+
+void
+ThreeGppSubClusterMappingTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // NLOS keeps the LOS ray out of the first tap, so every matrix entry is a
+    // pure sum of ray phasors.
+    Ptr<ChannelConditionModel> condModel = CreateObject<NeverLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(3.5e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+
+    NodeContainer nodes;
+    nodes.Create(2);
+    Ptr<MobilityModel> aMob = CreateObject<ConstantPositionMobilityModel>();
+    aMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    nodes.Get(0)->AggregateObject(aMob);
+    Ptr<MobilityModel> bMob = CreateObject<ConstantPositionMobilityModel>();
+    bMob->SetPosition(Vector(70.0, 20.0, 1.5));
+    nodes.Get(1)->AggregateObject(bMob);
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+    Ptr<PhasedArrayModel> aAntenna = makeAntenna();
+    Ptr<PhasedArrayModel> bAntenna = makeAntenna();
+    // The manual computation below drops the element steering phases, which
+    // requires the single element of both arrays to sit at the origin.
+    NS_TEST_ASSERT_MSG_EQ(aAntenna->GetElementLocation(0).GetLength(),
+                          0.0,
+                          "The single array element is expected at the origin");
+
+    auto channelMatrix = channelModel->GetChannel(aMob, bMob, aAntenna, bAntenna);
+    const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+        channelModel->GetParams(aMob, bMob));
+    NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+
+    const uint16_t nClusters = params->m_reducedClusterNumber;
+    const uint8_t nRays = 20; // UMa, Table 7.5-6
+    // 1-based Table 7.5-5 ray numbers of the three sub-clusters, as 0-based
+    // ray indices.
+    const std::vector<std::vector<uint8_t>> subClusterRays = {
+        {0, 1, 2, 3, 4, 5, 6, 7, 18, 19},
+        {8, 9, 10, 11, 16, 17},
+        {12, 13, 14, 15},
+    };
+
+    // The sub-cluster pages are appended in cluster-index order.
+    std::vector<uint16_t> strongestClusters;
+    for (uint16_t n = 0; n < nClusters; n++)
+    {
+        if (n == params->m_cluster1st || n == params->m_cluster2nd)
+        {
+            strongestClusters.push_back(n);
+        }
+    }
+    NS_TEST_ASSERT_MSG_GT(strongestClusters.size(), 0, "No strongest cluster found");
+
+    uint16_t subClusterPage = nClusters;
+    for (const auto n : strongestClusters)
+    {
+        const double scale = std::sqrt(params->m_clusterPower[n] / nRays);
+        for (uint8_t sc = 0; sc < 3; sc++)
+        {
+            std::complex<double> expected(0.0, 0.0);
+            for (const auto m : subClusterRays[sc])
+            {
+                expected += std::polar(1.0, params->m_clusterPhase[n][m][0]);
+            }
+            expected *= scale;
+            // Sub-cluster 1 replaces the cluster page; 2 and 3 are appended.
+            const uint16_t page = (sc == 0) ? n : subClusterPage + sc - 1;
+            const std::complex<double> actual = channelMatrix->m_channel(0, 0, page);
+            NS_TEST_ASSERT_MSG_EQ_TOL(actual.real(),
+                                      expected.real(),
+                                      1e-9 + 1e-6 * std::abs(expected),
+                                      "Sub-cluster " << +sc + 1 << " of cluster " << +n
+                                                     << " does not match the Table 7.5-5 mapping");
+            NS_TEST_ASSERT_MSG_EQ_TOL(actual.imag(),
+                                      expected.imag(),
+                                      1e-9 + 1e-6 * std::abs(expected),
+                                      "Sub-cluster " << +sc + 1 << " of cluster " << +n
+                                                     << " does not match the Table 7.5-5 mapping");
+        }
+        subClusterPage += 2;
+    }
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case that the blockage attenuation of the LOS ray scales the amplitude
+ * by 10^(-A/20) for an attenuation of A dB.
+ *
+ * With LosRayOnly enabled and single-element isotropic arrays, the only
+ * channel matrix entry is the LOS ray of (7.5-29), whose magnitude is exactly
+ * the blockage amplitude attenuation: it can be compared against the value
+ * manually computed from the per-cluster attenuation stored in the channel
+ * parameters.
+ */
+class ThreeGppLosBlockageAttenuationTest : public TestCase
+{
+  public:
+    /**
+     * Constructor
+     */
+    ThreeGppLosBlockageAttenuationTest();
+
+  private:
+    /**
+     * Build the test scenario
+     */
+    void DoRun() override;
+};
+
+ThreeGppLosBlockageAttenuationTest::ThreeGppLosBlockageAttenuationTest()
+    : TestCase("Check the LOS ray blockage attenuation against manually computed values")
+{
+}
+
+void
+ThreeGppLosBlockageAttenuationTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    Ptr<ChannelConditionModel> condModel = CreateObject<AlwaysLosChannelConditionModel>();
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(30e9));
+    channelModel->SetAttribute("Scenario", StringValue("UMa"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+    channelModel->SetAttribute("LosRayOnly", BooleanValue(true));
+    channelModel->SetAttribute("Blockage", BooleanValue(true));
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    constexpr uint32_t numUes = 20;
+    NodeContainer nodes;
+    nodes.Create(1 + numUes);
+    Ptr<MobilityModel> siteMob = CreateObject<ConstantPositionMobilityModel>();
+    siteMob->SetPosition(Vector(0.0, 0.0, 25.0));
+    nodes.Get(0)->AggregateObject(siteMob);
+    Ptr<PhasedArrayModel> siteAntenna = makeAntenna();
+
+    uint32_t numAttenuatedLinks = 0;
+    for (uint32_t u = 0; u < numUes; u++)
+    {
+        Ptr<MobilityModel> ueMob = CreateObject<ConstantPositionMobilityModel>();
+        ueMob->SetPosition(Vector(20.0 + 10.0 * (u % 5), 15.0 + 25.0 * (u / 5), 1.5));
+        nodes.Get(1 + u)->AggregateObject(ueMob);
+
+        auto channelMatrix = channelModel->GetChannel(siteMob, ueMob, siteAntenna, makeAntenna());
+        const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+            channelModel->GetParams(siteMob, ueMob));
+        NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+
+        const double attenuationDb = params->m_attenuation_dB[0];
+        numAttenuatedLinks += attenuationDb > 0.5;
+        const double expected = std::pow(10.0, -attenuationDb / 20.0);
+        NS_TEST_ASSERT_MSG_EQ_TOL(std::abs(channelMatrix->m_channel(0, 0, 0)),
+                                  expected,
+                                  1e-9 + 1e-6 * expected,
+                                  "The LOS ray amplitude should be attenuated by 10^(-A/20) for "
+                                  "a blockage attenuation of A dB");
+    }
+    // The check above is trivially satisfied by unblocked links: require that
+    // the deployment actually produced blocked ones.
+    NS_TEST_ASSERT_MSG_GT(numAttenuatedLinks,
+                          0,
+                          "No link was attenuated by the blockage model; the test needs at least "
+                          "one to exercise the LOS attenuation scaling");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test case for ThreeGppChannelModel::WrapAngles: an inclination outside
+ * [0, pi] must be mirrored through the pole (2 pi - theta, phi + pi), so a
+ * ray just past the nadir stays near the nadir and a negative inclination
+ * stays near the zenith.
+ */
+class ThreeGppChannelWrapAnglesTest : public TestCase
+{
+  public:
+    ThreeGppChannelWrapAnglesTest();
+
+  private:
+    void DoRun() override;
+};
+
+ThreeGppChannelWrapAnglesTest::ThreeGppChannelWrapAnglesTest()
+    : TestCase("Check the wrapping of azimuth and inclination angles")
+{
+}
+
+void
+ThreeGppChannelWrapAnglesTest::DoRun()
+{
+    const double tol = 1e-9;
+    // In range: unchanged.
+    auto [az, incl] = ThreeGppChannelModel::WrapAngles(0.3, 1.0);
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 0.3, tol, "azimuth changed inside the range");
+    NS_TEST_ASSERT_MSG_EQ_TOL(incl, 1.0, tol, "inclination changed inside the range");
+    // Just past the nadir: stays just above the nadir, on the opposite azimuth.
+    std::tie(az, incl) = ThreeGppChannelModel::WrapAngles(0.3, M_PI + 0.2);
+    NS_TEST_ASSERT_MSG_EQ_TOL(incl, M_PI - 0.2, tol, "inclination past the nadir");
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 0.3 + M_PI, tol, "azimuth past the nadir");
+    // Just above the zenith (negative inclination): stays near the zenith.
+    std::tie(az, incl) = ThreeGppChannelModel::WrapAngles(0.3, -0.2);
+    NS_TEST_ASSERT_MSG_EQ_TOL(incl, 0.2, tol, "negative inclination");
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 0.3 + M_PI, tol, "azimuth of a negative inclination");
+    // Azimuth wraps into [0, 2 pi).
+    std::tie(az, incl) = ThreeGppChannelModel::WrapAngles(-0.3, 1.0);
+    NS_TEST_ASSERT_MSG_EQ_TOL(az, 2 * M_PI - 0.3, tol, "negative azimuth");
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
+ * Test the K-factor of indoor LOS links. The LOS and O2I states are drawn
+ * independently, so an indoor link can be LOS. Scenarios without an O2I column
+ * in TR 38.901 Table 7.5-6, such as V2V-Urban, load the LOS column for it, so
+ * the K-factor of such a link must be drawn.
+ */
+class ThreeGppIndoorLosLspOrderingTest : public TestCase
+{
+  public:
+    ThreeGppIndoorLosLspOrderingTest()
+        : TestCase("Check the K-factor of indoor LOS links without an O2I column")
+    {
+    }
+
+  private:
+    void DoRun() override;
+};
+
+void
+ThreeGppIndoorLosLspOrderingTest::DoRun()
+{
+    RngSeedManager::SetSeed(1);
+    RngSeedManager::SetRun(1);
+
+    // Every link is O2I, and LOS below the 18 m breakpoint of the UMa LOS probability.
+    Ptr<ChannelConditionModel> condModel = CreateObject<ThreeGppUmaChannelConditionModel>();
+    condModel->SetAttribute("O2iThreshold", DoubleValue(1.0));
+
+    Ptr<ThreeGppChannelModel> channelModel = CreateObject<ThreeGppChannelModel>();
+    channelModel->SetAttribute("Frequency", DoubleValue(5.9e9));
+    channelModel->SetAttribute("Scenario", StringValue("V2V-Urban"));
+    channelModel->SetAttribute("ChannelConditionModel", PointerValue(condModel));
+
+    auto makeAntenna = []() {
+        return CreateObjectWithAttributes<UniformPlanarArray>(
+            "NumColumns",
+            UintegerValue(1),
+            "NumRows",
+            UintegerValue(1),
+            "AntennaElement",
+            PointerValue(CreateObject<IsotropicAntennaModel>()));
+    };
+
+    constexpr uint32_t nUes = 8;
+    NodeContainer nodes;
+    nodes.Create(1 + nUes);
+    Ptr<MobilityModel> txMob = CreateObject<ConstantPositionMobilityModel>();
+    txMob->SetPosition(Vector(0.0, 0.0, 1.5));
+    nodes.Get(0)->AggregateObject(txMob);
+    Ptr<PhasedArrayModel> txAntenna = makeAntenna();
+
+    bool anyKFactor = false;
+    for (uint32_t i = 0; i < nUes; i++)
+    {
+        Ptr<MobilityModel> rxMob = CreateObject<ConstantPositionMobilityModel>();
+        rxMob->SetPosition(Vector(5.0 + i, 2.0, 1.5));
+        nodes.Get(1 + i)->AggregateObject(rxMob);
+        channelModel->GetChannel(txMob, rxMob, txAntenna, makeAntenna());
+        const auto params = DynamicCast<const ThreeGppChannelModel::ThreeGppChannelParams>(
+            channelModel->GetParams(txMob, rxMob));
+        NS_TEST_ASSERT_MSG_NE(params, nullptr, "Channel params not found for generated link");
+        NS_TEST_ASSERT_MSG_EQ(params->m_losCondition,
+                              ChannelCondition::LOS,
+                              "The link should be LOS");
+        NS_TEST_ASSERT_MSG_EQ(params->m_o2iCondition,
+                              ChannelCondition::O2I,
+                              "The link should be O2I");
+        anyKFactor |= params->m_K_factor != 0.0;
+    }
+    NS_TEST_ASSERT_MSG_EQ(anyKFactor,
+                          true,
+                          "The K-factor of indoor LOS links must be drawn from the LOS column");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup spectrum-tests
+ *
  * Test suite for the ThreeGppChannelModel class
  */
 class ThreeGppChannelTestSuite : public TestSuite
@@ -1467,7 +3216,41 @@ class ThreeGppChannelTestSuite : public TestSuite
 ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     : TestSuite("three-gpp-channel", Type::UNIT)
 {
+    AddTestCase(new ThreeGppChannelWrapAnglesTest(), TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::LOS, 30, 4e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::NLOS, 30, 4e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::LOS, 30, 30e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::NLOS, 30, 30e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::LOS, 10, 30e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::NLOS, 10, 30e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::LOS, 10, 4e9),
+        TestCase::Duration::QUICK);
+    AddTestCase(
+        new ThreeGppChannelConsistencyTest(ChannelCondition::LosConditionValue::NLOS, 10, 4e9),
+        TestCase::Duration::QUICK);
+
     AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 1, 1, true),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 2, 2, true),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(false), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(true), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(false, true), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppChannelReciprocityTest(true, true), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 2, 1, 1), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(2, 2, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixComputationTest(4, 4, 2, 2), TestCase::Duration::QUICK);
@@ -1477,15 +3260,54 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
     AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 4, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppChannelMatrixUpdateTest(2, 2, 2, 2), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppAntennaSetupChangedTest(), TestCase::Duration::QUICK);
+    using LbConfig = ThreeGppLargeBandwidthModelingTest::Config;
+    // Single-element arrays: the bandwidth term alone sets the ray count.
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(LbConfig{.expectedRaysBw = 24}),
+                TestCase::Duration::QUICK);
+    // Below the lower bound of 20 rays of (7.6-8).
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(LbConfig{.expectedRaysBw = 8}),
+                TestCase::Duration::QUICK);
+    // MaxRaysPerCluster caps the count below the lower bound.
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(
+                    LbConfig{.expectedRaysBw = 24, .maxRaysPerCluster = 10}),
+                TestCase::Duration::QUICK);
+    // A 64-element row triples the count through the horizontal aperture term.
+    AddTestCase(
+        new ThreeGppLargeBandwidthModelingTest(LbConfig{.columns = 64, .expectedRaysBw = 8}),
+        TestCase::Duration::QUICK);
+    // A 64-element column tilted by 60 degrees keeps a zero horizontal aperture in
+    // the panel frame, so the count stays at the lower bound (a global-frame
+    // horizontal extent would triple the bandwidth term instead).
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(
+                    LbConfig{.rows = 64, .downtiltDeg = 60.0, .expectedRaysBw = 12}),
+                TestCase::Duration::QUICK);
+    // UMa NLOS has 20 clusters: the 400 taps of the lower bound exceed 8-bit
+    // cluster indexing.
+    AddTestCase(
+        new ThreeGppLargeBandwidthModelingTest(LbConfig{.scenario = "UMa", .expectedRaysBw = 8}),
+        TestCase::Duration::QUICK);
+    // The aperture term uses the maximum over both ends, so the same array at the
+    // rx end gives the same count.
+    AddTestCase(new ThreeGppLargeBandwidthModelingTest(
+                    LbConfig{.columns = 64, .expectedRaysBw = 8, .largeArrayAtRx = true}),
+                TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppInterUeSpatialConsistencyTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppIndoorLosLspOrderingTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppSubClusterMappingTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppLosBlockageAttenuationTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppXprDistributionTest(), TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 1, 1),
                 TestCase::Duration::QUICK);
+
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 4, 2, 2),
                 TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 2),
                 TestCase::Duration::QUICK);
     AddTestCase(new ThreeGppSpectrumPropagationLossModelTest(4, 2, 2, 1),
                 TestCase::Duration::QUICK);
+
     AddTestCase(new ThreeGppCalcLongTermMultiPortTest(), TestCase::Duration::QUICK);
+    AddTestCase(new ThreeGppReversedDirectionFieldPatternTest(), TestCase::Duration::QUICK);
 
     /**
      *  The TX and RX antennas are configured face-to-face.
@@ -1496,6 +3318,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
      *   (0,0)   (0,0)   (-5.8,)   (-5.8,0)
      *   (0,0)   (0,0)   (-5.8,0)  (-5.8,0)
      */
+
     std::valarray<std::complex<double>> testChannel1 =
         {5.9, 5.9, 0, 0, 5.9, 5.9, 0, 0, 0, 0, -5.8, -5.8, 0, 0, -5.8, -5.8};
     AddTestCase(new ThreeGppMimoPolarizationTest("Face-to-face. 0 and 0 pol. slant angles.",
@@ -1516,6 +3339,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
      *   (3,0)   (3,0)   (-5,0)  (-5,0)
      *   (3,0)   (3,0)   (-5,0)  (-5,0)
      */
+
     AddTestCase(
         new ThreeGppMimoPolarizationTest("Face-to-face. 30 and 0 pol. slant angles.",
                                          Vector{0, 0, 3},
@@ -1535,6 +3359,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
      *  (4,0)  (4,0)  (4,0)  (4,0)
      *  (4,0)  (4,0)  (4,0)  (4,0)
      */
+
     AddTestCase(
         new ThreeGppMimoPolarizationTest("Face-to-face. 45 and 0 pol. slant angles.",
                                          Vector{0, 0, 3},
@@ -1554,6 +3379,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
      *  (5.8,0)  (5.8,0)  (0,0)  (0,0)
      *  (5.8,0)  (5.8,0)  (0,0)  (0,0)
      */
+
     AddTestCase(new ThreeGppMimoPolarizationTest(
                     "Face-to-face. 90 and 0 pol. slant angles.",
                     Vector{0, 0, 3},
@@ -1577,6 +3403,7 @@ ThreeGppChannelTestSuite::ThreeGppChannelTestSuite()
      *  Notice that we expect almost the same matrix as in the first case in
      *  which
      */
+
     AddTestCase(
         new ThreeGppMimoPolarizationTest("Face-to-face. Different positions. Different bearing "
                                          "angles. 0 and 0 pol. slant angles.",

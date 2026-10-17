@@ -181,11 +181,11 @@ TestMultiUserScheduler::SelectTxFormat()
                                                                    m_allowedWidth);
 
         if (!GetHeFem(SINGLE_LINK_OP_ID)->TryAddMpdu(item, m_txParams, m_availableTime) ||
-            (m_availableTime != Time::Min() &&
-             *m_txParams.m_protection->protectionTime + *m_txParams.m_txDuration // TF tx time
-                     + m_apMac->GetWifiPhy()->GetSifs() + duration +
-                     *m_txParams.m_acknowledgment->acknowledgmentTime >
-                 m_availableTime))
+            (m_availableTime && *m_txParams.m_protection->protectionTime +
+                                        *m_txParams.m_txDuration // TF tx time
+                                        + m_apMac->GetWifiPhy()->GetSifs() + duration +
+                                        *m_txParams.m_acknowledgment->acknowledgmentTime >
+                                    *m_availableTime))
         {
             NS_LOG_DEBUG("Remaining TXOP duration is not enough for BSRP TF exchange");
             return SU_TX;
@@ -230,11 +230,10 @@ TestMultiUserScheduler::SelectTxFormat()
                 continue;
             }
 
-            Ptr<WifiMpdu> mpdu = m_apMac->GetQosTxop(tid)->GetNextMpdu(SINGLE_LINK_OP_ID,
-                                                                       peeked,
-                                                                       m_txParams,
-                                                                       m_availableTime,
-                                                                       m_initialFrame);
+            auto mpdu = m_apMac->GetQosTxop(tid)->GetNextMpdu(SINGLE_LINK_OP_ID,
+                                                              peeked,
+                                                              m_txParams,
+                                                              m_availableTime);
             if (!mpdu)
             {
                 NS_LOG_DEBUG("Not enough time to send frames to all the stations");
@@ -660,6 +659,7 @@ OfdmaAckSequenceTest::Transmit(std::string context,
 
             while ((mpdu = queue->PeekByTidAndAddress(i * 2,
                                                       staDev->GetMac()->GetAddress(),
+                                                      std::nullopt,
                                                       lastInFlight)) != nullptr)
             {
                 if (mpdu->IsInFlight())
@@ -1775,6 +1775,18 @@ OfdmaAckSequenceTest::CheckResults(Time sifs, Time slotTime, uint8_t aifsn)
             NS_TEST_EXPECT_MSG_EQ(baNavEnd,
                                   m_txPsdus[33].endTx,
                                   "Expected null Duration/ID for BlockAck");
+        }
+
+        if (m_txopLimit == 0)
+        {
+            // the duration/ID of the DL MU PPDU covers the entire acknowledgment sequence
+            // dlMuNavEnd <= ackSequenceEnd < dlMuNavEnd + tolerance
+            NS_TEST_EXPECT_MSG_LT_OR_EQ(dlMuNavEnd,
+                                        m_txPsdus[33].endTx,
+                                        "Duration/ID in DL MU PPDU is too long");
+            NS_TEST_EXPECT_MSG_LT(m_txPsdus[33].endTx,
+                                  dlMuNavEnd + tolerance,
+                                  "Duration/ID in DL MU PPDU does not cover the ack sequence");
         }
 
         nTxPsdus = 34;

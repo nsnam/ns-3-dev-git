@@ -8,9 +8,6 @@
 
 #include "priority-queue-scheduler.h"
 
-#include "assert.h"
-#include "event-impl.h"
-#include "log-macros-disabled.h"
 #include "log.h"
 #include "scheduler.h"
 

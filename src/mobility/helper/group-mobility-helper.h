@@ -58,7 +58,7 @@ class GroupMobilityHelper
      * Configure the position allocator which will be used to allocate
      * the initial position of the reference mobility model.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of position allocator to use.
      * @param [in] args Name and AttributeValue pairs to set.
      */
@@ -77,7 +77,7 @@ class GroupMobilityHelper
      * Configure the position allocator which will be used to allocate the
      * initial position of the member mobility models.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of position allocator to use.
      * @param [in] args Name and AttributeValue pairs to set.
      */
@@ -96,7 +96,7 @@ class GroupMobilityHelper
      * Configure the reference mobility model which will be installed as the
      * parent mobility model during GroupMobilityModel::Install.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of mobility model to use.
      * @param [in] args Name and AttributeValue pairs to set.
      */
@@ -110,7 +110,7 @@ class GroupMobilityHelper
      * Calls to MobilityHelper::Install will create an instance of a matching
      * mobility model for each node.
      *
-     * @tparam Ts \deduced Argument types
+     * @tparam Ts @deduced Argument types
      * @param type the type of mobility model to use.
      * @param [in] args Name and AttributeValue pairs to set.
      */

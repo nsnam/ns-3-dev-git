@@ -15,6 +15,7 @@
 
 #include "ns3/callback.h"
 #include "ns3/vht-phy.h"
+#include "ns3/wifi-export.h"
 #include "ns3/wifi-phy-band.h"
 #include "ns3/wifi-types.h"
 
@@ -40,7 +41,7 @@ class ObssPdAlgorithm;
 /**
  * Parameters for received HE-SIG-A for OBSS_PD based SR
  */
-struct HeSigAParameters
+struct WIFI_EXPORT HeSigAParameters
 {
     dBm_u rssi;       ///< RSSI
     uint8_t bssColor; ///< BSS color
@@ -54,7 +55,7 @@ struct HeSigAParameters
  *
  * Refer to P802.11ax/D4.0, clause 27.
  */
-class HePhy : public VhtPhy
+class WIFI_EXPORT HePhy : public VhtPhy
 {
   public:
     /**
@@ -100,7 +101,7 @@ class HePhy : public VhtPhy
     Time CalculateTxDuration(const WifiConstPsduMap& psduMap,
                              const WifiTxVector& txVector,
                              WifiPhyBand band) const override;
-    void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu) override;
+    void SwitchMaybeToCcaBusy(const Ptr<const WifiPpdu> ppdu = nullptr) override;
     dBm_u GetCcaThreshold(const Ptr<const WifiPpdu> ppdu,
                           WifiChannelListType channelType) const override;
     void NotifyCcaBusy(const Ptr<const WifiPpdu> ppdu,
@@ -250,74 +251,50 @@ class HePhy : public VhtPhy
     static WifiMode GetHeMcs(uint8_t index);
 
     /**
-     * Return MCS 0 from HE MCS values.
-     *
      * @return MCS 0 from HE MCS values
      */
     static WifiMode GetHeMcs0();
     /**
-     * Return MCS 1 from HE MCS values.
-     *
      * @return MCS 1 from HE MCS values
      */
     static WifiMode GetHeMcs1();
     /**
-     * Return MCS 2 from HE MCS values.
-     *
      * @return MCS 2 from HE MCS values
      */
     static WifiMode GetHeMcs2();
     /**
-     * Return MCS 3 from HE MCS values.
-     *
      * @return MCS 3 from HE MCS values
      */
     static WifiMode GetHeMcs3();
     /**
-     * Return MCS 4 from HE MCS values.
-     *
      * @return MCS 4 from HE MCS values
      */
     static WifiMode GetHeMcs4();
     /**
-     * Return MCS 5 from HE MCS values.
-     *
      * @return MCS 5 from HE MCS values
      */
     static WifiMode GetHeMcs5();
     /**
-     * Return MCS 6 from HE MCS values.
-     *
      * @return MCS 6 from HE MCS values
      */
     static WifiMode GetHeMcs6();
     /**
-     * Return MCS 7 from HE MCS values.
-     *
      * @return MCS 7 from HE MCS values
      */
     static WifiMode GetHeMcs7();
     /**
-     * Return MCS 8 from HE MCS values.
-     *
      * @return MCS 8 from HE MCS values
      */
     static WifiMode GetHeMcs8();
     /**
-     * Return MCS 9 from HE MCS values.
-     *
      * @return MCS 9 from HE MCS values
      */
     static WifiMode GetHeMcs9();
     /**
-     * Return MCS 10 from HE MCS values.
-     *
      * @return MCS 10 from HE MCS values
      */
     static WifiMode GetHeMcs10();
     /**
-     * Return MCS 11 from HE MCS values.
-     *
      * @return MCS 11 from HE MCS values
      */
     static WifiMode GetHeMcs11();
@@ -429,7 +406,7 @@ class HePhy : public VhtPhy
 
     /// structure containing the information about the RU subcarriers to be able to converted to the
     /// indices used by the Spectrum model
-    struct RuSubcarriersInfo
+    struct WIFI_EXPORT RuSubcarriersInfo
     {
         MHz_u bandWidth; ///< width of the band used for the OFDMA transmission. Must be a multiple
                          ///< of 20 MHz

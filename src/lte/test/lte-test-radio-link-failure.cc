@@ -13,14 +13,27 @@
 
 #include "lte-test-radio-link-failure.h"
 
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/lte-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/network-module.h"
+#include "ns3/boolean.h"
+#include "ns3/config.h"
+#include "ns3/double.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-static-routing.h"
+#include "ns3/lte-amc.h"
+#include "ns3/lte-enb-net-device.h"
+#include "ns3/lte-enb-rrc.h"
+#include "ns3/lte-helper.h"
+#include "ns3/lte-radio-bearer-info.h"
+#include "ns3/lte-rlc.h"
+#include "ns3/lte-ue-net-device.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/object-map.h"
 #include "ns3/packet-sink-helper.h"
-#include "ns3/point-to-point-module.h"
+#include "ns3/point-to-point-epc-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/string.h"
 #include "ns3/udp-client-server-helper.h"
+#include "ns3/uinteger.h"
 
 #include <iomanip>
 #include <iostream>
@@ -296,10 +309,17 @@ LteRadioLinkFailureTestCase::DoRun()
     NetDeviceContainer ueDevs;
 
     int64_t randomStream = 1;
+    // Call AssignStreams in the EpcHelper only once by setting 'assignEpcStreams' only once
+    // Then, increment the stream value by 1000 (a magic number that should ensure that there
+    // are no overlapping stream assignments) each time that AssignStreams is called,
+    // to lessen the possibility that random variable stream assignment changes propagate
+    // to other objects.
     enbDevs = lteHelper->InstallEnbDevice(enbNodes);
-    randomStream += lteHelper->AssignStreams(enbDevs, randomStream);
+    lteHelper->AssignStreams(enbDevs, randomStream, false);
+    randomStream += 1000;
     ueDevs = lteHelper->InstallUeDevice(ueNodes);
-    randomStream += lteHelper->AssignStreams(ueDevs, randomStream);
+    lteHelper->AssignStreams(ueDevs, randomStream, true);
+    randomStream += 1000;
 
     // Install the IP stack on the UEs
     internet.Install(ueNodes);
@@ -463,7 +483,6 @@ LteRadioLinkFailureTestCase::CheckConnected(Ptr<NetDevice> ueDevice, NetDeviceCo
 
     UeManager::State ueManagerState = ueManager->GetState();
     NS_TEST_ASSERT_MSG_EQ(ueManagerState, UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
-    NS_ASSERT_MSG(ueManagerState == UeManager::CONNECTED_NORMALLY, "Wrong UeManager state!");
 
     uint16_t ueCellId = ueRrc->GetCellId();
     uint16_t enbCellId = enbLteDevice->GetCellId();

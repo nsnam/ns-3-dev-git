@@ -13,6 +13,7 @@
 
 #include "ns3/net-device.h"
 #include "ns3/traced-callback.h"
+#include "ns3/wifi-export.h"
 
 #include <optional>
 #include <vector>
@@ -42,7 +43,7 @@ class EhtConfiguration;
  * This class holds together ns3::Channel, ns3::WifiPhy,
  * ns3::WifiMac, and, ns3::WifiRemoteStationManager.
  */
-class WifiNetDevice : public NetDevice
+class WIFI_EXPORT WifiNetDevice : public NetDevice
 {
   public:
     /**
@@ -179,6 +180,7 @@ class WifiNetDevice : public NetDevice
     Ptr<Channel> GetChannel() const override;
     void SetAddress(Address address) override;
     Address GetAddress() const override;
+    Address GetAddressFor(const Address& remoteAddr) const override;
     bool SetMtu(const uint16_t mtu) override;
     uint16_t GetMtu() const override;
     bool IsLinkUp() const override;
@@ -258,6 +260,8 @@ class WifiNetDevice : public NetDevice
 
     TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger; //!< receive trace callback
     TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger; //!< transmit trace callback
+    /// Trace fired when a received packet is dropped because no protocol handler consumed it.
+    TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
 
     WifiStandard m_standard;        //!< Wifi standard
     uint32_t m_ifIndex;             //!< IF index

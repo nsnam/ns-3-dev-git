@@ -137,6 +137,11 @@ CsmaChannel::Detach(uint32_t deviceId)
         NS_LOG_WARN("CsmaChannel::Detach(): Device is currently transmitting (" << deviceId << ")");
     }
 
+    if (m_deviceList[deviceId].devicePtr)
+    {
+        m_deviceList[deviceId].devicePtr->NotifyLinkDown();
+    }
+
     return true;
 }
 
@@ -151,6 +156,7 @@ CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
         if ((it->devicePtr == device) && (it->active))
         {
             it->active = false;
+            device->NotifyLinkDown();
             return true;
         }
     }

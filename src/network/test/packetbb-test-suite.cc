@@ -14,6 +14,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 using namespace ns3;
 
@@ -96,6 +97,93 @@ PbbTestCase::TestDeserialize()
                           "deserialization failed, did not use all bytes");
 
     NS_TEST_ASSERT_MSG_EQ(*newPacket, *m_refPacket, "deserialization failed, objects do not match");
+}
+
+/**
+ * @ingroup network-test
+ * @ingroup tests
+ *
+ * @brief Round-trip test for PbbAddressBlockIpv6 head/tail compression.
+ *
+ * Regression test for a bug in PbbAddressBlock::GetHeadTail() where the block-wide
+ * common tail length could grow across iterations instead of being monotonically
+ * non-increasing.  With a set of addresses whose suffixes are not all shared -- e.g.
+ * fe80::1, fc00::1, fe80::3, fc00::3 -- an earlier pair (fc00::1, fe80::3) reduces the
+ * common tail to zero, then the trailing pair (fe80::3, fc00::3) wrongly resurrected a
+ * one-byte tail of 0x03.  Serialization writes the block-wide tail once and applies it
+ * to every address, so the ...::1 addresses deserialized as ...::3.  This verifies that
+ * serialize/deserialize of a mixed-suffix IPv6 address block preserves the original.
+ */
+class PbbAddressBlockIpv6RoundtripTestCase : public TestCase
+{
+  public:
+    PbbAddressBlockIpv6RoundtripTestCase();
+    ~PbbAddressBlockIpv6RoundtripTestCase() override;
+
+  protected:
+    void DoRun() override;
+};
+
+PbbAddressBlockIpv6RoundtripTestCase::PbbAddressBlockIpv6RoundtripTestCase()
+    : TestCase("PbbAddressBlockIpv6 mixed-suffix head-tail compression")
+{
+}
+
+PbbAddressBlockIpv6RoundtripTestCase::~PbbAddressBlockIpv6RoundtripTestCase()
+{
+}
+
+void
+PbbAddressBlockIpv6RoundtripTestCase::DoRun()
+{
+    const std::vector<Ipv6Address> addresses = {
+        Ipv6Address("fe80::1"),
+        Ipv6Address("fc00::1"),
+        Ipv6Address("fe80::3"),
+        Ipv6Address("fc00::3"),
+    };
+
+    Ptr<PbbPacket> packet = Create<PbbPacket>();
+    Ptr<PbbMessageIpv6> msg = Create<PbbMessageIpv6>();
+    msg->SetType(0);
+    Ptr<PbbAddressBlockIpv6> block = Create<PbbAddressBlockIpv6>();
+    for (const auto& addr : addresses)
+    {
+        block->AddressPushBack(addr);
+    }
+    msg->AddressBlockPushBack(block);
+    packet->MessagePushBack(msg);
+
+    // Serialize, then deserialize into a fresh packet.
+    Buffer buffer;
+    buffer.AddAtStart(packet->GetSerializedSize());
+    packet->Serialize(buffer.Begin());
+
+    Ptr<PbbPacket> newPacket = Create<PbbPacket>();
+    uint32_t numbytes = newPacket->Deserialize(buffer.Begin());
+
+    NS_TEST_ASSERT_MSG_EQ(numbytes, buffer.GetSize(), "deserialization did not consume all bytes");
+
+    // The whole packet must round-trip unchanged ...
+    NS_TEST_ASSERT_MSG_EQ(
+        *newPacket,
+        *packet,
+        "serialization/deserialization changed the packet (address block corruption)");
+
+    // ... and, for a clearer diagnostic, each address must be recovered exactly.
+    Ptr<PbbMessage> newMsg = newPacket->MessageFront();
+    Ptr<PbbAddressBlock> newBlock = newMsg->AddressBlockFront();
+    NS_TEST_ASSERT_MSG_EQ(newBlock->AddressSize(),
+                          static_cast<int>(addresses.size()),
+                          "wrong number of addresses after serialize/deserialize");
+
+    std::size_t i = 0;
+    for (auto it = newBlock->AddressBegin(); it != newBlock->AddressEnd(); ++it, ++i)
+    {
+        NS_TEST_ASSERT_MSG_EQ(Ipv6Address::ConvertFrom(*it),
+                              addresses[i],
+                              "address " << i << " corrupted by serialize/deserialize");
+    }
 }
 
 /**
@@ -3135,6 +3223,8 @@ PbbTestSuite::PbbTestSuite()
         AddTestCase(new PbbTestCase("37", packet, buffer, sizeof(buffer)),
                     TestCase::Duration::QUICK);
     }
+
+    AddTestCase(new PbbAddressBlockIpv6RoundtripTestCase(), TestCase::Duration::QUICK);
 }
 
 static PbbTestSuite pbbTestSuite; //!< Static variable for test initialization

@@ -273,13 +273,13 @@ main(int argc, char* argv[])
 
     // Set the extended address to all devices (EUI-64)
     // Device must ALWAYS have IEEE Address (Extended address) assigned.
-    // Network address (short address) are assigned by the the JOIN mechanism
+    // Network address (short address) are assigned by the JOIN mechanism
     // In this case we use the helper to assign a sequential extended addresses
     // to all nodes in the simulation.
     lrWpanHelper.SetExtendedAddresses(lrwpanDevices);
 
     ZigbeeHelper zigbeeHelper;
-    zigbeeHelper.SetNwkLayerOnly();
+    zigbeeHelper.SetLayers(StackLayers::ONLY_NWK);
     zigbeeStacks = zigbeeHelper.Install(lrwpanDevices);
 
     // NWK callbacks hooks

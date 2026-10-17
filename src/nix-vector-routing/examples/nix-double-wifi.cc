@@ -35,7 +35,7 @@
                                      *    *    *    *
                                     AP
                                       Wifi 10.1.3.0/24
-   \endverbatim
+   @endverbatim
  *
  * @verbatim
     Wifi 2001:1::/64
@@ -47,7 +47,7 @@
                                      *    *    *    *
                                     AP
                                       Wifi 2001:3::/64
-   \endverbatim
+   @endverbatim
  *
  * Expected Outputs:
  * IPv4:
@@ -57,7 +57,7 @@
    10.1.1.3                 (Node 4)  ---->   10.1.1.4                 (Node 0)
    10.1.2.1                 (Node 0)  ---->   10.1.2.2                 (Node 1)
    10.1.3.4                 (Node 1)  ---->   10.1.3.3                 (Node 7)
-   \endverbatim
+   @endverbatim
  *
  * IPv6:
  * @verbatim
@@ -66,7 +66,7 @@
    2001:1::200:ff:fe00:5    (Node 4)  ---->   fe80::200:ff:fe00:6      (Node 0)
    fe80::200:ff:fe00:1      (Node 0)  ---->   fe80::200:ff:fe00:2      (Node 1)
    fe80::200:ff:fe00:a      (Node 1)  ---->   2001:3::200:ff:fe00:9    (Node 7)
-   \endverbatim
+   @endverbatim
  */
 
 using namespace ns3;

@@ -1,22 +1,23 @@
 #!/bin/bash
-# -*- indent-tabs-mode:nil; -*-
 
-
-# Process doxygen log to generate sorted list of top offenders.
+# Process Doxygen log to generate sorted list of top offenders.
 #
 
 me=$(basename $0)
 DIR="$(dirname $0)"
-# Trick to get the absolute path, since doxygen prefixes errors that way
+# Trick to get the absolute path, since Doxygen prefixes errors that way
 ROOT=$(cd "$DIR/.."; pwd -P)
 
 # Known log files
-STANDARDLOGFILE=doxygen.log
-WARNINGSLOGFILE=doxygen.warnings.log
+STANDARDLOGFILE=$DIR/doxygen.log
+WARNINGSLOGFILE=$DIR/doxygen.warnings.log
 # Default choice:  generate it
-LOG="$DIR/$WARNINGSLOGFILE"
+LOG=$WARNINGSLOGFILE
 # Verbose log
 VERBLOG="$DIR/doxygen.verbose.log"
+
+# Doxygen config file
+DOXYFILE=$DIR/doxygen.conf
 
 
 # Options ------------------------------
@@ -25,7 +26,7 @@ VERBLOG="$DIR/doxygen.verbose.log"
 # One line synopsis, continue
 function synopsis_short
 {
-    echo "Usage: $me [-beithv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]"
+    echo "Usage: $me [-behiStv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]"
 }
 
 # Two line synopsis, then exit with error
@@ -42,14 +43,13 @@ function usage
     synopsis_short
     cat <<-EOF
 
-    Run doxygen to generate all errors; report error counts
+    Run Doxygen to generate all errors; report error counts
     by module and file.
 
-    -i  Skip the build, try print-introspected-doxygen anyway.
-
-    -s  Skip doxygen run; use existing <log-file>.
-    -w  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
-    -l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
+    -i  Skip the build and introspection (introspected-doxygen, command-line)
+    -s  Skip Doxygen run; use existing <log-file>
+    -w  Skip Doxygen run; use existing warnings log $WARNINGSLOGFILE
+    -l  Skip Doxygen run; use the normal Doxygen log $STANDARDLOGFILE
 
     -b  Omit the blacklist filter of files whose warnings we ignore
     -e  Filter out warnings from */examples/*
@@ -57,27 +57,36 @@ function usage
     -m  Only include files matching src/<module>
     -f  Only include files matching the <regex>
     -F  Exclude files matching the <regex>
+    -S  Just show the summary counts, not the full listing
 
     -v  Show detailed output from each step.
     -h  Print this usage message
 
-    The default behavior is to modify doxygen.conf temporarily to
+    The default behavior is to modify $DOXYFILE temporarily to
     report all undocumented elements, and to reduce the run time.
-    The output of this special run is kept in doc/$WARNINGSLOGFILE.
+    The output of this special run is kept in $WARNINGSLOGFILE.
     To further reduce the run time, the -i option also skips
-    print-introspected-doxygen, so ns3 doesn\'t have to compile
-    any modified files at all.
+    the build, so ns3 doesn\'t have to compile any modified files at all.
+    This option necessarily skips re-generation of introspected-doxygen.h and
+    introspected-command-line.h, which rely on a clean build,
+    but these files only change when executable code changes, so this
+    isn't usually significant when just amending Doxygen comments.
 
-    The -f, -l, and -s options skip the doxygen run altogether.
+    The -l, -s, and -w options skip the Doxygen run altogether.
     The first two use a specified or the standard log file;
-    the -s option uses the warnings log from a prior run.
-    Only the first of -f <log-file>, -s, or -l will have effect.
+    the -w option uses the warnings log from a prior run.
+    Only the first of -s <log-file>, -w, or -l will have effect.
 
     The -e and -t options exclude examples and test directories
     from the counts.  The -m option only includes a specific module.
     The -F option only includes files (or warnings) matching the <regex>.
     The -m and -F options append the relevant warnings after the
     numerical report.  These can be used in any combination.
+
+    Some warnings are just nuisances, typically from third-party code
+    or constructs Doxygen has trouble with.  These are pre-loaded in to
+    the black list filter.  If you want to see what files and warnings these
+    are use the -b option.
 
 EOF
     exit 0
@@ -89,6 +98,12 @@ EOF
 # Arg -v Verbosity level
 verbosity=0
 
+# Log message, possibly verbosely if -v option given
+# Non-verbose:  Print the msg (without newline), then report status of cmd
+#   verbose -n msg
+#   ...
+#   status_report $? cmd
+# Verbose:  prefix with script name
 function verbose
 {
     if [ "$1" == "-n" ]; then
@@ -98,7 +113,7 @@ function verbose
             echo -n "${2}..."
         fi
     elif [ $verbosity -eq 1 ]; then
-        echo "$me:  $1 $2"
+        echo "$me: ${1:+ }$1 $2"
     else
         echo "$2"
     fi
@@ -108,6 +123,26 @@ function verbose
 rm -f $VERBLOG
 exec 6>$VERBLOG
 
+# Swap back to original DOXYFILE
+# Define here so status_report can use it if needed
+function restore_doxyfile()
+{
+    if [ -e $DOXYFILE.bak ]; then
+        rm -f $DOXYFILE
+        mv -f $DOXYFILE.bak $DOXYFILE
+    fi
+}
+
+# Report status of last command
+#   status_report $? long_msg [exitonerr]
+# If status ($?) was success (0)
+#   If verbose
+#     Show detailed log of last command
+#     Verbosely log long_msg
+#   Log "done."
+# If error
+#   If verbose log FAILED and detail log
+#   If exitonerr exit the script
 function status_report
 {
     local status="$1"
@@ -121,6 +156,7 @@ function status_report
         if [ $exitonerr == "yes" ]; then
             verbose "$long_msg "  "FAILED.  Details:"
             [[ -e $VERBLOG ]] && cat $VERBLOG && rm -f $VERBLOG
+            restore_doxyfile
             exit 1
         else
             verbose "$long_msg "  "FAILED, continuing"
@@ -138,12 +174,12 @@ use_filearg=0
 logfile_arg=
 # -l
 use_standard=0
-# skip doxygen run; using existing log file
+# skip Doxygen run; using existing log file
 skip_doxy=0
-# skip print-introspected-doxygen, avoiding a build
+# skip build, print-introspected-doxygen and introspected-command-line
 skip_intro=0
 
-# Filtering flags
+# Filtering flags, 1 means on/true
 filter_blacklist=1
 filter_examples=0
 filter_test=0
@@ -153,7 +189,10 @@ explicit_f_option=0
 filter_in=""
 filter_out=""
 
-while getopts :bef:F:hilm:s:tvw option ; do
+# Summary only
+summary_only=0
+
+while getopts :bef:F:hilm:Ss:tvw option ; do
 
     case $option in
     (b)  filter_blacklist=0       ;;
@@ -180,6 +219,8 @@ while getopts :bef:F:hilm:s:tvw option ; do
          logfile_arg="$OPTARG"
          ;;
 
+    (S)  summary_only=1           ;;
+
     (t)  filter_test=1            ;;
 
     (v)  verbosity=1
@@ -187,7 +228,7 @@ while getopts :bef:F:hilm:s:tvw option ; do
          ;;
 
     (w)  use_filearg=1
-         logfile_arg="$DIR/$WARNINGSLOGFILE"
+         logfile_arg="$WARNINGSLOGFILE"
          ;;
 
     (:)  echo "$me: Missing argument to -$OPTARG" ; synopsis ;;
@@ -197,6 +238,7 @@ while getopts :bef:F:hilm:s:tvw option ; do
     esac
 done
 
+# Check for existence of alternate Doxygen log file
 function checklogfile
 {
     if [ -e "$1" ] ; then
@@ -214,7 +256,7 @@ function checklogfile
 if [[ $use_filearg -eq 1 && "${logfile_arg:-}" != "" ]] ; then
     checklogfile "$logfile_arg"
 elif [ $use_standard -eq 1 ]; then
-    checklogfile "$DIR/$STANDARDLOGFILE"
+    checklogfile "$STANDARDLOGFILE"
 fi
 
 # Log filters --------------------------
@@ -242,17 +284,29 @@ filter_inRE=""
 # Blacklist filter of files whose warnings we ignore
 filter_blacklistRE=""
 
-#   External files: adding our own doxygen makes diffs with upstream very hard
+#   External files: adding our own Doxygen makes diffs with upstream very hard
 #     cairo-wideint
 REappend filter_blacklistRE "cairo-wideint"
+REappend filter_blacklistRE "valgrind\.h"
 
 #   Functions with varying numbers of arguments
 #   Explicit template instantiation declaration
 # REappend filter_blacklistRE "MakeCallback< ObjectBase \\* >(ObjectBase \\*"
 
-#   ATTRIBUTE_HELPER_CPP( and _HEADER(
-# REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
+#   Global variable declarations which look like function prototypes
+REappend filter_blacklistRE "generic-battery-discharge-example.cc.*battDischFile"
 
+#   ATTRIBUTE_HELPER_CPP( and _HEADER(
+REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)"
+
+#   NS_DEPRECATED_...(msg)
+REappend filter_blacklistRE "return type .*NS_DEPRECATED_3_"
+
+#   *.py:  we've included python files since 2012,
+#          but they are now (2025) generating warnings
+REappend filter_blacklistRE "\.py"
+
+#
 # Filter out regular expression for black list, -e, -t and -F
 filter_outRE=""
 [[ $filter_blacklist -eq 1 ]] && REappend filter_outRE "$filter_blacklistRE"
@@ -264,6 +318,7 @@ filter_outRE=""
 # Configuration ------------------------
 #
 
+# Log switch values '0' as "off", not '0' as "ON"
 function on_off
 {
     if [[ "${!1:-}" != "" && "${!1}" != "0" ]] ; then
@@ -273,11 +328,24 @@ function on_off
     fi
 }
 
+# Log all the filters
+function show_filters
+{
+    echo
+    echo "    Net result of all filters:"
+    [[ "${filter_blacklistRE:-}" != "" ]] && echo "      Blacklist:     \"$filter_blacklistRE\""
+    [[ "${filter_inRE:-}"  != "" ]] && echo "      Filtering in:  \"$filter_inRE\""
+    [[ "${filter_outRE:-}" != "" ]] && echo "      Filtering out: \"$filter_out\""
+
+    echo
+}
+
 if [ $verbosity -eq 1 ]; then
     echo
     echo "$me:"
     echo "    Verbose:          $(on_off verbosity)"
     echo "    Skip build:       $(on_off skip_intro)"
+    echo "    Skip Doxygen:     $(on_off skip_doxy)"
     echo "    Log file to use:  $LOG"
     echo "    Module filter:    $(on_off filter_module)  $filter_module"
     echo "    Examples filter:  $(on_off filter_examples)"
@@ -285,49 +353,43 @@ if [ $verbosity -eq 1 ]; then
     echo "    Blacklist filter: $(on_off filter_blacklist)"
     echo "    Filter in:        $(on_off filter_in)  $filter_in"
     echo "    Filter out:       $(on_off filter_out)  $filter_out"
-    echo
+    echo "    Summary only:     $(on_off summary_only)"
 
     #  Show the resulting filters here, in addition to below
-    echo "    Net result of all filters:"
-    [[ "${filter_inRE:-}"  != "" ]] && echo "      Filtering in:   \"$filter_inRE\""
-    [[ "${filter_outRE:-}" != "" ]] && echo "      Filtering out:  \"$filter_outRE\""
-
-    echo
+    show_filters
 fi
 
 
-#  Run doxygen -------------------------
+#  Run Doxygen -------------------------
 #
 
 if [ $skip_doxy -eq 1 ]; then
     echo
-    echo "Skipping doxygen run, using existing log file $LOG"
+    echo "Skipping Doxygen run, using existing log file $LOG"
 
 else
 
-    # We're going to modify doxygen.conf
+    # We're going to modify DOXYFILE
     # In case the user ^C's out of this we need to restore
-    # doxygen.conf, otherwise weird things happen.
-    # function restore_doxygen_conf defined below
-    trap restore_doxygen_conf INT
+    # DOXYFILE, otherwise weird things happen the next time
+    # they build Doxygen
+    trap restore_doxyfile INT
 
-    # Modify doxygen.conf to generate all the warnings
+    # Modify DOXYFILE to generate all the warnings
     # We keep dot active to generate graphs in the documentation
     # (see for example PacketTagList) and warn about ill-formed
-    # graphs, but we disable all the doxygen-generated diagrams
+    # graphs, but we disable all the Doxygen-generated diagrams
     # to shorten the run time.
 
-    conf=doc/doxygen.conf
-    cp $conf ${conf}.bak
-    cat <<-EOF >> $conf
+    cp $DOXYFILE ${DOXYFILE}.bak
+    cat <<-EOF >> $DOXYFILE
 
     # doxygen.warnings.report.sh:
     EXTRACT_ALL = no
     WARNINGS = no
-    WARN_LOGFILE = doc/$WARNINGSLOGFILE
+    WARN_LOGFILE = $WARNINGSLOGFILE
     SOURCE_BROWSER = no
     HTML_OUTPUT = html-warn
-    CLASS_DIAGRAMS = no
     CLASS_GRAPH = no
     COLLABORATION_GRAPH = no
     GROUP_GRAPHS = no
@@ -339,36 +401,26 @@ else
     DIRECTORY_GRAPH = no
 EOF
 
-    # Swap back to original config
-    function restore_doxygen_conf()
-    {
-        if [ -e $conf.bak ]; then
-            rm -f $conf
-            mv -f $conf.bak $conf
-        fi
-    }
-
-    intro_h="introspected-doxygen.h"
+    doxycmd="doxygen-no-build"
     if [ $skip_intro -eq 1 ]; then
-        verbose "" "Skipping ./ns3 build"
-        verbose -n "Trying print-introspected-doxygen with doxygen build"
-        (cd "$ROOT" && ./ns3 run print-introspected-doxygen --no-build >doc/$intro_h 2>&6 )
-        status_report $? "./ns3 run print-introspected-doxygen" noexit
+        verbose "" "Skipping ./ns3 build, print-introspected-doxygen, and introspected-command-line"
+
     else
         # Run introspection, which may require a build
         verbose -n "Building"
         (cd "$ROOT" && ./ns3 build >&6 2>&6 )
         status_report $? "./ns3 build"
-        verbose -n "Running print-introspected-doxygen with doxygen build"
-        (cd "$ROOT" && ./ns3 run print-introspected-doxygen --no-build >doc/$intro_h 2>&6 )
-        status_report $? "./ns3 run print-introspected-doxygen"
+
+        doxycmd=doxygen
     fi
 
-    verbose -n "Rebuilding doxygen docs with full errors"
-    (cd "$ROOT" && ./ns3 docs doxygen-no-build >&6 2>&6 )
-    status_report $? "./ns3 docs doxygen-no-build"
+    echo "Doxygen@version:" `which doxygen` "@" `doxygen --version`
+    verbose "" "Repo version: $(cd $ROOT && doc/ns3_html_theme/get_version.sh | cut -d ':' -f 2- )"
+    verbose -n "Rebuilding Doxygen docs with full errors"
+    (cd "$ROOT" && ./ns3 docs $doxycmd >&6 2>&6 )
+    status_report $? "./ns3 docs $doxycmd"
 
-    restore_doxygen_conf
+    restore_doxyfile
 fi
 
 # Filter log file
@@ -382,6 +434,7 @@ function filter_log
 
     flog=$(                         \
         echo "$flog"              | \
+        sed "s|^$ROOT/||g"         | \
         sort -t ':' -k1,1 -k2,2n  | \
         uniq                        \
         )
@@ -391,13 +444,12 @@ function filter_log
 
 # Analyze the log ----------------------
 #
-#  Show the resulting filters
-echo
-echo "Net result of all filters:"
-[[ "${filter_inRE:-}"  != "" ]] && echo "Filtering in \"$filter_inRE\""
-[[ "${filter_outRE:-}" != "" ]] && echo "Filtering out \"$filter_outRE\""
+#  Show the resulting filters, if not already shown by verbose
+if [[ $verbosity -ne 1 && ! -z "$filter_log_results" ]]; then
+    show_filters
+fi
 
-verbose -n "Filtering the doxygen log"
+verbose -n "Filtering the Doxygen log $LOG"
 
 filter_log_results=$(filter_log)
 
@@ -439,7 +491,7 @@ addlparam=$(                                  \
     sed 's/^[ \t]*//;s/[ \t]*$//'             \
     )
 
-# Sometimes doxygen can not pinpoint a warning to an exact file.
+# Sometimes Doxygen can not pinpoint a warning to an exact file.
 # In this case the output is of the form:
 # "<operator==>:1: warning: parameters of member ns3::operator== are not documented"
 # or
@@ -512,6 +564,13 @@ echo
 
 # Summarize the log --------------------
 #
+# Return status based on warnings
+exit_status=$((warncount > 0))
+
+if ((warncount == 0)); then
+   echo "No warnings passed the filters."
+   exit $exit_status
+fi
 
 echo
 echo "Report of Doxygen warnings"
@@ -576,9 +635,6 @@ printf "%6d directories\n" $modcount
 printf "%6d files\n" $filecount
 printf "%6d warnings\n" $warncount
 
-# Return status based on warnings
-exit_status=$((warncount > 0))
-
 # if [ "${filter_inRE:-}" != "" ] ; then
 #     if [ "$filterin" != "" ] ; then
 #         echo
@@ -591,6 +647,12 @@ exit_status=$((warncount > 0))
 #         exit_status=0
 #     fi
 # fi
+
+# Summary only: quit now
+if [ "$summary_only" == 1 ]; then
+    status_report 0 $me
+    exit $exit_status
+fi
 
 if [ "$filterin" != "" ] ; then
     echo

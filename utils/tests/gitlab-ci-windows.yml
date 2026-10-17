@@ -1,0 +1,85 @@
+# Copyright (c) 2026 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+# SPDX-License-Identifier: GPL-2.0-only
+# NS3 CI script for Windows
+#
+# Runner requirements:
+#   MinGW    Chocolatey, used to install MSYS2 (UCRT64) at C:\msys64
+#   ClangCL  Visual Studio 2022 (the ClangCL toolset is installed by the job), CMake and Python in PATH
+
+# MinGW (MSYS2/UCRT64) base -----------------------------------------------
+
+.build-windows-mingw-base:
+  variables:
+    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+    MSYSTEM: UCRT64
+    CHERE_INVOKING: "1"
+  before_script:
+    - choco install msys2 -y --no-progress --params "/NoUpdate /InstallDir:C:\msys64"
+    - C:\msys64\usr\bin\bash.exe -lc 'pacman -Sy --noconfirm --needed mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-ninja mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-ccache mingw-w64-ucrt-x86_64-gsl mingw-w64-ucrt-x86_64-libxml2 mingw-w64-ucrt-x86_64-lld && pacman --noconfirm -Scc'
+  script:
+    - C:\msys64\usr\bin\bash.exe -lc 'export CCACHE_BASEDIR="$PWD" && export CCACHE_DIR="$PWD/$CCACHE_BASEDIR_VALUE" && ccache -M 3G && ccache -F 0 && ccache -z && python3 ns3 configure -d $MODE --enable-asserts --enable-examples --enable-tests --disable-werror -G Ninja && python3 ns3 build && ccache -s'
+    - C:\msys64\usr\bin\bash.exe -lc 'export PATH="$PWD/build:$PATH" && python3 test.py --no-build --verbose-failed'
+  cache:
+    key: "ccache-$CI_JOB_NAME"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  interruptible: true
+  timeout: 6h
+  tags:
+    - saas-windows-medium-amd64
+
+# ClangCL (Visual Studio 2022) base ----------------------------------------
+
+.build-windows-clangcl-base:
+  before_script:
+    # The runner image does not include the ClangCL toolset of Visual Studio 2022
+    - '$vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -version "[17.0,18.0)" -latest -products * -property installationPath'
+    - Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe
+    - '$p = Start-Process -FilePath .\vs_buildtools.exe -ArgumentList "modify --installPath `"$vsPath`" --add Microsoft.VisualStudio.Component.VC.Llvm.Clang --add Microsoft.VisualStudio.Component.VC.Llvm.ClangToolset --quiet --wait --norestart --nocache" -Wait -PassThru'
+    - 'if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) { exit $p.ExitCode }'
+  script:
+    - python ns3 configure --enable-tests --enable-examples --enable-asserts -d release -G "Visual Studio 17 2022"
+    - python ns3 build
+    - '$env:PATH = "$env:CI_PROJECT_DIR\build;" + $env:PATH'
+    - python test.py --no-build --verbose-failed
+  interruptible: true
+  timeout: 6h
+  tags:
+    - saas-windows-medium-amd64
+
+# Gate job ------------------------------------------------------------------
+
+# Manual only: the SaaS Windows runners are too slow to run these jobs within the time limit on every pipeline
+daily-windows:
+  rules:
+    - if: $RELEASE == "daily"
+      when: manual
+      allow_failure: true
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
+  stage: pre-build
+  script:
+    - echo "Starting Windows jobs"
+
+# Daily build+test jobs (build stage) --------------------------------------
+
+daily-build-windows-clangcl:
+  extends: .build-windows-clangcl-base
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  needs: ["daily-windows"]
+  stage: build
+
+daily-build-windows-mingw:
+  extends: .build-windows-mingw-base
+  rules:
+    - if: $RELEASE == "daily"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      allow_failure: true
+  needs: ["daily-windows"]
+  stage: build
+  variables:
+    MODE: default

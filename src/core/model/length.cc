@@ -11,18 +11,14 @@
 #include "log.h"
 
 #include <algorithm>
-#include <array>
 #include <cctype>
 #include <cmath>
 #include <functional>
 #include <limits>
-#include <map>
 #include <ratio>
 #include <sstream>
 #include <string>
-#include <type_traits>
 #include <unordered_map>
-#include <vector>
 
 /**
  * @file

@@ -7,8 +7,8 @@ IEEE 802.15.4: Low-Rate Wireless Personal Area Network (LR-WPAN)
 
 This chapter describes the implementation of |ns3| models for the
 low-rate, wireless personal area network (LR-WPAN) as specified by
-IEEE standard 802.15.4 (2003,2006,2011). The current emphasis is on direct transmissions running on both,
-slotted and unslotted mode (CSMA/CA) of IEEE 802.15.4 operation for use in Zigbee (TM) and 6loWPAN networks.
+IEEE standard 802.15.4 (2003,2006,2011 and a few features of 2015). The current emphasis is on direct transmissions running on both,
+slotted and unslotted mode (CSMA/CA) of IEEE 802.15.4 operation for use in Zigbee (TM) and 6LoWPAN networks.
 
 Both beacon and non-beacon modes are supported as well as the bootstrap mechanism (scan and association).
 
@@ -116,9 +116,6 @@ This design can be extended in the future to support other subclasses of ``LrWpa
 
 The ``LrWpanNetDevice`` presented in this module is intended to be used with other technology profiles, such as the 6LoWPAN and ZigBee stack.
 
-
-
-
 Scope and Limitations
 ---------------------
 
@@ -133,11 +130,9 @@ Scope and Limitations
 - Guaranteed Time Slots (GTS) are not supported.
 - Not all attributes are supported by the MLME-SET and MLME-GET primitives.
 - Indirect transmissions are only supported during the association process.
-- RSSI is not supported as this is part of the 2015 revision and the current implementation only supports until the 2011 revision.
 - PHY and MAC are currently not supported by the attribute system. To change the behavior of the PHY and MAC the standard SET primitives (e.g. MLME-SET.request) must be used.
 - No radio energy model is supported.
 - The PHY does not include sleep state.
-- Preamble is not fully modeled but its duration is considered.
 
 The PHY layer
 -------------
@@ -163,12 +158,40 @@ the transmit power spectral density mask specified in 2.4 GHz per section
 noise across the frequency bands. The loss model can fully utilize all
 existing simple (non-spectrum phy) loss models. The Phy model uses
 the existing single spectrum channel model.
-The physical layer is modeled on packet level, that is, no preamble/SFD
-detection is done. Packet reception will be started with the first bit of the
-preamble (which is not modeled), if the SNR is more than -5 dB, see IEEE
-Std 802.15.4-2006, appendix E, Figure E.2. Reception of the packet will finish
-after the packet was completely transmitted. Other packets arriving during
-reception will add up to the interference/noise.
+The physical layer is modeled at packet level, meaning there are no
+I/Q samples, chips, correlators or real bit decoding. Reception is modeled as follows:
+The physical layer is modeled at packet level, meaning that no I/Q samples, chips, correlators, or explicit bit decoding are simulated.
+Reception is modeled as follows. The signal-to-interference-plus-noise ratio (SINR) is computed from the received signal power,
+the thermal noise floor, and the aggregate interference from other ongoing transmissions in the channel.
+
+At the end of the preamble, a preliminary SINR check is performed to determine whether the packet is decodable.
+If the SINR is greater than -5 dB (IEEE Std 802.15.4-2006, Appendix E, Figure E.2), the receiver locks onto the packet and continues reception.
+Otherwise, the packet is considered undecodable, dropped, and treated as interference for other ongoing receptions.
+
+For packets that pass the preamble check, interference is tracked over the duration of the packet.
+At the end of reception, the error rate model is applied using the accumulated SINR and packet parameters to probabilistically determine whether
+the packet is successfully received or corrupted.
+If the SNR is below the sensitivity threshold,
+the reception is labeled as failed (i.e., cannot be heard by the radio).
+
+The following figure shows the PPDU format and the relevant events and states during packet reception.
+
+::
+
+
+    +-------------+------+
+    |   Preamble  |  SFD |
+    +-------------+------+----------+------------------------+
+    |         SHR        |   PHR    |      Payload (PSDU)    |
+    |       (4 bytes)    | (1 byte) |     (0 to 127 bytes)   |
+    +--------------------+----------+------------------------+
+    ^             ^                                          ^
+    |             |                                          |
+    StartRx()   EndPreamble()                            EndRx() <==== ns-3 packet events
+
+    |-------------|------------------------------------------|   <==== PHY states during reception
+         RX_ON                     BUSY_RX
+
 
 Rx sensitivity is defined as the weakest possible signal point at which a receiver can receive and decode a packet with a high success rate.
 According to the standard (IEEE Std 802.15.4-2006, section 6.1.7), this
@@ -224,6 +247,101 @@ Std 802.15.4-2006, section 7.5.6.2 is supported, including acknowledgements.
 Both short and extended addressing are supported. Various trace sources are
 supported, and trace sources can be hooked to sinks.
 
+MAC layer modes
+~~~~~~~~~~~~~~~
+
+The MAC layer can operate in two different modes: beacon-enabled mode and non-beacon mode.
+In beacon-enabled mode, the PAN coordinator periodically transmits beacons to
+synchronize the devices in the PAN. The beacons define superframe structures that
+organize the channel time into active and inactive periods. During the active period,
+the channel time is further divided into a contention access period (CAP) and an optional
+contention free period (CFP). In beacon mode, devices use slotted CSMA/CA to access the channel
+and take decisions on when to transmit or receive data based on the time slots of the superframe structure.
+For further details see [:ref:`2<lrwpanRef2>`] and [:ref:`4<lrwpanRef4>`].
+The following code snippet shows how to configure a PAN coordinator in beacon-enabled mode.
+
+::
+
+    NodeContainer coordinators;
+    coordinators.Create(1);
+
+    LrWpanHelper lrWpanHelper;
+    NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(coordinators);
+    Ptr<LrWpanNetDevice> dev = lrwpanDevices.Get(0)->GetObject<LrWpanNetDevice>();
+
+    MlmeStartRequestParams params;
+    params.m_panCoor = true;
+    params.m_PanId = 5;
+    params.m_bcnOrd = 14; // Setting the beacon interval in time slots (2^14 time slots)
+    params.m_sfrmOrd = 6; // Setting the size of the active and inactive periods between beacons
+                          // (2^6 = 64 time slots)
+
+    dev->GetMac()->MlmeStartRequest(params); // Start the PAN coordinator with the given parameters
+
+In the example above, a PAN coordinator is created and configured to operate in beacon-enabled mode
+by setting the beacon order (``bcnOrd``) attribute to a value less than 15. The superframe order (``sfrmOrd``) attribute is set to 6,
+which means that the active period of the superframe will occupy 2^6 = 64 time slots out of the total 2^14 = 16384 slots. A single
+time slot is equivalent to 960 symbols (``aBaseSuperframeDuration``) or 15.36 ms (where each symbol is 16 us long at 62.5 ksymbols/s). The remaining slots
+(16384 - 64 = 16320 slots) will be inactive period where devices can enter a low power state to save energy.
+
+Devices maintain synchronization with the PAN coordinator by receiving the periodic beacons. If a device fails to receive
+a certain number of consecutive beacons, it considers that it has lost synchronization with the PAN coordinator
+and notifies the higher layers using the ``MLME-SYNC-LOSS.indication`` primitive. Decisions about how to recover from this situation
+are left to the higher layers (e.g., re-association).
+
+Finally, devices can also operate in non-beacon mode. Non-beacon mode is the default mode
+and implies that there is no limitation on when devices can receive or transmit data other than the constraints imposed by the
+unslotted CSMA/CA algorithm. This also implies that there are no inactive times.
+
+When both,the beacon order and superframe order attribute is set to 15 (default), the coordinator as well as any
+devices associated to the coordinator operate in non-beacon mode.
+
+The following shows a table with some time equivalents for different beacon order or superframe order values running
+on the 2.4 GHz band (symbol rate of 62.5 ksymbols/s):
+
++--------------+-------------------------+
+| BcnOrd       |     Time Interval       |
+| SfrmOrd      +                         +
+| exponents    |                         |
++==============+=========================+
+|      0       |        15.36 ms         |
++--------------+-------------------------+
+|      1       |        30.72 ms         |
++--------------+-------------------------+
+|      2       |        61.44 ms         |
++--------------+-------------------------+
+|      3       |        122.88 ms        |
++--------------+-------------------------+
+|      4       |        245.76 ms        |
++--------------+-------------------------+
+|      5       |        491.52 ms        |
++--------------+-------------------------+
+|      6       |        983.04 ms        |
++--------------+-------------------------+
+|      7       |        1.966 s          |
++--------------+-------------------------+
+|      8       |        3.932 s          |
++--------------+-------------------------+
+|      9       |        7.864 s          |
++--------------+-------------------------+
+|     10       |        15.728 s         |
++--------------+-------------------------+
+|     11       |        31.456 s         |
++--------------+-------------------------+
+|     12       |        62.912 s         |
++--------------+-------------------------+
+|     13       |        125.824 s        |
++--------------+-------------------------+
+|     14       |        251.648 s        |
++--------------+-------------------------+
+|     15       |      Non-beacon mode    |
++--------------+-------------------------+
+
+Later revisions of the standard (IEEE 802.15.4-2015) introduced a new modes of operation known as
+"behaviors". For example, the TSCH (Time Slotted Channel Hopping) behavior and the DSME
+(Deterministic and Synchronous Multi-Channel Extension) behavior. However, these new modes of operation are not
+currently supported by |ns3|.
+
 Scan and Association
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -244,7 +362,7 @@ determine the optimal coordinator. LQI values range from 0 to 255. Where 255 is 
 
 In LR-WPAN, association is used to join PANs. All devices in LR-WPAN must belong to a PAN to communicate. |ns3| uses a classic association procedure described in the standard. The standard also covers a more effective association procedure known as fast association (See IEEE 802.15.4-2015, fastA) but this association is currently not supported by |ns3|. Alternatively, |ns3| can do a "quick and dirty" association using either ```LrWpanHelper::AssociateToPan``` or ```LrWpanHelper::AssociateToBeaconPan```. These functions are used when a preset association can be done. For example, when the relationships between existing nodes and coordinators are known and can be set before the beginning of the simulation. In other situations, like in many networks in real deployments or in large networks, it is desirable that devices "associate themselves" with the best possible available coordinator candidates. This is a process known as bootstrap, and simulating this process makes it possible to demonstrate the kind of situations a node would face in which large networks to associate in real environment.
 
-Bootstrap (a.k.a. network initialization) is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
+Bootstrap (a.k.a. network initialization) [:ref:`2<lrwpanRef1>`] [:ref:`5<lrwpanRef5>`] is possible with a combination of scan and association MAC primitives. Details on the general process for this network initialization is described in the standard. Bootstrap is a complex process that not only requires the scanning networks, but also the exchange of command frames and the use of a pending transaction list (indirect transmissions) in the coordinator to store command frames. The following summarizes the whole process:
 
 .. _fig-lr-wpan-assocSequence:
 
@@ -525,13 +643,23 @@ of the error model validation and can be reproduced by running
 References
 ----------
 
+.. _lrwpanRef1:
+
 [`1 <https://ieeexplore.ieee.org/document/1700009>`_] Wireless Medium Access Control (MAC) and Physical Layer (PHY) Specifications for Low-Rate Wireless Personal Area Networks (WPANs), IEEE Computer Society, IEEE Std 802.15.4-2006, 8 September 2006.
+
+.. _lrwpanRef2:
 
 [`2 <https://ieeexplore.ieee.org/document/6012487>`_] IEEE Standard for Local and metropolitan area networks--Part 15.4: Low-Rate Wireless Personal Area Networks (LR-WPANs)," in IEEE Std 802.15.4-2011 (Revision of IEEE Std 802.15.4-2006) , vol., no., pp.1-314, 5 Sept. 2011, doi: 10.1109/IEEESTD.2011.6012487.
 
+.. _lrwpanRef3:
+
 [`3 <https://www.mdpi.com/2079-9292/11/24/4090>`_] J. Zheng and Myung J. Lee, "A comprehensive performance study of IEEE 802.15.4," Sensor Network Operations, IEEE Press, Wiley Interscience, Chapter 4, pp. 218-237, 2006.
 
+.. _lrwpanRef4:
+
 [`4 <https://dl.acm.org/doi/10.1145/3442555.3442574>`_] Alberto Gallegos Ramonet and Taku Noguchi. 2020. LR-WPAN: Beacon Enabled Direct Transmissions on Ns-3. In 2020 the 6th International Conference on Communication and Information Processing (ICCIP 2020). Association for Computing Machinery, New York, NY, USA, 115–122. https://doi.org/10.1145/3442555.3442574.
+
+.. _lrwpanRef5:
 
 [`5 <https://www.mdpi.com/2079-9292/11/24/4090>`_] Gallegos Ramonet, A.; Noguchi, T. Performance Analysis of IEEE 802.15.4 Bootstrap Process. Electronics 2022, 11, 4090. https://doi.org/10.3390/electronics11244090.
 

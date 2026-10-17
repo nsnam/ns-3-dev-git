@@ -14,6 +14,7 @@
 
 #include "ns3/net-device-container.h"
 #include "ns3/object-factory.h"
+#include "ns3/zigbee-stack.h"
 
 #include <optional>
 #include <string>
@@ -65,10 +66,12 @@ class ZigbeeHelper
     zigbee::ZigbeeStackContainer Install(NetDeviceContainer c);
 
     /**
-     * If this is set, the helper will only create Zigbee stacks that contain
-     * only the NWK layer
+     * Selects which set of Zigbee layers the stacks created by Install() should
+     * contain. The default is the full stack (NWK + APS + ZDO).
+     *
+     * @param layers The set of layers to instantiate (see zigbee::StackLayers).
      */
-    void SetNwkLayerOnly();
+    void SetLayers(zigbee::StackLayers layers);
 
     /**
      * Assign a fixed random variable stream number to the random variables
@@ -85,7 +88,7 @@ class ZigbeeHelper
 
   private:
     ObjectFactory m_stackFactory; //!< Zigbee stack object factory.
-    bool m_nwkLayerOnly;          //!< Flag indicating that only the NWK layer is present
+    zigbee::StackLayers m_layers; //!< Set of Zigbee layers to instantiate.
 };
 
 } // namespace ns3

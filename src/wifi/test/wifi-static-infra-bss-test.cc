@@ -73,10 +73,14 @@ using ChannelMap = std::unordered_map<WifiPhyBand, Ptr<MultiModelSpectrumChannel
 /// @brief test case information
 struct WifiStaticInfraBssTestVector
 {
-    std::string name;                                      ///< Test case name
-    StringVector apChs{};                                  ///< Channel setting for AP device
-    StringVector clientChs{};                              ///< Channel settings for client device
-    uint16_t apBufferSize{consts::DEFAULT_BA_BUFFER_SIZE}; ///< Originator Buffer Size
+    std::string name;                             ///< Test case name
+    StringVector apChs{};                         ///< Channel setting for AP device
+    StringVector clientChs{};                     ///< Channel settings for client device
+    std::vector<WifiPowerManagementMode> pmModes; ///< if non-empty, PM mode for each STA affiliated
+                                                  ///< with the client in increasing order of client
+                                                  ///< link ID (as assigned before association); if
+                                                  ///< empty, no PowerSave manager is installed
+    uint16_t apBufferSize{consts::DEFAULT_BA_BUFFER_SIZE};     ///< Originator Buffer Size
     uint16_t clientBufferSize{consts::DEFAULT_BA_BUFFER_SIZE}; ///< Recipient Buffer Size
     std::optional<Ipv4Address> apMulticastIp{std::nullopt};    ///< AP multicast IP
     bool ulMuDataDisable{DEFAULT_WIFI_UL_MU_DATA_DISABLE};     ///< UL MU Data Disable
@@ -131,6 +135,11 @@ class WifiStaticInfraBssTest : public TestCase
                               Ptr<ApWifiMac> apMac,
                               Ptr<StaWifiMac> clientMac);
 
+    /// Validate the configured PM mode for the STA(s) affiliated with the client device
+    /// @param apMac AP MAC
+    /// @param clientMac Client MAC
+    void ValidatePmMode(Ptr<ApWifiMac> apMac, Ptr<StaWifiMac> clientMac);
+
     /// Validate Block ACK Agreement at AP and client
     /// @param apMac AP MAC
     /// @param clientMac Client MAC
@@ -143,6 +152,7 @@ class WifiStaticInfraBssTest : public TestCase
     Ptr<WifiNetDevice> m_apDev{nullptr};          ///< AP WiFi device
     Ptr<WifiNetDevice> m_clientDev{nullptr};      ///< client WiFi device
     std::optional<Mac48Address> m_apGcrGroupAddr; ///< GCR group address
+    std::map<linkId_t, linkId_t> m_linkIdMap;     ///< non-AP MLD link ID to AP MLD link ID mapping
 };
 
 WifiStaticInfraBssTest::WifiStaticInfraBssTest(const WifiStaticInfraBssTestVector& testVec)
@@ -216,6 +226,20 @@ WifiStaticInfraBssTest::GetClientMacHelper() const
                       SsidValue(ssid),
                       "MpduBufferSize",
                       UintegerValue(m_testVec.clientBufferSize));
+    // install and configure a PowerSave manager if PM modes are provided
+    if (!m_testVec.pmModes.empty())
+    {
+        std::string s;
+        for (std::size_t id = 0; const auto pmMode : m_testVec.pmModes)
+        {
+            s += std::to_string(id++) + (pmMode == WIFI_PM_POWERSAVE ? " true, " : " false, ");
+        }
+        s.pop_back();
+        s.pop_back();
+        macHelper.SetPowerSaveManager("ns3::DefaultPowerSaveManager",
+                                      "PowerSaveMode",
+                                      StringValue(s));
+    }
     return macHelper;
 }
 
@@ -242,10 +266,18 @@ WifiStaticInfraBssTest::DoSetup()
                              {WIFI_PHY_BAND_5GHZ, CreateObject<MultiModelSpectrumChannel>()},
                              {WIFI_PHY_BAND_6GHZ, CreateObject<MultiModelSpectrumChannel>()}};
 
+    NS_TEST_ASSERT_MSG_EQ(
+        (m_testVec.pmModes.empty() || (m_testVec.pmModes.size() == m_testVec.clientChs.size())),
+        true,
+        "PM modes (" << m_testVec.pmModes.size() << ") and link (" << m_testVec.clientChs.size()
+                     << ") mismatch");
+
     m_apDev = GetWifiNetDevice(true, channelMap); // AP
     NS_ASSERT(m_apDev);
     m_clientDev = GetWifiNetDevice(false, channelMap); // Client
     NS_ASSERT(m_clientDev);
+
+    m_linkIdMap = WifiStaticSetupHelper::GetLinkIdMap(m_apDev, m_clientDev);
 
     WifiStaticSetupHelper::SetStaticAssociation(m_apDev, m_clientDev);
     if (auto multicastIp = m_testVec.apMulticastIp)
@@ -308,6 +340,43 @@ WifiStaticInfraBssTest::ValidateAssocForLink(linkId_t clientLinkId,
         (apRemoteMgr->GetAffiliatedStaAddress(clientMac->GetAddress()) == staAddr),
         true,
         "Incorrect affiliated address stored by AP on link ID " << +apLinkId);
+}
+
+void
+WifiStaticInfraBssTest::ValidatePmMode(Ptr<ApWifiMac> apMac, Ptr<StaWifiMac> clientMac)
+{
+    const auto& clientLinkIds = clientMac->GetLinkIds();
+    // if PM modes are not provided (hence, no PowerSave manager is installed), we expect all
+    // STAs affiliated with the client to be in active mode
+    auto pmModes = !m_testVec.pmModes.empty()
+                       ? m_testVec.pmModes
+                       : std::vector<WifiPowerManagementMode>(clientLinkIds.size(), WIFI_PM_ACTIVE);
+
+    NS_TEST_ASSERT_MSG_EQ(pmModes.size(), clientLinkIds.size(), "Number of PM modes mismatch");
+    for (std::size_t id = 0; const auto pmMode : pmModes)
+    {
+        NS_TEST_ASSERT_MSG_EQ(m_linkIdMap.contains(id),
+                              true,
+                              "Non-AP MLD did not have link " << id << " before association");
+        const auto linkId = m_linkIdMap.at(id);
+        NS_TEST_EXPECT_MSG_EQ(
+            clientMac->GetPmMode(linkId),
+            pmMode,
+            "Unexpected PM mode for STA affiliated with the non-AP MLD and operating on link "
+                << +linkId << "(non-AP MLD side)");
+
+        NS_TEST_EXPECT_MSG_EQ(
+            apMac->GetWifiRemoteStationManager(linkId)->IsInPsMode(clientMac->GetAddress()),
+            (pmMode == WIFI_PM_POWERSAVE),
+            "Unexpected PM mode for STA affiliated with the non-AP MLD and operating on link "
+                << +linkId << "(AP MLD side)");
+
+        NS_TEST_EXPECT_MSG_EQ(apMac->GetNStationsInPsMode(linkId),
+                              (pmMode == WIFI_PM_POWERSAVE ? 1 : 0),
+                              "AP is tracking an unexpected number of STAs in PS mode on link "
+                                  << +linkId);
+        ++id;
+    }
 }
 
 void
@@ -395,6 +464,7 @@ WifiStaticInfraBssTest::ValidateAssoc()
         ValidateAssocForLink(linkId, apMac, clientMac);
     }
 
+    ValidatePmMode(apMac, clientMac);
     ValidateBaAgr(apMac, clientMac);
     ValidateMuScheduler(apMac, clientMac);
 }
@@ -427,6 +497,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-1-link-Client-1-link",
               {"{36, 0, BAND_5GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}"},
+              {},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -434,6 +505,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-1-link-Client-1-link-multicast",
               {"{36, 0, BAND_5GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}"},
+              {WIFI_PM_POWERSAVE},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               "239.192.1.1",
@@ -441,6 +513,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-2-link-Client-1-link",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}"},
+              {},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -448,6 +521,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-2-link-Client-1-link-Diff-Order",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}"},
               {"{2, 0, BAND_2_4GHZ, 0}"},
+              {WIFI_PM_POWERSAVE},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -455,6 +529,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-3-link-Client-2-link",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+              {},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -462,6 +537,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-3-link-Client-2-link-Diff-Order",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
               {"{2, 0, BAND_2_4GHZ, 0}", "{36, 0, BAND_5GHZ, 0}"},
+              {WIFI_PM_ACTIVE, WIFI_PM_POWERSAVE},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -469,6 +545,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-3-link-Client-3-link",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+              {WIFI_PM_ACTIVE, WIFI_PM_POWERSAVE, WIFI_PM_ACTIVE},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -476,6 +553,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"AP-80MHz-Client-20MHz",
               {"{42, 80, BAND_5GHZ, 0}"},
               {"{36, 20, BAND_5GHZ, 0}"},
+              {WIFI_PM_ACTIVE},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -483,6 +561,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"Single-linkBuffer-Size-Test",
               {"{36, 0, BAND_5GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}"},
+              {},
               64,
               256,
               std::nullopt,
@@ -490,6 +569,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"Single-linkBuffer-Size-Test-Alt",
               {"{36, 0, BAND_5GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}"},
+              {},
               1024,
               256,
               std::nullopt,
@@ -497,6 +577,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"Multi-link-Buffer-Size-Test",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+              {WIFI_PM_POWERSAVE, WIFI_PM_POWERSAVE, WIFI_PM_POWERSAVE},
               256,
               64,
               std::nullopt,
@@ -504,6 +585,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"Multi-link-Buffer-Size-Test-Alt",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+              {WIFI_PM_ACTIVE, WIFI_PM_ACTIVE, WIFI_PM_ACTIVE},
               1024,
               1024,
               std::nullopt,
@@ -511,6 +593,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"Single-link-UL-MU-Disable",
               {"{36, 0, BAND_5GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}"},
+              {},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,
@@ -518,6 +601,7 @@ WifiStaticInfraBssTestSuite::WifiStaticInfraBssTestSuite()
              {"2-link-UL-MU-Disable",
               {"{36, 0, BAND_5GHZ, 0}", "{2, 0, BAND_2_4GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
               {"{36, 0, BAND_5GHZ, 0}", "{1, 0, BAND_6GHZ, 0}"},
+              {},
               consts::DEFAULT_BA_BUFFER_SIZE,
               consts::DEFAULT_BA_BUFFER_SIZE,
               std::nullopt,

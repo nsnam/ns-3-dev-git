@@ -279,7 +279,7 @@ IdealWifiManager::DoReportRtsOk(WifiRemoteStation* st,
     auto station = static_cast<IdealWifiRemoteStation*>(st);
     station->m_lastSnrObserved = rtsSnr;
     station->m_lastChannelWidthObserved =
-        GetPhy()->GetChannelWidth() >= MHz_u{42} ? MHz_u{20} : GetPhy()->GetChannelWidth();
+        GetPhy()->GetChannelWidth() >= MHz_u{40} ? MHz_u{20} : GetPhy()->GetChannelWidth();
     station->m_lastNssObserved = 1;
 }
 
@@ -438,7 +438,7 @@ IdealWifiManager::DoGetDataTxVector(WifiRemoteStation* st, MHz_u allowedWidth)
                         {
                             NS_LOG_DEBUG("Skipping mode " << mode.GetUniqueName() << " nss " << +nss
                                                           << " width "
-                                                          << +txVector.GetChannelWidth());
+                                                          << txVector.GetChannelWidth());
                             continue;
                         }
                         double threshold = GetSnrThreshold(txVector);
@@ -581,7 +581,7 @@ IdealWifiManager::GetLastObservedSnr(IdealWifiRemoteStation* station,
     double snr = station->m_lastSnrObserved;
     if (channelWidth != station->m_lastChannelWidthObserved)
     {
-        snr /= (static_cast<double>(channelWidth) / station->m_lastChannelWidthObserved);
+        snr /= (channelWidth / station->m_lastChannelWidthObserved);
     }
     if (nss != station->m_lastNssObserved)
     {

@@ -34,9 +34,9 @@ using namespace ns3::energy;
  *
  * Plot files are produced as a result of this example.
  * Graphs can be obtained from the plot using:
- * \code{.sh}
+ * @code{.sh}
    $> gnuplot <plotname>.plt
-   \endcode
+   @endcode
  *
  */
 

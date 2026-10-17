@@ -14,6 +14,8 @@
 #include "ns3/attribute-helper.h"
 #include "ns3/attribute.h"
 
+#include <array>
+#include <compare>
 #include <ostream>
 #include <stdint.h>
 
@@ -32,6 +34,9 @@ class Address;
 class Mac16Address
 {
   public:
+    /// Address length when converted to an Address [bytes].
+    static constexpr uint8_t ADDRESS_LENGTH = 2;
+
     Mac16Address() = default;
     /**
      * @param str a string representing the new Mac16Address
@@ -52,14 +57,14 @@ class Mac16Address
      *
      * Copy the input address to our internal buffer.
      */
-    void CopyFrom(const uint8_t buffer[2]);
+    void CopyFrom(const uint8_t buffer[ADDRESS_LENGTH]);
 
     /**
      * @param buffer address in network order
      *
      * Copy the internal address to the input buffer.
      */
-    void CopyTo(uint8_t buffer[2]) const;
+    void CopyTo(uint8_t buffer[ADDRESS_LENGTH]) const;
 
     /**
      * @returns a new Address instance
@@ -131,13 +136,13 @@ class Mac16Address
      * consisting of the sixteen octets DST[1] through DST[16], is
      * transmitted to the following 802.15.4 16-bit multicast address:
 
-    \verbatim
+    @verbatim
       0                   1
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |1 0 0|DST[15]* |   DST[16]     |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    \endverbatim
+    @endverbatim
 
      * Here, DST[15]* refers to the last 5 bits in octet DST[15], that is,
      * bits 3-7 within DST[15].  The initial 3-bit pattern of "100" follows
@@ -165,39 +170,21 @@ class Mac16Address
      */
     bool IsMulticast() const;
 
+    /**
+     * Spaceship comparison operator. All the other comparison operators
+     * are automatically generated from this one.
+     *
+     * @param other address to compare to this one
+     * @returns The result of the comparison.
+     */
+    constexpr std::strong_ordering operator<=>(const Mac16Address& other) const = default;
+
   private:
     /**
      * @brief Return the Type of address.
      * @return type of address
      */
     static uint8_t GetType();
-
-    /**
-     * @brief Equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are equal
-     */
-    friend bool operator==(const Mac16Address& a, const Mac16Address& b);
-
-    /**
-     * @brief Not equal to operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operands are not equal
-     */
-    friend bool operator!=(const Mac16Address& a, const Mac16Address& b);
-
-    /**
-     * @brief Less than operator.
-     *
-     * @param a the first operand
-     * @param b the first operand
-     * @returns true if the operand a is less than operand b
-     */
-    friend bool operator<(const Mac16Address& a, const Mac16Address& b);
 
     /**
      * @brief Stream insertion operator.
@@ -217,29 +204,11 @@ class Mac16Address
      */
     friend std::istream& operator>>(std::istream& is, Mac16Address& address);
 
-    static uint64_t m_allocationIndex; //!< Address allocation index
-    uint8_t m_address[2]{0};           //!< Address value
+    static uint64_t m_allocationIndex;               //!< Address allocation index
+    std::array<uint8_t, ADDRESS_LENGTH> m_address{}; //!< Address value
 };
 
 ATTRIBUTE_HELPER_HEADER(Mac16Address);
-
-inline bool
-operator==(const Mac16Address& a, const Mac16Address& b)
-{
-    return memcmp(a.m_address, b.m_address, 2) == 0;
-}
-
-inline bool
-operator!=(const Mac16Address& a, const Mac16Address& b)
-{
-    return memcmp(a.m_address, b.m_address, 2) != 0;
-}
-
-inline bool
-operator<(const Mac16Address& a, const Mac16Address& b)
-{
-    return memcmp(a.m_address, b.m_address, 2) < 0;
-}
 
 std::ostream& operator<<(std::ostream& os, const Mac16Address& address);
 std::istream& operator>>(std::istream& is, Mac16Address& address);

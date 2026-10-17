@@ -123,6 +123,17 @@ class NetDevice : public Object
     virtual Address GetAddress() const = 0;
 
     /**
+     * Get the current address used to communicate with a remote.
+     * This method can be overridden by devices that have multiple addresses and that need to select
+     * from among them based on the remote address provided.  The default implementation of this
+     * method will call GetAddress().
+     *
+     * @param remoteAddr the address of the remote.
+     * @return the current Address of this interface.
+     */
+    virtual Address GetAddressFor(const Address& remoteAddr) const;
+
+    /**
      * @param mtu MTU value, in bytes, to set for the device
      * @return whether the MTU value was within legal bounds
      *
@@ -136,6 +147,20 @@ class NetDevice : public Object
      * IP fragmentation when needed.
      */
     virtual uint16_t GetMtu() const = 0;
+    /**
+     * @brief Returns the padding threshold.
+     *
+     * Payloads shorter than this value in bytes are padded to this length,
+     * and the padding may be delivered to the receiver as data. Layers
+     * that infer upper-layer lengths from the frame size (e.g., 6LoWPAN
+     * header compression) can use this value to avoid emitting frames
+     * that would be padded.
+     *
+     * @return the payload size in bytes below which the device model may
+     *         deliver padding bytes as data on the receiver, or zero if
+     *         the link never delivers padding bytes as data.
+     */
+    virtual uint16_t GetPaddingThreshold() const;
     /**
      * @return true if link is up; false otherwise
      */

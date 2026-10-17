@@ -80,6 +80,10 @@ class CsmaNetDevice : public NetDevice
      */
     ~CsmaNetDevice() override;
 
+    // Delete copy constructor and assignment operator to avoid misuse
+    CsmaNetDevice(const CsmaNetDevice&) = delete;
+    CsmaNetDevice& operator=(const CsmaNetDevice&) = delete;
+
     /**
      * Set the interframe gap used to separate packets.  The interframe gap
      * defines the minimum space required between packets sent by this device.
@@ -214,10 +218,20 @@ class CsmaNetDevice : public NetDevice
     Ptr<Channel> GetChannel() const override;
     bool SetMtu(const uint16_t mtu) override;
     uint16_t GetMtu() const override;
+
+    uint16_t GetPaddingThreshold() const override;
     void SetAddress(Address address) override;
     Address GetAddress() const override;
     bool IsLinkUp() const override;
     void AddLinkChangeCallback(Callback<void> callback) override;
+
+    /**
+     * Notify any interested parties that the link has gone down, i.e. that the
+     * device has been detached from its channel. Marks the link as down and
+     * fires the link-change callbacks.
+     */
+    void NotifyLinkDown();
+
     bool IsBroadcast() const override;
     Address GetBroadcast() const override;
     bool IsMulticast() const override;
@@ -352,21 +366,6 @@ class CsmaNetDevice : public NetDevice
     void AddHeader(Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
 
   private:
-    /**
-     * Operator = is declared but not implemented.  This disables the assignment
-     * operator for CsmaNetDevice objects.
-     * @param o object to copy
-     * @returns the copied object
-     */
-    CsmaNetDevice& operator=(const CsmaNetDevice& o);
-
-    /**
-     * Copy constructor is declared but not implemented.  This disables the
-     * copy constructor for CsmaNetDevice objects.
-     * @param o object to copy
-     */
-    CsmaNetDevice(const CsmaNetDevice& o);
-
     /**
      * Initialization function used during object construction.
      * @param sendEnable if device will be allowed to send

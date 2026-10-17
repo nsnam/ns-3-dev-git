@@ -6,11 +6,15 @@
  */
 
 #include "ns3/abort.h"
+#include "ns3/box.h"
+#include "ns3/building.h"
 #include "ns3/buildings-channel-condition-model.h"
-#include "ns3/buildings-module.h"
+#include "ns3/buildings-helper.h"
 #include "ns3/config.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/log.h"
+#include "ns3/mobility-building-info.h"
+#include "ns3/node-container.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 

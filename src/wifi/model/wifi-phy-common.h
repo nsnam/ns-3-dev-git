@@ -11,15 +11,24 @@
 #ifndef WIFI_PHY_COMMON_H
 #define WIFI_PHY_COMMON_H
 
+#include "wifi-ns3-constants.h"
 #include "wifi-spectrum-value-helper.h"
 #include "wifi-standards.h"
 #include "wifi-types.h"
 
+#include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "ns3/ptr.h"
+#include "ns3/wifi-export.h"
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
 #include <ostream>
 #include <set>
+#include <utility>
 #include <vector>
 
 /**
@@ -45,13 +54,168 @@ class Time;
  */
 using WifiSpectrumBandFrequencies = std::pair<Hz_u, Hz_u>;
 
-/// WifiSpectrumBandInfo structure containing info about a spectrum band
-struct WifiSpectrumBandInfo
+/**
+ * @ingroup wifi
+ * Fixed-capacity inline vector holding the per-segment data of a
+ * WifiSpectrumBandInfo. A band has at most a small known number of segments
+ * (a single contiguous range in the common case, two for 80+80 split RUs),
+ * so inline storage covers every case without heap allocations and keeps
+ * band copies cheap.
+ *
+ * @tparam T element type
+ * @tparam N maximum number of elements
+ */
+template <typename T, std::size_t N>
+class WifiBandSegments
 {
-    std::vector<WifiSpectrumBandIndices>
-        indices; //!< the start and stop indices for each segment of the band
-    std::vector<WifiSpectrumBandFrequencies>
-        frequencies; //!< the start and stop frequencies for each segment of the band
+  public:
+    using value_type = T;                                             //!< element type
+    using size_type = std::size_t;                                    //!< size type
+    using iterator = typename std::array<T, N>::iterator;             //!< iterator type
+    using const_iterator = typename std::array<T, N>::const_iterator; //!< const iterator type
+
+    /// Default constructor (empty).
+    WifiBandSegments() = default;
+
+    /**
+     * Initializer-list constructor so existing call sites can write
+     * @code{.cpp} WifiBandSegments<T, N>{{a, b, c}} @endcode.
+     * @param init the elements to copy in
+     */
+    WifiBandSegments(std::initializer_list<T> init)
+    {
+        NS_ASSERT(init.size() <= N);
+        for (const auto& v : init)
+        {
+            m_data[m_size++] = v;
+        }
+    }
+
+    /// @return number of elements currently held
+    size_type size() const
+    {
+        return m_size;
+    }
+
+    /// @return true if no elements are held
+    bool empty() const
+    {
+        return m_size == 0;
+    }
+
+    /**
+     * Access the i-th element.
+     * @param i the index of the element
+     * @return reference to the i-th element
+     */
+    T& at(size_type i)
+    {
+        return m_data[i];
+    }
+
+    /**
+     * Access the i-th element.
+     * @param i the index of the element
+     * @return const reference to the i-th element
+     */
+    const T& at(size_type i) const
+    {
+        return m_data[i];
+    }
+
+    /// @return reference to the first element
+    T& front()
+    {
+        return m_data[0];
+    }
+
+    /// @return const reference to the first element
+    const T& front() const
+    {
+        return m_data[0];
+    }
+
+    /// @return reference to the last element
+    T& back()
+    {
+        return m_data[m_size - 1];
+    }
+
+    /// @return const reference to the last element
+    const T& back() const
+    {
+        return m_data[m_size - 1];
+    }
+
+    /**
+     * Append a new element constructed in-place.
+     * @param args constructor arguments
+     */
+    template <typename... Args>
+    void emplace_back(Args&&... args)
+    {
+        NS_ASSERT(m_size < N);
+        m_data[m_size++] = T(std::forward<Args>(args)...);
+    }
+
+    /// @return iterator to the first element
+    iterator begin()
+    {
+        return m_data.begin();
+    }
+
+    /// @return iterator one past the last element
+    iterator end()
+    {
+        return m_data.begin() + m_size;
+    }
+
+    /// @return const_iterator to the first element
+    const_iterator begin() const
+    {
+        return m_data.cbegin();
+    }
+
+    /// @return const_iterator one past the last element
+    const_iterator end() const
+    {
+        return m_data.cbegin() + m_size;
+    }
+
+    /// @return const_iterator to the first element
+    const_iterator cbegin() const
+    {
+        return m_data.cbegin();
+    }
+
+    /// @return const_iterator one past the last element
+    const_iterator cend() const
+    {
+        return m_data.cbegin() + m_size;
+    }
+
+    /**
+     * Equality compares size and elements element-wise.
+     * @param other the other vector to compare against
+     * @return true if the two vectors have the same content
+     */
+    bool operator==(const WifiBandSegments& other) const
+    {
+        return m_size == other.m_size && std::equal(cbegin(), cend(), other.cbegin());
+    }
+
+  private:
+    std::array<T, N> m_data{}; //!< inline storage
+    std::uint8_t m_size{0};    //!< number of elements currently held
+};
+
+/// WifiSpectrumBandInfo structure containing info about a spectrum band
+struct WIFI_EXPORT WifiSpectrumBandInfo
+{
+    /// Start and stop indices per segment of the band.
+    WifiBandSegments<WifiSpectrumBandIndices, WIFI_SPECTRUM_BAND_MAX_SEGMENTS> indices;
+    /// Start and stop frequencies per segment of the band.
+    WifiBandSegments<WifiSpectrumBandFrequencies, WIFI_SPECTRUM_BAND_MAX_SEGMENTS> frequencies;
 };
 
 /// vector of spectrum bands
@@ -80,6 +244,146 @@ operator<(const WifiSpectrumBandInfo& lhs, const WifiSpectrumBandInfo& rhs)
 }
 
 /**
+ * @ingroup wifi
+ * Received power (W) per spectrum band.
+ *
+ * Map from WifiSpectrumBandInfo to Watt_u, backed by a band-sorted
+ * std::vector to avoid a node allocation per inserted band. Lookups are
+ * O(log n) via binary search.
+ */
+class RxPowerWattPerChannelBand
+{
+  public:
+    using value_type = std::pair<WifiSpectrumBandInfo, Watt_u>; //!< (band, power) entry
+    using container_type = std::vector<value_type>;             //!< backing container type
+    using iterator = container_type::iterator;                  //!< iterator type
+    using const_iterator = container_type::const_iterator;      //!< const iterator type
+    using size_type = std::size_t;                              //!< size type
+
+    /// @return an iterator to the first entry
+    iterator begin()
+    {
+        return m_data.begin();
+    }
+
+    /// @return an iterator one past the last entry
+    iterator end()
+    {
+        return m_data.end();
+    }
+
+    /// @return a const iterator to the first entry
+    const_iterator begin() const
+    {
+        return m_data.begin();
+    }
+
+    /// @return a const iterator one past the last entry
+    const_iterator end() const
+    {
+        return m_data.end();
+    }
+
+    /// @return a const iterator to the first entry
+    const_iterator cbegin() const
+    {
+        return m_data.cbegin();
+    }
+
+    /// @return a const iterator one past the last entry
+    const_iterator cend() const
+    {
+        return m_data.cend();
+    }
+
+    /// @return the number of entries
+    size_type size() const
+    {
+        return m_data.size();
+    }
+
+    /// @return true if no entries are held
+    bool empty() const
+    {
+        return m_data.empty();
+    }
+
+    /**
+     * Map-like find by band.
+     * @param band the band to look up
+     * @return iterator to the entry, or end() if not found
+     */
+    iterator find(const WifiSpectrumBandInfo& band)
+    {
+        auto it = std::lower_bound(m_data.begin(), m_data.end(), band, BandLess{});
+        if (it != m_data.end() && !(band < it->first))
+        {
+            return it;
+        }
+        return m_data.end();
+    }
+
+    /**
+     * Map-like find by band.
+     * @param band the band to look up
+     * @return const iterator to the entry, or cend() if not found
+     */
+    const_iterator find(const WifiSpectrumBandInfo& band) const
+    {
+        auto it = std::lower_bound(m_data.cbegin(), m_data.cend(), band, BandLess{});
+        if (it != m_data.cend() && !(band < it->first))
+        {
+            return it;
+        }
+        return m_data.cend();
+    }
+
+    /**
+     * Map-like sorted insert. No-op if a value with the same key is already present.
+     * @param v the (band, power) pair to insert
+     * @return pair of iterator to the entry and bool indicating whether the insertion happened
+     */
+    std::pair<iterator, bool> insert(value_type v)
+    {
+        auto it = std::lower_bound(m_data.begin(), m_data.end(), v.first, BandLess{});
+        if (it != m_data.end() && !(v.first < it->first))
+        {
+            return {it, false};
+        }
+        return {m_data.insert(it, std::move(v)), true};
+    }
+
+  private:
+    /// Comparator for heterogeneous lookup of entries by band
+    struct BandLess
+    {
+        /**
+         * Compare an entry against a band.
+         * @param a the entry
+         * @param b the band
+         * @return true if the entry's band is lower than @p b
+         */
+        bool operator()(const value_type& a, const WifiSpectrumBandInfo& b) const
+        {
+            return a.first < b;
+        }
+
+        /**
+         * Compare a band against an entry.
+         * @param a the band
+         * @param b the entry
+         * @return true if @p a is lower than the entry's band
+         */
+        bool operator()(const WifiSpectrumBandInfo& a, const value_type& b) const
+        {
+            return a < b.first;
+        }
+    };
+
+    container_type m_data; //!< storage, kept in sorted-by-band order
+};
+
+/**
  * @brief Stream insertion operator.
  *
  * @param os the stream
@@ -90,11 +394,15 @@ inline std::ostream&
 operator<<(std::ostream& os, const WifiSpectrumBandInfo& band)
 {
     NS_ASSERT(band.indices.size() == band.frequencies.size());
+    bool printSegment = band.indices.size() > 1;
     for (std::size_t segmentIndex = 0; segmentIndex < band.indices.size(); ++segmentIndex)
     {
-        os << "indices segment" << segmentIndex << ": [" << band.indices.at(segmentIndex).first
-           << "-" << band.indices.at(segmentIndex).second << "], frequencies segment"
-           << segmentIndex << ": [" << band.frequencies.at(segmentIndex).first << "Hz-"
+        os << "indices"
+           << (printSegment ? std::string(" segment") + std::to_string(segmentIndex) : "") << ": ["
+           << band.indices.at(segmentIndex).first << "-" << band.indices.at(segmentIndex).second
+           << "], frequencies"
+           << (printSegment ? std::string(" segment") + std::to_string(segmentIndex) : "") << ": ["
+           << band.frequencies.at(segmentIndex).first << "Hz-"
            << band.frequencies.at(segmentIndex).second << "Hz] ";
     }
     return os;
@@ -591,7 +899,7 @@ operator<<(std::ostream& os, WifiChannelWidthType width)
  *
  * @return the guard interval duration to use for the mode
  */
-Time GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device);
+WIFI_EXPORT Time GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device);
 
 /**
  * Get the guard interval for a given WifiMode.
@@ -602,7 +910,9 @@ Time GetGuardIntervalForMode(WifiMode mode, const Ptr<WifiNetDevice> device);
  *
  * @return the guard interval duration to use for the mode
  */
-Time GetGuardIntervalForMode(WifiMode mode, bool htShortGuardInterval, Time heGuardInterval);
+WIFI_EXPORT Time GetGuardIntervalForMode(WifiMode mode,
+                                         bool htShortGuardInterval,
+                                         Time heGuardInterval);
 
 /**
  * Return the preamble to be used for the transmission.
@@ -622,7 +932,7 @@ WifiPreamble GetPreambleForTransmission(WifiModulationClass modulation,
  * @param preamble the given preamble type (must be one defined by HT standard or later)
  * @return the modulation class corresponding to the given preamble type
  */
-WifiModulationClass GetModulationClassForPreamble(WifiPreamble preamble);
+WIFI_EXPORT WifiModulationClass GetModulationClassForPreamble(WifiPreamble preamble);
 
 /**
  * Return whether the modulation class of the selected mode for the
@@ -646,7 +956,7 @@ bool IsAllowedControlAnswerModulationClass(WifiModulationClass modClassReq,
  *
  * @return the maximum PPDU duration, if defined, and zero otherwise
  */
-Time GetPpduMaxTime(WifiPreamble preamble);
+WIFI_EXPORT Time GetPpduMaxTime(WifiPreamble preamble);
 
 /**
  * Return true if a preamble corresponds to a multi-user transmission.
@@ -654,7 +964,7 @@ Time GetPpduMaxTime(WifiPreamble preamble);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to a multi-user transmission
  */
-bool IsMu(WifiPreamble preamble);
+WIFI_EXPORT bool IsMu(WifiPreamble preamble);
 
 /**
  * Return true if a preamble corresponds to a downlink multi-user transmission.
@@ -662,7 +972,7 @@ bool IsMu(WifiPreamble preamble);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to a downlink multi-user transmission
  */
-bool IsDlMu(WifiPreamble preamble);
+WIFI_EXPORT bool IsDlMu(WifiPreamble preamble);
 
 /**
  * Return true if a preamble corresponds to a uplink multi-user transmission.
@@ -670,7 +980,7 @@ bool IsDlMu(WifiPreamble preamble);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to a uplink multi-user transmission
  */
-bool IsUlMu(WifiPreamble preamble);
+WIFI_EXPORT bool IsUlMu(WifiPreamble preamble);
 
 /**
  * Return the modulation class corresponding to a given standard.
@@ -682,7 +992,7 @@ bool IsUlMu(WifiPreamble preamble);
  * @param standard the standard
  * @return the modulation class corresponding to the standard
  */
-WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
+WIFI_EXPORT WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
 
 /**
  * Get the supported channel width set that can be advertised in PHY capabilities.
@@ -691,7 +1001,7 @@ WifiModulationClass GetModulationClassForStandard(WifiStandard standard);
  * @param band the PHY band
  * @return the supported channel width set that can be advertised for the given standard and band
  */
-std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band);
+WIFI_EXPORT std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand band);
 
 /**
  * Get the maximum channel width allowed for the given modulation class.
@@ -699,7 +1009,7 @@ std::set<MHz_u> GetSupportedChannelWidthSet(WifiStandard standard, WifiPhyBand b
  * @param modulation the modulation class
  * @return the maximum channel width allowed for the given modulation class
  */
-MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
+WIFI_EXPORT MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
 
 /**
  * Get the total channel width for the channel width type.
@@ -707,7 +1017,7 @@ MHz_u GetMaximumChannelWidth(WifiModulationClass modulation);
  * @param width the channel width type
  * @return the total channel width for the channel width type
  */
-MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
+WIFI_EXPORT MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
 
 /**
  * Return true if a preamble corresponds to an EHT transmission.
@@ -715,7 +1025,7 @@ MHz_u GetChannelWidthInMhz(WifiChannelWidthType width);
  * @param preamble the preamble
  * @return true if the provided preamble corresponds to an EHT transmission
  */
-bool IsEht(WifiPreamble preamble);
+WIFI_EXPORT bool IsEht(WifiPreamble preamble);
 
 /**
  * @brief map a given channel list type to the corresponding scaling factor
@@ -731,29 +1041,10 @@ const std::map<WifiChannelListType, dBm_u> channelTypeToScalingFactor{
 /**
  * A struct for both SNR and PER
  */
-struct SnrPer
+struct WIFI_EXPORT SnrPer
 {
     double snr{0.0}; ///< SNR in linear scale
     double per{1.0}; ///< PER
-
-    /**
-     * Default constructor.
-     */
-    SnrPer()
-    {
-    }
-
-    /**
-     * Constructor for SnrPer.
-     *
-     * @param s the SNR in linear scale
-     * @param p the PER
-     */
-    SnrPer(double s, double p)
-        : snr(s),
-          per(p)
-    {
-    }
 };
 
 /**

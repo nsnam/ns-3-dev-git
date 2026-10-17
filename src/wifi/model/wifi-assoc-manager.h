@@ -12,6 +12,8 @@
 #include "qos-utils.h"
 #include "sta-wifi-mac.h"
 
+#include "ns3/wifi-export.h"
+
 #include <optional>
 #include <set>
 #include <unordered_map>
@@ -26,14 +28,14 @@ namespace ns3
  * scanning and association for single link devices and ML discovery
  * and setup for multi-link devices.
  */
-class WifiAssocManager : public Object
+class WIFI_EXPORT WifiAssocManager : public Object
 {
     /**
      * Struct providing a function call operator to compare two ApInfo objects.
      * This struct is used as the Compare template type parameter of the set of
      * ApInfo objects maintained by the Association Manager.
      */
-    struct ApInfoCompare
+    struct WIFI_EXPORT ApInfoCompare
     {
         /**
          * Constructor.
@@ -61,7 +63,7 @@ class WifiAssocManager : public Object
      * Struct to identify a specific TBTT Information field of a Neighbor AP Information
      * field in a Reduced Neighbor Report element.
      */
-    struct RnrLinkInfo
+    struct WIFI_EXPORT RnrLinkInfo
     {
         std::size_t m_nbrApInfoId;     ///< Neighbor AP Information field index
         std::size_t m_tbttInfoFieldId; ///< TBTT Information field index
@@ -108,6 +110,15 @@ class WifiAssocManager : public Object
      * @param linkId the ID of the given link
      */
     virtual void NotifyChannelSwitched(uint8_t linkId) = 0;
+
+    /**
+     * Notify that ML setup has been completed and link IDs have been swapped. This method
+     * updates the link IDs in the information gathered so far.
+     *
+     * @param swapInfo a set of pairs (from, to) each mapping a current link ID to the
+     *              link ID it has to become (i.e., link 'from' becomes link 'to')
+     */
+    void NotifyLinkSwapped(const std::map<uint8_t, uint8_t>& swapInfo);
 
     /**
      * Compare two ApInfo objects for the purpose of keeping a sorted list of
@@ -224,10 +235,10 @@ class WifiAssocManager : public Object
     /**
      * Check whether 11be Multi-Link setup can be established with the current best AP.
      *
-     * \param[out] mle const reference to the Multi-Link Element present in the
-     *                 Beacon/Probe Response received from the best AP, if any
-     * \param[out] rnr const reference to the Reduced Neighbor Report Element present
-     *                 in the Beacon/Probe Response received from the best AP, if any.
+     * @param [out] mle const reference to the Multi-Link Element present in the
+     *                  Beacon/Probe Response received from the best AP, if any
+     * @param [out] rnr const reference to the Reduced Neighbor Report Element present
+     *                  in the Beacon/Probe Response received from the best AP, if any.
      * @return whether 11be Multi-Link setup can be established with the current best AP
      */
     bool CanSetupMultiLink(OptMleConstRef& mle, OptRnrConstRef& rnr);

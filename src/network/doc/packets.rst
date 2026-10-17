@@ -37,12 +37,12 @@ One problem that this design choice raises is that it is difficult to
 pretty-print the packet headers without context. The packet metadata describes
 the type of the headers and trailers which were serialized in the byte buffer.
 The maintenance of metadata is optional and disabled by default. To enable it,
-you must call Packet::EnablePrinting() and this will allow you to get non-empty
-output from Packet::Print and Packet::Print.
+you must call ``Packet::EnablePrinting()`` and this will allow you to get non-empty
+output from ``Packet::Print()`` and ``Packet::Print()``.
 
 Also, developers often want to store data in packet objects that is not found
-in the real packets (such as timestamps or flow-ids). The Packet class
-deals with this requirement by storing a set of tags (class Tag).
+in the real packets (such as timestamps or flow-ids). The ``Packet`` class
+deals with this requirement by storing a set of tags (class ``Tag``).
 We have found two classes of use cases for these tags, which leads to
 two different types of tags. So-called 'byte' tags are used to tag a subset of
 the bytes in the packet byte buffer while 'packet' tags are used to tag the
@@ -52,7 +52,7 @@ bytes while 'packet' tags follow packets. Another important difference between
 these two kinds of tags is that byte tags cannot be removed and are expected to
 be written once, and read many times, while packet tags are expected to be
 written once, read many times, and removed exactly once. An example of a 'byte'
-tag is a FlowIdTag which contains a flow id and is set by the application
+tag is a ``FlowIdTag`` which contains a flow id and is set by the application
 generating traffic. An example of a 'packet' tag is a cross-layer QoS class id
 set by an application and processed by a lower-level MAC layer.
 
@@ -73,10 +73,10 @@ between ease-of-use, performance, and safe interface design.
 Packet design overview
 **********************
 
-Unlike |ns2|, in which Packet objects contain a buffer of C++
+Unlike |ns2|, in which ``Packet`` objects contain a buffer of C++
 structures corresponding to protocol headers, each network packet in
-|ns3| contains a byte Buffer, a list of byte Tags, a list of
-packet Tags, and a PacketMetadata object:
+|ns3| contains a byte ``Buffer``, a list of byte ``Tags``, a list of
+packet ``Tags``, and a ``PacketMetadata`` object:
 
 * The byte buffer stores the serialized content of the chunks added to a packet.
   The serialized representation of these chunks is expected to match that of
@@ -107,8 +107,8 @@ packet.
 
 Packets are reference counted objects. They are handled with smart pointer (Ptr)
 objects like many of the objects in the |ns3| system.  One small difference you
-will see is that class Packet does not inherit from class Object or class
-RefCountBase, and implements the Ref() and Unref() methods directly. This was
+will see is that class ``Packet`` does not inherit from class Object or class
+``RefCountBase``, and implements the ``Ref()`` and ``Unref()`` methods directly. This was
 designed to avoid the overhead of a vtable in class Packet.
 
 The Packet class is designed to be copied cheaply; the overall design
@@ -134,8 +134,8 @@ virtual methods listed below:
 * ``ns3::Header::PrintTo()``
 
 Basically, the first three functions are used to serialize and deserialize
-protocol control information to/from a Buffer. For example, one may define
-``class TCPHeader : public Header``. The TCPHeader object will typically
+protocol control information to/from a ``Buffer``. For example, one may define
+``class TCPHeader : public Header``. The ``TCPHeader`` object will typically
 consist of some private data (like a sequence number) and public interface
 access functions (such as checking the bounds of an input). But the underlying
 representation of the TCPHeader in a Packet Buffer is 20 serialized bytes (plus
@@ -190,7 +190,7 @@ The packet now has a size of N bytes, which can be verified by the GetSize()
 method::
 
   /**
-   * \returns the size in bytes of the packet (including the zero-filled
+   * @returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
    */
   uint32_t GetSize() const;
@@ -213,10 +213,10 @@ Adding and removing Buffer data
 
 After the initial packet creation (which may possibly create some fake initial
 bytes of payload), all subsequent buffer data is added by adding objects of
-class Header or class Trailer. Note that, even if you are in the application
+class ``Header`` or class ``Trailer``. Note that, even if you are in the application
 layer, handling packets, and want to write application data, you write it as an
-ns3::Header or ns3::Trailer. If you add a Header, it is prepended to the
-packet, and if you add a Trailer, it is added to the end of the packet. If you
+``ns3::Header`` or ``ns3::Trailer``. If you add a ``Header``, it is prepended to the
+packet, and if you add a ``Trailer``, it is added to the end of the packet. If you
 have no data in the packet, then it makes no difference whether you add a Header
 or Trailer. Since the APIs and classes for header and trailer are pretty much
 identical, we'll just look at class Header here.
@@ -229,7 +229,7 @@ must inherit from class Header, and implement the following methods:
 * ``GetSerializedSize ()``
 * ``Print ()``
 
-To see a simple example of how these are done, look at the UdpHeader class
+To see a simple example of how these are done, look at the ``UdpHeader`` class
 headers src/internet/model/udp-header.cc. There are many other examples within
 the source code.
 
@@ -242,7 +242,7 @@ Packet API can be used to add or remove such headers.::
    * methods to reserve space in the buffer and request the
    * header to serialize itself in the packet buffer.
    *
-   * \param header a reference to the header to add to this packet.
+   * @param header a reference to the header to add to this packet.
    */
   void AddHeader(const Header & header);
   /**
@@ -251,16 +251,16 @@ Packet API can be used to add or remove such headers.::
    * This method invokes Header::Deserialize(begin) and should be used for
    * fixed-length headers.
    *
-   * \param header a reference to the header to remove from the internal buffer.
-   * \returns the number of bytes removed from the packet.
+   * @param header a reference to the header to remove from the internal buffer.
+   * @returns the number of bytes removed from the packet.
    */
   uint32_t RemoveHeader(Header &header);
   /**
    * Deserialize but does _not_ remove the header from the internal buffer.
    * This method invokes Header::Deserialize.
    *
-   * \param header a reference to the header to read from the internal buffer.
-   * \returns the number of bytes read from the packet.
+   * @param header a reference to the header to read from the internal buffer.
+   * @returns the number of bytes read from the packet.
    */
   uint32_t PeekHeader(Header &header) const;
 
@@ -281,15 +281,15 @@ If the header is variable-length, then another variant of RemoveHeader() is
 needed::
 
   /**
-   * \brief Deserialize and remove the header from the internal buffer.
+   * @brief Deserialize and remove the header from the internal buffer.
    *
    * This method invokes Header::Deserialize(begin, end) and should be
    * used for variable-length headers (where the size is determined somehow
    * by the caller).
    *
-   * \param header a reference to the header to remove from the internal buffer.
-   * \param size number of bytes to deserialize
-   * \returns the number of bytes removed from the packet.
+   * @param header a reference to the header to remove from the internal buffer.
+   * @param size number of bytes to deserialize
+   * @returns the number of bytes removed from the packet.
    */
   uint32_t RemoveHeader(Header &header, uint32_t size);
 
@@ -302,11 +302,11 @@ be deduced from the packet length.
 Adding and removing Tags
 ++++++++++++++++++++++++
 
-There is a single base class of Tag that all packet tags must derive from. They
+There is a single base class of ``Tag`` that all packet tags must derive from. They
 are used in two different tag lists in the packet; the lists have different
 semantics and different expected use cases.
 
-As the names imply, ByteTags follow bytes and PacketTags follow packets. What
+As the names imply, ``ByteTags`` follow bytes and ``PacketTags`` follow packets. What
 this means is that when operations are done on packets, such as fragmentation,
 concatenation, and appending or removing headers, the byte tags keep track of
 which packet bytes they cover. For instance, if a user creates a TCP segment,
@@ -338,13 +338,13 @@ behavior of packet tags and byte tags.
 
 If a user wants to take an existing packet object and reuse it as a new packet,
 he or she should remove all byte tags and packet tags before doing so. An
-example is the UdpEchoServer class, which takes the received packet and "turns
+example is the ``UdpEchoServer`` class, which takes the received packet and "turns
 it around" to send back to the echo client.
 
 The Packet API for byte tags is given below.::
 
   /**
-   * \param tag the new tag to add to this packet
+   * @param tag the new tag to add to this packet
    *
    * Tag each byte included in this packet with the
    * new tag.
@@ -362,12 +362,12 @@ The Packet API for byte tags is given below.::
    */
   void AddByteTag(const Tag &tag) const;
   /**
-   * \returns an iterator over the set of byte tags included in this packet.
+   * @returns an iterator over the set of byte tags included in this packet.
    */
   ByteTagIterator GetByteTagIterator() const;
   /**
-   * \param tag the tag to search in this packet
-   * \returns true if the requested tag type was found, false otherwise.
+   * @param tag the tag to search in this packet
+   * @returns true if the requested tag type was found, false otherwise.
    *
    * If the requested tag type is found, it is copied in the user's
    * provided tag instance.
@@ -380,7 +380,7 @@ The Packet API for byte tags is given below.::
   void RemoveAllByteTags();
 
   /**
-   * \param os output stream in which the data should be printed.
+   * @param os output stream in which the data should be printed.
    *
    * Iterate over the tags present in this packet, and
    * invoke the Print method of each tag stored in the packet.
@@ -390,7 +390,7 @@ The Packet API for byte tags is given below.::
 The Packet API for packet tags is given below.::
 
   /**
-   * \param tag the tag to store in this packet
+   * @param tag the tag to store in this packet
    *
    * Add a tag to this packet. This method calls the
    * Tag::GetSerializedSize and, then, Tag::Serialize.
@@ -401,8 +401,8 @@ The Packet API for packet tags is given below.::
    */
   void AddPacketTag(const Tag &tag) const;
   /**
-   * \param tag the tag to remove from this packet
-   * \returns true if the requested tag is found, false
+   * @param tag the tag to remove from this packet
+   * @returns true if the requested tag is found, false
    *          otherwise.
    *
    * Remove a tag from this packet. This method calls
@@ -410,8 +410,8 @@ The Packet API for packet tags is given below.::
    */
   bool RemovePacketTag(Tag &tag);
   /**
-   * \param tag the tag to search in this packet
-   * \returns true if the requested tag is found, false
+   * @param tag the tag to search in this packet
+   * @returns true if the requested tag is found, false
    *          otherwise.
    *
    * Search a matching tag and call Tag::Deserialize if it is found.
@@ -423,17 +423,17 @@ The Packet API for packet tags is given below.::
   void RemoveAllPacketTags();
 
   /**
-   * \param os the stream in which we want to print data.
+   * @param os the stream in which we want to print data.
    *
    * Print the list of 'packet' tags.
    *
-   * \sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
+   * @sa Packet::AddPacketTag, Packet::RemovePacketTag, Packet::PeekPacketTag,
    *  Packet::RemoveAllPacketTags
    */
   void PrintPacketTags(std::ostream &os) const;
 
   /**
-   * \returns an object which can be used to iterate over the list of
+   * @returns an object which can be used to iterate over the list of
    *  packet tags.
    */
   PacketTagIterator GetPacketTagIterator() const;
@@ -514,7 +514,7 @@ Implementation details
 Private member variables
 ++++++++++++++++++++++++
 
-A Packet object's interface provides access to some private data::
+A ``Packet`` object's interface provides access to some private data::
 
   Buffer m_buffer;
   ByteTagList m_byteTagList;
@@ -523,7 +523,7 @@ A Packet object's interface provides access to some private data::
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
 
-Each Packet has a Buffer and two Tags lists, a PacketMetadata object, and a ref
+Each ``Packet`` has a ``Buffer`` and two ``Tags`` lists, a ``PacketMetadata`` object, and a ref
 count. A static member variable keeps track of the UIDs allocated. The actual
 uid of the packet is stored in the PacketMetadata.
 
@@ -536,14 +536,14 @@ be more convenient to store it in a member variable.
 Buffer implementation
 +++++++++++++++++++++
 
-Class Buffer represents a buffer of bytes. Its size is automatically adjusted to
+Class ``Buffer`` represents a buffer of bytes. Its size is automatically adjusted to
 hold any data prepended or appended by the user. Its implementation is optimized
 to ensure that the number of buffer resizes is minimized, by creating new
 Buffers of the maximum size ever used.  The correct maximum size is learned at
 runtime during use by recording the maximum size of each packet.
 
-Authors of new Header or Trailer classes need to know the public API of the
-Buffer class.  (add summary here)
+Authors of new ``Header`` or ``Trailer`` classes need to know the public API of the
+``Buffer`` class.  (add summary here)
 
 The byte buffer is implemented as follows: ::
 
@@ -560,18 +560,18 @@ The byte buffer is implemented as follows: ::
     uint32_t m_start;
     uint32_t m_size;
 
-* ``BufferData::m_count``: reference count for BufferData structure
-* ``BufferData::m_size``: size of data buffer stored in BufferData structure
+* ``BufferData::m_count``: reference count for ``BufferData`` structure
+* ``BufferData::m_size``: size of data buffer stored in ``BufferData`` structure
 * ``BufferData::m_initialStart``: offset from start of data buffer where data
   was first inserted
-* ``BufferData::m_dirtyStart``: offset from start of buffer where every Buffer
-  which holds a reference to this BufferData instance have written data so far
+* ``BufferData::m_dirtyStart``: offset from start of buffer where every ``Buffer``
+  which holds a reference to this ``BufferData`` instance have written data so far
 * ``BufferData::m_dirtySize``: size of area where data has been written so far
 * ``BufferData::m_data``: pointer to data buffer
 * ``Buffer::m_zeroAreaSize``: size of zero area which extends before
   ``m_initialStart``
 * ``Buffer::m_start``: offset from start of buffer to area used by this buffer
-* ``Buffer::m_size``: size of area used by this Buffer in its BufferData
+* ``Buffer::m_size``: size of area used by this ``Buffer`` in its ``BufferData``
   structure
 
 .. _buffer:
@@ -581,12 +581,12 @@ The byte buffer is implemented as follows: ::
    Implementation overview of a packet's byte Buffer.
 
 
-This data structure is summarized in Figure :ref:`buffer`. Each Buffer holds a
-pointer to an instance of a BufferData. Most Buffers should be able to share the
-same underlying BufferData and thus simply increase the BufferData's reference
-count. If they have to change the content of a BufferData inside the Dirty Area,
+This data structure is summarized in Figure :ref:`buffer`. Each ``Buffer`` holds a
+pointer to an instance of a ``BufferData``. Most ``Buffers`` should be able to share the
+same underlying ``BufferData`` and thus simply increase the ``BufferData``'s reference
+count. If they have to change the content of a ``BufferData`` inside the Dirty Area,
 and if the reference count is not one, they first create a copy of the
-BufferData and then complete their state-changing operation.
+``BufferData`` and then complete their state-changing operation.
 
 Tags implementation
 +++++++++++++++++++
@@ -594,7 +594,7 @@ Tags implementation
 (XXX revise me)
 
 Tags are implemented by a single pointer which points to the start of a
-linked list ofTagData data structures. Each TagData structure points
+linked list of ``TagData`` data structures. Each ``TagData`` structure points
 to the next TagData in the list (its next pointer contains zero to
 indicate the end of the linked list). Each TagData contains an integer
 unique id which identifies the type of the tag stored in the TagData.::
