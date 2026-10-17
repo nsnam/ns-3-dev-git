@@ -1,0 +1,3 @@
+FlowID,TxPackets,RxPackets,TxBytes,RxBytes,LossRatio(%),MeanDelay(ms)
+1,100,20,105200,21040,80.00,1.4229
+2,20,20,21040,21040,0.00,1.2838

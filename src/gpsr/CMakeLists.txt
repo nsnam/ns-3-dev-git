@@ -1,0 +1,20 @@
+build_lib(
+  LIBNAME gpsr
+  SOURCE_FILES
+    model/gpsr.cc
+    model/gpsr-packet.cc
+    model/gpsr-ptable.cc
+    helper/gpsr-helper.cc
+  HEADER_FILES
+    model/gpsr.h
+    model/gpsr-packet.h
+    model/gpsr-ptable.h
+    helper/gpsr-helper.h
+  LIBRARIES_TO_LINK
+    ${libcore}
+    ${libnetwork}
+    ${libinternet}
+    ${libwifi}
+    ${libmobility}
+    ${libapplications}
+)

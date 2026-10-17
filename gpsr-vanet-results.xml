@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<FlowMonitor>
+  <FlowStats>
+  </FlowStats>
+  <Ipv4FlowClassifier>
+  </Ipv4FlowClassifier>
+  <Ipv6FlowClassifier>
+  </Ipv6FlowClassifier>
+  <FlowProbes>
+    <FlowProbe index="0">
+    </FlowProbe>
+    <FlowProbe index="1">
+    </FlowProbe>
+    <FlowProbe index="2">
+    </FlowProbe>
+    <FlowProbe index="3">
+    </FlowProbe>
+    <FlowProbe index="4">
+    </FlowProbe>
+    <FlowProbe index="5">
+    </FlowProbe>
+    <FlowProbe index="6">
+    </FlowProbe>
+    <FlowProbe index="7">
+    </FlowProbe>
+    <FlowProbe index="8">
+    </FlowProbe>
+    <FlowProbe index="9">
+    </FlowProbe>
+    <FlowProbe index="10">
+    </FlowProbe>
+    <FlowProbe index="11">
+    </FlowProbe>
+    <FlowProbe index="12">
+    </FlowProbe>
+    <FlowProbe index="13">
+    </FlowProbe>
+    <FlowProbe index="14">
+    </FlowProbe>
+    <FlowProbe index="15">
+    </FlowProbe>
+    <FlowProbe index="16">
+    </FlowProbe>
+    <FlowProbe index="17">
+    </FlowProbe>
+    <FlowProbe index="18">
+    </FlowProbe>
+    <FlowProbe index="19">
+    </FlowProbe>
+  </FlowProbes>
+</FlowMonitor>

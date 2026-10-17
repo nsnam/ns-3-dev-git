@@ -1,0 +1,19 @@
+preparar pRa funcionar com o LS
+	Mandar loopback no routeoutput DONE
+	no route input ver tag e mandar pa deferedrouteoutput DONE
+	por millagre chama sendpacketfromqeue (com timers ou assim. o aodv faz no RecvReply....) DONE
+	no sendpacket se ja tiver pronto tira tag e envia DONE 
+
+mudar o invalid vector (-1, -1, 0) DONE
+
+tirar batota do l3... http://code.nsnam.org/tomh/ns-3-dev/rev/dc40e27bf514
+code style
+do the recovery-mode       search for "//FIXME here should call the recovery-mode"
+por instancia do LS DONE
+Chamar LS generico DONE
+
+eventually:
+	work with multiple interfaces
+	tirar prints a mais DONE
+
+
