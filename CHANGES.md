@@ -20,6 +20,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to existing API
 
+* (csma-layout) The `CsmaStarHelper::AssignIpv6Addresses` function signature has changed and is now analogous to the one of `CsmaStarHelper::AssignIpv4Addresses`.
 * (internet-apps) The `LeaseInfo` class in DHCPv6 has been moved from the `ns3` namespace to become a private inner class of `Dhcp6Server` (`Dhcp6Server::LeaseInfo`), as it is an internal data structure not used in any public interface.
 * (mesh) `dot11s::IePreq::GetDestinationList()` is now a const method.
 

@@ -48,9 +48,7 @@ main(int argc, char* argv[])
     // Default number of nodes in the star.  Overridable by command line argument.
     //
     uint32_t nSpokes = 7;
-    uint32_t useIpv6 = 0;
-    auto ipv6AddressBase = Ipv6Address("2001::");
-    auto ipv6AddressPrefix = Ipv6Prefix(64);
+    bool useIpv6 = false;
 
     CommandLine cmd(__FILE__);
     cmd.AddValue("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
@@ -66,7 +64,7 @@ main(int argc, char* argv[])
     NodeContainer fillNodes;
 
     //
-    // Just to be nasy, hang some more nodes off of the CSMA channel for each
+    // Hang some more nodes off of the CSMA channel for each
     // spoke, so that there are a total of 16 nodes on each channel.  Stash
     // all of these new devices into a container.
     //
@@ -89,13 +87,13 @@ main(int argc, char* argv[])
     internet.Install(fillNodes);
 
     NS_LOG_INFO("Assign IP Addresses.");
-    if (useIpv6 == 0)
+    if (!useIpv6)
     {
         star.AssignIpv4Addresses(Ipv4AddressHelper("10.1.0.0", "255.255.255.0"));
     }
     else
     {
-        star.AssignIpv6Addresses(ipv6AddressBase, ipv6AddressPrefix);
+        star.AssignIpv6Addresses(Ipv6AddressHelper("2001:f00d:cafe::", 64));
     }
 
     //
@@ -126,9 +124,10 @@ main(int argc, char* argv[])
         }
         else
         {
-            Ipv6AddressGenerator::Init(ipv6AddressBase, ipv6AddressPrefix);
-            Ipv6Address v6network = Ipv6AddressGenerator::GetNetwork(ipv6AddressPrefix);
-            address6.SetBase(v6network, ipv6AddressPrefix);
+            std::ostringstream subnet;
+            subnet << "2001:f00d:cafe:" << i << "::";
+            NS_LOG_INFO("Assign IP Addresses for CSMA subnet " << subnet.str());
+            address6.SetBase(subnet.str().c_str(), 64, "::3");
 
             for (uint32_t j = 0; j < nFill; ++j)
             {
@@ -143,7 +142,7 @@ main(int argc, char* argv[])
     //
     uint16_t port = 50000;
 
-    if (useIpv6 == 0)
+    if (!useIpv6)
     {
         Address hubLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
         PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", hubLocalAddress);
@@ -171,7 +170,7 @@ main(int argc, char* argv[])
 
     for (uint32_t i = 0; i < star.SpokeCount(); ++i)
     {
-        if (useIpv6 == 0)
+        if (!useIpv6)
         {
             AddressValue remoteAddress(InetSocketAddress(star.GetHubIpv4Address(i), port));
             onOffHelper.SetAttribute("Remote", remoteAddress);
@@ -200,7 +199,7 @@ main(int argc, char* argv[])
     for (uint32_t i = 0; i < fillNodes.GetN(); ++i)
     {
         AddressValue remoteAddress;
-        if (useIpv6 == 0)
+        if (!useIpv6)
         {
             remoteAddress =
                 AddressValue(InetSocketAddress(star.GetHubIpv4Address(i / nFill), port));
@@ -221,9 +220,13 @@ main(int argc, char* argv[])
     //
     // Turn on global static routing so we can actually be routed across the star.
     //
-    if (useIpv6 == 0)
+    if (!useIpv6)
     {
         Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+    }
+    else
+    {
+        Ipv6GlobalRoutingHelper::PopulateRoutingTables();
     }
 
     NS_LOG_INFO("Enable pcap tracing.");

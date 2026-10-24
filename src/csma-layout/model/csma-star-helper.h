@@ -115,18 +115,16 @@ class CsmaStarHelper
     void InstallStack(InternetStackHelper stack);
 
     /**
-     * @param address an Ipv4AddressHelper which is used to install
-     *                Ipv4 addresses on all the node interfaces in
-     *                the star
+     * @param addressHelper an Ipv4AddressHelper which is used to install
+     *                      Ipv4 addresses on all the node interfaces in the star
      */
-    void AssignIpv4Addresses(Ipv4AddressHelper address);
+    void AssignIpv4Addresses(Ipv4AddressHelper addressHelper);
 
     /**
-     * @param network an IPv6 Address representing the network portion
-     *                of the Ipv6 Address
-     * @param prefix the prefix length
+     * @param addressHelper an Ipv6AddressHelper which is used to install
+     *                      Ipv6 addresses on all the node interfaces in the star
      */
-    void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
+    void AssignIpv6Addresses(Ipv6AddressHelper addressHelper);
 
   private:
     NodeContainer m_hub;                    //!< NodeContainer for the hub node
