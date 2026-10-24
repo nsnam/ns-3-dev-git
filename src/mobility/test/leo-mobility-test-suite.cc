@@ -679,6 +679,190 @@ LeoOrbitInclinationTestCase::DoRun()
  * @ingroup mobility-test
  * @ingroup leo
  *
+ * @brief Test that a non-negative Speed attribute sets the orbital speed.
+ *
+ * GetSpeed() should return the attribute, GetAngularVelocity() should be that
+ * speed divided by the orbit radius, and GetVelocity() should still be the
+ * rate of change of GetPosition().
+ */
+class LeoCustomSpeedTestCase : public TestCase
+{
+  public:
+    LeoCustomSpeedTestCase();
+
+  private:
+    void DoRun() override;
+};
+
+LeoCustomSpeedTestCase::LeoCustomSpeedTestCase()
+    : TestCase("LEO Speed attribute sets the orbital speed")
+{
+}
+
+void
+LeoCustomSpeedTestCase::DoRun()
+{
+    const double speed = 5000.0;
+    auto node = CreateObject<Node>();
+    auto mob = CreateObject<LeoCircularOrbitMobilityModel>();
+    mob->SetAttribute("Altitude", DoubleValue(1000.0));
+    mob->SetAttribute("Inclination", DoubleValue(45.0));
+    mob->SetAttribute("Speed", DoubleValue(speed));
+    mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
+    node->AggregateObject(mob);
+
+    mob->SetPosition(Vector(0.0, 0.0, 0.0));
+
+    NS_TEST_ASSERT_MSG_EQ_TOL(mob->GetSpeed(), speed, 1e-9, "GetSpeed() should return Speed");
+    NS_TEST_ASSERT_MSG_EQ_TOL(mob->GetAngularVelocity(),
+                              speed / ORBIT_RADIUS_M,
+                              1e-12,
+                              "angular velocity should be Speed divided by the orbit radius");
+
+    const Time sampleTime = Seconds(100);
+    const Time halfStep = MilliSeconds(100);
+    Vector before;
+    Vector after;
+    Vector velocity;
+    Simulator::Schedule(sampleTime - halfStep, [&]() { before = mob->GetPosition(); });
+    Simulator::Schedule(sampleTime, [&]() { velocity = mob->GetVelocity(); });
+    Simulator::Schedule(sampleTime + halfStep, [&]() { after = mob->GetPosition(); });
+
+    Simulator::Run();
+    Simulator::Destroy();
+
+    Vector expected = (after - before) * (1.0 / (2 * halfStep.GetSeconds()));
+    NS_TEST_ASSERT_MSG_EQ_TOL((velocity - expected).GetLength(),
+                              0.0,
+                              VELOCITY_TOLERANCE,
+                              "velocity differs from the position difference");
+}
+
+/**
+ * @ingroup mobility-test
+ * @ingroup leo
+ *
+ * @brief Test that an argument of latitude of 180 degrees places the
+ * satellite at the descending node: on the equator, heading south.
+ */
+class LeoDescendingNodeTestCase : public TestCase
+{
+  public:
+    /**
+     * Constructor.
+     *
+     * @param inclination inclination of the orbital plane in degrees
+     */
+    LeoDescendingNodeTestCase(double inclination);
+
+  private:
+    void DoRun() override;
+
+    double m_inclination; ///< Inclination of the orbital plane in degrees
+};
+
+LeoDescendingNodeTestCase::LeoDescendingNodeTestCase(double inclination)
+    : TestCase((std::ostringstream() << "LEO argument of latitude 180 deg is the descending "
+                                        "node, inclination "
+                                     << inclination << " deg")
+                   .str()),
+      m_inclination(inclination)
+{
+}
+
+void
+LeoDescendingNodeTestCase::DoRun()
+{
+    auto node = CreateObject<Node>();
+    auto mob = CreateObject<LeoCircularOrbitMobilityModel>();
+    mob->SetAttribute("Altitude", DoubleValue(1000.0));
+    mob->SetAttribute("Inclination", DoubleValue(m_inclination));
+    mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
+    node->AggregateObject(mob);
+
+    mob->SetPosition(Vector(0.0, 180.0, 0.0));
+
+    // Opposite the ascending node at longitude 0
+    Vector pos = mob->GetPosition();
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.x, -ORBIT_RADIUS_M, TOLERANCE, "x coordinate is incorrect");
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.y, 0.0, TOLERANCE, "y coordinate should be zero");
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.z, 0.0, TOLERANCE, "z coordinate should be zero");
+    NS_TEST_ASSERT_MSG_LT(mob->GetVelocity().z,
+                          0.0,
+                          "velocity at the descending node should point south");
+
+    Simulator::Destroy();
+}
+
+/**
+ * @ingroup mobility-test
+ * @ingroup leo
+ *
+ * @brief Test that a retrograde satellite returns to its ascending node
+ * after one orbital period, displaced westward by the Earth's rotation.
+ *
+ * Starting at the ascending node at longitude 0, after one period T the
+ * expected ECEF position is r * (cos(lon_T), sin(lon_T), 0), with
+ * lon_T = -2 * pi * T / 24h, and the satellite is heading north again.
+ */
+class LeoRetrogradeFullPeriodTestCase : public TestCase
+{
+  public:
+    LeoRetrogradeFullPeriodTestCase();
+
+  private:
+    void DoRun() override;
+};
+
+LeoRetrogradeFullPeriodTestCase::LeoRetrogradeFullPeriodTestCase()
+    : TestCase("LEO retrograde orbit returns to the drifted ascending node after one period")
+{
+}
+
+void
+LeoRetrogradeFullPeriodTestCase::DoRun()
+{
+    auto node = CreateObject<Node>();
+    auto mob = CreateObject<LeoCircularOrbitMobilityModel>();
+    mob->SetAttribute("Altitude", DoubleValue(1000.0));
+    mob->SetAttribute("Inclination", DoubleValue(98.0));
+    mob->SetAttribute("Resolution", TimeValue(Seconds(0)));
+    node->AggregateObject(mob);
+
+    mob->SetPosition(Vector(0.0, 0.0, 0.0));
+
+    const double periodSeconds = 2.0 * std::numbers::pi / mob->GetAngularVelocity();
+    const Time period = Seconds(periodSeconds);
+    Vector pos;
+    Vector velocity;
+    Simulator::Schedule(period, [&]() {
+        pos = mob->GetPosition();
+        velocity = mob->GetVelocity();
+    });
+
+    Simulator::Run();
+    Simulator::Destroy();
+
+    double lonAtT = -2.0 * std::numbers::pi * period.GetSeconds() / Hours(24).GetSeconds();
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.x,
+                              ORBIT_RADIUS_M * std::cos(lonAtT),
+                              TOLERANCE,
+                              "x coordinate after one period is incorrect");
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.y,
+                              ORBIT_RADIUS_M * std::sin(lonAtT),
+                              TOLERANCE,
+                              "y coordinate after one period is incorrect");
+    NS_TEST_ASSERT_MSG_EQ_TOL(pos.z,
+                              0.0,
+                              TOLERANCE,
+                              "z coordinate after one period should be zero");
+    NS_TEST_ASSERT_MSG_GT(velocity.z, 0.0, "satellite should be heading north after one period");
+}
+
+/**
+ * @ingroup mobility-test
+ * @ingroup leo
+ *
  * @brief Test that the Walker Delta phasing factor correctly staggers
  * satellites in adjacent orbital planes.
  *
@@ -1086,6 +1270,13 @@ LeoMobilityTestSuite::LeoMobilityTestSuite()
     AddTestCase(new LeoVelocityTestCase(45.0, 0.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoVelocityTestCase(45.0, 90.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoVelocityTestCase(98.0, 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoVelocityTestCase(135.0, 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoVelocityTestCase(180.0, 0.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoVelocityTestCase(45.0, 180.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoCustomSpeedTestCase, TestCase::Duration::QUICK);
+    AddTestCase(new LeoDescendingNodeTestCase(45.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoDescendingNodeTestCase(135.0), TestCase::Duration::QUICK);
+    AddTestCase(new LeoRetrogradeFullPeriodTestCase, TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitInclinationTestCase(45.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitInclinationTestCase(98.0), TestCase::Duration::QUICK);
     AddTestCase(new LeoOrbitInclinationTestCase(135.0), TestCase::Duration::QUICK);
