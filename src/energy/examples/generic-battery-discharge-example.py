@@ -26,6 +26,9 @@ def main(argv):
     argv: System parameters to use if necessary
     """
 
+    cmd = ns.CommandLine(__file__)
+    cmd.Parse(argv)
+
     ns.LogComponentEnable("GenericBatteryModel", ns.LOG_LEVEL_DEBUG)
 
     node = ns.Node()
@@ -53,6 +56,12 @@ def main(argv):
     devicesEnergyModel.SetEnergySource(batteryModel)
     batteryModel.AppendDeviceEnergyModel(devicesEnergyModel)
     devicesEnergyModel.SetNode(node)
+    # Attach the battery to the node as the energy source helpers do, so it
+    # can be found from the node (e.g. by the visualizer's battery indicator).
+    batteryModel.SetNode(node)
+    sources = ns.CreateObject[ns.energy.EnergySourceContainer]()
+    sources.Add(batteryModel)
+    node.AggregateObject(sources)
 
     devicesEnergyModel.SetCurrentA(6.5)
 

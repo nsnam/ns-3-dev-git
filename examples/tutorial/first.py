@@ -11,6 +11,11 @@ except ModuleNotFoundError:
         " or your PYTHONPATH might not be properly configured"
     )
 
+import sys
+
+cmd = ns.CommandLine(__file__)
+cmd.Parse(sys.argv)
+
 # // Default Network Topology
 # //
 # //       10.1.1.0

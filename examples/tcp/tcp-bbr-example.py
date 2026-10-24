@@ -27,6 +27,7 @@ Outputs:
 
 import argparse
 import os
+import sys
 import time
 
 try:
@@ -126,7 +127,9 @@ def main():
     parser.add_argument("--delAckCount", type=int, default=2, help="Delayed ACK count")
     parser.add_argument("--enablePcap", action="store_true", help="Enable pcap traces")
     parser.add_argument("--stopTime", type=float, default=100.0, help="Simulation stop time")
-    args = parser.parse_args()
+    args, ns3_args = parser.parse_known_args()
+    cmd = ns.CommandLine(__file__)
+    cmd.Parse([sys.argv[0]] + ns3_args)
 
     ts = time.strftime("%d-%m-%Y-%I-%M-%S")
     outdir = f"bbr-results/{ts}/"

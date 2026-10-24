@@ -16,6 +16,11 @@ except ModuleNotFoundError:
         " or your PYTHONPATH might not be properly configured"
     )
 
+import sys
+
+cmd = ns.CommandLine(__file__)
+cmd.Parse(sys.argv)
+
 ns.LogComponentEnable("BriteTopologyHelper", ns.LOG_LEVEL_ALL)
 
 # BRITE needs a configuration file to build its graph. By default, this

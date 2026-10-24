@@ -16,6 +16,11 @@ except ModuleNotFoundError:
         " or your PYTHONPATH might not be properly configured"
     )
 
+import sys
+
+cmd = ns.CommandLine(__file__)
+cmd.Parse(sys.argv)
+
 ns.LogComponentEnable("OpenFlowInterface", ns.LOG_LEVEL_ALL)
 ns.LogComponentEnable("OpenFlowSwitchNetDevice", ns.LOG_LEVEL_ALL)
 

@@ -16,6 +16,11 @@ except ModuleNotFoundError:
         " or your PYTHONPATH might not be properly configured"
     )
 
+import sys
+
+cmd = ns.CommandLine(__file__)
+cmd.Parse(sys.argv)
+
 ns.LogComponentEnable("Ipv4ClickRouting", ns.LOG_LEVEL_ALL)
 ns.LogComponentEnable("Ipv4L3ClickProtocol", ns.LOG_LEVEL_ALL)
 
