@@ -1,0 +1,87 @@
+<!doctype html>
+<!--
+  Copyright (c) 2026 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+
+  SPDX-License-Identifier: GPL-2.0-only
+
+  Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ns-3 PyViz</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+  <strong class="brand"><img src="/ns-3-logo.png" alt="ns-3" height="18"><span class="brand-text">PyViz</span></strong>
+  <button id="play-pause" title="Pause or resume the simulation">Pause</button>
+  <button data-action="restart" title="Rerun the scenario from the beginning">Restart</button>
+  <button data-action="exit" title="Run the rest of the simulation without the visualizer, then continue the scenario after Simulator::Run()">Exit</button>
+  <label title="Simulated seconds per wall-clock second"><span class="label-text">Speed</span> <input id="speed" type="range" min="-2" max="2" step="0.1" value="-2"><output id="speed-value">0.01x</output></label>
+  <label title="Simulated time the rates are averaged over: 0.1 s per step"><span class="label-text">Smooth</span> <input id="smoothing" type="range" min="1" max="50" step="1" value="5"></label>
+  <label title="Whose transmissions are drawn"><span class="label-text">Traffic</span> <select id="transmissions"><option value="all">All nodes</option><option value="selected">Selected</option><option value="none">None</option></select></label>
+  <label title="Node size"><span class="label-text">Size</span> <input id="node-size" type="range" min="0.25" max="4" step="0.25" value="1"></label>
+  <button id="toggle-trails" aria-pressed="false" title="Draw the recent path of moving nodes">Trails</button>
+  <button id="zoom-fit" title="Fit the view to the scenario">Fit</button>
+  <button id="screenshot" title="Save the topology as SVG">Screenshot</button>
+  <select id="global-panels" hidden title="Simulation-wide panels"><option value="">Panels...</option></select>
+  <span id="clock" title="">Waiting for simulation</span>
+  <button id="theme-toggle"></button>
+</header>
+<main>
+  <section class="topology">
+    <svg id="scene" role="img" aria-label="Network topology"><g id="viewport"></g></svg>
+    <div id="node-menu" hidden></div>
+    <div id="tooltip" hidden></div>
+    <div id="drag-coords" hidden></div>
+    <details id="legend" open>
+      <summary>Legend</summary>
+      <ul>
+        <li><svg viewBox="-14 -7 28 14"><path d="M7,0 L-5,-5 L-2,0 L-5,5 Z" class="packet"/></svg>Packet on its way</li>
+        <li><svg viewBox="0 0 28 14"><line x1="2" y1="7" x2="26" y2="7" class="transmission" stroke-width="3"/></svg>Traffic rate (thicker is faster)</li>
+        <li><svg viewBox="0 0 28 14"><g class="unreceived"><line x1="2" y1="7" x2="20" y2="7"/><path d="M16,3 L24,11 M16,11 L24,3" class="unreceived-cross"/></g></svg>Sent, not received (lost in the channel)</li>
+        <li><svg viewBox="-14 -7 28 14"><g class="legend-mail drop-channel"><rect x="-8" y="-5.5" width="16" height="11" rx="1.5"/><path d="M-8,-5 L0,1 L8,-5"/></g></svg>Corrupted in the channel, discarded on reception</li>
+        <li><svg viewBox="-14 -7 28 14"><g class="legend-mail drop-queue"><rect x="-8" y="-5.5" width="16" height="11" rx="1.5"/><path d="M-8,-5 L0,1 L8,-5"/></g></svg>Discarded by a full queue</li>
+        <li><svg viewBox="-14 -7 28 14"><g class="legend-mail drop-ttl"><rect x="-8" y="-5.5" width="16" height="11" rx="1.5"/><path d="M-8,-5 L0,1 L8,-5"/></g></svg>TTL expired</li>
+        <li><svg viewBox="-14 -7 28 14"><g class="legend-mail drop-other"><rect x="-8" y="-5.5" width="16" height="11" rx="1.5"/><path d="M-8,-5 L0,1 L8,-5"/></g></svg>Discarded for another reason (e.g. no route)</li>
+      </ul>
+    </details>
+    <div id="taskbar" aria-label="Minimized windows"></div>
+  </section>
+  <aside>
+    <nav class="tabs">
+      <button data-tab="node" class="selected">Node</button>
+      <button data-tab="types">Types</button>
+      <button data-tab="console">Console</button>
+      <button id="minimize-sidebar" class="minimize" title="Minimize the sidebar to the taskbar">Minimize</button>
+    </nav>
+    <section id="tab-node">
+      <div id="panels"><p>Click a node to inspect it; Shift/Ctrl-click to select several. Right-click for panels.</p></div>
+      <article id="objects"></article>
+    </section>
+    <section id="tab-types" hidden>
+      <input id="type-filter" type="search" placeholder="Filter classes">
+      <label class="check"><input id="types-in-use" type="checkbox" checked> Only types used by this simulation</label>
+      <small>Inspect a class. New defaults only affect objects created later, so most scenarios need them set before the simulation builds its objects.</small>
+      <div id="types"></div>
+      <article id="details"><p>Select a type to inspect its attributes and trace sources.</p></article>
+    </section>
+    <section id="tab-console" hidden>
+      <p><small>Optional, for scripting: inspect or change the running simulation in Python, which everything else in the visualizer can do without. <code>ns</code>, <code>viz</code>, the selected <code>node</code> and all selected <code>nodes</code> are defined. Click an example to try it:</small></p>
+      <ul id="console-examples">
+        <li><code>ns.Simulator.Now().GetSeconds()</code></li>
+        <li><code>node.GetNDevices()</code></li>
+        <li><code>viz.set_node_color(node.GetId(), "#ff00ff")</code></li>
+      </ul>
+      <pre id="console-output"></pre>
+      <textarea id="console-input" rows="3" placeholder="Shift+Enter to run"></textarea>
+      <button id="console-run">Run</button>
+    </section>
+  </aside>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

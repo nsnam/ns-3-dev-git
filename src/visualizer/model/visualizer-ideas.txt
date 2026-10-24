@@ -1,6 +1,3 @@
-- Add an Attribute browser plugin, simililar to Mathieu's GtkConfigStore;
-  - Right click on a node -> Show Attributes;
-  - Allow editing attributes too;
 - List of all nodes, navigator;
 - Represent individual NetDevices in Nodes;
 - Colorize flows; possible approaches:
@@ -10,7 +7,3 @@
   - Present a GUI to show applications and set color for each one;
   - Problems:
      > How about multiple flows?  How to represent them simultaneously?
-- Track down a Gtk+ bug preventing tooltips from working correctly with large zoom levels;
-- Possibly look for embedding an ipython shell as a widget inside the
-  main window: https://ipython.readthedocs.io/en/latest/interactive/reference.html#embedding-ipython
-

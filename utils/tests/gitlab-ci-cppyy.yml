@@ -48,6 +48,36 @@ cppyy-24.04:
     - ./ns3 run ./utils/python-unit-tests.py
   timeout: 9h
 
+# PyViz web visualizer: backend tests and Selenium tests of the browser UI,
+# including wireless (Wi-Fi, LR-WPAN, LTE) transmissions.
+# Debian ships real chromium/chromium-driver packages (Ubuntu only has snaps).
+weekly-pyviz:
+  stage: test
+  image: debian:bookworm # python 3.11
+  rules:
+    - if: $RELEASE == "weekly"
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
+  dependencies: []
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y
+      g++ cmake ninja-build ccache
+      python3 python3-pip python3-venv python3-dev
+      chromium chromium-driver
+      git
+    - python3 -m venv ns3venv
+    - source ./ns3venv/bin/activate
+    - pip install cppyy==3.5.0 selenium
+  script:
+    - ./ns3 configure -G Ninja --enable-python-bindings
+      --enable-modules "visualizer;point-to-point;csma;bridge;wifi;lr-wpan;lte;olsr;flow-monitor;applications;mobility;internet"
+    - ./ns3 build
+    - ./ns3 run "src/visualizer/test/pyviz-web-test.py -v --require-selenium
+      --chrome-binary /usr/bin/chromium --chromedriver /usr/bin/chromedriver"
+  timeout: 4h
+
 .manylinux-pip-wheel:
   stage: test
   image: quay.io/pypa/manylinux_2_28_x86_64

@@ -20,12 +20,17 @@ This file is a best-effort approach to solving this issue; we will do our best b
 * (sixlowpan) Added `SixLowPanAdaptiveFlooding`, a mesh-under forwarding policy that adapts the re-broadcast rate to the observed network activity using the Trickle algorithm (RFC 6206), with per-packet forwarding deadlines and redundancy-based discarding.
 * (zigbee) Added support for `ZigbeeZdo::IeeeAddrRequest` which allows obtaining remote nodes network address (16 bit address) using their IEEE address (64 bit address) as a reference.
 * (wifi) Added a new `PcapConfiguration` which can be set using new method **ConfigPcapOptions** of `WifiHelper`.
+* (visualizer) Added `visualizer.enable_flow_monitor()` to plot FlowMonitor statistics; `PyViz::ConnectTrace()`, which connects one of the generic handlers `Tx`, `Rx` and `Drop` to a Config path; and `PyViz::RecordTx()`, `RecordRx()` and `RecordDrop()`.
+* (visualizer) Added `visualizer.set_speed()` and `visualizer.skip_to()`, and the `PyVizSpeed` and `PyVizStartTime` global values (`--PyVizSpeed`, `--PyVizStartTime`), to set the initial playback speed and skip the start of a simulation.
+* (visualizer) Plugins can add values to each node's snapshot with `add_node_info()` and hold the simulation with `add_step_guard()`.
 
 ### Changes to existing API
 
 * (csma-layout) The `CsmaStarHelper::AssignIpv6Addresses` function signature has changed and is now analogous to the one of `CsmaStarHelper::AssignIpv4Addresses`.
 * (point-to-point-layout) The `AssignIpv6Addresses` function signatures has changed and is now analogous to the one of `AssignIpv4Addresses`.
 * (internet) The `Ipv[4,6]AddressGenerator` classes are now deprecated in favor of `Ipv[4,6]AddressHelper`.
+* (visualizer) `visualizer.start()` now opens a browser based visualizer. The GTK visualizer (`visualizer.core`), its plugins, and their `populate-node-menu`/`simulation-periodic-update` signals were removed. Hooks and plugins registered with `add_initialization_hook()` and `register_plugin()` now receive the web visualizer object, which provides `add_node_panel()`, `add_panel()`, `add_overlay()`, `add_periodic_update()`, `add_tooltip_info()` and `set_node_color()`/`set_node_label()`/`set_node_size()`/`set_node_icon()`.
+* (visualizer) The `PyViz` constructor no longer connects to trace sources; the Python visualizer connects them, skipping types whose modules are not built. The device-specific `PyViz` trace handlers were replaced by the generic `Tx`, `Rx` and `Drop` handlers. The `to` and `from` members of the last-packet samples (`TxPacketSample`, `RxPacketSample`) are now an `Address` instead of a `std::variant` of MAC address types; they hold the address of the receiving device (or the transmitting device's broadcast address when several devices received the packet) and of the transmitting device, and are empty when unknown.
 * (internet-apps) The `LeaseInfo` class in DHCPv6 has been moved from the `ns3` namespace to become a private inner class of `Dhcp6Server` (`Dhcp6Server::LeaseInfo`), as it is an internal data structure not used in any public interface.
 * (mesh) `dot11s::IePreq::GetDestinationList()` is now a const method.
 * (wifi) The `MonitorSnifferRx` and `MonitorSnifferTx` trace sources of the `WifiPhy` class have been deprecated in favor of a new `MonitorSniffer` trace source of the `WifiPhy` class. If the trace contains information about the signal and noise, it is equivalent to `MonitorSnifferRx`; otherwise it is equivalent to `MonitorSnifferTx`.
@@ -33,9 +38,13 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to build system
 
+* (visualizer) PyViz no longer needs GTK+ 3, GooCanvas, PyGObject, pygraphviz or IPython; it only requires the Python bindings. GTK+ 3 is still used by `GtkConfigStore`.
+* (visualizer) The visualizer library now links only against the core and network modules instead of internet, wifi, lr-wpan and point-to-point.
+
 ### Changed behavior
 
 * (wifi) Monitor sniffer events for a transmitted frame (`MonitorSniffer` and the deprecated `MonitorSnifferTx`) are raised when the PPDU transmission completes. The PCAP record time and the radiotap TSFT of a transmitted frame are therefore the end of the PPDU.
+* (visualizer) `visualizer.start()`, and `Simulator::Run()` under `VisualSimulatorImpl`, return when **Exit** is clicked on the page, after running the rest of the simulation without the visualizer, so the scenario's code after them runs; previously they only returned when the process was interrupted. The page is only reachable with the token in the URL that the visualizer prints and opens.
 
 ## Changes from ns-3.48 to ns-3.49
 

@@ -83,6 +83,7 @@ SOURCES = \
 	$(SRC)/wifi/doc/source/wifi-references.rst \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/virtual-net-device/doc/virtual-net-device.rst \
+	$(SRC)/visualizer/doc/visualizer.rst \
 	$(SRC)/topology-read/doc/topology.rst \
 	$(SRC)/traffic-control/doc/traffic-control-layer.rst \
 	$(SRC)/traffic-control/doc/queue-discs.rst \
@@ -117,6 +118,22 @@ SOURCEFIGS = \
 	figures/emulated-channel.dia \
 	$(SRC)/antenna/doc/figures/antenna-coordinate-system.dia	\
 	$(SRC)/antenna/doc/figures/circular-antenna-pattern.png	\
+	$(SRC)/visualizer/doc/figures/pyviz-battery-panel.png \
+	$(SRC)/visualizer/doc/figures/pyviz-console.png \
+	$(SRC)/visualizer/doc/figures/pyviz-drag-coordinates.png \
+	$(SRC)/visualizer/doc/figures/pyviz-energy-panel.png \
+	$(SRC)/visualizer/doc/figures/pyviz-mobility-bounds.png \
+	$(SRC)/visualizer/doc/figures/pyviz-flow-monitor-zoom.png \
+	$(SRC)/visualizer/doc/figures/pyviz-flow-monitor.png \
+	$(SRC)/visualizer/doc/figures/pyviz-node-menu.png \
+	$(SRC)/visualizer/doc/figures/pyviz-object-tree.png \
+	$(SRC)/visualizer/doc/figures/pyviz-overview.png \
+	$(SRC)/visualizer/doc/figures/pyviz-panels.png \
+	$(SRC)/visualizer/doc/figures/pyviz-sidebar-hidden.png \
+	$(SRC)/visualizer/doc/figures/pyviz-start.png \
+	$(SRC)/visualizer/doc/figures/pyviz-trails-battery.png \
+	$(SRC)/visualizer/doc/figures/pyviz-tour.png \
+	$(SRC)/visualizer/doc/figures/pyviz-types.png \
 	$(SRC)/applications/doc/http-embedded-object-size.png \
 	$(SRC)/applications/doc/http-main-object-size.png \
 	$(SRC)/applications/doc/http-num-of-embedded-objects.png \

@@ -6,6 +6,7 @@
  * Author: Gustavo Carneiro <gjcarneiro@gmail.com> <gjc@inescporto.pt>
  */
 #include <Python.h>
+#include <iostream>
 #undef HAVE_SYS_STAT_H
 #include "visual-simulator-impl.h"
 
@@ -116,6 +117,8 @@ VisualSimulatorImpl::Run()
     }
     ss << "import visualizer\n"
        << "visualizer.start()\n";
+    std::cout << "PyViz: loading the Python bindings and the scenario; "
+              << "this can take several seconds" << std::endl;
     if (!Py_IsInitialized())
     {
         Py_Initialize();

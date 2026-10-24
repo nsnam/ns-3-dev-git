@@ -134,11 +134,11 @@ ns-3.30-3.36 (also requires pybindgen, found in the ``allinone`` directory)::
 PyViz visualizer
 ================
 
-The PyViz visualizer uses a variety of Python packages supporting GraphViz.::
+Since ns-3.50, PyViz runs in a web browser and needs only the Python bindings (see above).
+
+From ns-3.29 to ns-3.49, PyViz was based on GTK+ 3, GooCanvas, and GraphViz::
 
   apt install gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3
-
-For Ubuntu 18.04 and later, python-pygoocanvas is no longer provided. The ns-3.29 release and later upgrades the support to GTK+ version 3, and requires these packages:
 
 For ns-3.28 and earlier releases, PyViz is based on Python2, GTK+ 2, GooCanvas, and GraphViz::
 

@@ -11,20 +11,16 @@
 #ifndef NS3_PYVIZ_H
 #define NS3_PYVIZ_H
 
+#include "ns3/address.h"
 #include "ns3/channel.h"
 #include "ns3/event-id.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/ipv4-l3-protocol.h"
-#include "ns3/mac16-address.h"
-#include "ns3/mac48-address.h"
-#include "ns3/mac64-address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
 
+#include <deque>
 #include <map>
 #include <set>
-#include <variant>
 
 namespace ns3
 {
@@ -43,12 +39,36 @@ struct TransmissionSample
 };
 
 /**
+ * One observed packet interval between the visualizer's device Tx and Rx traces.
+ */
+struct PacketFlowSample
+{
+    Time startTx;          //!< Time at the transmitting device trace
+    Time startRx;          //!< Time at the receiving device trace
+    Ptr<Node> transmitter; //!< The source node
+    Ptr<Node> receiver;    //!< The destination node
+    uint32_t bytes;        //!< Packet size in bytes
+    uint32_t packetUid;    //!< Packet UID recorded by the Tx trace
+};
+
+/**
  * PacketDropSample structure
  */
 struct PacketDropSample
 {
     Ptr<Node> transmitter; //!< The transmitter node where the drop was registered
     uint32_t bytes;        //!< The number of bytes dropped
+    uint32_t packets;      //!< The number of packets dropped
+    std::string kind;      //!< The cause: "queue", "channel", "ttl" or "other"
+};
+
+/**
+ * Bytes a node transmitted during one simulation step, received or not.
+ */
+struct NodeTxSample
+{
+    Ptr<Node> transmitter; //!< The transmitting node
+    uint32_t bytes;        //!< The number of bytes transmitted
 };
 
 /**
@@ -66,7 +86,9 @@ struct PacketSample
  */
 struct TxPacketSample : PacketSample
 {
-    std::variant<Mac16Address, Mac48Address, Mac64Address> to; //!< The destination MAC address
+    /// Address of the device that received the packet, the broadcast address
+    /// of the transmitting device if several did, or empty if none did (yet).
+    Address to;
 };
 
 /**
@@ -74,7 +96,7 @@ struct TxPacketSample : PacketSample
  */
 struct RxPacketSample : PacketSample
 {
-    std::variant<Mac16Address, Mac48Address, Mac64Address> from; //!< The source MAC address
+    Address from; //!< Address of the transmitting device, or empty if unknown
 };
 
 /**
@@ -162,8 +184,17 @@ class PyViz
      * Run simulation until a given (simulated, absolute) time is reached.
      *
      * @param time the run time
+     * @return True if the simulation reached the given time; false if it
+     *         stopped earlier, because no events remain or Simulator::Stop()
+     *         was called by the simulation itself.
      */
-    void SimulatorRunUntil(Time time);
+    bool SimulatorRunUntil(Time time);
+
+    /**
+     * Run the rest of the simulation, until no events remain or
+     * Simulator::Stop() is called.
+     */
+    void SimulatorRun();
 
     /**
      * Get the stop time of the underlying visual simulator implementation.
@@ -194,11 +225,26 @@ class PyViz
     TransmissionSampleList GetTransmissionSamples() const;
 
     /**
+     * Get recently completed packet Tx-to-Rx intervals.
+     *
+     * @return Recent packet flow samples.
+     */
+    std::vector<PacketFlowSample> GetPacketFlowSamples() const;
+
+    /**
      * Get packet drop samples.
      *
      * @returns the packet drop sample list
      */
     PacketDropSampleList GetPacketDropSamples() const;
+
+    /**
+     * Get the bytes each node transmitted during the last step, whether or not
+     * any device received them.
+     *
+     * @return The per-node transmission samples.
+     */
+    std::vector<NodeTxSample> GetNodeTxSamples() const;
 
     /**
      * Get last packets function.
@@ -236,6 +282,56 @@ class PyViz
      * @param tracePath the path to trace
      */
     void RegisterDropTracePath(const std::string& tracePath);
+
+    /**
+     * Connect a generic visualizer trace handler to a Config path.
+     *
+     * The trace source must have the signature void (Ptr<const Packet>) and
+     * its context must name the node ("/NodeList/N/...") and, for "Tx" and
+     * "Rx", the device ("/NodeList/N/DeviceList/D/..."). Which trace sources
+     * of which device types to connect is decided by the Python visualizer;
+     * sources with other signatures are adapted there and use RecordTx(),
+     * RecordRx() and RecordDrop().
+     *
+     * The caller must make sure every TypeId named in the path is registered,
+     * since Config path resolution aborts on unknown type names.
+     *
+     * @param handler "Tx" (a device sends a packet), "Rx" (a device receives a
+     *        packet) or "Drop" (a node drops a packet).
+     * @param path Config path of the trace source.
+     * @return True if the handler exists and at least one trace was connected.
+     */
+    bool ConnectTrace(const std::string& handler, const std::string& path);
+
+    /**
+     * Record a packet sent by a device.
+     *
+     * @param nodeIndex the node index
+     * @param devIndex the device index in the node
+     * @param packet the packet
+     */
+    void RecordTx(uint32_t nodeIndex, uint32_t devIndex, Ptr<const Packet> packet);
+
+    /**
+     * Record a packet received by a device; matched with the transmission
+     * of the same packet on the same channel.
+     *
+     * @param nodeIndex the node index
+     * @param devIndex the device index in the node
+     * @param packet the packet
+     */
+    void RecordRx(uint32_t nodeIndex, uint32_t devIndex, Ptr<const Packet> packet);
+
+    /**
+     * Record a packet dropped by a node.
+     *
+     * @param nodeIndex the node index
+     * @param packet the packet
+     * @param kind the cause: "queue", "channel", "ttl" or "other"
+     */
+    void RecordDrop(uint32_t nodeIndex,
+                    Ptr<const Packet> packet,
+                    const std::string& kind = "other");
 
     /**
      * Register CSMA like device function.
@@ -320,6 +416,9 @@ class PyViz
      */
     void DoPause(const std::string& message);
 
+    /// Run the simulator implementation wrapped by the visualizer, or the simulator itself
+    void RunSimulator();
+
     /**
      * Stop simulation callback function.
      */
@@ -330,145 +429,44 @@ class PyViz
     /////////////////////
 
     /**
-     * Network transmit common trace callback function.
+     * Generic transmit trace callback.
      *
-     * @param context the context
+     * @param context the context ("/NodeList/N/DeviceList/D/...")
      * @param packet the packet
-     * @param destination the destination MAC address
      */
-    void TraceNetDevTxCommon(
-        const std::string& context,
-        Ptr<const Packet> packet,
-        const std::variant<Mac16Address, Mac48Address, Mac64Address>& destination);
+    void TraceTx(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Network receive common trace callback function.
+     * Generic receive trace callback.
      *
-     * @param context the context
+     * @param context the context ("/NodeList/N/DeviceList/D/...")
      * @param packet the packet
-     * @param source the source MAC address
      */
-    void TraceNetDevRxCommon(const std::string& context,
-                             Ptr<const Packet> packet,
-                             const std::variant<Mac16Address, Mac48Address, Mac64Address>& source);
+    void TraceRx(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Wi-Fi transmit trace callback function.
+     * Generic drop trace callback.
      *
-     * @param context the context
+     * @param context the context ("/NodeList/N/...")
      * @param packet the packet
      */
-    void TraceNetDevTxWifi(std::string context, Ptr<const Packet> packet);
+    void TraceDrop(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Wi-Fi receive trace callback function.
+     * Trace a packet a full queue discarded.
      *
      * @param context the context
      * @param packet the packet
      */
-    void TraceNetDevRxWifi(std::string context, Ptr<const Packet> packet);
+    void TraceQueueDrop(std::string context, Ptr<const Packet> packet);
 
     /**
-     * Lr-Wpan transmit trace callback function.
+     * Trace a packet the channel corrupted, discarded by its receiver.
      *
      * @param context the context
      * @param packet the packet
      */
-    void TraceNetDevTxLrWpan(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * Lr-Wpan receive trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceNetDevRxLrWpan(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * Queue drop trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceDevQueueDrop(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * Ipv4 drop trace callback function.
-     *
-     * @param context the context
-     * @param hdr the header
-     * @param packet the packet
-     * @param reason the drop reason
-     * @param dummy_ipv4 the dummy Ipv4
-     * @param interface the interface
-     */
-    void TraceIpv4Drop(std::string context,
-                       const ns3::Ipv4Header& hdr,
-                       Ptr<const Packet> packet,
-                       ns3::Ipv4L3Protocol::DropReason reason,
-                       Ptr<Ipv4> dummy_ipv4,
-                       uint32_t interface);
-
-    /**
-     * CSMA transmit trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceNetDevTxCsma(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * CSMA receive trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceNetDevRxCsma(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * CSMA promiscuous receive function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceNetDevPromiscRxCsma(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * Point to point transmit trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceNetDevTxPointToPoint(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * Point to point receive trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     */
-    void TraceNetDevRxPointToPoint(std::string context, Ptr<const Packet> packet);
-
-    /**
-     * LTE transmit trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     * @param destination the destination MAC address
-     */
-    void TraceNetDevTxLte(std::string context,
-                          Ptr<const Packet> packet,
-                          const Mac48Address& destination);
-    /**
-     * LTE receive trace callback function.
-     *
-     * @param context the context
-     * @param packet the packet
-     * @param source the MAC address of the source
-     */
-    void TraceNetDevRxLte(std::string context,
-                          Ptr<const Packet> packet,
-                          const Mac48Address& source);
+    void TraceChannelDrop(std::string context, Ptr<const Packet> packet);
 
     /**
      * The TxRecordValue structure
@@ -517,12 +515,21 @@ class PyViz
     std::map<uint32_t, PacketCaptureOptions> m_packetCaptureOptions; //!< Packet capture options
     std::vector<std::string> m_pauseMessages;                        //!< Pause message
     std::map<TxRecordKey, TxRecordValue> m_txRecords;                //!< Transmit records
+    /// Transmitting device of the recent transmissions, by channel and packet
+    /// UID, to fill in the addresses of the last packets samples
+    std::map<TxRecordKey, Ptr<NetDevice>> m_recentTransmitters;
+    std::deque<TxRecordKey>
+        m_recentTransmissionOrder; //!< Keys of m_recentTransmitters, oldest first
     std::map<TransmissionSampleKey,
              TransmissionSampleValue>
-        m_transmissionSamples;                    //!< Transmission samples
-    std::map<Ptr<Node>, uint32_t> m_packetDrops;  //!< Packet drops
-    std::set<uint32_t> m_nodesOfInterest;         //!< List of node IDs whose transmissions
-                                                  //!< will be monitored
+        m_transmissionSamples;                         //!< Transmission samples
+    std::vector<PacketFlowSample> m_packetFlowSamples; //!< Recent Tx-to-Rx intervals
+    using DropKey = std::pair<Ptr<Node>, std::string>; //!< Dropping node and cause
+    std::map<DropKey, uint32_t> m_packetDrops;         //!< Bytes dropped
+    std::map<DropKey, uint32_t> m_packetDropCounts;    //!< Packets dropped
+    std::map<Ptr<Node>, uint32_t> m_nodeTxBytes;       //!< Bytes transmitted per node
+    std::set<uint32_t> m_nodesOfInterest;              //!< List of node IDs whose transmissions
+                                                       //!< will be monitored
     std::map<uint32_t, Time> m_packetsOfInterest; //!< List of packet UIDs that will be monitored
     std::map<uint32_t, LastPacketsSample> m_lastPackets;                    //!< Last packets
     std::map<uint32_t, std::vector<NetDeviceStatistics>> m_nodesStatistics; //!< Node statistics

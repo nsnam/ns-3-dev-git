@@ -176,8 +176,8 @@ The `Qt5 or Qt6 <https://www.qt.io>`_ development tools are needed for NetAnim a
 PyViz visualizer
 ================
 
-The PyViz visualizer uses a variety of Python packages supporting GraphViz.
-In general, to enable Python support in ns-3, `cppyy <https://cppyy.readthedocs.io/en/latest/>`_ is required.
+The PyViz visualizer runs in a web browser and needs only the Python bindings,
+which require `cppyy <https://cppyy.readthedocs.io/en/latest/>`_.
 
 MPI-based distributed simulation
 ================================

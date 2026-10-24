@@ -24,10 +24,7 @@
       sqlite sqlite-devel
       libxml2 libxml2-devel
       mpich mpich-devel openssh
-      goocanvas2-devel
       python3 python3-devel
-      python3-gobject-devel gobject-introspection-devel
-      graphviz-devel graphviz
       git
     - source /etc/profile.d/modules.sh
     - module load mpi/mpich-$(uname -m)

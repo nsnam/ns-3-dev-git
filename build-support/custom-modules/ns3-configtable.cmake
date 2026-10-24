@@ -17,7 +17,7 @@
 # ns-3 Click Integration        : not enabled (nsclick not enabled (see option --with-nsclick))
 # ns-3 OpenFlow Integration     : not enabled (OpenFlow not enabled (see option --with-openflow))
 # Netmap emulation FdNetDevice  : not enabled (needs net/netmap_user.h)
-# PyViz visualizer              : not enabled (Missing python modules: pygraphviz, gi.repository.GooCanvas)
+# PyViz visualizer              : not enabled (Python Bindings are disabled)
 # Python API Scanning Support   : not enabled (castxml too old)
 # Python Bindings               : enabled
 # Real Time Simulator           : enabled

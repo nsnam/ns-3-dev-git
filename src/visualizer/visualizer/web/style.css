@@ -1,0 +1,160 @@
+/*
+ * Copyright (c) 2026 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ *
+ * SPDX-License-Identifier: GPL-2.0-only
+ *
+ * Author: Gabriel Ferreira <gabrielcarvfer@gmail.com>
+ */
+:root { --mail-edge: #fff; --tip: #172630ee; --coords: #101820e6; --bg: #101820; --surface: #172630; --button: #28404c; --button-on: #3c6070; --border: #2d414c; --border-strong: #45606c; --text: #e8f0f4; --muted: #a9c1ca; --text-soft: #d4e2e8; --accent: #7fd9bc; --dot: #253741; --rate: #b8f0b8; --drop-rate: #ffb0b0; --link: #8aa4af; --node-stroke: #d5fff3; --highlight: #ffd166;
+ color-scheme: light dark; font: 14px system-ui, sans-serif; background: var(--bg); color: var(--text); }
+/* Follows the system or browser theme, unless the toolbar button chose one. */
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --mail-edge: #000; --tip: #ffffffee; --coords: #ffffffe6; --bg: #f4f7f8; --surface: #ffffff; --button: #e3eaed; --button-on: #bcd3dc; --border: #d0dade; --border-strong: #9fb2ba; --text: #14222a; --muted: #4f6570; --text-soft: #22343d; --accent: #0b7a5a; --dot: #d5dee2; --rate: #0a6b0a; --drop-rate: #b00020; --link: #6c8490; --node-stroke: #14503f; --highlight: #c77700; } }
+:root[data-theme="light"] { color-scheme: light; --mail-edge: #000; --tip: #ffffffee; --coords: #ffffffe6; --bg: #f4f7f8; --surface: #ffffff; --button: #e3eaed; --button-on: #bcd3dc; --border: #d0dade; --border-strong: #9fb2ba; --text: #14222a; --muted: #4f6570; --text-soft: #22343d; --accent: #0b7a5a; --dot: #d5dee2; --rate: #0a6b0a; --drop-rate: #b00020; --link: #6c8490; --node-stroke: #14503f; --highlight: #c77700; }
+:root[data-theme="dark"] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100vh; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); }
+/* One row: controls keep their size, the taskbar takes the free space, and
+   the status text is cut off with an ellipsis when space runs out. */
+body > header { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; min-width: 0; overflow: hidden; padding: 6px 12px; background: var(--surface); border-bottom: 1px solid var(--border); white-space: nowrap; }
+body > header > * { flex: 0 0 auto; }
+body > header label { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; }
+body > header input[type=range] { width: 64px; padding: 0; }
+body > header select { padding: 4px; }
+/* The status line takes the remaining width and is cut off with an ellipsis last. */
+#clock { flex: 1 1 auto; min-width: 12ch; max-width: 40ch; margin-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+#speed-value { display: inline-block; width: 5.5ch; text-align: right; font-variant-numeric: tabular-nums; }
+main { min-height: 0; padding: 12px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 12px; }
+.topology { position: relative; min-width: 0; min-height: 0; }
+#scene { width: 100%; height: 100%; border-radius: 8px; background: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 22px 22px; touch-action: none; user-select: none; }
+aside { min-height: 0; overflow: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+h2 { font-size: 16px; margin: 0 0 10px; }
+input, select, textarea { padding: 6px; color: inherit; background: var(--bg); border: 1px solid var(--border-strong); border-radius: 5px; font: inherit; }
+aside input, aside textarea { width: 100%; }
+article input { margin: 5px 0; }
+button:not(.type) { padding: 5px 8px; color: var(--text); background: var(--button); border: 1px solid var(--border-strong); border-radius: 4px; cursor: pointer; }
+button.selected { background: var(--button-on); }
+.tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+#types { max-height: 32vh; overflow: auto; margin: 8px 0; }
+.type { display: block; width: 100%; padding: 6px; text-align: left; color: var(--text-soft); background: transparent; border: 0; border-radius: 4px; cursor: pointer; }
+.type:hover, .type.selected { background: var(--button); }
+article { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; }
+article h3 { font-size: 13px; color: var(--accent); }
+article li { margin: 7px 0; overflow-wrap: anywhere; }
+small { display: block; color: var(--muted); }
+details.object { margin: 4px 0 4px 6px; padding-left: 8px; border-left: 1px solid var(--border); }
+details.object > summary { cursor: pointer; color: var(--accent); overflow-wrap: anywhere; }
+.attribute { margin: 6px 0; }
+.panel-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
+#console-output { max-height: 50vh; overflow: auto; white-space: pre-wrap; background: var(--bg); padding: 8px; border-radius: 5px; font: 12px ui-monospace, monospace; }
+#node-menu { position: absolute; width: max-content; display: flex; flex-direction: column; gap: 2px; padding: 4px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 6px; z-index: 3; }
+#node-menu[hidden], #tooltip[hidden] { display: none; }
+/* max-content: otherwise the width shrinks to what is left of the position. */
+#tooltip { position: absolute; width: max-content; max-width: min(420px, 100%); padding: 8px; background: var(--tip); border: 1px solid var(--border-strong); border-radius: 6px; pointer-events: none; z-index: 2; }
+.panel-window { position: absolute; right: 12px; top: 12px; width: min(640px, 90%); max-height: 70%; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 8px; z-index: 1; box-shadow: 0 6px 24px #000a; resize: both; overflow: hidden; }
+.panel-window > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; cursor: move; user-select: none; border-bottom: 1px solid var(--border); }
+.panel-window[hidden] { display: none; }
+.window-buttons { display: flex; gap: 4px; }
+.panel-body { overflow: auto; padding: 0 10px 10px; }
+.panel-section h4 { margin: 8px 0 4px; color: var(--accent); }
+.panel-controls { display: flex; gap: 8px; padding: 0 10px; }
+.panel-controls fieldset { border: 1px solid var(--border); border-radius: 5px; }
+.checklist { max-height: 120px; overflow: auto; }
+.checklist label { display: block; font-size: 12px; }
+.table-wrap { overflow: auto; }
+table { border-collapse: collapse; font-size: 12px; width: 100%; }
+th, td { padding: 3px 6px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+td:last-child { white-space: normal; overflow-wrap: anywhere; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; margin: 0; font-size: 12px; }
+dt { color: var(--muted); white-space: pre; }
+dd { margin: 0; overflow-wrap: anywhere; }
+.node { fill: #55c2a1; stroke: var(--node-stroke); stroke-width: 2; cursor: pointer; }
+.node.mobile { fill: #e06c75; }
+.node.selected { stroke: var(--highlight); stroke-width: 3; }
+.node.primary { stroke-width: 5; }
+.node-group { cursor: pointer; }
+.hub { fill: var(--text); stroke: var(--link); stroke-width: 2; }
+.link { stroke: var(--link); stroke-width: 2; opacity: .8; }
+.overlay.wifi-link { stroke: #c00000; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.overlay.cellular-link { stroke: #0060c0; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.overlay { stroke: #c678dd; stroke-width: 1.5; }
+.transmission { stroke: #00c000; opacity: .75; }
+.arrow-tx { fill: #00c000; }
+.drop-packet rect, .legend-mail rect { stroke-width: 1.2; }
+.drop-packet path, .legend-mail path { fill: none; stroke-width: 1; }
+.drop-packet rect, .drop-packet path, .legend-mail rect, .legend-mail path { stroke: var(--mail-edge); }
+.drop-queue rect { fill: #ff9f1c; }
+.drop-channel rect { fill: #e0303f; }
+.drop-ttl rect { fill: #3d8bfd; }
+.drop-other rect { fill: #9aa5ad; }
+.rate { fill: var(--rate); font-size: 11px; text-anchor: middle; pointer-events: none; }
+.drop-rate { fill: var(--text); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
+.packet { fill: var(--highlight); stroke: #fff4ca; stroke-width: 1; filter: drop-shadow(0 0 4px #ffb703); }
+.packet-trail { stroke: var(--highlight); stroke-width: 2; stroke-linecap: round; opacity: .55; }
+/* Packets fly over nodes all the time; they must not swallow node clicks. */
+#packets, .packet-hop { pointer-events: none; }
+.label { fill: var(--text); font-size: 12px; text-anchor: middle; pointer-events: none; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; grid-template-rows: minmax(250px, 1fr) minmax(220px, 40vh); } }
+.plot { position: relative; }
+.plot-svg { width: 100%; height: auto; display: block; }
+.plot .grid { stroke: var(--border); stroke-width: 1; }
+.plot .axis-label { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.plot .series { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.plot .crosshair { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.plot-tip { position: absolute; top: 4px; padding: 6px 8px; background: var(--bg); border: 1px solid var(--border-strong); border-radius: 5px; font-size: 12px; pointer-events: none; }
+.plot-tip[hidden] { display: none; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text); margin-top: 4px; }
+.plot .zoom-band { fill: #3987e5; opacity: .2; }
+.plot .plot-hit { cursor: crosshair; }
+.zoom-reset { display: block; margin: 4px 0 0 auto; font-size: 12px; }
+.brand { display: flex; align-items: center; gap: 6px; }
+.brand img { display: block; }
+body.sidebar-collapsed main { grid-template-columns: minmax(0, 1fr); }
+body.sidebar-collapsed aside { display: none; }
+/* Minimized windows wait in the top left corner of the topology, where
+   panel windows (which open on the right) do not cover them. */
+#taskbar { position: absolute; top: 8px; left: 8px; max-width: 45%; display: flex; flex-wrap: wrap; gap: 4px; z-index: 1000; pointer-events: none; }
+#taskbar .task { pointer-events: auto; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--button-on); font-size: 12px; box-shadow: 0 2px 8px #0008; }
+#taskbar .task.minimized { background: var(--button); }
+.trail { fill: none; stroke: #c678dd; stroke-width: 1.5; opacity: .35; stroke-linejoin: round; stroke-linecap: round; pointer-events: none; }
+.trail.recent { opacity: .8; stroke-width: 2; }
+.battery { pointer-events: visiblePainted; }
+.battery-body { fill: var(--bg); stroke: var(--node-stroke); stroke-width: 1; }
+.battery-tip { fill: var(--node-stroke); }
+.battery-level.high { fill: #55c2a1; }
+.battery-level.mid { fill: #e5c07b; }
+.battery-level.low { fill: #e06c75; }
+.battery-text { fill: var(--text); font-size: 10px; font-variant-numeric: tabular-nums; }
+.tabs .minimize { margin-left: auto; }
+/* Narrow windows: the control labels give way to their tooltips first, then
+   sliders and buttons shrink, so the toolbar stays on one row. */
+@media (max-width: 1450px) { body > header label .label-text { display: none; } }
+@media (max-width: 1150px) {
+  body > header { gap: 4px; padding: 6px 8px; }
+  body > header input[type=range] { width: 48px; }
+  body > header button, body > header select { padding: 4px 6px; font-size: 12px; }
+  .brand-text, #clock .clock-nodes { display: none; }
+  #global-panels { width: 96px; }
+  #global-panels option:disabled { color: #6b7a84; }
+  .brand img { height: 15px; width: auto; }
+}
+.mobility-bounds { fill: #ffd16610; stroke: var(--highlight); stroke-width: 1.5; stroke-dasharray: 6 4; }
+#drag-coords { position: absolute; padding: 3px 6px; background: var(--coords); border: 1px solid var(--highlight); border-radius: 4px; color: var(--highlight); font: 12px ui-monospace, monospace; pointer-events: none; z-index: 5; }
+#drag-coords[hidden] { display: none; }
+.unreceived line { stroke: #e0303f; stroke-width: 2; stroke-dasharray: 4 4; }
+.unreceived-cross { fill: none; stroke: #e0303f; stroke-width: 2.5; stroke-linecap: round; }
+.unreceived-rate { fill: var(--drop-rate); }
+.check { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; }
+.check input { width: auto; }
+#console-examples { margin: 4px 0 8px; padding-left: 18px; font-size: 12px; }
+#console-examples code { cursor: pointer; }
+/* The logo has white lettering. */
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .brand img { padding: 2px 4px; background: #172630; border-radius: 3px; } }
+:root[data-theme="light"] .brand img { padding: 2px 4px; background: #172630; border-radius: 3px; }
+#theme-toggle { margin-left: auto; }
+/* Bottom left: panel windows open on the right and the taskbar is top left. */
+#legend { position: absolute; left: 8px; bottom: 8px; padding: 4px 8px; background: var(--tip); border: 1px solid var(--border-strong); border-radius: 6px; font-size: 12px; z-index: 1; }
+#legend summary { cursor: pointer; }
+#legend ul { list-style: none; margin: 6px 0 2px; padding: 0; }
+#legend li { display: flex; align-items: center; gap: 8px; margin: 3px 0; white-space: nowrap; }
+#legend svg { flex: none; width: 28px; height: 14px; }

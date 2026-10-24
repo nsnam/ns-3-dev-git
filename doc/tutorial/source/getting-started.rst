@@ -1417,3 +1417,18 @@ The resulting text file can then be saved with any corresponding
   then
       echo "$gitDiff" >> version.txt
   fi
+
+Visualizing a simulation
+************************
+
+|ns3| includes a live visualizer, PyViz, that shows the topology and its packets
+in a web browser while a simulation runs. It needs the Python bindings, even for
+C++ programs, so first set them up as described in the *PyViz visualizer* chapter
+of the model library. Then add ``--visualize`` to the run command:
+
+.. sourcecode:: console
+
+  $ ./ns3 run wifi-simple-adhoc-grid --visualize
+
+The program prints the address of the page and opens it, which can take several
+seconds. Press **Play**, raise the speed, and click a node to inspect it.
