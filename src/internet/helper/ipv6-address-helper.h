@@ -195,6 +195,12 @@ class Ipv6AddressHelper
      */
     Ipv6InterfaceContainer AssignWithoutOnLink(const NetDeviceContainer& c);
 
+    /**
+     * @brief Used to turn off fatal errors and assertions, for testing or special cases
+     * @param allow allow duplicates
+     */
+    void AllowDuplicates(bool allow = true);
+
   private:
     Ipv6Address m_network; //!< network address
     Ipv6Prefix m_prefix;   //!< prefix length

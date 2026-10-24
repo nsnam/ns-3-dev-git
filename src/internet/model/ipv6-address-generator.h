@@ -60,6 +60,7 @@ class Ipv6AddressGenerator
      * @param prefix The prefix of the base Ipv6Address
      * @param interfaceId The base interface ID used for initialization
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static void Init(const Ipv6Address net,
                      const Ipv6Prefix prefix,
                      const Ipv6Address interfaceId = "::1");
@@ -76,6 +77,7 @@ class Ipv6AddressGenerator
      * @param prefix The Ipv6Prefix used to set the next network
      * @returns the IPv6 address of the next network
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static Ipv6Address NextNetwork(const Ipv6Prefix prefix);
 
     /**
@@ -87,6 +89,7 @@ class Ipv6AddressGenerator
      * @param prefix The Ipv6Prefix for the current network
      * @returns the IPv6 address of the current network
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static Ipv6Address GetNetwork(const Ipv6Prefix prefix);
 
     /**
@@ -95,6 +98,7 @@ class Ipv6AddressGenerator
      * @param interfaceId The interfaceId to set for the current Ipv6Prefix
      * @param prefix The Ipv6Prefix whose address is to be set
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static void InitAddress(const Ipv6Address interfaceId, const Ipv6Prefix prefix);
 
     /**
@@ -106,6 +110,7 @@ class Ipv6AddressGenerator
      * @param prefix The Ipv6Prefix for the current network
      * @returns the IPv6 address
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static Ipv6Address NextAddress(const Ipv6Prefix prefix);
 
     /**
@@ -117,11 +122,13 @@ class Ipv6AddressGenerator
      * @param prefix The Ipv6Prefix for the current network
      * @returns the IPv6 address
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static Ipv6Address GetAddress(const Ipv6Prefix prefix);
 
     /**
      * @brief Reset the networks and Ipv6Address to zero
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static void Reset();
 
     /**
@@ -134,6 +141,7 @@ class Ipv6AddressGenerator
      * @param addr The Ipv6Address to be added to the list of Ipv6 entries
      * @returns true on success
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static bool AddAllocated(const Ipv6Address addr);
 
     /**
@@ -142,6 +150,7 @@ class Ipv6AddressGenerator
      * @param addr The Ipv6Address to be checked in the list of Ipv4 entries
      * @returns true if the address is already allocated
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static bool IsAddressAllocated(const Ipv6Address addr);
 
     /**
@@ -151,11 +160,13 @@ class Ipv6AddressGenerator
      * @param prefix The Ipv6 network prefix
      * @returns true if the network is already allocated
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static bool IsNetworkAllocated(const Ipv6Address addr, const Ipv6Prefix prefix);
 
     /**
      * @brief Used to turn off fatal errors and assertions, for testing
      */
+    NS_DEPRECATED_3_50("Use Ipv6AddressHelper")
     static void TestMode();
 };
 

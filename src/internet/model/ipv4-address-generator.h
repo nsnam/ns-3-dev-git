@@ -7,6 +7,7 @@
 #ifndef IPV4_ADDRESS_GENERATOR_H
 #define IPV4_ADDRESS_GENERATOR_H
 
+#include "ns3/deprecated.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3
@@ -38,6 +39,7 @@ class Ipv4AddressGenerator
      * @param mask The network mask of the base Ipv4Address
      * @param addr The base address used for initialization
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static void Init(const Ipv4Address net,
                      const Ipv4Mask mask,
                      const Ipv4Address addr = "0.0.0.1");
@@ -54,6 +56,7 @@ class Ipv4AddressGenerator
      * @param mask The Ipv4Mask used to set the next network
      * @returns the IPv4 address of the next network
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static Ipv4Address NextNetwork(const Ipv4Mask mask);
 
     /**
@@ -65,6 +68,7 @@ class Ipv4AddressGenerator
      * @param mask The Ipv4Mask for the current network
      * @returns the IPv4 address of the current network
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static Ipv4Address GetNetwork(const Ipv4Mask mask);
 
     /**
@@ -73,6 +77,7 @@ class Ipv4AddressGenerator
      * @param addr The address to set for the current mask
      * @param mask The Ipv4Mask whose address is to be set
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static void InitAddress(const Ipv4Address addr, const Ipv4Mask mask);
 
     /**
@@ -84,6 +89,7 @@ class Ipv4AddressGenerator
      * @param mask The Ipv4Mask for the current network
      * @returns the IPv4 address
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static Ipv4Address NextAddress(const Ipv4Mask mask);
 
     /**
@@ -95,11 +101,13 @@ class Ipv4AddressGenerator
      * @param mask The Ipv4Mask for the current network
      * @returns the IPv4 address
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static Ipv4Address GetAddress(const Ipv4Mask mask);
 
     /**
      * @brief Reset the networks and Ipv4Address to zero
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static void Reset();
 
     /**
@@ -112,6 +120,7 @@ class Ipv4AddressGenerator
      * @param addr The Ipv4Address to be added to the list of Ipv4 entries
      * @returns true on success
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static bool AddAllocated(const Ipv4Address addr);
 
     /**
@@ -120,6 +129,7 @@ class Ipv4AddressGenerator
      * @param addr The Ipv4Address to be checked in the list of Ipv4 entries
      * @returns true if the network is already allocated
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static bool IsAddressAllocated(const Ipv4Address addr);
 
     /**
@@ -129,11 +139,13 @@ class Ipv4AddressGenerator
      * @param mask The Ipv4 network mask
      * @returns true if the network is already allocated
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static bool IsNetworkAllocated(const Ipv4Address addr, const Ipv4Mask mask);
 
     /**
      * @brief Used to turn off fatal errors and assertions, for testing
      */
+    NS_DEPRECATED_3_50("Use Ipv4AddressHelper")
     static void TestMode();
 };
 

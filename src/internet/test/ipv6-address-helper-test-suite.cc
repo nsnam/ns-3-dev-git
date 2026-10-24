@@ -152,7 +152,6 @@ IpAddressHelperTestCasev6::DoRun()
 void
 IpAddressHelperTestCasev6::DoTeardown()
 {
-    Ipv6AddressGenerator::Reset();
     Simulator::Destroy();
 }
 

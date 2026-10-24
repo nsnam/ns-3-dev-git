@@ -9,7 +9,6 @@
 #include "ipv6-address-helper.h"
 
 #include "ns3/assert.h"
-#include "ns3/ipv6-address-generator.h"
 #include "ns3/ipv6.h"
 #include "ns3/log.h"
 #include "ns3/loopback-net-device.h"
@@ -20,6 +19,7 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/ptr.h"
+#include "ns3/simulation-singleton.h"
 #include "ns3/traffic-control-helper.h"
 #include "ns3/traffic-control-layer.h"
 
@@ -27,6 +27,210 @@ namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("Ipv6AddressHelper");
+
+/**
+ * @ingroup address
+ *
+ * @brief IPv6 allocated address checker
+ *
+ * This class helps tracking allocated IPv6 addresses, ensuring that
+ * no duplication arises.
+ *
+ * For testing purposes, or if a duplication is explicitly wanted,
+ * it is possible to disable the fatal errors by using `AllowDuplicates`.
+ */
+class Ipv6AddressDuplicateChecker
+{
+  public:
+    /**
+     * @brief Add the Ipv4Address to the list of IPv4 entries
+     *
+     * Typically, this is used by external address allocators that want
+     * to make use of this class's ability to track duplicates.
+     *
+     * @param addr The Ipv4Address to be added to the list of Ipv4 entries
+     * @returns true on success
+     */
+    bool AddAllocated(const Ipv6Address addr);
+
+    /**
+     * @brief Check the Ipv4Address allocation in the list of IPv4 entries
+     *
+     * @param addr The Ipv4Address to be checked in the list of Ipv4 entries
+     * @returns true if the address is already allocated
+     */
+    bool IsAddressAllocated(const Ipv6Address addr);
+
+    /**
+     * @brief Used to turn off fatal errors and assertions, for testing or special cases
+     * @param allow allow duplicates
+     */
+    void AllowDuplicates(bool allow = true);
+
+  private:
+    /**
+     * @brief This class holds the allocated addresses
+     */
+    class Entry
+    {
+      public:
+        uint8_t addrLow[16];  //!< the lowest allocated address
+        uint8_t addrHigh[16]; //!< the highest allocated address
+    };
+
+    std::list<Entry> m_entries;    //!< contained of allocated addresses
+    bool m_allowDuplicates{false}; //!< allow duplicates (if true)
+};
+
+bool
+Ipv6AddressDuplicateChecker::AddAllocated(const Ipv6Address address)
+{
+    NS_LOG_FUNCTION(this << address);
+
+    uint8_t addr[16];
+    address.GetBytes(addr);
+
+    std::list<Entry>::iterator i;
+
+    for (i = m_entries.begin(); i != m_entries.end(); ++i)
+    {
+        NS_LOG_LOGIC("examine entry: " << Ipv6Address((*i).addrLow) << " to "
+                                       << Ipv6Address((*i).addrHigh));
+        //
+        // First things first.  Is there an address collision -- that is, does the
+        // new address fall in a previously allocated block of addresses.
+        //
+        if (!(Ipv6Address(addr) < Ipv6Address((*i).addrLow)) &&
+            ((Ipv6Address(addr) < Ipv6Address((*i).addrHigh)) ||
+             (Ipv6Address(addr) == Ipv6Address((*i).addrHigh))))
+        {
+            NS_LOG_LOGIC(
+                "Ipv6AddressDuplicateChecker::Add(): Address Collision: " << Ipv6Address(addr));
+            if (!m_allowDuplicates)
+            {
+                NS_FATAL_ERROR(
+                    "Ipv6AddressDuplicateChecker::Add(): Address Collision: " << Ipv6Address(addr));
+            }
+            return false;
+        }
+        //
+        // If the new address is less than the lowest address in the current
+        // block and can't be merged into to the current block, then insert it
+        // as a new block before the current block.
+        //
+        uint8_t taddr[16];
+        for (uint32_t j = 0; j < 16; j++)
+        {
+            taddr[j] = (*i).addrLow[j];
+        }
+        taddr[15] -= 1;
+        if (Ipv6Address(addr) < Ipv6Address(taddr))
+        {
+            break;
+        }
+        //
+        // If the new address fits at the end of the block, look ahead to the next
+        // block and make sure it's not a collision there.  If we won't overlap,
+        // then just extend the current block by one address.  We expect that
+        // completely filled network ranges will be a fairly rare occurrence,
+        // so we don't worry about collapsing address range blocks.
+        //
+        for (uint32_t j = 0; j < 16; j++)
+        {
+            taddr[j] = (*i).addrLow[j];
+        }
+        taddr[15] += 1;
+        if (Ipv6Address(addr) == Ipv6Address(taddr))
+        {
+            auto j = i;
+            ++j;
+
+            if (j != m_entries.end())
+            {
+                if (Ipv6Address(addr) == Ipv6Address((*j).addrLow))
+                {
+                    NS_LOG_LOGIC("Ipv6AddressDuplicateChecker::Add(): "
+                                 "Address Collision: "
+                                 << Ipv6Address(addr));
+                    if (!m_allowDuplicates)
+                    {
+                        NS_FATAL_ERROR("Ipv6AddressDuplicateChecker::Add(): Address Collision: "
+                                       << Ipv6Address(addr));
+                    }
+                    return false;
+                }
+            }
+
+            NS_LOG_LOGIC("New addrHigh = " << Ipv6Address(addr));
+            for (uint32_t j = 0; j < 16; j++)
+            {
+                (*i).addrHigh[j] = addr[j];
+            }
+            return true;
+        }
+        //
+        // If we get here, we know that the next lower block of addresses
+        // couldn't have been extended to include this new address since the
+        // code immediately above would have been executed and that next lower
+        // block extended upward.  So we know it's safe to extend the current
+        // block down to include the new address.
+        //
+        for (uint32_t j = 0; j < 16; j++)
+        {
+            taddr[j] = (*i).addrLow[j];
+        }
+        taddr[15] -= 1;
+        if (Ipv6Address(addr) == Ipv6Address(taddr))
+        {
+            NS_LOG_LOGIC("New addrLow = " << Ipv6Address(addr));
+            for (uint32_t j = 0; j < 16; j++)
+            {
+                (*i).addrLow[j] = addr[j];
+            }
+            return true;
+        }
+    }
+
+    Entry entry;
+    for (uint32_t j = 0; j < 16; j++)
+    {
+        entry.addrLow[j] = entry.addrHigh[j] = addr[j];
+    }
+    m_entries.insert(i, entry);
+    return true;
+}
+
+bool
+Ipv6AddressDuplicateChecker::IsAddressAllocated(const Ipv6Address address)
+{
+    NS_LOG_FUNCTION(this << address);
+
+    uint8_t addr[16];
+    address.GetBytes(addr);
+
+    for (auto i = m_entries.begin(); i != m_entries.end(); ++i)
+    {
+        NS_LOG_LOGIC("examine entry: " << Ipv6Address((*i).addrLow) << " to "
+                                       << Ipv6Address((*i).addrHigh));
+
+        if (!(Ipv6Address(addr) < Ipv6Address((*i).addrLow)) &&
+            ((Ipv6Address(addr) < Ipv6Address((*i).addrHigh)) ||
+             (Ipv6Address(addr) == Ipv6Address((*i).addrHigh))))
+        {
+            NS_LOG_LOGIC("Ipv6AddressDuplicateChecker::IsAddressAllocated(): Address Collision: "
+                         << Ipv6Address(addr));
+            return true;
+        }
+    }
+    return false;
+}
+
+void
+Ipv6AddressDuplicateChecker::AllowDuplicates(bool allow)
+{
+    NS_LOG_FUNCTION(this << allow);
+    m_allowDuplicates = allow;
+}
 
 Ipv6AddressHelper::Ipv6AddressHelper()
 {
@@ -82,28 +286,28 @@ Ipv6AddressHelper::NewAddress(Address addr)
     {
         Ipv6Address address =
             Ipv6Address::MakeAutoconfiguredAddress(Mac64Address::ConvertFrom(addr), m_network);
-        Ipv6AddressGenerator::AddAllocated(address);
+        SimulationSingleton<Ipv6AddressDuplicateChecker>::Get()->AddAllocated(address);
         return address;
     }
     else if (Mac48Address::IsMatchingType(addr))
     {
         Ipv6Address address =
             Ipv6Address::MakeAutoconfiguredAddress(Mac48Address::ConvertFrom(addr), m_network);
-        Ipv6AddressGenerator::AddAllocated(address);
+        SimulationSingleton<Ipv6AddressDuplicateChecker>::Get()->AddAllocated(address);
         return address;
     }
     else if (Mac16Address::IsMatchingType(addr))
     {
         Ipv6Address address =
             Ipv6Address::MakeAutoconfiguredAddress(Mac16Address::ConvertFrom(addr), m_network);
-        Ipv6AddressGenerator::AddAllocated(address);
+        SimulationSingleton<Ipv6AddressDuplicateChecker>::Get()->AddAllocated(address);
         return address;
     }
     else if (Mac8Address::IsMatchingType(addr))
     {
         Ipv6Address address =
             Ipv6Address::MakeAutoconfiguredAddress(Mac8Address::ConvertFrom(addr), m_network);
-        Ipv6AddressGenerator::AddAllocated(address);
+        SimulationSingleton<Ipv6AddressDuplicateChecker>::Get()->AddAllocated(address);
         return address;
     }
     else
@@ -160,7 +364,7 @@ Ipv6AddressHelper::NewAddress()
     }
     m_address = Ipv6Address(hostBuf);
 
-    Ipv6AddressGenerator::AddAllocated(addr);
+    SimulationSingleton<Ipv6AddressDuplicateChecker>::Get()->AddAllocated(addr);
     return addr;
 }
 
@@ -306,6 +510,12 @@ Ipv6AddressHelper::AssignWithoutOnLink(const NetDeviceContainer& c)
     std::vector<bool> onLink(c.GetN(), false);
 
     return Assign(c, withConfiguration, onLink);
+}
+
+void
+Ipv6AddressHelper::AllowDuplicates(bool allow)
+{
+    SimulationSingleton<Ipv6AddressDuplicateChecker>::Get()->AllowDuplicates(allow);
 }
 
 } /* namespace ns3 */

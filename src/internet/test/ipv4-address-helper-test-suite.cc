@@ -34,7 +34,6 @@ NetworkAllocatorHelperTestCase::NetworkAllocatorHelperTestCase()
 void
 NetworkAllocatorHelperTestCase::DoTeardown()
 {
-    Ipv4AddressGenerator::Reset();
     Simulator::Destroy();
 }
 
@@ -87,7 +86,6 @@ AddressAllocatorHelperTestCase::AddressAllocatorHelperTestCase()
 void
 AddressAllocatorHelperTestCase::DoTeardown()
 {
-    Ipv4AddressGenerator::Reset();
     Simulator::Destroy();
 }
 
@@ -141,11 +139,6 @@ ResetAllocatorHelperTestCase::DoRun()
     Ipv4Address address;
     Ipv4AddressHelper h;
 
-    //
-    // We're going to use some of the same addresses allocated above,
-    // so reset the Ipv4AddressGenerator to make it forget we did.
-    //
-
     h.SetBase("1.0.0.0", "255.0.0.0", "0.0.0.3");
     address = h.NewAddress();
     NS_TEST_EXPECT_MSG_EQ(address, Ipv4Address("1.0.0.3"), "301");
@@ -180,7 +173,6 @@ ResetAllocatorHelperTestCase::DoRun()
 void
 ResetAllocatorHelperTestCase::DoTeardown()
 {
-    Ipv4AddressGenerator::Reset();
     Simulator::Destroy();
 }
 
@@ -252,14 +244,16 @@ IpAddressHelperTestCasev4::DoRun()
     ip2.NewNetwork(); // 192.168.2
     ip2.NewNetwork(); // 192.168.3
     ip2.NewNetwork(); // 192.168.4
-                      // Uncomment below, and 192.168.4.1 will crash since it was allocated above
-                      // ipAddr1 = ip2.NewAddress (); // 4.1
+
+    // Uncomment below, and 192.168.4.1 will crash since it was allocated above
+    // if we allow duplicates, it won't crash.
+    ip2.AllowDuplicates(true);
+    ipAddr1 = ip2.NewAddress(); // 4.1
 }
 
 void
 IpAddressHelperTestCasev4::DoTeardown()
 {
-    Ipv4AddressGenerator::Reset();
     Simulator::Destroy();
 }
 

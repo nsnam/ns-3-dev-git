@@ -167,6 +167,12 @@ class Ipv4AddressHelper
      */
     Ipv4InterfaceContainer Assign(const NetDeviceContainer& c);
 
+    /**
+     * @brief Used to turn off fatal errors and assertions, for testing or special cases
+     * @param allow allow duplicates
+     */
+    void AllowDuplicates(bool allow = true);
+
   private:
     /**
      * @brief Returns the number of address bits (hostpart) for a given netmask

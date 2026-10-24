@@ -309,7 +309,6 @@ set(test_sources
     test/icmp-checksum-test-suite.cc
     test/icmp-test.cc
     test/internet-stack-helper-test-suite.cc
-    test/ipv4-address-generator-test-suite.cc
     test/ipv4-address-helper-test-suite.cc
     test/ipv4-deduplication-test.cc
     test/ipv4-forwarding-test.cc
@@ -324,7 +323,6 @@ set(test_sources
     test/ipv4-static-routing-test-suite.cc
     test/ipv4-test.cc
     test/ipv6-address-duplication-test.cc
-    test/ipv6-address-generator-test-suite.cc
     test/ipv6-address-helper-test-suite.cc
     test/ipv6-dual-stack-test-suite.cc
     test/ipv6-extension-header-test-suite.cc

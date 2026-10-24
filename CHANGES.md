@@ -22,6 +22,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 * (csma-layout) The `CsmaStarHelper::AssignIpv6Addresses` function signature has changed and is now analogous to the one of `CsmaStarHelper::AssignIpv4Addresses`.
 * (point-to-point-layout) The `AssignIpv6Addresses` function signatures has changed and is now analogous to the one of `AssignIpv4Addresses`.
+* (internet) The `Ipv[4,6]AddressGenerator` classes are now deprecated in favor of `Ipv[4,6]AddressHelper`.
 * (internet-apps) The `LeaseInfo` class in DHCPv6 has been moved from the `ns3` namespace to become a private inner class of `Dhcp6Server` (`Dhcp6Server::LeaseInfo`), as it is an internal data structure not used in any public interface.
 * (mesh) `dot11s::IePreq::GetDestinationList()` is now a const method.
 
