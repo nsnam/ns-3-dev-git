@@ -82,6 +82,10 @@ class Ipv6AddressHelper
      * @param network The IPv6 network
      * @param prefix The prefix
      * @param base The base interface ID
+     *
+     * The `base` parameter is redundant and kept for analogy with
+     * `Ipv4AddressHelper`. IPv6 addresses have their interface ID derived
+     * from the MAC address.
      */
     Ipv6AddressHelper(Ipv6Address network,
                       Ipv6Prefix prefix,
@@ -93,6 +97,10 @@ class Ipv6AddressHelper
      * @param network The IPv6 network
      * @param prefix The prefix
      * @param base The base interface ID
+     *
+     * The `base` parameter is redundant and kept for analogy with
+     * `Ipv4AddressHelper`. IPv6 addresses have their interface ID derived
+     * from the MAC address.
      */
     void SetBase(Ipv6Address network, Ipv6Prefix prefix, Ipv6Address base = Ipv6Address("::1"));
 
