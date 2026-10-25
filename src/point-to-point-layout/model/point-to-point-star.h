@@ -109,11 +109,11 @@ class PointToPointStarHelper
     void AssignIpv4Addresses(Ipv4AddressHelper address);
 
     /**
-     * @param network an IPv6 address representing the network portion
-     *                of the IPv6 Address
-     * @param prefix the prefix length
+     * @param address an Ipv6AddressHelper which is used to install
+     *                Ipv6 addresses on all the node interfaces in
+     *                the star
      */
-    void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
+    void AssignIpv6Addresses(Ipv6AddressHelper address);
 
     /**
      * Sets up the node canvas locations for every node in the star.

@@ -138,11 +138,18 @@ class PointToPointDumbbellHelper
                              Ipv4AddressHelper routerIp);
 
     /**
-     * @param network an IPv6 address representing the network portion
-     *                of the IPv6 Address
-     * @param prefix the prefix length
+     * @param leftIp Ipv6AddressHelper to assign Ipv6 addresses to the
+     *               interfaces on the left side of the dumbbell
+     *
+     * @param rightIp Ipv6AddressHelper to assign Ipv6 addresses to the
+     *                interfaces on the right side of the dumbbell
+     *
+     * @param routerIp Ipv6AddressHelper to assign Ipv6 addresses to the
+     *                 interfaces on the bottleneck link
      */
-    void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
+    void AssignIpv6Addresses(Ipv6AddressHelper leftIp,
+                             Ipv6AddressHelper rightIp,
+                             Ipv6AddressHelper routerIp);
 
     /**
      * Sets up the node canvas locations for every node in the dumbbell.

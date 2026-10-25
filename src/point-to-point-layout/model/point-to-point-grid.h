@@ -113,11 +113,13 @@ class PointToPointGridHelper
     /**
      * Assigns Ipv6 addresses to all the row and column interfaces
      *
-     * @param network an IPv6 address representing the network portion
-     *                of the IPv6 Address
-     * @param prefix the prefix length
+     * @param rowIp the Ipv6AddressHelper used to assign Ipv6 addresses
+     *              to all of the row interfaces in the grid
+     *
+     * @param colIp the Ipv6AddressHelper used to assign Ipv6 addresses
+     *              to all of the column interfaces in the grid
      */
-    void AssignIpv6Addresses(Ipv6Address network, Ipv6Prefix prefix);
+    void AssignIpv6Addresses(Ipv6AddressHelper rowIp, Ipv6AddressHelper colIp);
 
     /**
      * Sets up the node canvas locations for every node in the grid.

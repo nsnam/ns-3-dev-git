@@ -7,7 +7,6 @@
 #include "point-to-point-star.h"
 
 #include "ns3/constant-position-mobility-model.h"
-#include "ns3/ipv6-address-generator.h"
 #include "ns3/log.h"
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
@@ -100,23 +99,13 @@ PointToPointStarHelper::AssignIpv4Addresses(Ipv4AddressHelper address)
 }
 
 void
-PointToPointStarHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix prefix)
+PointToPointStarHelper::AssignIpv6Addresses(Ipv6AddressHelper address)
 {
-    Ipv6AddressGenerator::Init(addrBase, prefix);
-    Ipv6Address v6network;
-    Ipv6AddressHelper addressHelper;
-
     for (uint32_t i = 0; i < m_spokes.GetN(); ++i)
     {
-        v6network = Ipv6AddressGenerator::GetNetwork(prefix);
-        addressHelper.SetBase(v6network, prefix);
-
-        Ipv6InterfaceContainer ic = addressHelper.Assign(m_hubDevices.Get(i));
-        m_hubInterfaces6.Add(ic);
-        ic = addressHelper.Assign(m_spokeDevices.Get(i));
-        m_spokeInterfaces6.Add(ic);
-
-        Ipv6AddressGenerator::NextNetwork(prefix);
+        m_hubInterfaces6.Add(address.Assign(m_hubDevices.Get(i)));
+        m_spokeInterfaces6.Add(address.Assign(m_spokeDevices.Get(i)));
+        address.NewNetwork();
     }
 }
 

@@ -10,7 +10,6 @@
 
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/internet-stack-helper.h"
-#include "ns3/ipv6-address-generator.h"
 #include "ns3/log.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/string.h"
@@ -124,12 +123,8 @@ PointToPointGridHelper::AssignIpv4Addresses(Ipv4AddressHelper rowIp, Ipv4Address
 }
 
 void
-PointToPointGridHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix prefix)
+PointToPointGridHelper::AssignIpv6Addresses(Ipv6AddressHelper rowIp, Ipv6AddressHelper colIp)
 {
-    Ipv6AddressGenerator::Init(addrBase, prefix);
-    Ipv6Address v6network;
-    Ipv6AddressHelper addrHelper;
-
     // Assign addresses to all row devices in the grid.
     // These devices are stored in a vector.  Each row
     // of the grid has all the row devices in one entry
@@ -140,13 +135,9 @@ PointToPointGridHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix pre
         NetDeviceContainer rowContainer = m_rowDevices[i];
         for (uint32_t j = 0; j < rowContainer.GetN(); j += 2)
         {
-            v6network = Ipv6AddressGenerator::GetNetwork(prefix);
-            addrHelper.SetBase(v6network, prefix);
-            Ipv6InterfaceContainer ic = addrHelper.Assign(rowContainer.Get(j));
-            rowInterfaces.Add(ic);
-            ic = addrHelper.Assign(rowContainer.Get(j + 1));
-            rowInterfaces.Add(ic);
-            Ipv6AddressGenerator::NextNetwork(prefix);
+            rowInterfaces.Add(rowIp.Assign(rowContainer.Get(j)));
+            rowInterfaces.Add(rowIp.Assign(rowContainer.Get(j + 1)));
+            rowIp.NewNetwork();
         }
         m_rowInterfaces6.push_back(rowInterfaces);
     }
@@ -161,13 +152,9 @@ PointToPointGridHelper::AssignIpv6Addresses(Ipv6Address addrBase, Ipv6Prefix pre
         NetDeviceContainer colContainer = m_colDevices[i];
         for (uint32_t j = 0; j < colContainer.GetN(); j += 2)
         {
-            v6network = Ipv6AddressGenerator::GetNetwork(prefix);
-            addrHelper.SetBase(v6network, prefix);
-            Ipv6InterfaceContainer ic = addrHelper.Assign(colContainer.Get(j));
-            colInterfaces.Add(ic);
-            ic = addrHelper.Assign(colContainer.Get(j + 1));
-            colInterfaces.Add(ic);
-            Ipv6AddressGenerator::NextNetwork(prefix);
+            colInterfaces.Add(colIp.Assign(colContainer.Get(j)));
+            colInterfaces.Add(colIp.Assign(colContainer.Get(j + 1)));
+            colIp.NewNetwork();
         }
         m_colInterfaces6.push_back(colInterfaces);
     }
