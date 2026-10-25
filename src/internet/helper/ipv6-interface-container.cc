@@ -61,6 +61,12 @@ Ipv6InterfaceContainer::Add(Ptr<Ipv6> ipv6, uint32_t interface)
 }
 
 void
+Ipv6InterfaceContainer::Add(std::pair<Ptr<Ipv6>, uint32_t> a)
+{
+    Add(a.first, a.second);
+}
+
+void
 Ipv6InterfaceContainer::Add(std::string ipv6Name, uint32_t interface)
 {
     Ptr<Ipv6> ipv6 = Names::Find<Ipv6>(ipv6Name);

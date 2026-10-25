@@ -96,6 +96,15 @@ class Ipv6InterfaceContainer
     void Add(Ptr<Ipv6> ipv6, uint32_t interface);
 
     /**
+     * Manually add an entry to the container consisting of a previously composed
+     * entry std::pair.
+     *
+     * @param ipInterfacePair the pair of a pointer to Ipv6 object and interface index of the
+     * Ipv6Interface to add to the container
+     */
+    void Add(std::pair<Ptr<Ipv6>, uint32_t> ipInterfacePair);
+
+    /**
      * @brief Get an iterator which refers to the first pair in the
      * container.
      *
