@@ -42,6 +42,8 @@ but other contemporaneous versions may also work.
 
 ### New user-visible features
 
+- (sixlowpan) !2881 Added `SixLowPanAdaptiveFlooding`, a mesh-under forwarding policy that adapts the re-broadcast rate to the observed network activity using the Trickle algorithm (RFC 6206).
+
 ### Bugs fixed
 
 - (mesh) #682 Mesh regression tests no longer compare against reference PCAP files; they now check HWMP, peer management and FLAME behavior through trace sources.

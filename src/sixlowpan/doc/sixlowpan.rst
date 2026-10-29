@@ -27,6 +27,13 @@ the ``GetMtu`` behaviour, which will always return *at least* 1280 bytes, as man
 
 In both cases this is completely transparent to the upper layers.
 
+6LoWPAN provides two different approaches for routing IPv6 packets within a 6LoWPAN network:
+
+1. Mesh-under routing, where packets are forwarded below the network layer, using layer 2 addresses.
+2. Route-over routing, where packets are routed at the network layer, using IPv6 addresses.
+
+Both approaches are described in their respective sections below.
+
 The source code for the sixlowpan module lives in the directory ``src/sixlowpan``.
 
 Scope and Limitations
@@ -37,6 +44,7 @@ The following is a list of known limitations of the |ns3| 6LowPAN implementation
 * 6lowPAN requires a preset MAC address before the start of the simulation. In other words, it cannot dynamically extract the underlying MAC addresses once the simulation has started.
 * When used along side IEEE 802.15.4, only short addresses (16-bit) are supported.
 * HC2 is not included but it is deprecated in the RFCs.
+* When the mesh-under facility is used, ALL the packets are sent without acknowledgment because, at lower level, they are sent to a broadcast address. Moreover, flooding in a PAN generates a lot of overhead, which is often not wanted; the ``SixLowPanAdaptiveFlooding`` forwarding policy can be used to mitigate it.
 
 The following is a list of limitations for 6LowPAN-ND:
 
@@ -48,55 +56,67 @@ The following is a list of limitations for 6LowPAN-ND:
 Compression
 -----------
 
-IPHC stateful (context-based) and HC1 compressions are supported. The IPv6/MAC addressing schemes defined in :rfc:`6282` and :rfc:`4944` are different.
-One adds the PanId in the pseudo-MAC address (4944) and the other doesn't (6282).
+Three header compression schemes are supported, selected through the ``CompressionType``
+attribute of ``SixLowPanNetDevice``:
 
-The expected use cases (confirmed by the RFC editor) is to *never* have a mixed environment
+* ``HC1`` (Header Compression 1), defined in :rfc:`4944`.
+* ``IPHC`` (IP Header Compression), defined in :rfc:`6282` (the default).
+* ``GHC`` (Generic Header Compression), defined in :rfc:`7400`, which extends IPHC.
+
+The IPv6/MAC addressing schemes defined in :rfc:`6282` and :rfc:`4944` are different.
+One adds the PAN Id in the pseudo-MAC address (4944) and the other doesn't (6282).
+
+The expected use case (confirmed by the RFC editor) is to *never* have a mixed environment
 where part of the nodes are using HC1 and part IPHC because this would lead to confusion on
 what the IPv6 address of a node is. Due to this, the nodes configured to use IPHC will drop the packets compressed with HC1
 and vice-versa. The drop is logged in the drop trace as ``DROP_DISALLOWED_COMPRESSION``.
 
+HC1 compression
+~~~~~~~~~~~~~~~
+
+HC1 is the original, stateless compression scheme for 6LoWPAN. It is most effective with
+link-local addresses, which can be fully elided when they are derived from the MAC address,
+and it does not support any form of context. It has been superseded by IPHC, and it is
+provided mainly for completeness and for studies involving legacy implementations.
+
+The companion HC2 next-header compression (also defined in :rfc:`4944`) is not implemented,
+as it has been superseded by the IPHC Next Header Compression (NHC) formats.
+
+IPHC compression
+~~~~~~~~~~~~~~~~
+
+IPHC is the default compression scheme, and it supports both stateless and stateful
+(context-based) compression. A context maps a short numeric ID to an IPv6 prefix, allowing
+addresses that share that prefix to be compressed more aggressively. The UDP header is
+compressed with the Next Header Compression (NHC) format.
+
 When using the IPHC stateful compression, nodes need to be aware of the context. To manually set the context,
-it is possible to use the  ``SixLowPanHelper::AddContext`` function. Please be aware that installing different contexts for different nodes will lead to decompression failures.
+it is possible to use the  ``SixLowPanHelper::AddContext`` function. Please be aware that installing different contexts for different nodes will lead to decompression failures. Contexts can also be distributed automatically by 6LoWPAN-ND (see the Usage section).
 
-Generic Header Compression (GHC)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GHC compression
+~~~~~~~~~~~~~~~
 
-The module implements Generic Header Compression (GHC), defined in :rfc:`7400`, which
-compresses payloads and headers for which no dedicated :rfc:`6282` NHC format exists:
+GHC compresses payloads and headers for which no dedicated :rfc:`6282` NHC format exists:
 ICMPv6 messages, UDP payloads, and IPv6 extension headers.
 
-GHC is selected through the ``CompressionType`` attribute of ``SixLowPanNetDevice``
-(value ``GHC``). The default is ``IPHC``, which preserves interoperability with non-GHC
-peers. ``GHC`` extends ``IPHC`` rather than replacing it: the compressor falls back to
+``GHC`` extends ``IPHC`` rather than replacing it: the compressor falls back to
 standard :rfc:`6282` NHC when GHC does not produce a smaller result, and the decompressor
-accepts both :rfc:`6282` and GHC dispatch bytes.
+accepts both :rfc:`6282` and GHC dispatch bytes. The default compression type is ``IPHC``,
+which preserves interoperability with non-GHC peers.
 
 The 6LoWPAN Capability Indication Option (6CIO, :rfc:`7400` Section 3.3) is available
 through the ``SixLowPan6Cio`` option class to signal GHC support to peers.
 
-Routing Handling
-----------------
-
-6lowPAN provides two different approaches for routing IPv6 packets within a 6lowPAN network:
-
-1. Mesh-under routing
-2. Route over routing
-
 Mesh-under routing
-~~~~~~~~~~~~~~~~~~
+------------------
 
-A mesh-under routing approach indicates that a routing system is implemented below IP, and 6lowPAN makes the packet forwarding decisions based on layer 2 addresses.
+A mesh-under routing approach indicates that a routing system is implemented below the network layer, and 6lowPAN makes the packet forwarding decisions based on layer 2 addresses.
 
 A node takes part in a mesh-under network when its ``UseMeshUnder`` attribute is enabled: MESH and BC0 headers are added to sent packets (with the initial hop limit set by ``MeshUnderRadius``), and received mesh-under packets are decoded and delivered. Whether the node also relays received mesh-under packets is controlled by the ``ForwardMesh`` attribute (enabled by default): encoding and decoding the MESH and BC0 headers is a simple operation, while forwarding requires per-packet state, so constrained nodes can take part in the mesh without relaying. The forwarding decision itself is delegated to a pluggable forwarding policy derived from ``SixLowPanMeshUnderRouting``, so the forwarding policy can be changed without modifying ``SixLowPanNetDevice``.
 
 A node with ``UseMeshUnder`` disabled that receives a mesh-under packet is a network misconfiguration (the node could decode the packet, but it could never reply through the mesh): the packet is dropped, the drop is logged in the drop trace as ``DROP_MESH_NOT_ENABLED``, and a warning is issued. This is a deliberate fix of the historical behavior, where every node relayed mesh-under packets regardless of its own configuration.
 
-Duplicate detection is common to all policies: each packet carries a BC0 sequence number, and a per-originator cache drops packets already seen. The cache length (by default 10) can be changed through the policy's ``MeshCacheLength`` attribute.
-
-The available forwarding policies are:
-
-* ``SixLowPanSimpleFlooding`` (default): every non-duplicate packet is re-broadcast after a uniform random jitter, set by its ``MeshUnderJitter`` attribute. This preserves the historical behavior, and existing simulations are unaffected.
+Duplicate detection is common to all policies: each packet carries a BC0 sequence number, and a per-originator cache drops packets already seen. The cache length (by default 10) can be changed through the policy's ``MeshCacheLength`` attribute. Note that in particularly crowded networks the cache may need enlarging: the cache is the memory that both the duplicate suppression and the policies' duplicate accounting rely on.
 
 Each device exposes its policy through the ``MeshUnderRouting`` attribute. The policy attributes can be reached, e.g., through ``Config::Set`` with a path like::
 
@@ -105,38 +125,77 @@ Each device exposes its policy through the ``MeshUnderRouting`` attribute. The p
 A policy is selected through the helper, optionally passing policy attributes::
 
     SixLowPanHelper sixlowpan;
-    sixlowpan.SetMeshUnderRouting("ns3::SixLowPanSimpleFlooding",
-                                  "MeshUnderJitter",
-                                  StringValue("ns3::UniformRandomVariable[Min=0.0|Max=5.0]"));
+    sixlowpan.SetMeshUnderRouting("ns3::SixLowPanAdaptiveFlooding",
+                                  "MinInterval", TimeValue(MilliSeconds(10)),
+                                  "RedundancyConstant", UintegerValue(1));
     sixlowpan.Install(devices);
 
 A new forwarding policy is created by subclassing ``SixLowPanMeshUnderRouting`` and implementing ``OnPacketForward()``, which decides if and when to invoke the supplied forward callback. The optional ``OnDuplicateReceived()`` hook is invoked for every duplicate reception and can be used to modify the decisions on if / when to forward the packet.
 
-.. note::
-    Flooding in a PAN generates a lot of overhead, which is often not wanted. Moreover, when using the mesh-under facility, ALL the packets are sent without acknowledgment because, at lower level, they are sent to a broadcast address.
+The available forwarding policies are:
+
+* ``SixLowPanSimpleFlooding`` (default).
+* ``SixLowPanAdaptiveFlooding``
+
+SixLowPanSimpleFlooding
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Simple Flooding is the default policy, and it preserves the historical mesh-under behavior: existing simulations are unaffected.
+
+Every received packet that is not a duplicate is re-broadcast exactly once, after a uniform random jitter set by the ``MeshUnderJitter`` attribute (by default between 0 and 10 ms). The jitter de-synchronizes neighbouring relays, which would otherwise all re-broadcast the same packet at the same moment, causing systematic collisions.
+
+Beyond the jitter, Simple Flooding performs no suppression: since every node forwards every packet exactly once, the number of transmissions per packet grows linearly with the node density. This keeps the policy simple and predictable, and it is a reasonable choice for small or sparse networks. In dense networks it leads to the well-known broadcast storm problem, which the Adaptive Flooding policy addresses.
+
+SixLowPanAdaptiveFlooding
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adaptive Flooding adapts the re-broadcast rate to the observed network activity using the Trickle algorithm (:rfc:`6206`), in the spirit of MPL (:rfc:`7731`). A single Trickle timer governs how often the node transmits its pending forwards:
+
+* Packets accepted for forwarding join a FIFO pending queue. The first packet (empty queue) starts the timer from the minimum interval, since a new packet is new information to spread; later arrivals join the queue without restarting it, so an earlier packet is never starved.
+* Overhearing a neighbour re-broadcast a packet the node has also seen is a *consistent event*: it increments the Trickle counter and, as consistency accumulates, grows the interval, so a well-covered neighbourhood transmits less often.
+* When the timer fires, the node forwards only if fewer than ``RedundancyConstant`` (k) copies were heard during the interval; otherwise it stays silent. A firing forwards only the packet at the head of the queue, and the timer keeps running (its interval doubling as usual) until the queue drains, so a loaded queue drains at the Trickle pace instead of bursting.
+* Each packet has its own deadline: a packet still pending ``MaxForwardingDelay`` after its arrival (suppression won) is discarded individually, without affecting later arrivals.
+* A pending packet that has been received ``DuplicateThreshold`` times in total is discarded at transmit time instead of being forwarded: enough neighbours already covered it, so this discard reacts to the observed redundancy itself rather than to the clock. A zero threshold disables the check.
+* The timer stops when the queue drains (everything forwarded or discarded), so the next arrival restarts it from the minimum interval. Arrivals never reset a running timer.
+
+The adaptive flooding policy exposes a ``PendingQueueSize`` traced value and ``PacketDiscarded`` / ``PacketSuppressed`` trace sources to observe the queue occupancy, the deadline discards and the redundancy discards.
+
+The interval bounds are set with ``MinInterval`` (Imin) and ``Doublings`` (Imax = MinInterval times 2 to the power Doublings). Setting ``RedundancyConstant`` to zero disables suppression, reducing the behaviour to jittered flooding.
+
+The default attribute values come from a simulation study on dense, loaded networks (20 nodes, concurrent senders, pending queues holding several packets), where they maximised delivery while minimising transmissions and delay.
+
+Note that density-aware transmit timing (an adaptive forwarding jitter) is inherent to this policy: the interval growth under consistent events IS the adaptation, so no separate jitter mechanism is needed.
 
 The mesh-under forwarding could be further improved by providing the following:
 
 * Adaptive hop-limit calculation,
-* Adaptive forwarding jitter,
 * Use of direct (non mesh) transmission for packets directed to 1-hop neighbors.
 
+Some further directions were considered and deliberately left as future work, to keep the forwarding policies simple. A mesh-under flooding policy that accumulates features stops being simpler than a full routing protocol, at which point a routing protocol serves the user better:
+
+* Priority-aware discarding. The DuplicateThreshold could depend on the packet's DSCP class (which 6LoWPAN already parses for header compression): a high-priority packet would tolerate more observed duplicates before being discarded than a low-priority one. The forwarding policy would only honor a priority set by the upper layers, never set one itself. This mirrors the DiffServ Assured Forwarding structure (:rfc:`2597`), where the class carries the priority and the drop precedence the discard aggressiveness.
+* Per-priority queues. Going further, each DSCP class could have its own pending queue and its own policy instance (even with different Trickle parameters), drained by a weighted round-robin scheduler. This removes the head-of-line coupling between priorities but adds scheduler complexity that is out of proportion for a flooding mechanism, so it is documented here rather than implemented.
+
+A more efficient flooding based on Multipoint Relays (MPRs), as used by OLSRv2, was considered and deliberately left out. Selecting MPRs requires every node to maintain an up-to-date view of its two-hop neighbourhood, which needs a background protocol such as NHDP (:rfc:`6130`) exchanging periodic control messages. In the low-datarate or high-mobility regimes typical of 6LoWPAN, that control overhead can cost more energy than the data traffic itself, and the topology may change faster than the updates can track it. It is therefore a known and understood option that was evaluated and discarded for this module.
+
 Route-over routing
-~~~~~~~~~~~~~~~~~~
+------------------
 
-The routing decisions are made at the network layer (over IP) and use IPv6 addresses for routing like traditional IP networks.
-The usage of route-over routing requires more processing at each hop as the IPV6 and other headers needs to be processed.
-However, it is more flexible than the mesh-under approach as you can use one or more routing mechanism to reach the destination.
+When Route-over is used, the routing decisions are made at the network layer (over 6LoWPAN) and use IPv6 addresses for routing like traditional IP networks.
+The usage of route-over routing requires more processing at each hop, as the IPv6 and other headers need to be processed.
+However, it is more flexible than the mesh-under approach, as you can use different routing mechanisms to reach the destination.
 
-Route-over is not a device option: it is simply what happens when mesh-under is not used. With ``UseMeshUnder`` disabled (the default), the 6LoWPAN device performs only compression and fragmentation, and packet routing is entirely handled by the IPv6 routing protocols installed on the nodes.
+Since in route-over the routing decisions are performed at IP level, the 6LoWPAN layer must be completely transparent to it.
+With ``UseMeshUnder`` disabled (the default), the 6LoWPAN device performs only compression and fragmentation, and packet routing is entirely handled by the IPv6 routing protocols installed on the nodes.
 
-Examples of routing protocols used with 6lowPAN route-over include protocols such as the Routing protocol for Low-Power and Lossy Networks (RPL) and
-the Ad-hoc On-Demand Distance Vector for IPV6 (AODVv6).
+The choice of which routing protocol to use is entirely left to the user, but notable protocols that are suited for the typical IoT scenarios include the Routing Protocol for Low-Power and Lossy Networks (RPL), the Ad-hoc On-Demand Distance Vector for IPv6 (AODVv6), MANET protocols, etc. The only requirement is - of course - to handle IPv6 addresses.
+
+Note that static routing is a feasible option, if the network dynamics allows it (i.e., the links are stable).
 
 6lowPAN Optimized Neighbor Discovery (6lowPAN-ND)
 -------------------------------------------------
 
-IPv6 Neighbor Discovery (ND) as defined in :rfc`4861` assumes always on, multicast friendly links, which are not possible for low-power and lossy networks (LLNs) such as those using IEEE 802.15.4.
+IPv6 Neighbor Discovery (ND) as defined in :rfc:`4861` assumes always on, multicast friendly links, which are not possible for low-power and lossy networks (LLNs) such as those using IEEE 802.15.4.
 
 :rfc:`6775` and :rfc:`8505` define 6LoWPAN Neighbor Discovery (6LoWPAN-ND) to address these limitations. Some key optimizations include:
 
@@ -323,6 +382,11 @@ The mesh-under forwarding policies provide further attributes:
 
 * ``MeshCacheLength``: (unsigned 16 bits integer, default 10), the length of the cache for each source (``SixLowPanMeshUnderRouting``, common to all policies).
 * ``MeshUnderJitter``: (ns3::UniformRandomVariable[Min=0.0|Max=10.0]), the jitter in ms a node uses to forward mesh-under packets - used to prevent collisions (``SixLowPanSimpleFlooding``).
+* ``MinInterval``: (Time, default 10ms), the minimum Trickle interval Imin (``SixLowPanAdaptiveFlooding``).
+* ``Doublings``: (unsigned 8 bits integer, default 4), the number of interval doublings, Imax = Imin * 2^Doublings (``SixLowPanAdaptiveFlooding``).
+* ``RedundancyConstant``: (unsigned 16 bits integer, default 1), the Trickle redundancy constant k; zero disables suppression (``SixLowPanAdaptiveFlooding``).
+* ``MaxForwardingDelay``: (Time, default 500ms), per-packet deadline: a packet not forwarded within this time of its arrival is dropped as suppressed (``SixLowPanAdaptiveFlooding``).
+* ``DuplicateThreshold``: (unsigned 16 bits integer, default 2), discard a pending packet at transmit time once it has been received this many times in total; zero disables the check (``SixLowPanAdaptiveFlooding``).
 
 The CompressionThreshold attribute is similar to Contiki's SICSLOWPAN_CONF_MIN_MAC_PAYLOAD
 option. If a compressed packet size is less than the threshold, the uncompressed version is

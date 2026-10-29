@@ -77,7 +77,8 @@ SixLowPanMeshUnderRouting::RecordPacket(const Address& originator, uint8_t seqNo
 }
 
 void
-SixLowPanMeshUnderRouting::OnDuplicateReceived(const Address& originator, uint8_t seqNo)
+SixLowPanMeshUnderRouting::OnDuplicateReceived(const Address& originator [[maybe_unused]],
+                                               uint8_t seqNo [[maybe_unused]])
 {
     NS_LOG_FUNCTION(this << originator << +seqNo);
     // Default no-op. Subclasses may override to react to duplicates.

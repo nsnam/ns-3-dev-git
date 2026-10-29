@@ -17,6 +17,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 ### New API
 
 * (mesh) Added the `PreqReceived`, `PrepReceived` and `PerrReceived` trace sources to `dot11s::HwmpProtocol`, fired when a PREQ, PREP or PERR element is received from a neighbor, and `flame::FlameProtocol::GetRoutingTable()`.
+* (sixlowpan) Added `SixLowPanAdaptiveFlooding`, a mesh-under forwarding policy that adapts the re-broadcast rate to the observed network activity using the Trickle algorithm (RFC 6206), with per-packet forwarding deadlines and redundancy-based discarding.
 
 ### Changes to existing API
 
