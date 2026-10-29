@@ -352,7 +352,7 @@ class LteRrcSap
         {
             THRESHOLD_RSRP, ///< RSRP is used for the threshold.
             THRESHOLD_RSRQ  ///< RSRQ is used for the threshold.
-        } choice;
+        } choice;           ///< Threshold choice.
 
         uint8_t range; ///< Value range used in RSRP/RSRQ threshold.
     };

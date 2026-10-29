@@ -81,7 +81,7 @@ struct WIFI_EXPORT WifiRemoteStation
 struct WIFI_EXPORT WifiRemoteStationState
 {
     /**
-     * State of the station
+     * States of the station
      */
     enum
     {
@@ -91,7 +91,7 @@ struct WIFI_EXPORT WifiRemoteStationState
         GOT_ASSOC_TX_OK,
         ASSOC_REFUSED,
         ADHOC_PEER
-    } m_state;
+    } m_state; //!< Actual state of the station
 
     /**
      * This member is the list of WifiMode objects that comprise the
