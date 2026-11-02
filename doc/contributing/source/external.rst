@@ -185,11 +185,20 @@ is compatible for inclusion with the ns-allinone releases.
 Maintaining app store modules
 *****************************
 
-A recent `Google Summer of Code project <https://mishal.dev/gsoc19-report>`_
+After every release of ns-3-dev, an `ns-allinone` release is made of
+contributed modules in the app store that are compatible with the release.
+The maintainers will work with app module maintainers to update their
+modules as necessary, but some may be left behind if module maintainers
+drop their maintenance.
+
+There is currently no CI testing of the app store modules.
+A past `Google Summer of Code project <https://mishal.dev/gsoc19-report>`_
 worked on allowing integration of the app store with continuous integration
-(CI) testing.  This integration is ongoing, but the eventual goal is that
+(CI) testing.  The eventual goal is that
 regressions that are caused by upstream changes to |ns3| will be quickly
 caught, and the app owner will be asked to fix the build of their app,
+However, further development and a maintenance commitment is necessary
+to realize this.
 possibly by issuing another module release as well.
 
 Links to related projects
