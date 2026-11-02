@@ -182,51 +182,6 @@ however, that the project can only distribute modules in its ns-allinone
 releases that are GPLv2-compatible.  A module licensed as GPLv2-or-later
 is compatible for inclusion with the ns-allinone releases.
 
-Code review for apps
-********************
-
-Even though apps are not added to the |ns3| mainline, it is still possible
-to request code reviews for them (in order to improve the code).  There
-is a special repository set up for this purpose:
-`ns-3-contrib-reviews <https://gitlab.com/nsnam/ns-3-contrib-reviews>`_.  The
-purpose of this repository is to provide a fork-able repository against
-which to generate Merge Requests, but no eventual merge ever takes place.
-
-The steps to request a code review are:
-
-1. Fork `ns-3-contrib-reviews` into your own namespace
-2. Clone the fork to your local machine
-3. Create a new feature branch  on what you just checked out for your new code
-4. cd to 'contrib' and clone your extension module there
-5. remove the .git directory of that module so that git does not treat it as a submodule; e.g., if your module name is `modulename`:
-
-.. code-block:: text
-
-  $ rm -rf modulename/.git
-
-6. Force an add of the module, overcoming the .gitignore file for contrib modules
-
-.. code-block:: text
-
-  $ git add -f modulename
-
-7. Add your files:
-
-.. code-block:: text
-
-  $ git commit -m"Add modulename for review" -a
-
-8.  Push the feature branch to your remote repository
-
-.. code-block:: text
-
-  $ git push -u origin
-
-9. Navigate to your github.com page and generate a Merge Request towards
-   the upstream `ns-3-contrib-reviews`
-
-10. Announce on ns-developers mailing list that you would like a review.
-
 Maintaining app store modules
 *****************************
 
