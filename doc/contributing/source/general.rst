@@ -209,22 +209,8 @@ Creating a patch
 ****************
 Patches are preferably submitted as a GitLab.com
 `Merge Request <https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html>`_.
-Short patches can be attached to an issue report or sent to the mailing-lists,
-but a Merge Request is the best way to submit.
-
-The UNIX diff tool is the most common way of producing a patch: a patch is
-a text-based representation of the difference between two text files or two
-directories with text files in them. If you have two files,
-``original.cc``, and, ``modified.cc``, you can generate a patch with the
-command ``diff -u original.cc modified.cc``. If you wish to produce a patch
-between two directories, use the command ``diff -uprN original modified``.
-
-Make sure you specify to the reviewer where the original files came from
-and make sure that the resulting patch file does not contain unexpected
-content by performing a final inspection of the patch file yourself.
-
-Patches such as this are sufficient for simple bug fixes or very simple
-small features.
+Short patches, as a unified diff file, can be attached to an issue report or sent to the
+mailing-lists, but a Merge Request is the best way to submit.
 
 Git can be used to create a patch of what parts differ from the last
 committed code; try::
@@ -259,10 +245,10 @@ The list of maintainers for each module is found here:
 https://www.nsnam.org/about/governance/maintainers/
 
 Maintainers review code (bug fixes, new models) within scope of their
-maintenance responsibility.  A maintainer of a module should "sign off"
-(or approve of) changes to an |ns3| module before it is committed to
+maintenance responsibility.  A maintainer of a module should approve
+changes to an |ns3| module before it is committed to
 the main codebase.  Note that we typically do not formalize the signing
-off using Git's sign off feature, but instead, maintainers will indicate
+off using Git's "sign off" feature, but instead, maintainers will indicate
 their approval of the merge request using GitLab.com.
 
 Note that some modules do not have active maintainers; these types of

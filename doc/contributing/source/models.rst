@@ -9,11 +9,10 @@
 Submitting new models
 =====================
 
-We actively encourage submission of new features to |ns3|.
-Independent submissions are essential for open source projects, and if
-accepted into the mainline, you will also be credited as an author of
-future versions of |ns3|. However,
-please keep in mind that there is already a large burden on the |ns3|
+We encourage submission of new features to |ns3|, but including
+new features in the mainline of |ns3| requires consensus from the maintainers
+that the feature is mainstream enough and that there is a project commitment
+to maintain it.  Please keep in mind that there is already a large burden on the |ns3|
 maintainers to manage the flow of incoming contributions and maintain new
 and existing code. The goal of this chapter is to outline the options for
 new models in |ns3|, and how you can help to minimize the burden on maintainers
@@ -52,17 +51,17 @@ The options for publishing new models are:
    significant intrusive changes to the |ns3| mainline to support.  Some
    recent examples include the Public Safety models and the millimeter-wave
    extensions to |ns3|.  This has the benefit of being self-contained, but
-   the drawback of losing compatibility with the mainline over time.  A page
-   on the App Store can be made for these forks as well.  For maintenance
-   reasons and improved user experience, we prefer to upstream mainline
-   changes so that public forks can be avoided.
+   the drawback of losing compatibility with the mainline over time.  The
+   project is no longer listing forks on the App Store.
 
 4. Archive your code somewhere, or publish in a Git repository, and link to
    it from the |ns3| `Contributed Code <https://www.nsnam.org/wiki/Contributed_Code>`_
    wiki page.  This option requires the least amount of work from the
    contributor, but visibility of the code to new |ns3| users will likely be
    reduced.  To follow this route, obtain a wiki account from the webmaster,
-   and make edits as appropriate to link your code.
+   and make edits as appropriate to link your code.  Or, you can choose to
+   archive your code as a published artifact in a permanent location such as
+   the ACM Digital Library or Zenodo if it is supporting a publication.
 
 The remainder of the chapter concerns option 1 (upstreaming to ns-3-dev); the
 other options are described in the next chapter (:ref:`External`).

@@ -108,8 +108,9 @@ posted in the optional *Maintenance* or *Development* tabs.
 App types
 *********
 
-Two types of "apps" are hosted on the app store:  1) contributed modules,
-and 2) forks of |ns3|.  It benefits users the most when contributed code
+Going forward, the project has decided to host only contributed modules,
+and not full forks of |ns3|, on the app store.
+It benefits users the most when contributed code
 can be added as modules to the `contrib` directory, because this allows
 the modules to be used with different versions of the |ns3| mainline
 and to combine multiple such modules.  However, some authors have chosen
@@ -119,7 +120,8 @@ the |ns3| mainline code, in such a manner that the patch will likely not
 be accepted in the mainline.  For an example of a full fork in the
 app store, see the `Public Safety Communications <https://apps.nsnam.org/app/publicsafetylte/>`_ app page; this is a full fork because of the intrusive
 changes to the mainline LTE module necessary to support the public
-safety extensions.
+safety extensions. The project has decided to focus the app store
+on contributed modules only, going forward.
 
 Sometimes a contributed module does require a very small patch to the
 mainline despite being largely implemented in a modular way.  In this

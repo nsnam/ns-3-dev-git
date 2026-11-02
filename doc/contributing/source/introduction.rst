@@ -38,8 +38,10 @@ used by |ns3| so as to smooth the contribution process.
 
 The very first step is to become familiar with |ns3| by reading the tutorial,
 running some example programs, and then reading some of the code and
-documentation to get a feel for things.  From that point, there are a
-number of options to contribute:
+documentation to get a feel for things.  We also strongly recommend subscribing
+to our Zulip chat channel and reading through discussions in the GitLab.com
+Work Items and Merge Requests, to get a feel for how the project operates.
+From that point, there are a number of options to contribute:
 
 * Contributing a small documentation correction
 * Reporting or discussing a bug in the software
@@ -47,8 +49,7 @@ number of options to contribute:
 * Reviewing code contributed by others
 * Submitting new code for inclusion in the mainline
 * Alerting users to code that is maintained or archived elsewhere
-* Submitting a module or fork for publishing in the ns-3 app store
-* Becoming a maintainer of part of the simulator
+* Submitting an extension module for publishing in the ns-3 app store
 
 |ns3| is mainly a C++ project, and this contribution guide focuses on
 how to contribute |ns3| code specifically, but the overall open source
@@ -56,11 +57,8 @@ project maintains various related codebases written in several other
 languages, so if you are interested in contributing outside of |ns3|
 C++ code, there are several possibilities:
 
-* |ns3| provides Python bindings to most of its API, and maintains an
-  automated API scanning process that relies on other tools.  We can use
-  maintenance help in the C++/Python bindings support.
-* Another Python project is the `bake build tool <https://gitlab.com/nsnam/bake/-/issues>`_, which has a number of open issues.
-* See also our Python-based `PyViz visualizer <https://www.nsnam.org/wiki/PyViz>`_; extensions and documentation would be welcome.
+* |ns3| provides Python bindings to most of its API, and maintains a
+  process to create a Python module from the C++ libraries built by CMake.
 * The `NetAnim <https://gitlab.com/nsnam/netanim>`_ animator is written in `Qt <https://www.qt.io/>`_ and has lacked a maintainer for several years.
 * If you are interested in Linux kernel hacking, or use of applications in |ns3| such as open source routing daemons, we maintain the
   `Direct Code Execution project <https://www.nsnam.org/about/projects/direct-code-execution/>`_.

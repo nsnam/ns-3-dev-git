@@ -31,7 +31,7 @@ or comment on issues or merge requests; this requires users to obtain
 a GitLab.com account.
 
 If a user wants to report an issue with |ns3|, please first search
-the `issue tracker <https://gitlab.com/nsnam/ns-3-dev/-/issues>`_ for
+the `Work Item tracker <https://gitlab.com/nsnam/ns-3-dev/-/work_items>`_ for
 something that may be similar, and if nothing is found, please report
 the new issue.
 
