@@ -41,17 +41,17 @@ class PcapHelper
      */
     enum DataLinkType
     {
-        DLT_NULL NS_DEPRECATED_3_49("use iana::LinkType::NULL_LINK") = 0,
-        DLT_EN10MB NS_DEPRECATED_3_49("use iana::LinkType::ETHERNET") = 1,
-        DLT_PPP NS_DEPRECATED_3_49("use iana::LinkType::PPP") = 9,
-        DLT_RAW NS_DEPRECATED_3_49("use iana::LinkType::RAW") = 101,
-        DLT_IEEE802_11 NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_11") = 105,
-        DLT_LINUX_SLL NS_DEPRECATED_3_49("use iana::LinkType::LINUX_SLL") = 113,
-        DLT_PRISM_HEADER NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_11_PRISM") = 119,
-        DLT_IEEE802_11_RADIO NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_11_RADIOTAP") = 127,
-        DLT_IEEE802_15_4 NS_DEPRECATED_3_49("use iana::LinkType::IEEE802_15_4_WITHFCS") = 195,
-        DLT_NETLINK NS_DEPRECATED_3_49("use iana::LinkType::NETLINK") = 253,
-        DLT_LORATAP NS_DEPRECATED_3_49("use iana::LinkType::LORATAP") = 270
+        DLT_NULL NS_DEPRECATED_3_49("use iana::linktype::NULL_LINK") = 0,
+        DLT_EN10MB NS_DEPRECATED_3_49("use iana::linktype::ETHERNET") = 1,
+        DLT_PPP NS_DEPRECATED_3_49("use iana::linktype::PPP") = 9,
+        DLT_RAW NS_DEPRECATED_3_49("use iana::linktype::RAW") = 101,
+        DLT_IEEE802_11 NS_DEPRECATED_3_49("use iana::linktype::IEEE802_11") = 105,
+        DLT_LINUX_SLL NS_DEPRECATED_3_49("use iana::linktype::LINUX_SLL") = 113,
+        DLT_PRISM_HEADER NS_DEPRECATED_3_49("use iana::linktype::IEEE802_11_PRISM") = 119,
+        DLT_IEEE802_11_RADIO NS_DEPRECATED_3_49("use iana::linktype::IEEE802_11_RADIOTAP") = 127,
+        DLT_IEEE802_15_4 NS_DEPRECATED_3_49("use iana::linktype::IEEE802_15_4_WITHFCS") = 195,
+        DLT_NETLINK NS_DEPRECATED_3_49("use iana::linktype::NETLINK") = 253,
+        DLT_LORATAP NS_DEPRECATED_3_49("use iana::linktype::LORATAP") = 270
     };
 
     /**
