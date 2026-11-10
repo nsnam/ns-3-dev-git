@@ -284,7 +284,61 @@ SixlowpanGhcEngineTest::DoRun()
                               "Subtest 5: decompressed data must match original");
     }
 
-    // Subtest 6: Bytecode classification
+    // Subtest 6: ZERO_INSERT versus BACKREF is decided by encoded cost.
+    // A zero-free, compressible prefix (the bytes 1..16 repeated over 250
+    // bytes) is followed by "00 00 00 00 01", which matches the static
+    // dictionary. That source lies more than 247 bytes back, so the backref
+    // needs three extended-args bytes (4 bytes in all), while ZERO_INSERT for
+    // the four zeros plus a literal for the last byte costs 3. The encoder
+    // must choose the cheaper form: 48 bytes in all instead of 49.
+    {
+        constexpr uint32_t prefixLen = 250;
+        constexpr uint32_t inputLen = prefixLen + 5;
+        std::vector<uint8_t> input(inputLen);
+        for (uint32_t i = 0; i < prefixLen; i++)
+        {
+            input[i] = static_cast<uint8_t>(1 + (i % 16));
+        }
+        input[prefixLen + 4] = 0x01;
+
+        std::vector<uint8_t> compressed(inputLen);
+        uint32_t compLen = SixLowPanGhcEngine::Compress(srcAddr,
+                                                        dstAddr,
+                                                        input.data(),
+                                                        inputLen,
+                                                        compressed.data(),
+                                                        inputLen,
+                                                        false);
+
+        NS_TEST_ASSERT_MSG_EQ(compLen,
+                              48u,
+                              "Subtest 6: ZERO_INSERT plus literal must be chosen over a "
+                              "4-byte backref");
+        NS_TEST_ASSERT_MSG_EQ(static_cast<int>(compressed[compLen - 3]),
+                              0x82,
+                              "Subtest 6: expected ZERO_INSERT of four zeros");
+        NS_TEST_ASSERT_MSG_EQ(static_cast<int>(compressed[compLen - 2]),
+                              0x01,
+                              "Subtest 6: expected a one-byte literal run");
+        NS_TEST_ASSERT_MSG_EQ(static_cast<int>(compressed[compLen - 1]),
+                              0x01,
+                              "Subtest 6: expected the literal byte 0x01");
+
+        std::vector<uint8_t> decompressed(inputLen);
+        uint32_t decompLen = SixLowPanGhcEngine::Decompress(srcAddr,
+                                                            dstAddr,
+                                                            compressed.data(),
+                                                            compLen,
+                                                            decompressed.data(),
+                                                            inputLen,
+                                                            false);
+        NS_TEST_ASSERT_MSG_EQ(decompLen, inputLen, "Subtest 6: decompressed length mismatch");
+        NS_TEST_ASSERT_MSG_EQ(std::memcmp(input.data(), decompressed.data(), inputLen),
+                              0,
+                              "Subtest 6: decompressed data must match original");
+    }
+
+    // Subtest 7: Bytecode classification
     {
         NS_TEST_ASSERT_MSG_EQ(static_cast<int>(SixLowPanGhcEngine::ClassifyBytecode(0x00)),
                               static_cast<int>(GhcBytecodeType::LITERAL),
@@ -664,11 +718,10 @@ SixlowpanGhcUdpImplTest::DoRun()
  * For each vector, the test runs two steps in the order suggested by the
  * RFC 7400 authors:
  *
- *   1. Compress(RefUncomp) -> MyComp. Because RFC 7400 LZ77 does not mandate
- *      a unique encoding (different compressors may select different but
- *      equally valid matches), MyComp is not required to match RefComp
- *      byte-for-byte. The test only asserts that MyComp is non-empty and
- *      fits in the output buffer.
+ *   1. Compress(RefUncomp) -> MyComp. RFC 7400 does not mandate a unique
+ *      encoding, but the engine reproduces the RFC bytecode for all ten
+ *      examples, so the test asserts MyComp == RefComp to catch encoder
+ *      regressions.
  *
  *   2. Decompress(MyComp) -> MyUncomp. Decompression must recover
  *      RefUncomp byte-for-byte: this is the primary correctness check for
@@ -727,10 +780,9 @@ SixlowpanGhcAppendixATest::RunVector(const Vector& v)
     const std::string& tag = v.label;
 
     // --- Step 1: Compress RefUncomp into MyComp ------------------------------
-    // Per RFC 7400, LZ77 is not a unique encoding: different compressors can
-    // produce different but equally valid compressed streams. MyComp is
-    // therefore not required to match RefComp byte-for-byte; we only assert
-    // that it is non-empty and fits in the output buffer.
+    // RFC 7400 does not mandate a unique encoding, but the engine reproduces
+    // the RFC bytecode for every Appendix A example, so an exact comparison
+    // guards against encoder regressions.
     std::array<uint8_t, 512> myCompBuf{};
     const auto myPayloadLen = static_cast<uint32_t>(v.payload.size());
     const auto myCompBufLen = static_cast<uint32_t>(myCompBuf.size());
@@ -744,6 +796,9 @@ SixlowpanGhcAppendixATest::RunVector(const Vector& v)
     NS_TEST_EXPECT_MSG_LT(myCompLen, myCompBufLen, tag + ": compressed fits in buffer");
 
     std::vector<uint8_t> myComp(myCompBuf.begin(), myCompBuf.begin() + myCompLen);
+    NS_TEST_EXPECT_MSG_EQ((myComp == v.compressed),
+                          true,
+                          tag + ": compressed output must equal the RFC reference bytecode");
 
     // --- Step 2: Decompress MyComp into MyUncomp; must equal RefUncomp ------
     // This compress/decompress recovery is the primary correctness check. The

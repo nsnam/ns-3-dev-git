@@ -331,9 +331,11 @@ SixLowPanGhcEngine::FindLongestMatch(const uint8_t* buffer,
             continue;
         }
 
-        // Emit a backref only when it is no larger than the literal bytes
-        // it replaces: 1 opcode byte + extended-args bytes vs len bytes.
-        if (1 + CountBackrefExtArgBytes(len, back) > len)
+        // Emit a backref only when it is strictly shorter than the literal
+        // bytes it replaces: 1 opcode byte + extended-args bytes vs len
+        // bytes. A backref of equal size saves nothing and splits the
+        // surrounding literal run, which costs an extra literal opcode.
+        if (1 + CountBackrefExtArgBytes(len, back) >= len)
         {
             continue;
         }
@@ -513,10 +515,27 @@ SixLowPanGhcEngine::Compress(const Ipv6Address& srcAddr,
                                           matchOffset,
                                           matchLength);
 
-        // Prefer BACKREF if it strictly covers more input than ZERO_INSERT
-        // (or if no zero run is available). Ties go to ZERO_INSERT since its
-        // encoding is simpler (no offset math, no extended args).
-        const bool preferBackref = haveMatch && (zeros < 2 || matchLength > zeros);
+        // Prefer BACKREF only when it encodes in fewer bytes than ZERO_INSERT
+        // for the zero prefix plus a literal run for the remaining matched
+        // bytes. The match is at most MAX_BACKREF_LEN bytes and longer than
+        // the zero run, so one ZERO_INSERT covers the zeros and the remainder
+        // (1..15 bytes) fits one literal opcode. The two differ only when the
+        // backref needs two or more extended-args bytes, i.e. when its source
+        // is more than 127 bytes back. Ties go to ZERO_INSERT.
+        bool preferBackref = false;
+        if (haveMatch)
+        {
+            if (zeros < 2)
+            {
+                preferBackref = true;
+            }
+            else if (matchLength > zeros)
+            {
+                const uint32_t backrefCost = 1 + CountBackrefExtArgBytes(matchLength, matchOffset);
+                const uint32_t zeroThenLiteralCost = 2 + (matchLength - zeros);
+                preferBackref = backrefCost < zeroThenLiteralCost;
+            }
+        }
 
         if (preferBackref)
         {
