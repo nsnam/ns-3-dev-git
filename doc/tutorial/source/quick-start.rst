@@ -70,18 +70,18 @@ modules of your choice
 
    ::
 
-    $ tar xjf ns-3.45.tar.bz2
+    $ tar xjf ns-3.49.tar.bz2
 
 or
    ::
 
-    $ tar xjf ns-allinone-3.45.tar.bz2
+    $ tar xjf ns-allinone-3.49.tar.bz2
 
 3) Change into the |ns3| directory directly; e.g.
 
    ::
 
-    $ cd ns-3.45
+    $ cd ns-3.49
 
 Cloning ns-3 from GitLab.com
 ++++++++++++++++++++++++++++
@@ -99,12 +99,12 @@ only to `cd` into ns-3-dev; the `master` branch is checked out by default.
 
   $ cd ns-3-dev
 
-If instead you want to try the most recent release (version 3.45 as of this
+If instead you want to try the most recent release (version 3.49 as of this
 writing), you can checkout a branch corresponding to that git tag:
 
 ::
 
-  $ git checkout -b ns-3.45-branch ns-3.45
+  $ git checkout -b ns-3.49-branch ns-3.49
 
 Building and testing ns-3
 *************************

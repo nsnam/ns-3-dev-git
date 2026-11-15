@@ -61,7 +61,7 @@ the project provides an installation guide
 for various systems, available at
 https://www.nsnam.org/docs/installation/html/index.html.
 
-As of the most recent |ns3| release (ns-3.47), the following tools
+As of the most recent |ns3| release (ns-3.49), the following tools
 are needed to get started with |ns3|:
 
 ============  ===========================================================
@@ -130,14 +130,14 @@ get a copy of a release by typing the following into your Linux shell
   $ cd
   $ mkdir workspace
   $ cd workspace
-  $ wget https://www.nsnam.org/release/ns-3.45.tar.bz2
-  $ tar xjf ns-3.45.tar.bz2
+  $ wget https://www.nsnam.org/release/ns-3.49.tar.bz2
+  $ tar xjf ns-3.49.tar.bz2
 
 Notice the use above of the ``wget`` utility, which is a command-line
 tool to fetch objects from the web; if you do not have this installed,
 you can use a browser for this step.
 
-Following these steps, you should change into the directory ``ns-3.45``.
+Following these steps, you should change into the directory ``ns-3.49``.
 You are now ready to build the base |ns3| distribution and may skip ahead
 to the section on building |ns3|.
 
