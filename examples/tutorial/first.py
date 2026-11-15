@@ -36,6 +36,11 @@ pointToPoint.SetChannelAttribute("Delay", ns.StringValue("2ms"))
 devices = pointToPoint.Install(nodes)
 
 stack = ns.InternetStackHelper()
+
+# Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+# Note: Actual networks typically have both IPv4 and IPv6 enabled.
+stack.SetIpv6StackInstall(False)
+
 stack.Install(nodes)
 
 address = ns.Ipv4AddressHelper()

@@ -110,14 +110,14 @@ main(int argc, char* argv[])
 
     if (useV6)
     {
-        // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
-        // Note: Normal networks typically have both IPv4 and IPv6 enabled.
+        // Disabling IPv4 because it is not necessary to show what we want to demonstrate here.
+        // Note: Actual networks typically have both IPv4 and IPv6 enabled.
         stack.SetIpv4StackInstall(false);
     }
     else
     {
-        // Disabling IPv4 because it is not necessary to show what we want to demonstrate here.
-        // Note: Normal networks typically have both IPv4 and IPv6 enabled.
+        // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+        // Note: Actual networks typically have both IPv4 and IPv6 enabled.
         stack.SetIpv6StackInstall(false);
     }
 

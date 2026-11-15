@@ -477,11 +477,16 @@ millisecond transmission delay.
 InternetStackHelper
 ~~~~~~~~~~~~~~~~~~~
 We now have nodes and devices configured, but we don't have any protocol stacks
-installed on our nodes.  The next two lines of code will take care of that.
+installed on our nodes.  The next lines of code will take care of that.
 
 ::
 
     InternetStackHelper stack;
+
+    // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+    // Note: Actual networks typically have both IPv4 and IPv6 enabled.
+    stack.SetIpv6StackInstall(false);
+
     stack.Install(nodes);
 
 The ``InternetStackHelper`` is a topology helper that is to internet stacks
@@ -489,6 +494,15 @@ what the ``PointToPointHelper`` is to point-to-point net devices.  The
 ``Install`` method takes a ``NodeContainer`` as a parameter.  When it is
 executed, it will install an Internet Stack (TCP, UDP, IP, etc.) on each of
 the nodes in the node container.
+
+By default, the ``InternetStackHelper`` installs both IPv4 and IPv6, as is
+typical of real networks.  This example only uses IPv4, so the call to
+``SetIpv6StackInstall(false)`` skips the installation of IPv6.  This keeps
+the example focused on what we want to demonstrate, and keeps IPv6 control
+traffic (such as neighbor discovery and router advertisement messages) out
+of the logs and traces that we will look at later.  Similarly,
+``SetIpv4StackInstall(false)`` can be used to build an IPv6-only node.  Most
+of the tutorial programs that follow disable IPv6 in the same way.
 
 Ipv4AddressHelper
 ~~~~~~~~~~~~~~~~~

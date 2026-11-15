@@ -54,7 +54,9 @@ First, it has been enabled for IPv6 support with a command-line option:
   cmd.Parse(argc, argv);
 
 If the user specifies ``useIpv6``, option, the program will be run
-using IPv6 instead of IPv4.  The ``help`` option, available on all |ns3|
+using IPv6 instead of IPv4.  As in the earlier tutorial programs, only the
+address family in use is installed on the nodes; with ``useIpv6``, the IPv4
+stack is not installed, and otherwise, the IPv6 stack is not installed.  The ``help`` option, available on all |ns3|
 programs that support the CommandLine object as shown above, can
 be invoked as follows (please note the use of double quotes):
 
@@ -103,6 +105,24 @@ some of the new lines of this diff:
 
 .. sourcecode:: diff
 
+     InternetStackHelper stack;
+
+  -  // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+  -  // Note: Actual networks typically have both IPv4 and IPv6 enabled.
+  -  stack.SetIpv6StackInstall(false);
+  +  if (useV6)
+  +  {
+  +      // Disabling IPv4 because it is not necessary to show what we want to demonstrate here.
+  +      // Note: Actual networks typically have both IPv4 and IPv6 enabled.
+  +      stack.SetIpv4StackInstall(false);
+  +  }
+  +  else
+  +  {
+  +      // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+  +      // Note: Actual networks typically have both IPv4 and IPv6 enabled.
+  +      stack.SetIpv6StackInstall(false);
+  +  }
+   ...
   +  std::string probeType;
   +  std::string tracePath;
   +  if (useV6 == false)

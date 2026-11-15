@@ -117,6 +117,11 @@ mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel")
 mobility.Install(wifiApNode)
 
 stack = ns.InternetStackHelper()
+
+# Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+# Note: Actual networks typically have both IPv4 and IPv6 enabled.
+stack.SetIpv6StackInstall(False)
+
 stack.Install(csmaNodes)
 stack.Install(wifiApNode)
 stack.Install(wifiStaNodes)

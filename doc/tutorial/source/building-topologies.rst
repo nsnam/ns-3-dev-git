@@ -192,8 +192,17 @@ stacks present.  Just as in the ``first.cc`` script, we will use the
 ::
 
   InternetStackHelper stack;
+
+  // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+  // Note: Actual networks typically have both IPv4 and IPv6 enabled.
+  stack.SetIpv6StackInstall(false);
+
   stack.Install(p2pNodes.Get(0));
   stack.Install(csmaNodes);
+
+As in ``first.cc``, we disable IPv6 because this example only uses IPv4.
+Among other things, this keeps IPv6 neighbor discovery packets out of the
+packet traces that we will examine below.
 
 Recall that we took one of the nodes from the ``p2pNodes`` container and
 added it to the ``csmaNodes`` container.  Thus we only need to install
@@ -1115,9 +1124,16 @@ to install these stacks.
 ::
 
   InternetStackHelper stack;
+
+  // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
+  // Note: Actual networks typically have both IPv4 and IPv6 enabled.
+  stack.SetIpv6StackInstall(false);
+
   stack.Install(csmaNodes);
   stack.Install(wifiApNode);
   stack.Install(wifiStaNodes);
+
+As in ``second.cc``, IPv6 is not installed because it is not needed here.
 
 Just as in the ``second.cc`` example script, we are going to use the
 ``Ipv4AddressHelper`` to assign IP addresses to our device interfaces.
