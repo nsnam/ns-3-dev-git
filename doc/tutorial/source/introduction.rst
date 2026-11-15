@@ -62,10 +62,10 @@ a few distinguishing features of |ns3| in contrast to other tools.
   users should expect to work at the command line and with C++ and/or
   Python software development tools.
 * |ns3| is primarily used on Linux or macOS systems, although support exists
-  for BSD systems and also for Windows frameworks that can build Linux code,
-  such as Windows Subsystem for Linux, or Cygwin.  Native Windows
-  Visual Studio is not presently supported although a developer is working
-  on future support.  Windows users may also use a Linux virtual machine.
+  for BSD systems and for Windows, using either the Windows Subsystem for
+  Linux (WSL2) or the Msys2 toolchains.  Native Windows Visual Studio
+  (MSVC) is not fully supported; see the installation guide for details.
+  Windows users may also use a Linux virtual machine.
 * |ns3| is not an officially supported software product of any company.
   Support for |ns3| is done on a best-effort basis on the
   ns-3-users forum (ns-3-users@googlegroups.com).
@@ -135,7 +135,7 @@ contribute to |ns3| like they have for |ns2|:
   `page
   <http://nsnam.isi.edu/nsnam/index.php/Contributed_Code>`_
 * Documentation on `how to contribute <https://www.nsnam.org/docs/contributing/html/index.html>`_
-* Use of Git hosting at GitLab.com including `issue tracker <https://www.gitlab.com/nsnam>`_
+* Use of Git hosting at GitLab.com including `issue tracker <https://gitlab.com/nsnam/ns-3-dev/-/issues>`_
 
 We realize that if you are reading this document, contributing back to
 the project is probably not your foremost concern at this point, but

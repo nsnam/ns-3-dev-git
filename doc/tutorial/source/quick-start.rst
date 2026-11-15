@@ -40,7 +40,7 @@ supported by a recent C++ compiler and Python runtime support.
 
 For Linux, use either g++ or clang++ compilers.  For macOS, use clang++
 (available in Xcode or Xcode Command Line Tools).  For Windows, Msys2 tools
-with the MinGW64 toolchain can be used (since ns-3.37) for most use
+with the UCRT64 (or MinGW64) toolchain can be used (since ns-3.37) for most use
 cases.  For releases earlier than ns-3.37, or for use of emulation modes
 or Python bindings, we recommend
 to either use a Linux virtual machine, or the Windows Subsystem for Linux.
@@ -115,7 +115,7 @@ configure the build using the *CMake* build system.  The below
 commands make use of a Python wrapper around CMake, called ``ns3``, that
 simplifies the command-line syntax, resembling *Waf* syntax.  There
 are several options to control the build, but enabling the example programs
-and the tests, for a default build profile (with asserts enabled and
+and the tests, for a default build profile (with asserts enabled
 and support for |ns3| logging) is what is usually done at first:
 
 ::

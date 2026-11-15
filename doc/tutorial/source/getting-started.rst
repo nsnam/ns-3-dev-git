@@ -76,7 +76,7 @@ tar           any recent version (to unpack an `ns-3 release <https://www.nsnam.
 bunzip2       any recent version (to uncompress an |ns3| release)
 ============  ===========================================================
 
-To check the default version of Python, type ``python -V``.  To check
+To check the default version of Python, type ``python3 -V``.  To check
 the default version of g++, type ``g++ -v``.  If your installation is
 missing or too old, please consult the |ns3|
 `installation guide <https://www.nsnam.org/docs/installation/html/index.html>`_ for guidance.
@@ -385,7 +385,7 @@ Other options might depend on third-party libraries, which if not found will be 
 If this library were not found, the corresponding |ns3| feature
 would not be enabled and a message would be displayed.  Note further that there is
 a feature to use the program ``sudo`` to set the suid bit of certain programs.
-This is not enabled by default and so this feature is reported as "not enabled."
+This is not enabled by default.
 Finally, to reprint this summary of which optional features are enabled, use
 the ``show config`` option to ns3.
 
@@ -423,7 +423,7 @@ Handling build errors
 in the mainstream Linux and macOS distributions at the time of the release.
 However, over time, newer distributions are released, with newer compilers,
 and these newer compilers tend to be more pedantic about warnings.  |ns3|
-configures its build to treat all warnings as errors, so it is sometimes
+configures its ``debug`` build profile to treat all warnings as errors, so it is sometimes
 the case, if you are using an older release version on a newer system,
 that a compiler warning will cause the build to fail.
 
@@ -498,13 +498,13 @@ The build profile controls the use of logging, assertions, and compiler optimiza
     | Wrapper  |                                 |                             |                               |                                 |
     | Macro    |                                 |                             |                               |                                 |
     +----------+---------------------------------+-----------------------------+-------------------------------+---------------------------------+
-    | Compiler | ``-Og -g``                      | ``-Os -g``                  | ``-O3``                       | ``-O3``                         |
-    | Flags    |                                 |                             |                               | ``-march=native``               |
+    | Compiler | ``-g``                          | ``-Os -g`` (``-O2 -g``      | ``-O3``                       | ``-O3``                         |
+    | Flags    |                                 | on macOS)                   |                               | ``-march=native``               |
     |          |                                 |                             |                               | ``-mtune=native``               |
     +----------+---------------------------------+-----------------------------+-------------------------------+---------------------------------+
 
 As you can see, logging and assertions are only configured
-by default in debug builds, although they can be selectively enabled
+by default in the ``debug`` and ``default`` build profiles, although they can be selectively enabled
 in other build profiles by using the ``--enable-logs`` and
 ``--enable-asserts`` flags during CMake configuration time.
 Recommended practice is to develop your scenario in debug mode, then
@@ -552,7 +552,7 @@ to define some environment variables to help you avoid mistakes:
 
   $ export NS3CONFIG="--enable-examples --enable-tests"
   $ export NS3DEBUG="--build-profile=debug --out=build/debug"
-  $ export NS3OPT=="--build-profile=optimized --out=build/optimized"
+  $ export NS3OPT="--build-profile=optimized --out=build/optimized"
 
   $ ./ns3 configure $NS3CONFIG $NS3DEBUG
   $ ./ns3 build
@@ -586,8 +586,9 @@ More info on ``distcc`` and distributed compilation can be found on it's
 <https://code.google.com/p/distcc/>`_
 under Documentation section.
 
-To add compiler flags, use the ``CXXFLAGS_EXTRA`` environment variable when
-you configure |ns3|.
+To add compiler flags, set the ``CXXFLAGS`` environment variable when you
+first configure |ns3| (e.g., ``CXXFLAGS="-Wno-foo" ./ns3 configure``), or pass
+CMake options after ``--`` (e.g., ``./ns3 configure -- -DCMAKE_CXX_FLAGS="-Wno-foo"``).
 
 Install
 =======
@@ -768,7 +769,7 @@ Corresponds to:
   $ cmake --build . -j 16 --target test-runner # This command builds the test-runner target calling the underlying build system
   $ export PATH=$PATH:/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python # export library paths
   $ export LD_LIBRARY_PATH=/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python
-  $ export PYTHON_PATH=/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python
+  $ export PYTHONPATH=/ns-3-dev/build/:/ns-3-dev/build/lib:/ns-3-dev/build/bindings/python
   $ /ns-3-dev/build/utils/ns3-dev-test-runner-optimized # call the executable with the real path
 
 Note: the command above would fail if ``./ns3 build`` was not executed first,
@@ -1058,9 +1059,9 @@ You can run the unit tests of the |ns3| distribution by running the
 
 .. sourcecode:: console
 
-  $ ./test.py --no-build
+  $ ./test.py
 
-These tests are run in parallel by ns3. You should eventually
+These tests are run in parallel by ``test.py``. You should eventually
 see a report saying that
 
 .. sourcecode:: text
@@ -1126,7 +1127,7 @@ Running a Script
 We typically run scripts under the control of ns3.  This allows the build
 system to ensure that the shared library paths are set correctly and that
 the libraries are available at run time.  To run a program, simply use the
-``--run`` option in ns3.  Let's run the |ns3| equivalent of the
+``run`` command of ns3.  Let's run the |ns3| equivalent of the
 ubiquitous hello world program by typing the following:
 
 .. sourcecode:: console
@@ -1226,9 +1227,9 @@ For example, to run your |ns3| program ``hello-simulator`` with the arguments
 
 .. sourcecode:: console
 
-  $ ./ns3 run hello-simulator --command-template="gdb %s --args <args>"
+  $ ./ns3 run hello-simulator --command-template="gdb --args %s <args>"
 
-Notice that the |ns3| program name goes with the ``--run`` argument,
+Notice that the |ns3| program name goes with the ``run`` command,
 and the control utility (here ``gdb``) is the first token
 in the ``--command-template`` argument.  The ``--args`` tells ``gdb``
 that the remainder of the command line belongs to the "inferior" program.
@@ -1241,7 +1242,7 @@ debugger:
 
 .. sourcecode:: console
 
-  $ ./ns3 run test-runner --command-template="gdb %s --args --suite=mytest --verbose"
+  $ ./ns3 run test-runner --command-template="gdb --args %s --suite=mytest --verbose"
 
 Working Directory
 +++++++++++++++++
@@ -1287,7 +1288,7 @@ This configuration option has the following prerequisites:
 or
 
 - A file named version.cache, containing version information, is located in the
-  src/core directory
+  src/core/model directory
 
 If these prerequisites are not met, the configuration will fail.
 
@@ -1307,11 +1308,10 @@ to the output below.
   ns-3.33+249@g80e0dd0-dirty-debug
 
 If ``show version`` is run when ``--enable-build-version`` was not configured,
-an error message indicating that the option is disabled will be displayed instead.
-
-.. sourcecode:: text
-
-  Build version support is not enabled, reconfigure with --enable-build-version flag
+ns3 instead prints the output of ``git describe --dirty`` (if run from a git
+repository), along with a reminder to reconfigure with
+``--enable-build-version``; outside of a git repository, a message indicating
+that the feature is disabled is displayed.
 
 The build information is generated by examining the current state of the git
 repository.  The output of  ``show version`` will change whenever the state
