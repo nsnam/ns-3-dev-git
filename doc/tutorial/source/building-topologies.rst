@@ -32,20 +32,20 @@ enough |ns3| code to understand most of what is going on in this
 example, but we will go over the entire script and examine some of the output.
 
 Just as in the ``first.cc`` example (and in all ns-3 examples) the file
-begins with an emacs mode line and some GPL boilerplate.
+begins with an SPDX license identifier.
 
 The actual code begins by loading module include files just as was done in the
 ``first.cc`` example.
 
 ::
 
+  #include "ns3/applications-module.h"
   #include "ns3/core-module.h"
-  #include "ns3/network-module.h"
   #include "ns3/csma-module.h"
   #include "ns3/internet-module.h"
-  #include "ns3/point-to-point-module.h"
-  #include "ns3/applications-module.h"
   #include "ns3/ipv4-global-routing-helper.h"
+  #include "ns3/network-module.h"
+  #include "ns3/point-to-point-module.h"
 
 One thing that can be surprisingly useful is a small bit of ASCII art that
 shows a cartoon of the network topology constructed in the example.  You will
@@ -98,7 +98,7 @@ entirely comfortable with the following code at this point in the tutorial.
   bool verbose = true;
   uint32_t nCsma = 3;
 
-  CommandLine cmd;
+  CommandLine cmd(__FILE__);
   cmd.AddValue("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
 
@@ -330,7 +330,8 @@ network and ask it to perform a promiscuous sniff of the network, thereby
 emulating what ``tcpdump`` would do.  If you were on a Linux machine
 you might do something like ``tcpdump -i eth0`` to get the trace.
 In this case, we specify the device using ``csmaDevices.Get(1)``,
-which selects the first device in the container.  Setting the final
+which selects the device at index one in the container (the CSMA device
+on node two, the first "extra" node).  Setting the final
 parameter to true enables promiscuous captures.
 
 The last section of code just runs and cleans up the simulation just like
@@ -370,7 +371,11 @@ run the program.
   $ ./ns3 run scratch/mysecond
 
 Since we have set up the UDP echo applications to log just as we did in
-``first.cc``, you will see similar output when you run the script.
+``first.cc``, you will see similar output when you run the script.  The
+exact times may differ slightly from those shown in this chapter.  For
+example, ARP requests are sent after a small random delay (jitter), and the
+random values drawn can change between |ns3| releases or when other parts of
+the configuration change.
 
 .. sourcecode:: text
 
@@ -379,12 +384,12 @@ Since we have set up the UDP echo applications to log just as we did in
   At time +2.0078s server sent 1024 bytes to 10.1.1.1 port 49153
   At time +2.01761s client received 1024 bytes from 10.1.2.4 port 9
 
-Recall that the first message, "``Sent 1024 bytes to 10.1.2.4``," is the
+Recall that the first message, "``client sent 1024 bytes to 10.1.2.4``," is the
 UDP echo client sending a packet to the server.  In this case, the server
-is on a different network (10.1.2.0).  The second message, "``Received 1024
-bytes from 10.1.1.1``," is from the UDP echo server, generated when it receives
-the echo packet.  The final message, "``Received 1024 bytes from 10.1.2.4``,"
-is from the echo client, indicating that it has received its echo back from
+is on a different network (10.1.2.0).  The second message, "``server received
+1024 bytes from 10.1.1.1``," is from the UDP echo server, generated when it
+receives the echo packet.  The final message, "``client received 1024 bytes
+from 10.1.2.4``," is from the echo client, indicating that it has received its echo back from
 the server.
 
 If you now look in the top level directory, you will find three trace
@@ -566,20 +571,18 @@ a bystander in the CSMA network.  You may really want to get a trace from
 a single device and you may not be interested in any other traffic on the
 network.  You can do this fairly easily.
 
-Let's take a look at ``scratch/mysecond.cc`` and add that code enabling us
-to be more specific.  ``ns-3`` helpers provide methods that take a node
-number and device number as parameters.  Go ahead and replace the
-``EnablePcap`` calls with the calls below.
+``ns-3`` helpers provide methods that take a node number and device number
+as parameters, so that you can be more specific.  For example, calls such as
+the following would trace only selected devices:
 
 ::
 
   pointToPoint.EnablePcap("second", p2pNodes.Get(0)->GetId(), 0);
   csma.EnablePcap("second", csmaNodes.Get(nCsma)->GetId(), 0, false);
-  csma.EnablePcap("second", csmaNodes.Get(nCsma-1)->GetId(), 0, false);
+  csma.EnablePcap("second", csmaNodes.Get(nCsma - 1)->GetId(), 0, false);
 
-We know that we want to create a pcap file with the base name "second" and
-we also know that the device of interest in both cases is going to be zero,
-so those parameters are not really interesting.
+Here, the base name of each pcap file is "second" and the device of interest
+on each node is device zero, so those parameters are not really interesting.
 
 In order to get the node number, you have two choices:  first, nodes are
 numbered in a monotonically increasing fashion starting from zero in the
@@ -614,7 +617,8 @@ about what is going on,
 
   $ rm *.pcap
 
-On line 110, notice the following command to enable tracing on one node
+Now let's make a simpler change to ``scratch/mysecond.cc``.  Near the end
+of ``main``, notice the following command to enable tracing on one node
 (the index 1 corresponds to the second CSMA node in the container):
 
 .. sourcecode:: bash
@@ -809,8 +813,9 @@ Building a Wireless Network Topology
 In this section we are going to further expand our knowledge of |ns3|
 network devices and channels to cover an example of a wireless network.
 |ns3| provides a set of 802.11 models that attempt to provide an
-accurate MAC-level implementation of the 802.11 specification and a
-"not-so-slow" PHY-level model of the 802.11a specification.
+accurate MAC-level implementation of the 802.11 specification and
+"not-so-slow" PHY-level models of several 802.11 standards (802.11a/b/g
+through 802.11ax and 802.11be).
 
 Just as we have seen both point-to-point and CSMA topology helper objects when
 constructing point-to-point topologies, we will see equivalent ``Wifi``
@@ -825,7 +830,7 @@ this example, but there are a few new things, so we will go over the entire
 script and examine some of the output.
 
 Just as in the ``second.cc`` example (and in all |ns3| examples)
-the file begins with an emacs mode line and some GPL boilerplate.
+the file begins with an SPDX license identifier.
 
 Take a look at the ASCII art (reproduced below) that shows the default network
 topology constructed in the example.  You can see that we are going to
@@ -840,19 +845,21 @@ network.  By default there are three "extra" CSMA nodes and three wireless
 ``STA`` nodes.
 
 The code begins by loading module include files just as was done in the
-``second.cc`` example.  There are a couple of new includes corresponding
-to the wifi module and the mobility module which we will discuss below.
+``second.cc`` example.  There are a few new includes corresponding
+to the mobility module and to the Wi-Fi helper and SSID classes, which we
+will discuss below.
 
 ::
 
-  #include "ns3/core-module.h"
-  #include "ns3/point-to-point-module.h"
-  #include "ns3/network-module.h"
   #include "ns3/applications-module.h"
-  #include "ns3/wifi-module.h"
-  #include "ns3/mobility-module.h"
+  #include "ns3/core-module.h"
   #include "ns3/csma-module.h"
   #include "ns3/internet-module.h"
+  #include "ns3/mobility-module.h"
+  #include "ns3/network-module.h"
+  #include "ns3/point-to-point-module.h"
+  #include "ns3/ssid.h"
+  #include "ns3/yans-wifi-helper.h"
 
 The network topology illustration follows:
 
@@ -884,21 +891,33 @@ component is defined.  This should all be quite familiar by now.
   NS_LOG_COMPONENT_DEFINE("ThirdScriptExample");
 
 The main program begins just like ``second.cc`` by adding some command line
-parameters for enabling or disabling logging components and for changing the
-number of devices created.
+parameters for enabling or disabling logging components and pcap tracing,
+and for changing the number of devices created.  The number of Wi-Fi
+stations is limited to 18, because the grid layout used below for the
+initial station positions would otherwise exceed the bounding box of the
+mobility model.
 
 ::
 
   bool verbose = true;
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
+  bool tracing = false;
 
-  CommandLine cmd;
+  CommandLine cmd(__FILE__);
   cmd.AddValue("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue("nWifi", "Number of wifi STA devices", nWifi);
   cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
+  cmd.AddValue("tracing", "Enable pcap tracing", tracing);
 
-  cmd.Parse(argc,argv);
+  cmd.Parse(argc, argv);
+
+  if (nWifi > 18)
+  {
+      std::cout << "nWifi should be 18 or less; otherwise grid layout exceeds the bounding box"
+                << std::endl;
+      return 1;
+  }
 
   if (verbose)
   {
@@ -976,12 +995,12 @@ helpers:
 ::
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default();
+  YansWifiPhyHelper phy;
 
 For simplicity, this code uses the default PHY layer configuration and
 channel models which are documented in the API Doxygen documentation for
-the ``YansWifiChannelHelper::Default`` and ``YansWifiPhyHelper::Default``
-methods. Once these objects are created, we create a channel object
+the ``YansWifiChannelHelper::Default`` method and the ``YansWifiPhyHelper``
+class. Once these objects are created, we create a channel object
 and associate it to our PHY layer object manager to make sure
 that all the PHY layer objects created by the ``YansWifiPhyHelper``
 share the same underlying channel, that is, they share the same
@@ -1021,7 +1040,7 @@ the WifiNetDevice objects that the helper create.
 
 ::
 
-  NetDeviceContainer staDevices
+  NetDeviceContainer staDevices;
   mac.SetType("ns3::StaWifiMac",
               "Ssid", SsidValue(ssid),
               "ActiveProbing", BooleanValue(false));
@@ -1043,7 +1062,6 @@ create the Wi-Fi devices of these stations:
 
 ::
 
-  NetDeviceContainer staDevices;
   staDevices = wifi.Install(phy, mac, wifiStaNodes);
 
 We have configured Wi-Fi for all of our STA nodes, and now we need to
@@ -1204,19 +1222,26 @@ loop.
 
   Simulator::Stop(Seconds(10));
 
-We create just enough tracing to cover all three networks:
+If the ``tracing`` command line argument is set, we create just enough
+tracing to cover all three networks:
 
 ::
 
-  pointToPoint.EnablePcapAll("third");
-  phy.EnablePcap("third", apDevices.Get(0));
-  csma.EnablePcap("third", csmaDevices.Get(0), true);
+  if (tracing)
+  {
+      phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+      pointToPoint.EnablePcapAll("third");
+      phy.EnablePcap("third", apDevices.Get(0));
+      csma.EnablePcap("third", csmaDevices.Get(0), true);
+  }
 
-These three lines of code will start pcap tracing on both of the point-to-point
-nodes that serves as our backbone, will start a promiscuous (monitor) mode
-trace on the Wi-Fi network, and will start a promiscuous trace on the CSMA
-network.  This will let us see all of the traffic with a minimum number of
-trace files.
+The first line selects the radiotap pcap format for the Wi-Fi traces, so that
+PHY-level information (such as the data rate, channel frequency, and signal
+and noise levels) is recorded along with each 802.11 frame.  The next three
+lines will start pcap tracing on both of the point-to-point nodes that serve
+as our backbone, will start a promiscuous (monitor) mode trace on the Wi-Fi
+network, and will start a promiscuous trace on the CSMA network.  This will
+let us see all of the traffic with a minimum number of trace files.
 
 Finally, we actually run the simulation, clean up and then exit the program.
 
@@ -1238,7 +1263,8 @@ repository, type the following:
   $ ./ns3 run 'scratch/mythird --tracing=1'
 
 Again, since we have set up the UDP echo applications just as we did in the
-``second.cc`` script, you will see similar output.
+``second.cc`` script, you will see similar output (and, again, the exact
+times may differ slightly from those shown here).
 
 .. sourcecode:: text
 
@@ -1247,12 +1273,12 @@ Again, since we have set up the UDP echo applications just as we did in the
   At time +2.01624s server sent 1024 bytes to 10.1.3.3 port 49153
   At time +2.02849s client received 1024 bytes from 10.1.2.4 port 9
 
-Recall that the first message, ``Sent 1024 bytes to 10.1.2.4``," is the
+Recall that the first message, "``client sent 1024 bytes to 10.1.2.4``," is the
 UDP echo client sending a packet to the server.  In this case, the client
 is on the wireless network (10.1.3.0).  The second message,
-"``Received 1024 bytes from 10.1.3.3``," is from the UDP echo server,
+"``server received 1024 bytes from 10.1.3.3``," is from the UDP echo server,
 generated when it receives the echo packet.  The final message,
-"``Received 1024 bytes from 10.1.2.4``," is from the echo client, indicating
+"``client received 1024 bytes from 10.1.2.4``," is from the echo client, indicating
 that it has received its echo back from the server.
 
 If you now look in the top level directory, and you enabled tracing at
@@ -1283,15 +1309,18 @@ You should see some wifi-looking contents you haven't seen here before:
 .. sourcecode:: text
 
   reading from file third-0-1.pcap, link-type IEEE802_11_RADIO (802.11 plus radiotap header)
-
-  0.033119 33119us tsft 6.0 Mb/s 5210 MHz 11a Beacon (ns-3-ssid) [6.0* 9.0 12.0* 18.0 24.0* 36.0 48.0 54.0 Mbit] ESS
-  0.120504 120504us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
-  0.120520 120520us tsft 6.0 Mb/s 5210 MHz 11a Acknowledgment RA:00:00:00:00:00:08
-  0.120632 120632us tsft 6.0 Mb/s 5210 MHz 11a -62dBm signal -94dBm noise CF-End RA:ff:ff:ff:ff:ff:ff
-  0.120666 120666us tsft 6.0 Mb/s 5210 MHz 11a Assoc Response AID(1) :: Successful
+  0.034061 34061us tsft 6.0 Mb/s 5210 MHz 11a [bit 22] Beacon (ns-3-ssid) [6.0* 9.0 12.0* 18.0 24.0* 36.0 48.0 54.0 Mbit] ESS
+  0.120515 120515us tsft 6.0 Mb/s 5210 MHz 11a -61dBm signal -94dBm noise [bit 22] Assoc Request (ns-3-ssid) [6.0 9.0 12.0 18.0 24.0 36.0 48.0 54.0 Mbit]
+  0.120575 120575us tsft 6.0 Mb/s 5210 MHz 11a [bit 22] Acknowledgment RA:00:00:00:00:00:07
+  0.120877 120877us tsft 6.0 Mb/s 5210 MHz 11a [bit 22] Assoc Response AID(1) :: Successful
   ...
 
-You can see that the link type is now 802.11 as you would expect.  You can
+You can see that the link type is now 802.11 as you would expect.  Although
+the devices are configured for 802.11ax, these management and control
+frames are sent at a basic rate of 6 Mb/s using the legacy (non-HT) OFDM
+format, which ``tcpdump`` labels as ``11a`` in the 5 GHz band.  ``tcpdump``
+may also print radiotap fields that it does not decode, such as ``[bit 22]``
+(the radiotap timestamp field).  You can
 probably understand what is going on and find the IP echo request and response
 packets in this trace.  We leave it as an exercise to completely parse the
 trace dump.
@@ -1525,9 +1554,12 @@ At the traffic-control layer, these are the options:
 * MqQueueDisc: This queue disc has no limits on its capacity
 * TbfQueueDisc: The default maximum size is 1000 packets
 
-By default, a pfifo_fast queueing discipline is installed on a NetDevice when
-an IPv4 or IPv6 address is assigned to an interface associated with the NetDevice,
-unless a queueing discipline has been already installed on the NetDevice.
+By default, when an IPv4 or IPv6 address is assigned to an interface associated
+with a NetDevice, an FqCoDel queueing discipline is installed on the NetDevice
+if it has a single transmission queue, or an mq queueing discipline with one
+FqCoDel child queueing discipline per transmission queue if the NetDevice has
+multiple transmission queues (e.g., a Wi-Fi device with QoS support).  This
+is not done if a queueing discipline has been already installed on the NetDevice.
 
 At the device layer, there are device specific queues:
 
@@ -1535,9 +1567,9 @@ At the device layer, there are device specific queues:
   a DropTail queue of default size (100 packets)
 * CsmaNetDevice: The default configuration (as set by the helper) is to install
   a DropTail queue of default size (100 packets)
-* WiFiNetDevice: The default configuration is to install a DropTail queue of default size
-  (100 packets) for non-QoS stations and four DropTail queues of default size (100
-  packets) for QoS stations
+* WifiNetDevice: The default configuration is to install a WifiMacQueue of default
+  size (500 packets) for non-QoS stations and four WifiMacQueues of default size
+  (500 packets), one per access category, for QoS stations
 * SimpleNetDevice: The default configuration is to install a DropTail queue of default
   size (100 packets)
 * LteNetDevice: Queueing occurs at the RLC layer (RLC UM default buffer is 10 * 1024 bytes, RLC AM does not have a buffer limit).
