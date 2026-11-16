@@ -49,28 +49,28 @@ First, it has been enabled for IPv6 support with a command-line option:
 
 ::
 
-  CommandLine cmd;
+  CommandLine cmd(__FILE__);
   cmd.AddValue("useIpv6", "Use Ipv6", useV6);
   cmd.Parse(argc, argv);
 
-If the user specifies ``useIpv6``, option, the program will be run
+If the user specifies the ``useIpv6`` option, the program will be run
 using IPv6 instead of IPv4.  As in the earlier tutorial programs, only the
 address family in use is installed on the nodes; with ``useIpv6``, the IPv4
-stack is not installed, and otherwise, the IPv6 stack is not installed.  The ``help`` option, available on all |ns3|
+stack is not installed, and otherwise, the IPv6 stack is not installed.  The ``--PrintHelp`` option, available on all |ns3|
 programs that support the CommandLine object as shown above, can
 be invoked as follows (please note the use of double quotes):
 
 ::
 
-  ./ns3 run "seventh --help"
+  ./ns3 run "seventh --PrintHelp"
 
 which produces:
 
 ::
 
-  ns3-dev-seventh-debug [Program Arguments] [General Arguments]
+  seventh [Program Options] [General Arguments]
 
-  Program Arguments:
+  Program Options:
       --useIpv6:  Use Ipv6 [false]
 
   General Arguments:
@@ -79,6 +79,7 @@ which produces:
       --PrintGroup=[group]:        Print all TypeIds of group.
       --PrintTypeIds:              Print all TypeIds.
       --PrintAttributes=[typeid]:  Print all attributes of typeid.
+      --PrintVersion:              Print the ns-3 version.
       --PrintHelp:                 Print this help message.
 
 This default (use of IPv4, since useIpv6 is false) can be changed by
@@ -125,18 +126,18 @@ some of the new lines of this diff:
    ...
   +  std::string probeType;
   +  std::string tracePath;
-  +  if (useV6 == false)
-  +    {
+  +  if (!useV6)
+  +  {
      ...
   +      probeType = "ns3::Ipv4PacketProbe";
   +      tracePath = "/NodeList/*/$ns3::Ipv4L3Protocol/Tx";
-  +    }
+  +  }
   +  else
-  +    {
+  +  {
      ...
   +      probeType = "ns3::Ipv6PacketProbe";
   +      tracePath = "/NodeList/*/$ns3::Ipv6L3Protocol/Tx";
-  +    }
+  +  }
    ...
   +   // Use GnuplotHelper to plot the packet byte count over time
   +   GnuplotHelper plotHelper;
@@ -146,7 +147,7 @@ some of the new lines of this diff:
   +   // arguments are, respectively, the plot title, x-axis, and y-axis labels
   +   plotHelper.ConfigurePlot("seventh-packet-byte-count",
   +                            "Packet Byte Count vs. Time",
-  +                            "Time(Seconds)",
+  +                            "Time (Seconds)",
   +                            "Packet Byte Count");
   +
   +   // Specify the probe type, trace source path (in configuration namespace), and
@@ -163,17 +164,14 @@ some of the new lines of this diff:
   +   FileHelper fileHelper;
   +
   +   // Configure the file to be written, and the formatting of output data.
-  +   fileHelper.ConfigureFile("seventh-packet-byte-count",
-  +                            FileAggregator::FORMATTED);
+  +   fileHelper.ConfigureFile("seventh-packet-byte-count", FileAggregator::FORMATTED);
   +
   +   // Set the labels for this formatted output file.
   +   fileHelper.Set2dFormat("Time (Seconds) = %.3e\tPacket Byte Count = %.0f");
   +
-  +   // Specify the probe type, probe path (in configuration namespace), and
+  +   // Specify the probe type, trace source path (in configuration namespace), and
   +   // probe output trace source ("OutputBytes") to write.
-  +   fileHelper.WriteProbe(probeType,
-  +                         tracePath,
-  +                         "OutputBytes");
+  +   fileHelper.WriteProbe(probeType, tracePath, "OutputBytes");
   +
       Simulator::Stop(Seconds(20));
       Simulator::Run();
@@ -189,7 +187,6 @@ line attribute above, that ``seventh.cc`` had created a number of new output fil
   seventh-packet-byte-count-1.txt
   seventh-packet-byte-count.dat
   seventh-packet-byte-count.plt
-  seventh-packet-byte-count.png
   seventh-packet-byte-count.sh
 
 These were created by the additional statements introduced above; in
@@ -248,9 +245,9 @@ corresponding to the trace source path:
 
 Note the wild-card in the trace path.  In summary, what this plot is
 capturing is the plot of packet bytes observed at the transmit trace
-source of the Ipv6L3Protocol object; largely 596-byte TCP segments
-in one direction, and 60-byte TCP acks in the other (two node
-trace sources were matched by this trace source).
+source of the Ipv6L3Protocol object; largely 608-byte and 576-byte TCP
+data segments in one direction, and 72-byte TCP acks in the other (two
+node trace sources were matched by this trace source).
 
 How was this configured?  A few statements need to be provided.  First,
 the GnuplotHelper object must be declared and configured:
@@ -307,8 +304,10 @@ observe:
 
 ::
 
-    .AddTraceSource("Tx", "Send IPv6 packet to outgoing interface.",
-                    MakeTraceSourceAccessor(&Ipv6L3Protocol::m_txTrace))
+  .AddTraceSource("Tx",
+                  "Send IPv6 packet to outgoing interface.",
+                  MakeTraceSourceAccessor(&Ipv6L3Protocol::m_txTrace),
+                  "ns3::Ipv6L3Protocol::TxRxTracedCallback")
 
 This says that ``Tx`` is a name for variable ``m_txTrace``, which has
 a declaration of:
@@ -317,6 +316,8 @@ a declaration of:
 
   /**
    * @brief Callback to trace TX (transmission) packets.
+   * @deprecated The non-const \c Ptr<Ipv6> argument is deprecated
+   * and will be changed to \c Ptr<const Ipv6> in a future release.
    */
   TracedCallback<Ptr<const Packet>, Ptr<Ipv6>, uint32_t> m_txTrace;
 
@@ -339,18 +340,21 @@ the data out of the probed Packet object:
   TypeId
   Ipv6PacketProbe::GetTypeId()
   {
-    static TypeId tid = TypeId("ns3::Ipv6PacketProbe")
-      .SetParent<Probe>()
-      .SetGroupName("Stats")
-      .AddConstructor<Ipv6PacketProbe>()
-      .AddTraceSource("Output",
-                      "The packet plus its IPv6 object and interface that serve as the output for this probe",
-                      MakeTraceSourceAccessor(&Ipv6PacketProbe::m_output))
-      .AddTraceSource("OutputBytes",
-                      "The number of bytes in the packet",
-                      MakeTraceSourceAccessor(&Ipv6PacketProbe::m_outputBytes))
-    ;
-    return tid;
+      static TypeId tid =
+          TypeId("ns3::Ipv6PacketProbe")
+              .SetParent<Probe>()
+              .SetGroupName("Internet")
+              .AddConstructor<Ipv6PacketProbe>()
+              .AddTraceSource("Output",
+                              "The packet plus its IPv6 object and interface "
+                              "that serve as the output for this probe",
+                              MakeTraceSourceAccessor(&Ipv6PacketProbe::m_output),
+                              "ns3::Ipv6L3Protocol::TxRxTracedCallback")
+              .AddTraceSource("OutputBytes",
+                              "The number of bytes in the packet",
+                              MakeTraceSourceAccessor(&Ipv6PacketProbe::m_outputBytes),
+                              "ns3::Packet::SizeTracedCallback");
+      return tid;
   }
 
 
@@ -371,7 +375,7 @@ The following traced values are supported with Probes as of this writing:
 
 +------------------+-------------------+------------------------------------+
 | TracedValue type |   Probe type      |  File                              |
-+==================+=========+=========+====================================+
++==================+===================+====================================+
 | double           | DoubleProbe       | stats/model/double-probe.h         |
 +------------------+-------------------+------------------------------------+
 | uint8_t          | Uinteger8Probe    | stats/model/uinteger-8-probe.h     |
@@ -380,7 +384,7 @@ The following traced values are supported with Probes as of this writing:
 +------------------+-------------------+------------------------------------+
 | uint32_t         | Uinteger32Probe   | stats/model/uinteger-32-probe.h    |
 +------------------+-------------------+------------------------------------+
-| bool             | BooleanProbe      | stats/model/uinteger-16-probe.h    |
+| bool             | BooleanProbe      | stats/model/boolean-probe.h        |
 +------------------+-------------------+------------------------------------+
 | ns3::Time        | TimeProbe         | stats/model/time-probe.h           |
 +------------------+-------------------+------------------------------------+
@@ -393,8 +397,6 @@ The following TraceSource types are supported by Probes as of this writing:
 | Ptr<const Packet>                        | PacketProbe            | OutputBytes   | network/utils/packet-probe.h                       |
 +------------------------------------------+------------------------+---------------+----------------------------------------------------+
 | Ptr<const Packet>, Ptr<Ipv4>, uint32_t   | Ipv4PacketProbe        | OutputBytes   | internet/model/ipv4-packet-probe.h                 |
-+------------------------------------------+------------------------+---------------+----------------------------------------------------+
-| Ptr<const Packet>, Ptr<Ipv6>, uint32_t   | Ipv6PacketProbe        | OutputBytes   | internet/model/ipv6-packet-probe.h                 |
 +------------------------------------------+------------------------+---------------+----------------------------------------------------+
 | Ptr<const Packet>, Ptr<Ipv6>, uint32_t   | Ipv6PacketProbe        | OutputBytes   | internet/model/ipv6-packet-probe.h                 |
 +------------------------------------------+------------------------+---------------+----------------------------------------------------+
@@ -411,12 +413,13 @@ FileHelper
 
 The FileHelper class is just a variation of the previous GnuplotHelper
 example.  The example program provides formatted output of the
-same timestamped data, such as follows:
+same timestamped data, such as the following first lines from the
+node 0 and node 1 files (with IPv6):
 
 ::
 
-  Time (Seconds) = 9.312e+00    Packet Byte Count = 596
-  Time (Seconds) = 9.312e+00    Packet Byte Count = 564
+  Time (Seconds) = 1.000e+00    Packet Byte Count = 76
+  Time (Seconds) = 1.002e+00    Packet Byte Count = 56
 
 Two files are provided, one for node "0" and one for node "1" as can
 be seen in the filenames.  Let's look at the code piece-by-piece:
