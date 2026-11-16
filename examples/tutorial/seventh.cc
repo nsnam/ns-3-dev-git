@@ -92,6 +92,17 @@ main(int argc, char* argv[])
     cmd.AddValue("useIpv6", "Use Ipv6", useV6);
     cmd.Parse(argc, argv);
 
+    // In the following three lines, TCP NewReno is used as the congestion
+    // control algorithm, the initial congestion window of a TCP connection is
+    // set to 1 packet, and the classic fast recovery algorithm is used. Note
+    // that this configuration is used only to demonstrate how TCP parameters
+    // can be configured in ns-3. Otherwise, it is recommended to use the default
+    // settings of TCP in ns-3.
+    Config::SetDefault("ns3::TcpL4Protocol::SocketType", StringValue("ns3::TcpNewReno"));
+    Config::SetDefault("ns3::TcpSocket::InitialCwnd", UintegerValue(1));
+    Config::SetDefault("ns3::TcpL4Protocol::RecoveryType",
+                       TypeIdValue(TypeId::LookupByName("ns3::TcpClassicRecovery")));
+
     NodeContainer nodes;
     nodes.Create(2);
 
@@ -108,16 +119,14 @@ main(int argc, char* argv[])
 
     InternetStackHelper stack;
 
+    // Selecting only one of IPv4 or IPv6 since both are not needed to show what we want to
+    // demonstrate here. Note: actual networks typically have both enabled.
     if (useV6)
     {
-        // Disabling IPv4 because it is not necessary to show what we want to demonstrate here.
-        // Note: Actual networks typically have both IPv4 and IPv6 enabled.
         stack.SetIpv4StackInstall(false);
     }
     else
     {
-        // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
-        // Note: Actual networks typically have both IPv4 and IPv6 enabled.
         stack.SetIpv6StackInstall(false);
     }
 

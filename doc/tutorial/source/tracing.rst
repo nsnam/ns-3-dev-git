@@ -2311,11 +2311,7 @@ Now, back to the example.  If you build and run this example,
 
 you will see similar messages appear as when you ran "fifth", but two
 new files will appear in the top-level directory of your |ns3|
-distribution.  (Unlike ``fifth.cc``, ``sixth.cc`` does not change the
-default TCP configuration, so it uses the |ns3| defaults of ``Cubic``
-congestion control, ``Prr`` loss recovery and a larger initial congestion
-window; the congestion window values will therefore differ from those of
-``fifth``.)
+distribution.
 
 .. sourcecode:: bash
 
@@ -2326,13 +2322,13 @@ or your favorite file viewer.
 
 .. sourcecode:: bash
 
-  1.00419 0       5360
-  1.1548  5360    1040
-  1.15978 1040    3752
-  1.42104 3752    1040
+  1.00419 0       536
+  1.0093  536     1072
+  1.01528 1072    1608
+  1.02167 1608    2144
   ...
-  8.15785 536     1072
-  8.15785 1072    1608
+  9.30928 8925    8957
+  9.3176  8957    8989
 
 You have a tab separated file with a timestamp, an old congestion
 window and a new congestion window suitable for directly importing
@@ -2347,8 +2343,8 @@ Since "sixth.pcap" is a PCAP file, you can view it with ``tcpdump``.
   1.136956 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 17177:17681, ack 1, win 32768, options [TS val 1133 ecr 1127,eol], length 504: HTTP
   1.403196 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 33280:33784, ack 1, win 32768, options [TS val 1399 ecr 1394,eol], length 504: HTTP
   ...
-  7.385276 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 781040:781544, ack 1, win 32768, options [TS val 7381 ecr 7379,eol], length 504: HTTP
-  8.141504 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 875144:875680, ack 1, win 32768, options [TS val 8138 ecr 8134,eol], length 536: HTTP
+  7.393596 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 782080:782584, ack 1, win 32768, options [TS val 7389 ecr 7386,eol], length 504: HTTP
+  8.158144 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 877224:877760, ack 1, win 32768, options [TS val 8155 ecr 8150,eol], length 536: HTTP
 
 You have a PCAP file with the packets that were dropped in the
 simulation.  There are no other packets present in the file and there

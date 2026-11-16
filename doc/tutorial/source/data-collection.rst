@@ -111,19 +111,17 @@ some of the new lines of this diff:
   -  // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
   -  // Note: Actual networks typically have both IPv4 and IPv6 enabled.
   -  stack.SetIpv6StackInstall(false);
+  +  // Selecting only one of IPv4 or IPv6 since both are not needed to show what we want to
+  +  // demonstrate here. Note: actual networks typically have both enabled.
   +  if (useV6)
   +  {
-  +      // Disabling IPv4 because it is not necessary to show what we want to demonstrate here.
-  +      // Note: Actual networks typically have both IPv4 and IPv6 enabled.
   +      stack.SetIpv4StackInstall(false);
   +  }
   +  else
   +  {
-  +      // Disabling IPv6 because it is not necessary to show what we want to demonstrate here.
-  +      // Note: Actual networks typically have both IPv4 and IPv6 enabled.
   +      stack.SetIpv6StackInstall(false);
   +  }
-   ...
+     ...
   +  std::string probeType;
   +  std::string tracePath;
   +  if (!useV6)
