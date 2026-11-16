@@ -170,6 +170,23 @@ logging  functionality.  The decision regarding how much information is logged
 is left to the individual model developer.  In the case of the echo
 applications, a good deal of log output is available.
 
+Some of the first lines are worth a closer look.  When an |ns3| object
+is created, each of its attributes is set, either to its default value or
+to a value provided by a helper, and an attribute that is backed by a
+setter method causes that method to run (and to log, if it has an
+``NS_LOG_FUNCTION`` statement).  The first ``SetRemote`` and ``SetPort``
+calls come from the default values of two deprecated attributes
+(``RemoteAddress`` and ``RemotePort``) that the client still supports;
+``00-00:00`` is how an empty ``Address`` is printed.  The second
+``SetRemote`` call sets the ``Remote`` attribute to the value provided by
+the ``UdpEchoClientHelper``.  The printed address
+``03-06-0a:01:01:02:09:00`` is an address type number, a length of six
+bytes, and the bytes themselves:  the IPv4 address 10.1.1.2 (``0a:01:01:02``)
+followed by port 9, least significant byte first (``09:00``).  The
+``SetPort(..., 0)`` that follows does not change the port, which is
+already part of that address, as the later "``client sent 1024 bytes to
+10.1.1.2 port 9``" message confirms.
+
 You can now see a log of the function calls that were made to the application.
 If you look closely you will notice a single colon between the string
 ``UdpEchoClientApplication`` and the method name where you might have
