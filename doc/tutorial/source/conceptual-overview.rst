@@ -87,7 +87,7 @@ Ethernet switch, or three-dimensional space full of obstructions in the case
 of wireless networks.
 
 We will use specialized versions of the ``Channel`` called
-``CsmaChannel``, ``PointToPointChannel`` and ``WifiChannel`` in this
+``CsmaChannel``, ``PointToPointChannel`` and ``YansWifiChannel`` in this
 tutorial.  The ``CsmaChannel``, for example, models a version of a
 communication subnetwork that implements a *carrier sense multiple
 access* communication medium.  This gives us Ethernet-like functionality.
@@ -126,7 +126,7 @@ Just as an Ethernet NIC is designed to work with an Ethernet network, the
 ``CsmaNetDevice`` is designed to work with a ``CsmaChannel``; the
 ``PointToPointNetDevice`` is designed to work with a
 ``PointToPointChannel`` and a ``WifiNetDevice`` is designed to work with
-a ``WifiChannel``.
+a ``YansWifiChannel``.
 
 Topology Helpers
 ++++++++++++++++
@@ -156,10 +156,13 @@ a directory structure something like the following:
 
 .. sourcecode:: bash
 
-  AUTHORS        CMakeLists.txt   examples   RELEASE_NOTES.md  testpy.supp
-  bindings       contrib          LICENSE    scratch           utils
-  build-support  CONTRIBUTING.md  ns3        src               utils.py
-  CHANGES.md     doc              README.md  test.py           VERSION
+  AGENTS.md       CMakePresets.json.in  LICENSES          setup.py
+  AUTHORS         CODE_OF_CONDUCT.md    ns3               src
+  bindings        contrib               pyproject.toml    test.py
+  build-support   CONTRIBUTING.md       README.md         third-party
+  CHANGES.md      doc                   RELEASE_NOTES.md  utils
+  CLAUDE.md       examples              scratch           utils.py
+  CMakeLists.txt  LICENSE               setup.cfg         VERSION
 
 Change into the ``examples/tutorial`` directory.  You should see a file named
 ``first.cc`` located there.  This is a script that will create a simple
@@ -170,10 +173,10 @@ nodes.  Let's take a look at that script line by line, so go ahead and open
 Copyright
 +++++++++
 The |ns3| simulator is licensed using the GNU General Public
-License version 2.  You will see the appropriate GNU legalese at the head of every file
-in the |ns3| distribution.  Often you will see a copyright notice for
-one of the institutions involved in the |ns3| project above the GPL
-text and an author listed below.
+License version 2.  You will see an SPDX license identifier at the head of every
+file in the |ns3| distribution.  Often you will also see a copyright notice for
+one of the institutions involved in the |ns3| project and an author listed
+below the identifier.
 
 ::
 
@@ -187,11 +190,11 @@ The code proper starts with a number of include statements.
 
 ::
 
-  #include "ns3/core-module.h"
-  #include "ns3/network-module.h"
-  #include "ns3/internet-module.h"
-  #include "ns3/point-to-point-module.h"
   #include "ns3/applications-module.h"
+  #include "ns3/core-module.h"
+  #include "ns3/internet-module.h"
+  #include "ns3/network-module.h"
+  #include "ns3/point-to-point-module.h"
 
 To help our high-level script users deal with the large number of include
 files present in the system, we group includes according to relatively large
@@ -226,7 +229,7 @@ examples and tests.  You will also have called
   $ ./ns3 build
 
 to build the project.  So now if you look in the directory
-``../../build/include/ns3`` you will find the four module include files shown
+``../../build/include/ns3`` you will find the five module include files shown
 above (among many other header files).  You can take a look at the contents of these files and find that they
 do include all of the public include files in their respective modules.
 
@@ -305,6 +308,19 @@ This is just the declaration of the main function of your program (script).
 Just as in any C++ program, you need to define a main function that will be
 the first function run.  There is nothing at all special here.  Your
 |ns3| script is just a C++ program.
+
+The next two lines create a ``CommandLine`` object and use it to parse the
+program's command-line arguments:
+
+::
+
+    CommandLine cmd(__FILE__);
+    cmd.Parse(argc, argv);
+
+This script does not define any arguments of its own, but parsing the
+command line still lets you change |ns3| ``Attributes`` and global values
+when you run the program, and print help with ``--PrintHelp``.  We will
+return to this in the :ref:`Attribute` section.
 
 The next line sets the time resolution to one nanosecond, which happens
 to be the default value:
@@ -603,7 +619,7 @@ Applications require a time to "start" generating traffic and may take an
 optional time to "stop".  We provide both.  These times are set using  the
 ``ApplicationContainer`` methods ``Start`` and ``Stop``.  These
 methods take ``Time`` parameters.  In this case, we use an *explicit*
-C++ conversion sequence to take the C++ double 1.0 and convert it to an
+C++ conversion sequence to take the value 1 and convert it to an
 |ns3| ``Time`` object using a ``Seconds`` cast.  Be aware that
 the conversion rules may be controlled by the model author, and C++ has its
 own rules, so you can't always just assume that parameters will be happily
@@ -638,12 +654,12 @@ that is managed by an ``UdpEchoClientHelper``.
     clientApps.Start(Seconds(2));
     clientApps.Stop(Seconds(10));
 
-For the echo client, however, we need to set five different ``Attributes``.
-The first two ``Attributes`` are set during construction of the
-``UdpEchoClientHelper``.  We pass parameters that are used (internally to
-the helper) to set the "RemoteAddress" and "RemotePort" ``Attributes``
-in accordance with our convention to make required ``Attributes`` parameters
-in the helper constructors.
+For the echo client, however, we need to set four different ``Attributes``.
+The first ``Attribute`` is set during construction of the
+``UdpEchoClientHelper``.  We pass an address and a port, which are used
+(internally to the helper) to set the "Remote" ``Attribute`` (a socket address
+combining the two) in accordance with our convention to make required
+``Attributes`` parameters in the helper constructors.
 
 Recall that we used an ``Ipv4InterfaceContainer`` to keep track of the IP
 addresses we assigned to our devices.  The zeroth interface in the
@@ -809,18 +825,20 @@ successfully.
 
 .. sourcecode:: bash
 
-  Scanning dependencies of target scratch_myfirst
-  [  0%] Building CXX object scratch/CMakeFiles/scratch_myfirst.dir/myfirst.cc.o
-  [  0%] Linking CXX executable ../../build/scratch/ns3.36.1-myfirst-debug
+  [1/2] Building CXX object scratch/CMakeFiles/scratch_myfirst.dir/myfirst.cc.o
+  [2/2] Linking CXX executable /path/to/ns-3-dev/build/scratch/ns3-dev-myfirst-debug
   Finished executing the following commands:
-  cd cmake-cache; cmake --build . -j 7 ; cd ..
+  cmake --build /path/to/ns-3-dev/cmake-cache -j 7
 
-You can now run the example (note that if you build your program in the scratch
-directory you must run it out of the scratch directory):
+You can now run the example.  Programs in the scratch directory can be
+run by giving their path relative to the top-level directory:
 
 .. sourcecode:: bash
 
   $ ./ns3 run scratch/myfirst
+
+or, as long as no other program has the same name, simply by name
+(``./ns3 run myfirst``).
 
 You should see some output:
 
