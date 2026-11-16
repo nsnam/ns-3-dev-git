@@ -117,8 +117,8 @@ of code in ``scratch/myfirst.cc``,
 
 This line of code enables the ``LOG_LEVEL_INFO`` level of logging.  When
 we pass a logging level flag, we are actually enabling the given level and
-all lower levels.  In this case, we have enabled ``NS_LOG_INFO``,
-``NS_LOG_DEBUG``, ``NS_LOG_WARN`` and ``NS_LOG_ERROR``.  We can
+all more severe levels.  In this case, we have enabled ``NS_LOG_INFO``,
+``NS_LOG_WARN`` and ``NS_LOG_ERROR``.  We can
 increase the logging level and get more information without changing the
 script and recompiling by setting the NS_LOG environment variable like this:
 
@@ -141,19 +141,24 @@ the following output:
 
 .. sourcecode:: bash
 
-  UdpEchoClientApplication:UdpEchoClient(0xef90d0)
-  UdpEchoClientApplication:SetDataSize(0xef90d0, 1024)
-  UdpEchoClientApplication:StartApplication(0xef90d0)
-  UdpEchoClientApplication:ScheduleTransmit(0xef90d0, +0ns)
-  UdpEchoClientApplication:Send(0xef90d0)
+  UdpEchoClientApplication:UdpEchoClient(0xadac39f80)
+  UdpEchoClientApplication:SetRemote(0xadac39f80, 00-00:00)
+  UdpEchoClientApplication:SetPort(0xadac39f80, 0)
+  UdpEchoClientApplication:SetDataSize(0xadac39f80, 1024)
+  UdpEchoClientApplication:SetRemote(0xadac39f80, 03-06-0a:01:01:02:09:00)
+  UdpEchoClientApplication:SetPort(0xadac39f80, 0)
+  UdpEchoClientApplication:CancelEvents(0xadac39f80)
+  UdpEchoClientApplication:DoStartApplication(0xadac39f80)
+  UdpEchoClientApplication:ScheduleTransmit(0xadac39f80, +0ns)
+  UdpEchoClientApplication:Send(0xadac39f80)
   At time +2s client sent 1024 bytes to 10.1.1.2 port 9
   At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
   At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
-  UdpEchoClientApplication:HandleRead(0xef90d0, 0xee7b20)
+  UdpEchoClientApplication:HandleRead(0xadac39f80, 0x1115bb860)
   At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
-  UdpEchoClientApplication:StopApplication(0xef90d0)
-  UdpEchoClientApplication:DoDispose(0xef90d0)
-  UdpEchoClientApplication:~UdpEchoClient(0xef90d0)
+  UdpEchoClientApplication:CancelEvents(0xadac39f80)
+  UdpEchoClientApplication:CancelEvents(0xadac39f80)
+  UdpEchoClientApplication:~UdpEchoClient(0xadac39f80)
 
 The additional debug information provided by the application is from
 the NS_LOG_FUNCTION level.  This shows every time a function in the application
@@ -179,7 +184,7 @@ logging component name from the class name.
 
 It turns out that in some cases, it can be hard to determine which method
 actually generates a log message.  If you look in the text above, you may
-wonder where the string "``Received 1024 bytes from 10.1.1.2``" comes
+wonder where the string "``client received 1024 bytes from 10.1.1.2``" comes
 from.  You can resolve this by OR'ing the ``prefix_func`` level into the
 ``NS_LOG`` environment variable.  Try doing the following,
 
@@ -196,25 +201,30 @@ name.
 
 .. sourcecode:: bash
 
-  UdpEchoClientApplication:UdpEchoClient(0xea8e50)
-  UdpEchoClientApplication:SetDataSize(0xea8e50, 1024)
-  UdpEchoClientApplication:StartApplication(0xea8e50)
-  UdpEchoClientApplication:ScheduleTransmit(0xea8e50, +0ns)
-  UdpEchoClientApplication:Send(0xea8e50)
+  UdpEchoClientApplication:UdpEchoClient(0x942d24c40)
+  UdpEchoClientApplication:SetRemote(0x942d24c40, 00-00:00)
+  UdpEchoClientApplication:SetPort(0x942d24c40, 0)
+  UdpEchoClientApplication:SetDataSize(0x942d24c40, 1024)
+  UdpEchoClientApplication:SetRemote(0x942d24c40, 03-06-0a:01:01:02:09:00)
+  UdpEchoClientApplication:SetPort(0x942d24c40, 0)
+  UdpEchoClientApplication:CancelEvents(0x942d24c40)
+  UdpEchoClientApplication:DoStartApplication(0x942d24c40)
+  UdpEchoClientApplication:ScheduleTransmit(0x942d24c40, +0ns)
+  UdpEchoClientApplication:Send(0x942d24c40)
   UdpEchoClientApplication:Send(): At time +2s client sent 1024 bytes to 10.1.1.2 port 9
   At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
   At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
-  UdpEchoClientApplication:HandleRead(0xea8e50, 0xea5b20)
+  UdpEchoClientApplication:HandleRead(0x942d24c40, 0x942d48000)
   UdpEchoClientApplication:HandleRead(): At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
-  UdpEchoClientApplication:StopApplication(0xea8e50)
-  UdpEchoClientApplication:DoDispose(0xea8e50)
-  UdpEchoClientApplication:~UdpEchoClient(0xea8e50)
+  UdpEchoClientApplication:CancelEvents(0x942d24c40)
+  UdpEchoClientApplication:CancelEvents(0x942d24c40)
+  UdpEchoClientApplication:~UdpEchoClient(0x942d24c40)
 
 You can now see all of the messages coming from the UDP echo client application
-are identified as such.  The message "Received 1024 bytes from 10.1.1.2" is
+are identified as such.  The message "client received 1024 bytes from 10.1.1.2" is
 now clearly identified as coming from the echo client application.
 Also, in most log statements, you will see a hexadecimal value printed
-such as ``0xea8e50``; this is because most statements print out the value
+such as ``0x942d24c40``; this is because most statements print out the value
 of the C++ ``this`` pointer, so that objects can be distinguished from
 one another.
 
@@ -236,26 +246,29 @@ in debugging problems.
 
 .. sourcecode:: bash
 
-  UdpEchoServerApplication:UdpEchoServer(0x2101590)
-  UdpEchoClientApplication:UdpEchoClient(0x2101820)
-  UdpEchoClientApplication:SetDataSize(0x2101820, 1024)
-  UdpEchoServerApplication:StartApplication(0x2101590)
-  UdpEchoClientApplication:StartApplication(0x2101820)
-  UdpEchoClientApplication:ScheduleTransmit(0x2101820, +0ns)
-  UdpEchoClientApplication:Send(0x2101820)
+  UdpEchoServerApplication:UdpEchoServer(0xbf3168000)
+  UdpEchoClientApplication:UdpEchoClient(0xbf3085f80)
+  UdpEchoClientApplication:SetRemote(0xbf3085f80, 00-00:00)
+  UdpEchoClientApplication:SetPort(0xbf3085f80, 0)
+  UdpEchoClientApplication:SetDataSize(0xbf3085f80, 1024)
+  UdpEchoClientApplication:SetRemote(0xbf3085f80, 03-06-0a:01:01:02:09:00)
+  UdpEchoClientApplication:SetPort(0xbf3085f80, 0)
+  UdpEchoServerApplication:DoStartApplication(0xbf3168000)
+  UdpEchoClientApplication:CancelEvents(0xbf3085f80)
+  UdpEchoClientApplication:DoStartApplication(0xbf3085f80)
+  UdpEchoClientApplication:ScheduleTransmit(0xbf3085f80, +0ns)
+  UdpEchoClientApplication:Send(0xbf3085f80)
   UdpEchoClientApplication:Send(): At time +2s client sent 1024 bytes to 10.1.1.2 port 9
-  UdpEchoServerApplication:HandleRead(0x2101590, 0x2106240)
+  UdpEchoServerApplication:HandleRead(0xbf3168000, 0x1111d5740)
   UdpEchoServerApplication:HandleRead(): At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
   UdpEchoServerApplication:HandleRead(): Echoing packet
   UdpEchoServerApplication:HandleRead(): At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
-  UdpEchoClientApplication:HandleRead(0x2101820, 0x21134b0)
+  UdpEchoClientApplication:HandleRead(0xbf3085f80, 0x1111d5a40)
   UdpEchoClientApplication:HandleRead(): At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
-  UdpEchoClientApplication:StopApplication(0x2101820)
-  UdpEchoServerApplication:StopApplication(0x2101590)
-  UdpEchoClientApplication:DoDispose(0x2101820)
-  UdpEchoServerApplication:DoDispose(0x2101590)
-  UdpEchoClientApplication:~UdpEchoClient(0x2101820)
-  UdpEchoServerApplication:~UdpEchoServer(0x2101590)
+  UdpEchoClientApplication:CancelEvents(0xbf3085f80)
+  UdpEchoClientApplication:CancelEvents(0xbf3085f80)
+  UdpEchoClientApplication:~UdpEchoClient(0xbf3085f80)
+  UdpEchoServerApplication:~UdpEchoServer(0xbf3168000)
 
 It is also sometimes useful to be able to see the simulation time at which a
 log message is generated.  You can do this by ORing in the prefix_time bit.
@@ -270,26 +283,29 @@ you should see the following output:
 
 .. sourcecode:: bash
 
-  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x8edfc0)
-  +0.000000000s UdpEchoClientApplication:UdpEchoClient(0x8ee210)
-  +0.000000000s UdpEchoClientApplication:SetDataSize(0x8ee210, 1024)
-  +1.000000000s UdpEchoServerApplication:StartApplication(0x8edfc0)
-  +2.000000000s UdpEchoClientApplication:StartApplication(0x8ee210)
-  +2.000000000s UdpEchoClientApplication:ScheduleTransmit(0x8ee210, +0ns)
-  +2.000000000s UdpEchoClientApplication:Send(0x8ee210)
+  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x9fb12c000)
+  +0.000000000s UdpEchoClientApplication:UdpEchoClient(0x9fb03df80)
+  +0.000000000s UdpEchoClientApplication:SetRemote(0x9fb03df80, 00-00:00)
+  +0.000000000s UdpEchoClientApplication:SetPort(0x9fb03df80, 0)
+  +0.000000000s UdpEchoClientApplication:SetDataSize(0x9fb03df80, 1024)
+  +0.000000000s UdpEchoClientApplication:SetRemote(0x9fb03df80, 03-06-0a:01:01:02:09:00)
+  +0.000000000s UdpEchoClientApplication:SetPort(0x9fb03df80, 0)
+  +1.000000000s UdpEchoServerApplication:DoStartApplication(0x9fb12c000)
+  +2.000000000s UdpEchoClientApplication:CancelEvents(0x9fb03df80)
+  +2.000000000s UdpEchoClientApplication:DoStartApplication(0x9fb03df80)
+  +2.000000000s UdpEchoClientApplication:ScheduleTransmit(0x9fb03df80, +0ns)
+  +2.000000000s UdpEchoClientApplication:Send(0x9fb03df80)
   +2.000000000s UdpEchoClientApplication:Send(): At time +2s client sent 1024 bytes to 10.1.1.2 port 9
-  +2.003686400s UdpEchoServerApplication:HandleRead(0x8edfc0, 0x936770)
+  +2.003686400s UdpEchoServerApplication:HandleRead(0x9fb12c000, 0x9fad00000)
   +2.003686400s UdpEchoServerApplication:HandleRead(): At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
   +2.003686400s UdpEchoServerApplication:HandleRead(): Echoing packet
   +2.003686400s UdpEchoServerApplication:HandleRead(): At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
-  +2.007372800s UdpEchoClientApplication:HandleRead(0x8ee210, 0x8f3140)
+  +2.007372800s UdpEchoClientApplication:HandleRead(0x9fb03df80, 0x9fad00300)
   +2.007372800s UdpEchoClientApplication:HandleRead(): At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
-  +10.000000000s UdpEchoClientApplication:StopApplication(0x8ee210)
-  +10.000000000s UdpEchoServerApplication:StopApplication(0x8edfc0)
-  UdpEchoClientApplication:DoDispose(0x8ee210)
-  UdpEchoServerApplication:DoDispose(0x8edfc0)
-  UdpEchoClientApplication:~UdpEchoClient(0x8ee210)
-  UdpEchoServerApplication:~UdpEchoServer(0x8edfc0)
+  +10.000000000s UdpEchoClientApplication:CancelEvents(0x9fb03df80)
+  UdpEchoClientApplication:CancelEvents(0x9fb03df80)
+  UdpEchoClientApplication:~UdpEchoClient(0x9fb03df80)
+  UdpEchoServerApplication:~UdpEchoServer(0x9fb12c000)
 
 You can see that the constructor for the UdpEchoServer was called at a
 simulation time of 0 seconds.  This is actually happening before the
@@ -298,7 +314,7 @@ for the UdpEchoClient constructor message.
 
 Recall that the ``scratch/myfirst.cc`` script started the echo server
 application at one second into the simulation.  You can now see that the
-``StartApplication`` method of the server is, in fact, called at one second.
+``DoStartApplication`` method of the server is, in fact, called at one second.
 You can also see that the echo client application is started at a simulation
 time of two seconds as we requested in the script.
 
@@ -377,7 +393,7 @@ off the torrent of logging we previously enabled:
 
 .. sourcecode:: bash
 
-  $ ./ns3
+  $ ./ns3 build
   $ export NS_LOG=""
 
 Now, if you run the script,
@@ -426,21 +442,18 @@ in the following code,
 ::
 
   int
-  main(int argc, char *argv[])
+  main(int argc, char* argv[])
   {
-    ...
-
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.Parse(argc, argv);
 
     ...
   }
 
 This simple two line snippet is actually very useful by itself.  It opens the
-door to the |ns3| global variable and ``Attribute`` systems.  Go
-ahead and add that two lines of code to the ``scratch/myfirst.cc`` script at
-the start of ``main``.  Go ahead and build the script and run it, but ask
-the script for help in the following way,
+door to the |ns3| global variable and ``Attribute`` systems.  These two
+lines are already at the start of ``main`` in the ``scratch/myfirst.cc``
+script.  Go ahead and run it, but ask the script for help in the following way,
 
 .. sourcecode:: bash
 
@@ -454,14 +467,15 @@ now see the ``--PrintHelp`` argument and respond with,
 .. sourcecode:: bash
 
   myfirst [General Arguments]
+
   General Arguments:
-    --PrintGlobals:              Print the list of globals.
-    --PrintGroups:               Print the list of groups.
-    --PrintGroup=[group]:        Print all TypeIds of group.
-    --PrintTypeIds:              Print all TypeIds.
-    --PrintAttributes=[typeid]:  Print all attributes of typeid.
-    --PrintVersion:              Print the ns-3 version.
-    --PrintHelp:                 Print this help message.
+      --PrintGlobals:              Print the list of globals.
+      --PrintGroups:               Print the list of groups.
+      --PrintGroup=[group]:        Print all TypeIds of group.
+      --PrintTypeIds:              Print all TypeIds.
+      --PrintAttributes=[typeid]:  Print all attributes of typeid.
+      --PrintVersion:              Print the ns-3 version.
+      --PrintHelp:                 Print this help message.
 
 Let's focus on the ``--PrintAttributes`` option.  We have already hinted
 at the |ns3| ``Attribute`` system while walking through the
@@ -489,8 +503,8 @@ Among the ``Attributes`` you will see listed is,
 
 .. sourcecode:: bash
 
-  --ns3::PointToPointNetDevice::DataRate=[32768bps]:
-    The default data rate for point to point links
+      --ns3::PointToPointNetDevice::DataRate=[32768bps]
+          The default data rate for point to point links
 
 This is the default value that will be used when a ``PointToPointNetDevice``
 is created in the system.  We overrode this default with the ``Attribute``
@@ -516,7 +530,7 @@ any ``set`` operations as in the following example,
 
   ...
 
-Go ahead and build the new script with ns3 (``./ns3``) and let's go back
+Go ahead and build the new script with ns3 (``./ns3 build``) and let's go back
 and enable some logging from the UDP echo server application and turn on the
 time prefix.
 
@@ -528,24 +542,22 @@ If you run the script, you should now see the following output,
 
 .. sourcecode:: bash
 
-  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x20d0d10)
-  +1.000000000s UdpEchoServerApplication:StartApplication(0x20d0d10)
+  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x10f3dda60)
+  +1.000000000s UdpEchoServerApplication:DoStartApplication(0x10f3dda60)
   At time +2s client sent 1024 bytes to 10.1.1.2 port 9
-  +2.257324218s UdpEchoServerApplication:HandleRead(0x20d0d10, 0x20900b0)
-  +2.257324218s At time +2.25732s server received 1024 bytes from 10.1.1.1 port 49153
-  +2.257324218s Echoing packet
-  +2.257324218s At time +2.25732s server sent 1024 bytes to 10.1.1.1 port 49153
+  +2.257324219s UdpEchoServerApplication:HandleRead(0x10f3dda60, 0x10f3ddd20)
+  +2.257324219s At time +2.25732s server received 1024 bytes from 10.1.1.1 port 49153
+  +2.257324219s Echoing packet
+  +2.257324219s At time +2.25732s server sent 1024 bytes to 10.1.1.1 port 49153
   At time +2.51465s client received 1024 bytes from 10.1.1.2 port 9
-  +10.000000000s UdpEchoServerApplication:StopApplication(0x20d0d10)
-  UdpEchoServerApplication:DoDispose(0x20d0d10)
-  UdpEchoServerApplication:~UdpEchoServer(0x20d0d10)
+  UdpEchoServerApplication:~UdpEchoServer(0x10f3dda60)
 
 Recall that the last time we looked at the simulation time at which the packet
-was received by the echo server, it was at 2.0073728 seconds.
+was received by the echo server, it was at 2.0036864 seconds.
 
 .. sourcecode:: bash
 
-  +2.007372800s UdpEchoServerApplication:HandleRead(): Received 1024 bytes from 10.1.1.1
+  +2.003686400s UdpEchoServerApplication:HandleRead(): At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
 
 Now it is receiving the packet at 2.25732 seconds.  This is because we just dropped
 the data rate of the ``PointToPointNetDevice`` down to its default of
@@ -575,8 +587,8 @@ way:
 
 .. sourcecode:: bash
 
-  --ns3::PointToPointChannel::Delay=[0ns]:
-    Transmission delay through the channel
+      --ns3::PointToPointChannel::Delay=[+0ns]
+          Propagation delay through the channel
 
 We can then set both of these default values through the command line system,
 
@@ -591,17 +603,15 @@ in which case we recover the timing we had when we explicitly set the
 
 .. sourcecode:: bash
 
-  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x1df20f0)
-  +1.000000000s UdpEchoServerApplication:StartApplication(0x1df20f0)
+  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x10f16a430)
+  +1.000000000s UdpEchoServerApplication:DoStartApplication(0x10f16a430)
   At time +2s client sent 1024 bytes to 10.1.1.2 port 9
-  +2.003686400s UdpEchoServerApplication:HandleRead(0x1df20f0, 0x1de0250)
+  +2.003686400s UdpEchoServerApplication:HandleRead(0x10f16a430, 0x10f16a670)
   +2.003686400s At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
   +2.003686400s Echoing packet
   +2.003686400s At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
   At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
-  +10.000000000s UdpEchoServerApplication:StopApplication(0x1df20f0)
-  UdpEchoServerApplication:DoDispose(0x1df20f0)
-  UdpEchoServerApplication:~UdpEchoServer(0x1df20f0)
+  UdpEchoServerApplication:~UdpEchoServer(0x10f16a430)
 
 Note that the packet is again received by the server at 2.00369 seconds.  We
 could actually set any of the ``Attributes`` used in the script in this way.
@@ -634,13 +644,13 @@ a feature for this.  If we ask for command line help we should see:
   myfirst [General Arguments]
 
   General Arguments:
-    --PrintGlobals:              Print the list of globals.
-    --PrintGroups:               Print the list of groups.
-    --PrintGroup=[group]:        Print all TypeIds of group.
-    --PrintTypeIds:              Print all TypeIds.
-    --PrintAttributes=[typeid]:  Print all attributes of typeid.
-    --PrintVersion:              Print the ns-3 version.
-    --PrintHelp:                 Print this help message.
+      --PrintGlobals:              Print the list of globals.
+      --PrintGroups:               Print the list of groups.
+      --PrintGroup=[group]:        Print all TypeIds of group.
+      --PrintTypeIds:              Print all TypeIds.
+      --PrintAttributes=[typeid]:  Print all attributes of typeid.
+      --PrintVersion:              Print the ns-3 version.
+      --PrintHelp:                 Print this help message.
 
 If you select the "PrintGroups" argument, you should see a list of all
 registered ``TypeId`` groups.  The group names are aligned with the module names
@@ -680,11 +690,11 @@ start with the following code,
 ::
 
   int
-  main(int argc, char *argv[])
+  main(int argc, char* argv[])
   {
     uint32_t nPackets = 1;
 
-    CommandLine cmd;
+    CommandLine cmd(__FILE__);
     cmd.AddValue("nPackets", "Number of packets to echo", nPackets);
     cmd.Parse(argc, argv);
 
@@ -699,7 +709,7 @@ instead of the constant ``1`` as is shown below.
   echoClient.SetAttribute("MaxPackets", UintegerValue(nPackets));
 
 Now if you run the script and provide the ``--PrintHelp`` argument, you
-should see your new ``User Argument`` listed in the help display.
+should see your new argument listed under ``Program Options`` in the help display.
 
 Try,
 
@@ -710,19 +720,19 @@ Try,
 
 .. sourcecode:: bash
 
-  [Program Options] [General Arguments]
+  myfirst [Program Options] [General Arguments]
 
   Program Options:
-    --nPackets:  Number of packets to echo [1]
+      --nPackets:  Number of packets to echo [1]
 
   General Arguments:
-    --PrintGlobals:              Print the list of globals.
-    --PrintGroups:               Print the list of groups.
-    --PrintGroup=[group]:        Print all TypeIds of group.
-    --PrintTypeIds:              Print all TypeIds.
-    --PrintAttributes=[typeid]:  Print all attributes of typeid.
-    --PrintVersion:              Print the ns-3 version.
-    --PrintHelp:                 Print this help message.
+      --PrintGlobals:              Print the list of globals.
+      --PrintGroups:               Print the list of groups.
+      --PrintGroup=[group]:        Print all TypeIds of group.
+      --PrintTypeIds:              Print all TypeIds.
+      --PrintAttributes=[typeid]:  Print all attributes of typeid.
+      --PrintVersion:              Print the ns-3 version.
+      --PrintHelp:                 Print this help message.
 
 
 If you want to specify the number of packets to echo, you can now do so by
@@ -736,23 +746,21 @@ You should now see
 
 .. sourcecode:: bash
 
-  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x836e50)
-  +1.000000000s UdpEchoServerApplication:StartApplication(0x836e50)
+  +0.000000000s UdpEchoServerApplication:UdpEchoServer(0x10f1182e0)
+  +1.000000000s UdpEchoServerApplication:DoStartApplication(0x10f1182e0)
   At time +2s client sent 1024 bytes to 10.1.1.2 port 9
-  +2.003686400s UdpEchoServerApplication:HandleRead(0x836e50, 0x8450c0)
-  +2.003686400s At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
-  +2.003686400s Echoing packet
-  +2.003686400s At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
-  At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
+  +2.257324219s UdpEchoServerApplication:HandleRead(0x10f1182e0, 0x10f1185a0)
+  +2.257324219s At time +2.25732s server received 1024 bytes from 10.1.1.1 port 49153
+  +2.257324219s Echoing packet
+  +2.257324219s At time +2.25732s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time +2.51465s client received 1024 bytes from 10.1.1.2 port 9
   At time +3s client sent 1024 bytes to 10.1.1.2 port 9
-  +3.003686400s UdpEchoServerApplication:HandleRead(0x836e50, 0x8450c0)
-  +3.003686400s At time +3.00369s server received 1024 bytes from 10.1.1.1 port 49153
-  +3.003686400s Echoing packet
-  +3.003686400s At time +3.00369s server sent 1024 bytes to 10.1.1.1 port 49153
-  At time +3.00737s client received 1024 bytes from 10.1.1.2 port 9
-  +10.000000000s UdpEchoServerApplication:StopApplication(0x836e50)
-  UdpEchoServerApplication:DoDispose(0x836e50)
-  UdpEchoServerApplication:~UdpEchoServer(0x836e50)
+  +3.257324219s UdpEchoServerApplication:HandleRead(0x10f1182e0, 0x10f1185a0)
+  +3.257324219s At time +3.25732s server received 1024 bytes from 10.1.1.1 port 49153
+  +3.257324219s Echoing packet
+  +3.257324219s At time +3.25732s server sent 1024 bytes to 10.1.1.1 port 49153
+  At time +3.51465s client received 1024 bytes from 10.1.1.2 port 9
+  UdpEchoServerApplication:~UdpEchoServer(0x10f1182e0)
 
 
 You have now echoed two packets.  Pretty easy, isn't it?
@@ -870,9 +878,8 @@ You can now build the script and run it from the command line:
 
   $ ./ns3 run scratch/myfirst
 
-Just as you have seen many times before, you will see some messages from ns3 and then
-"'build' finished successfully" with some number of messages from
-the running program.
+Just as you have seen many times before, you will see some messages from ns3
+followed by the output of the running program.
 
 When it ran, the program will have created a file named ``myfirst.tr``.
 Because of the way that ns3 works, the file is not created in the local
@@ -913,20 +920,20 @@ number on the left side:
   ns3::PppHeader (
     Point-to-Point Protocol: IP (0x0021))
     ns3::Ipv4Header (
-      tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none]
-      length: 1052 10.1.1.1 > 10.1.1.2)
+      tos 0x0 DSCP Default ECN Not-ECT ttl 64 id 0 protocol 17
+      offset (bytes) 0 flags [none] length: 1052 10.1.1.1 > 10.1.1.2)
       ns3::UdpHeader (
         length: 1032 49153 > 9)
         Payload (size=1024)
 
-The first section of this expanded trace event (reference number 0) is the
+The first section of this expanded trace event (reference number 1) is the
 operation.  We have a ``+`` character, so this corresponds to an
-*enqueue* operation on the transmit queue.  The second section (reference 1)
+*enqueue* operation on the transmit queue.  The second section (reference 2)
 is the simulation time expressed in seconds.  You may recall that we asked the
 ``UdpEchoClientApplication`` to start sending packets at two seconds.  Here
 we see confirmation that this is, indeed, happening.
 
-The next section of the example trace (reference 2) tell us which trace source
+The next section of the example trace (reference 3) tells us which trace source
 originated this event (expressed in the tracing namespace).  You can think
 of the tracing namespace somewhat like you would a filesystem namespace.  The
 root of the namespace is the ``NodeList``.  This corresponds to a container
@@ -941,21 +948,21 @@ zeroth device installed in the node.
 
 The next string, ``$ns3::PointToPointNetDevice`` tells you what kind of
 device is in the zeroth position of the device list for node zero.
-Recall that the operation ``+`` found at reference 00 meant that an enqueue
+Recall that the operation ``+`` found at reference 1 meant that an enqueue
 operation happened on the transmit queue of the device.  This is reflected in
 the final segments of the "trace path" which are ``TxQueue/Enqueue``.
 
-The remaining sections in the trace should be fairly intuitive.  References 3-4
+The remaining sections in the trace should be fairly intuitive.  References 4-5
 indicate that the packet is encapsulated in the point-to-point protocol.
-References 5-7 show that the packet has an IP version four header and has
+References 6-8 show that the packet has an IP version four header and has
 originated from IP address 10.1.1.1 and is destined for 10.1.1.2.  References
-8-9 show that this packet has a UDP header and, finally, reference 10 shows
+9-10 show that this packet has a UDP header and, finally, reference 11 shows
 that the payload is the expected 1024 bytes.
 
 The next line in the trace file shows the same packet being dequeued from the
 transmit queue on the same node.
 
-The Third line in the trace file shows the packet being received by the net
+The third line in the trace file shows the packet being received by the net
 device on the node with the echo server. I have reproduced that event below.
 
 .. sourcecode:: text
@@ -964,9 +971,11 @@ device on the node with the echo server. I have reproduced that event below.
   r
   2.25732
   /NodeList/1/DeviceList/0/$ns3::PointToPointNetDevice/MacRx
+  ns3::PppHeader (
+    Point-to-Point Protocol: IP (0x0021))
     ns3::Ipv4Header (
-      tos 0x0 ttl 64 id 0 protocol 17 offset 0 flags [none]
-      length: 1052 10.1.1.1 > 10.1.1.2)
+      tos 0x0 DSCP Default ECN Not-ECT ttl 64 id 0 protocol 17
+      offset (bytes) 0 flags [none] length: 1052 10.1.1.1 > 10.1.1.2)
       ns3::UdpHeader (
         length: 1032 49153 > 9)
         Payload (size=1024)
@@ -977,7 +986,7 @@ closely this means that you have left the ``DataRate`` of the net devices
 and the channel ``Delay`` set to their default values.  This time should
 be familiar as you have seen it before in a previous section.
 
-The trace source namespace entry (reference 02) has changed to reflect that
+The trace source namespace entry (reference 3) has changed to reflect that
 this event is coming from node 1 (``/NodeList/1``) and the packet reception
 trace source (``/MacRx``).  It should be quite easy for you to follow the
 progress of the packet through the topology by looking at the rest of the
