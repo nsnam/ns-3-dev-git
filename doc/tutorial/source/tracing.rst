@@ -35,7 +35,7 @@ messages and reduce and transform the data to a manageable form.
 Programs must be written to do the transformation, so this does not
 come for free.  ``NS_LOG`` output is not considered part of the |ns3|
 API, and can change without warning between releases.  In addition,
-``NS_LOG`` output is only available in debug builds, so relying on it
+``NS_LOG`` output is not available in optimized builds, so relying on it
 imposes a performance penalty.  Of course, if the information of
 interest does not exist in any of the pre-defined output mechanisms,
 this approach fails.
@@ -108,7 +108,7 @@ Let's pick a random example.  If you wanted to add more logging to the
 |ns3| TCP socket (``tcp-socket-base.cc``) you could just add a new
 message down in the implementation.  Notice that in
 ``TcpSocketBase::ProcessEstablished()`` there is no log message for the
-reception of a SYN+ACK in ESTABLISHED state.
+reception of a SYN or SYN+ACK in ESTABLISHED state.
 You could simply add one, changing the code.  Here is the original::
 
   /* Received a packet upon ESTABLISHED state. This function is mimicking the
@@ -119,13 +119,17 @@ You could simply add one, changing the code.  Here is the original::
     NS_LOG_FUNCTION(this << tcpHeader);
     ...
 
-    else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
+    else if (tcpflags == TcpHeader::SYN || tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
     {
-      // No action for received SYN+ACK, it is probably a duplicated packet
+      // (a) Received SYN, old NS-3 behaviour is to set state to SYN_RCVD and
+      // respond with a SYN+ACK. But it is not a legal state transition as of
+      // RFC793. Thus this is ignored.
+
+      // (b) No action for received SYN+ACK, it is probably a duplicated packet
     }
     ...
 
-To log the SYN+ACK case, you can add a new ``NS_LOG_LOGIC`` in the
+To log these cases, you can add a new ``NS_LOG_LOGIC`` in the
 ``if`` statement body::
 
   /* Received a packet upon ESTABLISHED state. This function is mimicking the
@@ -135,10 +139,14 @@ To log the SYN+ACK case, you can add a new ``NS_LOG_LOGIC`` in the
   {
     NS_LOG_FUNCTION(this << tcpHeader);
     ...
-    else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
+    else if (tcpflags == TcpHeader::SYN || tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
     {
-      // No action for received SYN+ACK, it is probably a duplicated packet
-      NS_LOG_LOGIC("TcpSocketBase " << this << " ignoring SYN+ACK");
+      // (a) Received SYN, old NS-3 behaviour is to set state to SYN_RCVD and
+      // respond with a SYN+ACK. But it is not a legal state transition as of
+      // RFC793. Thus this is ignored.
+
+      // (b) No action for received SYN+ACK, it is probably a duplicated packet
+      NS_LOG_LOGIC("TcpSocketBase " << this << " ignoring SYN or SYN+ACK");
     }
     ...
 
@@ -165,9 +173,9 @@ which you depend on disappear or change between releases.  If you depend
 on the structure of the output, you may find other messages being
 added or deleted which may affect your parsing code.
 
-Finally, ``NS_LOG`` output is only available in debug builds, you
-can't get log output from optimized builds, which run about twice as
-fast.  Relying on ``NS_LOG`` imposes a performance penalty.
+Finally, ``NS_LOG`` output is only available in debug and default builds;
+you can't get log output from optimized builds, which run faster.  Relying
+on ``NS_LOG`` imposes a performance penalty.
 
 For these reasons, we consider prints to ``std::cout`` and ``NS_LOG``
 messages to be quick and dirty ways to get more information out of
@@ -320,9 +328,10 @@ the tutorial directory as ``fourth.cc``.  Let's walk through it::
    */
 
   #include "ns3/object.h"
-  #include "ns3/uinteger.h"
-  #include "ns3/traced-value.h"
+  #include "ns3/simulator.h"
   #include "ns3/trace-source-accessor.h"
+  #include "ns3/traced-value.h"
+  #include "ns3/uinteger.h"
 
   #include <iostream>
 
@@ -330,8 +339,9 @@ the tutorial directory as ``fourth.cc``.  Let's walk through it::
 
 Most of this code should be quite familiar to you.  As mentioned
 above, the trace system makes heavy use of the Object and Attribute
-systems, so you will need to include them.  The first two includes
-above bring in the declarations for those systems explicitly.  You
+systems, so you will need to include them.  The ``object.h`` and
+``uinteger.h`` includes above bring in the declarations for those
+systems explicitly.  You
 could use the core module header to get everything at once, but we do
 the includes explicitly here to illustrate how simple this all really
 is.
@@ -356,8 +366,8 @@ simple Object we can work with.
     static TypeId GetTypeId()
     {
       static TypeId tid = TypeId("MyObject")
-        .SetParent(Object::GetTypeId())
-        .SetGroupName("MyGroup")
+        .SetParent<Object>()
+        .SetGroupName("Tutorial")
         .AddConstructor<MyObject>()
         .AddTraceSource("MyInteger",
                         "An integer value to trace.",
@@ -417,12 +427,14 @@ We have now seen the trace source and the trace sink.  What remains is
 code to connect the source to the sink, which happens in ``main``::
 
   int
-  main(int argc, char *argv[])
+  main(int argc, char* argv[])
   {
     Ptr<MyObject> myObject = CreateObject<MyObject>();
     myObject->TraceConnectWithoutContext("MyInteger", MakeCallback(&IntTrace));
 
     myObject->m_myInt = 1234;
+
+    return 0;
   }
 
 Here we first create the MyObject instance in which the trace source
@@ -554,10 +566,11 @@ directly::
 In the ``third.cc`` example, we actually wanted an additional "context"
 to be delivered along with the Callback parameters (which will be
 explained below) so we could actually use the following equivalent
-code::
+code, in which the second argument is the context string that will be
+passed to the trace sink::
 
   Ptr<Object> theObject = wifiStaNodes.Get(nWifi - 1);
-  theObject->GetObject<MobilityModel>()->TraceConnect("CourseChange", MakeCallback(&CourseChange));
+  theObject->GetObject<MobilityModel>()->TraceConnect("CourseChange", oss.str(), MakeCallback(&CourseChange));
 
 It turns out that the internal code for
 ``Config::ConnectWithoutContext`` and ``Config::Connect`` actually
@@ -977,27 +990,19 @@ file, so just ``grep`` for it using:
 
   $ find . -name '*.h' | xargs grep TracedCallback
 
-You'll see 303 lines fly by (I piped this through ``wc`` to see how bad it
-was).  Although that may seem like a lot, that's not really a lot.  Just
-pipe the output through ``more`` and start scanning through it.  On the
-first page, you will see some very suspiciously template-looking
-stuff.
+You'll see hundreds of lines fly by.  Although that may seem like a lot,
+that's not really a lot.  Just pipe the output through ``more`` and start
+scanning through it.  Among them, you will see some very suspiciously
+template-looking stuff.
 
 ::
 
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback()
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext(c ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect(const CallbackB ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect(const Callba ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()() const ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1) const ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator()(T1 a1, T2 a2 ...
+  TracedCallback<Ts...>::TracedCallback()
+  TracedCallback<Ts...>::ConnectWithoutContext(const CallbackBase& callback)
+  TracedCallback<Ts...>::Connect(const CallbackBase& callback, std::string path)
+  TracedCallback<Ts...>::DisconnectWithoutContext(const CallbackBase& callback)
+  TracedCallback<Ts...>::Disconnect(const CallbackBase& callback, std::string path)
+  TracedCallback<Ts...>::operator()(Ts... args) const
 
 It turns out that all of this comes from the header file
 ``traced-callback.h`` which sounds very promising.  You can then take
@@ -1015,13 +1020,13 @@ In either case, the next step is to take a look at
 ``src/core/model/traced-callback.h`` in your favorite editor to see
 what is happening.
 
-You will see a comment at the top of the file that should be
+You will see a comment near the top of the file that should be
 comforting:
 
-  An ns3::TracedCallback has almost exactly the same API as a normal
-  ns3::Callback but instead of forwarding calls to a single function
-  (as an ns3::Callback normally does), it forwards calls to a chain of
-  ns3::Callback.
+  A TracedCallback has almost exactly the same API as a normal
+  Callback but instead of forwarding calls to a single function
+  (as a Callback normally does), it forwards calls to a chain
+  of Callback.
 
 This should sound very familiar and let you know you are on the right
 track.
@@ -1030,52 +1035,52 @@ Just after this comment, you will find
 
 ::
 
-  template<typename T1 = empty, typename T2 = empty,
-           typename T3 = empty, typename T4 = empty,
-           typename T5 = empty, typename T6 = empty,
-           typename T7 = empty, typename T8 = empty>
+  template <typename... Ts>
   class TracedCallback
   {
     ...
 
-This tells you that TracedCallback is a templated class.  It has eight
-possible type parameters with default values.  Go back and compare
-this with the declaration you are trying to understand::
+This tells you that TracedCallback is a templated class.  It is a
+*variadic* template:  it takes any number of type parameters, collected
+in the parameter pack ``Ts``.  Go back and compare this with the
+declaration you are trying to understand::
 
   TracedCallback<Ptr<const MobilityModel>> m_courseChangeTrace;
 
-The ``typename T1`` in the templated class declaration corresponds to
-the ``Ptr<const MobilityModel>`` in the declaration above.  All of the
-other type parameters are left as defaults.  Looking at the
-constructor really doesn't tell you much.  The one place where you
+The parameter pack ``Ts`` in the templated class declaration corresponds
+to the single type ``Ptr<const MobilityModel>`` in the declaration above.
+Looking at the constructor really doesn't tell you much.  The one place where you
 have seen a connection made between your Callback function and the
 tracing system is in the ``Connect`` and ``ConnectWithoutContext``
 functions.  If you scroll down, you will see a
 ``ConnectWithoutContext`` method here::
 
-  template<typename T1, typename T2,
-           typename T3, typename T4,
-           typename T5, typename T6,
-           typename T7, typename T8>
+  template <typename... Ts>
   void
-  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext ...
+  TracedCallback<Ts...>::ConnectWithoutContext(const CallbackBase& callback)
   {
-    Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
-    cb.Assign(callback);
+    Callback<void, Ts...> cb;
+    if (!cb.Assign(callback))
+    {
+      NS_FATAL_ERROR_NO_MSG();
+    }
     m_callbackList.push_back(cb);
   }
 
 You are now in the belly of the beast.  When the template is
 instantiated for the declaration above, the compiler will replace
-``T1`` with ``Ptr<const MobilityModel>``.
+``Ts...`` with ``Ptr<const MobilityModel>``.
 
 ::
 
   void
-  TracedCallback<Ptr<const MobilityModel>::ConnectWithoutContext ... cb
+  TracedCallback<Ptr<const MobilityModel>>::ConnectWithoutContext(const CallbackBase& callback)
   {
     Callback<void, Ptr<const MobilityModel>> cb;
-    cb.Assign(callback);
+    if (!cb.Assign(callback))
+    {
+      NS_FATAL_ERROR_NO_MSG();
+    }
     m_callbackList.push_back(cb);
   }
 
@@ -1086,7 +1091,7 @@ discussed at the start of this section.  The code then adds the
 Callback to the list of Callbacks for this source.  The only thing
 left is to look at the definition of Callback.  Using the same ``grep``
 trick as we used to find ``TracedCallback``, you will be able to find
-that the file ``./core/callback.h`` is the one we need to look at.
+that the file ``./core/model/callback.h`` is the one we need to look at.
 
 If you look down through the file, you will see a lot of probably
 almost incomprehensible template code.  You will eventually come to
@@ -1099,7 +1104,6 @@ there is some English:
 
   * the first non-optional template argument represents the return type of the callback.
   * the remaining (optional) template arguments represent the type of the subsequent arguments to the callback.
-  * up to nine arguments are supported.
 
 We are trying to figure out what the
 
@@ -1271,7 +1275,7 @@ the list of TraceSources you will find
 Clicking on the callback ``typedef`` link we see the signature
 you now know to expect::
 
-    typedef void(* ns3::TracedValueCallback::Int32)(int32_t oldValue, int32_t newValue)
+    typedef void(* ns3::TracedValueCallback::Uint32)(uint32_t oldValue, uint32_t newValue)
 
 You should now understand this code completely.  If we have a pointer
 to the ``TcpSocketBase`` object, we can ``TraceConnect`` to the
@@ -1294,33 +1298,29 @@ usual, ``grep`` is your friend:
 
   $ find . -name '*.cc' | xargs grep CongestionWindow
 
-This will point out a couple of promising candidates:
-``examples/tcp/tcp-large-transfer.cc`` and
-``src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc``.
-
-We haven't visited any of the test code yet, so let's take a look
-there.  You will typically find that test code is fairly minimal, so
-this is probably a very good bet.  Open
-``src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc`` in your favorite editor
+This will point out a number of promising candidates, in the
+``examples/tcp`` directory and in the TCP test code in
+``src/internet/test``.  A fairly minimal one is
+``examples/tcp/tcp-large-transfer.cc``.  Open it in your favorite editor
 and search for "CongestionWindow".  You will find,
 
 ::
 
-  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow",
-      MakeCallback(&Ns3TcpCwndTestCase1::CwndChange, this));
+  Config::ConnectWithoutContext("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+                                MakeCallback(&CwndTracer));
 
-This should look very familiar to you.  We mentioned above that if we
-had a pointer to the ``TcpSocketBase``, we could ``TraceConnect`` to the
-"CongestionWindow" trace source.  That's exactly what we have here; so
-it turns out that this line of code does exactly what we want.  Let's
-go ahead and extract the code we need from this function
-(``Ns3TcpCwndTestCase1::DoRun()``).  If you look at this
-function, you will find that it looks just like an |ns3| script.  It
-turns out that is exactly what it is.  It is a script run by the test
-framework, so we can just pull it out and wrap it in ``main`` instead
-of in ``DoRun``.  Rather than walk through this, step, by step, we
-have provided the file that results from porting this test back to a
-native |ns3| script -- ``examples/tutorial/fifth.cc``.
+This should look very familiar to you.  It connects a trace sink to the
+"CongestionWindow" trace source of the first TCP socket on node 0, using
+a config path.  We also mentioned above that if we had a pointer to the
+``TcpSocketBase``, we could ``TraceConnect`` to the "CongestionWindow"
+trace source directly.  Rather than walk through the construction of
+such a program step by step, we have provided a native |ns3| script
+that does exactly this (it was originally ported from an |ns3| TCP test
+case) -- ``examples/tutorial/fifth.cc``.  In it, you will find,
+
+::
+
+  ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow", MakeCallback(&CwndChange));
 
 Dynamic Trace Sources
 +++++++++++++++++++++
@@ -1375,8 +1375,8 @@ entire purpose of which is to take a ``Socket`` as a parameter.
 Walkthrough: ``fifth.cc``
 +++++++++++++++++++++++++
 
-Now, let's take a look at the example program we constructed by
-dissecting the congestion window test.  Open
+Now, let's take a look at the example program that was originally
+constructed by dissecting a congestion window test.  Open
 ``examples/tutorial/fifth.cc`` in your favorite editor.  You should
 see some familiar looking code::
 
@@ -2014,8 +2014,8 @@ didn't go to any trouble to create a helper to manage the
     Ptr<TutorialApp> app = CreateObject<TutorialApp>();
     app->Setup(ns3TcpSocket, sinkAddress, 1040, 1000, DataRate("1Mbps"));
     nodes.Get(0)->AddApplication(app);
-    app->Start(Seconds(1.));
-    app->Stop(Seconds(20.));
+    app->SetStartTime(Seconds(1.));
+    app->SetStopTime(Seconds(20.));
 
 The first line creates an ``Object`` of type ``TutorialApp`` -- our
 ``Application``.  The second line tells the ``Application`` what
@@ -2024,7 +2024,7 @@ at each send event, how many send events to generate and the rate at
 which to produce data from those events.
 
 Next, we manually add the ``TutorialApp Application`` to the source Node and
-explicitly call the ``Start`` and ``Stop`` methods on the
+explicitly call the ``SetStartTime`` and ``SetStopTime`` methods on the
 ``Application`` to tell it when to start and stop doing its thing.
 
 We need to actually do the connect from the receiver point-to-point
@@ -2209,7 +2209,7 @@ to do just that::
   ...
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap", std::ios::out, iana::linktype::PPP);
   devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
 In the first section of the code snippet above, we are creating the
@@ -2243,23 +2243,21 @@ did with the ``AsciiTraceHelper``. The line of code,
 
 ::
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap",
-  "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file =
+      pcapHelper.CreateFile("sixth.pcap", std::ios::out, iana::linktype::PPP);
 
-creates a PCAP file named "sixth.pcap" with file mode "w".  This means
-that the new file is truncated (contents deleted) if an existing file
-with that name is found.  The final parameter is the "data link type"
-of the new PCAP file.  These are the same as the PCAP library data
-link types defined in ``bpf.h`` if you are familiar with PCAP.  In this
-case, ``DLT_PPP`` indicates that the PCAP file is going to contain
+creates a PCAP file named "sixth.pcap" with file mode ``std::ios::out``.
+This means that the new file is truncated (contents deleted) if an existing
+file with that name is found.  The final parameter is the "link type"
+of the new PCAP file.  These are the link-layer header type values
+registered with IANA for the PCAP file format.  In this case,
+``iana::linktype::PPP`` indicates that the PCAP file is going to contain
 packets prefixed with point to point headers.  This is true since the
 packets are coming from our point-to-point device driver.  Other
-common data link types are DLT_EN10MB (10 MB Ethernet) appropriate for
-csma devices and DLT_IEEE802_11 (IEEE 802.11) appropriate for wifi
-devices.  These are defined in ``src/network/helper/trace-helper.h``
-if you are interested in seeing the list.  The entries in the list
-match those in ``bpf.h`` but we duplicate them to avoid a PCAP source
-dependence.
+common link types are ``iana::linktype::ETHERNET``, appropriate for
+csma devices, and ``iana::linktype::IEEE802_11``, appropriate for wifi
+devices.  These are defined in ``src/network/utils/iana-link-type-numbers.h``
+if you are interested in seeing the list.
 
 A |ns3| object representing the PCAP file is returned from
 ``CreateFile`` and used in a bound callback exactly as it was in the
@@ -2291,7 +2289,7 @@ in the distribution and notice,
 
 that class ``PcapFileWrapper`` is an |ns3| Object by virtue of its
 inheritance.  Then look at
-``src/network/model/output-stream-wrapper.h`` and notice,
+``src/network/utils/output-stream-wrapper.h`` and notice,
 
 ::
 
@@ -2311,9 +2309,13 @@ Now, back to the example.  If you build and run this example,
 
   $ ./ns3 run sixth
 
-you will see the same messages appear as when you ran "fifth", but two
+you will see similar messages appear as when you ran "fifth", but two
 new files will appear in the top-level directory of your |ns3|
-distribution.
+distribution.  (Unlike ``fifth.cc``, ``sixth.cc`` does not change the
+default TCP configuration, so it uses the |ns3| defaults of ``Cubic``
+congestion control, ``Prr`` loss recovery and a larger initial congestion
+window; the congestion window values will therefore differ from those of
+``fifth``.)
 
 .. sourcecode:: bash
 
@@ -2324,13 +2326,13 @@ or your favorite file viewer.
 
 .. sourcecode:: bash
 
-  1       0       536
-  1.0093  536     1072
-  1.01528 1072    1608
-  1.02167 1608    2144
+  1.00419 0       5360
+  1.1548  5360    1040
+  1.15978 1040    3752
+  1.42104 3752    1040
   ...
-  9.69256 5149    5204
-  9.89311 5204    5259
+  8.15785 536     1072
+  8.15785 1072    1608
 
 You have a tab separated file with a timestamp, an old congestion
 window and a new congestion window suitable for directly importing
@@ -2342,11 +2344,11 @@ Since "sixth.pcap" is a PCAP file, you can view it with ``tcpdump``.
 .. sourcecode:: bash
 
   reading from file sixth.pcap, link-type PPP (PPP)
-  1.136956 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 17177:17681, ack 1, win 32768, options [TS val 1133 ecr 1127,eol], length 504
-  1.403196 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 33280:33784, ack 1, win 32768, options [TS val 1399 ecr 1394,eol], length 504
+  1.136956 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 17177:17681, ack 1, win 32768, options [TS val 1133 ecr 1127,eol], length 504: HTTP
+  1.403196 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 33280:33784, ack 1, win 32768, options [TS val 1399 ecr 1394,eol], length 504: HTTP
   ...
-  7.426220 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 785704:786240, ack 1, win 32768, options [TS val 7423 ecr 7421,eol], length 536
-  9.630693 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 882688:883224, ack 1, win 32768, options [TS val 9620 ecr 9618,eol], length 536
+  7.385276 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 781040:781544, ack 1, win 32768, options [TS val 7381 ecr 7379,eol], length 504: HTTP
+  8.141504 IP 10.1.1.1.49153 > 10.1.1.2.8080: Flags [.], seq 875144:875680, ack 1, win 32768, options [TS val 8138 ecr 8134,eol], length 536: HTTP
 
 You have a PCAP file with the packets that were dropped in the
 simulation.  There are no other packets present in the file and there
@@ -2384,7 +2386,7 @@ and we did this in only 18 lines of code::
   ...
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile("sixth.pcap", std::ios::out, iana::linktype::PPP);
   devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback(&RxDrop, file));
 
 Trace Helpers
@@ -2472,7 +2474,7 @@ class.
 
 The signature of this method reflects the device-centric view of the
 situation at this level.  All of the public methods inherited from
-class ``PcapUserHelperForDevice`` reduce to calling this single
+class ``PcapHelperForDevice`` reduce to calling this single
 device-dependent implementation method.  For example, the lowest level
 PCAP method,
 
@@ -2600,8 +2602,8 @@ id>.pcap``
 As previously mentioned, every Node in the system will have a
 system-assigned Node id; and every device will have an interface index
 (also called a device id) relative to its node.  By default, then, a
-PCAP trace file created as a result of enabling tracing on the first
-device of Node 21 using the prefix "prefix" would be
+PCAP trace file created as a result of enabling tracing on the device
+with index 1 on Node 21 using the prefix "prefix" would be
 ``prefix-21-1.pcap``.
 
 You can always use the |ns3| object name service to make this more
@@ -2754,11 +2756,11 @@ but to summarize ...
   In this case, trace contexts *are* written to the ASCII trace file
   since they are required to disambiguate traces from the two devices.
   Note that since the user is completely specifying the file name, the
-  string should include the ``,tr`` suffix for consistency.
+  string should include the ``.tr`` suffix for consistency.
 
 * You can enable ASCII tracing on a particular (node, net-device)
   pair by providing a ``std::string`` representing an object name
-  service string to an ``EnablePcap`` method.  The ``Ptr<NetDevice>``
+  service string to an ``EnableAscii`` method.  The ``Ptr<NetDevice>``
   is looked up from the name string.  Again, the ``<Node>`` is
   implicit since the named net device must belong to exactly one Node.
   For example,
@@ -2874,8 +2876,8 @@ By convention, ASCII traces in the |ns3| system are of the form
 As previously mentioned, every Node in the system will have a
 system-assigned Node id; and every device will have an interface index
 (also called a device id) relative to its node.  By default, then, an
-ASCII trace file created as a result of enabling tracing on the first
-device of Node 21, using the prefix "prefix", would be
+ASCII trace file created as a result of enabling tracing on the device
+with index 1 on Node 21, using the prefix "prefix", would be
 ``prefix-21-1.tr``.
 
 You can always use the |ns3| object name service to make this more
@@ -2901,7 +2903,7 @@ The goal of these ``mixins`` is to make it easy to add a consistent
 PCAP trace facility to protocols.  We want all of the various flavors
 of PCAP tracing to work the same across all protocols, so the methods
 of these helpers are inherited by stack helpers.  Take a look at
-``src/network/helper/trace-helper.h`` if you want to follow the
+``src/internet/helper/internet-trace-helper.h`` if you want to follow the
 discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the
@@ -2967,7 +2969,7 @@ You are encouraged to peruse the API Documentation for class
 summarize ...
 
 * You can enable PCAP tracing on a particular protocol/interface pair by
-  providing a ``Ptr<Ipv4>`` and ``interface`` to an ``EnablePcap``
+  providing a ``Ptr<Ipv4>`` and ``interface`` to an ``EnablePcapIpv4``
   method.  For example,
 
   ::
@@ -2976,14 +2978,14 @@ summarize ...
     ...
     helper.EnablePcapIpv4("prefix", ipv4, 0);
 
-* You can enable PCAP tracing on a particular node/net-device pair by
+* You can enable PCAP tracing on a particular protocol/interface pair by
   providing a ``std::string`` representing an object name service string
-  to an ``EnablePcap`` method.  The ``Ptr<Ipv4>`` is looked up from the
+  to an ``EnablePcapIpv4`` method.  The ``Ptr<Ipv4>`` is looked up from the
   name string.  For example,
 
   ::
 
-    Names::Add("serverIPv4" ...);
+    Names::Add("serverIpv4" ...);
     ...
     helper.EnablePcapIpv4("prefix", "serverIpv4", 1);
 
@@ -3065,7 +3067,7 @@ You can always use the |ns3| object name service to make this more
 clear.  For example, if you use the object name service to assign the
 name "serverIpv4" to the Ptr<Ipv4> on Node 21, the resulting PCAP
 trace file name will automatically become,
-"prefix-nserverIpv4-i1.pcap".
+"prefix-serverIpv4-i1.pcap".
 
 Several of the methods have a default parameter called
 ``explicitFilename``.  When set to true, this parameter disables the
@@ -3077,7 +3079,7 @@ ASCII
 ~~~~~
 
 The behavior of the ASCII trace helpers is substantially similar to
-the PCAP case.  Take a look at ``src/network/helper/trace-helper.h``
+the PCAP case.  Take a look at ``src/internet/helper/internet-trace-helper.h``
 if you want to follow the discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the
@@ -3103,7 +3105,7 @@ The signature of this method reflects the protocol- and
 interface-centric view of the situation at this level; and also the
 fact that the helper may be writing to a shared output stream.  All of
 the public methods inherited from class
-``PcapAndAsciiTraceHelperForIpv4`` reduce to calling this single
+``AsciiTraceHelperForIpv4`` reduce to calling this single
 device- dependent implementation method.  For example, the lowest
 level ASCII trace methods,
 
@@ -3143,10 +3145,10 @@ Methods
   void EnableAsciiIpv4All(Ptr<OutputStreamWrapper> stream);
 
   void EnableAsciiIpv4(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
-  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4(Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface, bool explicitFilename);
 
 You are encouraged to peruse the API Documentation for class
-``PcapAndAsciiHelperForIpv4`` to find the details of these methods;
+``AsciiTraceHelperForIpv4`` to find the details of these methods;
 but to summarize ...
 
 * There are twice as many methods available for ASCII tracing as there
@@ -3154,14 +3156,14 @@ but to summarize ...
   model where traces from each unique protocol/interface pair are
   written to a unique file, we support a model in which trace
   information for many protocol/interface pairs is written to a common
-  file.  This means that the <prefix>-n<node id>-<interface> file name
+  file.  This means that the <prefix>-n<node id>-i<interface> file name
   generation mechanism is replaced by a mechanism to refer to a common
   file; and the number of API methods is doubled to allow all
   combinations.
 
 * Just as in PCAP tracing, you can enable ASCII tracing on a particular
   protocol/interface pair by providing a ``Ptr<Ipv4>`` and an
-  ``interface`` to an ``EnableAscii`` method.  For example,
+  ``interface`` to an ``EnableAsciiIpv4`` method.  For example,
 
   ::
 
@@ -3190,11 +3192,11 @@ but to summarize ...
   In this case, trace contexts are written to the ASCII trace file since
   they are required to disambiguate traces from the two interfaces.
   Note that since the user is completely specifying the file name, the
-  string should include the ",tr" for consistency.
+  string should include the ".tr" suffix for consistency.
 
 * You can enable ASCII tracing on a particular protocol by providing a
   ``std::string`` representing an object name service string to an
-  ``EnablePcap`` method.  The ``Ptr<Ipv4>`` is looked up from the name
+  ``EnableAsciiIpv4`` method.  The ``Ptr<Ipv4>`` is looked up from the name
   string.  The ``<Node>`` in the resulting filenames is implicit since
   there is a one-to-one correspondence between protocol instances and
   nodes, For example,
@@ -3207,8 +3209,8 @@ but to summarize ...
     helper.EnableAsciiIpv4("prefix", "node1Ipv4", 1);
     helper.EnableAsciiIpv4("prefix", "node2Ipv4", 1);
 
-  This would result in two files named "prefix-nnode1Ipv4-i1.tr" and
-  "prefix-nnode2Ipv4-i1.tr" with traces for each interface in the
+  This would result in two files named "prefix-node1Ipv4-i1.tr" and
+  "prefix-node2Ipv4-i1.tr" with traces for each interface in the
   respective trace file.  Since all of the EnableAscii functions are
   overloaded to take a stream wrapper, you can use that form as well::
 
@@ -3274,11 +3276,11 @@ but to summarize ...
     helper.EnableAsciiIpv4("prefix", n);
 
   This would result in a number of ASCII trace files being created,
-  each of which follows the <prefix>-<node id>-<device id>.tr
+  each of which follows the <prefix>-n<node id>-i<interface>.tr
   convention.  Combining all of the traces into a single file is
   accomplished similarly to the examples above.
 
-* You can enable ASCII tracing on the basis of Node ID and device ID as
+* You can enable ASCII tracing on the basis of Node ID and interface as
   well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
   the appropriate protocol is looked up in the node.  The resulting
   protocol and interface are used to specify the resulting trace source.
@@ -3301,7 +3303,7 @@ but to summarize ...
   This would result in a number of ASCII trace files being created, one
   for every interface in the system related to a protocol of the type
   managed by the helper.  All of these files will follow the
-  <prefix>-n<node id>-i<interface.tr convention.  Combining all of the
+  <prefix>-n<node id>-i<interface>.tr convention.  Combining all of the
   traces into a single file is accomplished similarly to the examples
   above.
 
@@ -3310,24 +3312,24 @@ Filenames
 
 Implicit in the prefix-style method descriptions above is the
 construction of the complete filenames by the implementation method.
-By convention, ASCII traces in the |ns3| system are of the form
-"<prefix>-<node id>-<device id>.tr"
+By convention, ASCII traces of protocols in the |ns3| system are of the
+form "<prefix>-n<node id>-i<interface>.tr"
 
 As previously mentioned, every Node in the system will have a
 system-assigned Node id.  Since there is a one-to-one correspondence
-between protocols and nodes we use to node-id to identify the protocol
+between protocols and nodes we use the node id to identify the protocol
 identity.  Every interface on a given protocol will have an interface
 index (also called simply an interface) relative to its protocol.  By
 default, then, an ASCII trace file created as a result of enabling
-tracing on the first device of Node 21, using the prefix "prefix",
-would be "prefix-n21-i1.tr".  Use the prefix to disambiguate multiple
+tracing on interface 1 of the Ipv4 protocol of Node 21, using the prefix
+"prefix", would be "prefix-n21-i1.tr".  Use the prefix to disambiguate multiple
 protocols per node.
 
 You can always use the |ns3| object name service to make this more
 clear.  For example, if you use the object name service to assign the
 name "serverIpv4" to the protocol on Node 21, and also specify
 interface one, the resulting ASCII trace file name will automatically
-become, "prefix-nserverIpv4-1.tr".
+become, "prefix-serverIpv4-i1.tr".
 
 Several of the methods have a default parameter called
 ``explicitFilename``.  When set to true, this parameter disables the
