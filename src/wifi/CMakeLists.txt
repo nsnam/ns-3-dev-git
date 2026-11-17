@@ -400,6 +400,7 @@ set(header_files
     model/wifi-spectrum-signal-parameters.h
     model/wifi-standard-constants.h
     model/wifi-standards.h
+    model/wifi-state.h
     model/wifi-tx-current-model.h
     model/wifi-tx-parameters.h
     model/wifi-tx-timer.h
@@ -462,6 +463,7 @@ build_lib(
     test/wifi-scanning-test.cc
     test/wifi-static-emlsr-test.cc
     test/wifi-static-infra-bss-test.cc
+    test/wifi-state-test.cc
     test/wifi-test.cc
     test/wifi-transmit-mask-test.cc
     test/wifi-txop-test.cc
