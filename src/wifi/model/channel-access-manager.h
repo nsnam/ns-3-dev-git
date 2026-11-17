@@ -11,6 +11,7 @@
 
 #include "wifi-phy-common.h"
 #include "wifi-phy-operating-channel.h"
+#include "wifi-state.h"
 
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
@@ -510,15 +511,6 @@ class WIFI_EXPORT ChannelAccessManager : public Object
     virtual Time GetEifsNoDifs() const;
 
     /**
-     * Structure defining start time and end time for a given state.
-     */
-    struct WIFI_EXPORT Timespan
-    {
-        Time start{0}; //!< start time
-        Time end{0};   //!< end time
-    };
-
-    /**
      * typedef for a vector of Txops
      */
     typedef std::vector<Ptr<Txop>> Txops;
@@ -527,23 +519,23 @@ class WIFI_EXPORT ChannelAccessManager : public Object
     Time m_lastAckTimeoutEnd; //!< the last Ack timeout end time
     Time m_lastCtsTimeoutEnd; //!< the last CTS timeout end time
     Time m_lastNavEnd;        //!< the last NAV end time
-    Timespan m_lastRx;        //!< the last receive start and end time
+    TimeSpan m_lastRx;        //!< the last receive start and end time
     bool m_lastRxReceivedOk;  //!< the last receive OK
     Time m_lastTxEnd;         //!< the last transmit end time
     std::map<WifiChannelListType, Time>
         m_lastBusyEnd;                       //!< the last busy end time for each channel type
     std::vector<Time> m_lastPer20MHzBusyEnd; /**< the last busy end time per 20 MHz channel
                                                   (HE stations and channel width > 20 MHz only) */
-    std::map<WifiChannelListType, Timespan>
-        m_lastIdle;               //!< the last idle start and end time for each channel type
-    Time m_lastSwitchingEnd;      //!< the last switching end time
-    Timespan m_lastSleep;         //!< the last sleep start and end time
-    Timespan m_lastOff;           //!< the last off start and end time
-    Time m_eifsNoDifs;            //!< EIFS no DIFS time
-    Timespan m_lastNoPhy;         //!< the last start and end time no PHY was operating on the link
-    mutable Time m_cachedSifs;    //!< cached value for SIFS, to be only used without a PHY
-    mutable Time m_cachedSlot;    //!< cached value for slot, to be only used without a PHY
-    EventId m_accessTimeout;      //!< the access timeout ID
+    std::map<WifiChannelListType, TimeSpan>
+        m_lastIdle;          //!< the last idle start and end time for each channel type
+    Time m_lastSwitchingEnd; //!< the last switching end time
+    Time m_eifsNoDifs;       //!< EIFS no DIFS time
+    WifiState<bool> m_phyConnected{false}; //!< PHY connection state and interval history
+    WifiState<bool> m_sleeping{false};     //!< Sleep state and interval history
+    WifiState<bool> m_off{false};          //!< Off state and interval history
+    mutable Time m_cachedSifs;             //!< cached value for SIFS, to be only used without a PHY
+    mutable Time m_cachedSlot;             //!< cached value for slot, to be only used without a PHY
+    EventId m_accessTimeout;               //!< the access timeout ID
     bool m_generateBackoffOnNoTx; //!< whether the backoff should be invoked when the AC gains the
                                   //!< right to start a TXOP but it does not transmit any frame
                                   //!< (e.g., due to constraints associated with EMLSR operations),
