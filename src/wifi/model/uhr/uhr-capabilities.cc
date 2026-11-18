@@ -318,7 +318,7 @@ UhrCapabilities::SerializeInformationField(Buffer::Iterator start) const
     m_phyCapabilities.Serialize(start);
     if (m_dbeCapabilityParams)
     {
-        NS_ASSERT(m_macCapabilities.dbeSupport);
+        NS_ASSERT(m_macCapabilities.dbeSupport != 0);
         m_dbeCapabilityParams->Serialize(start);
     }
 }
