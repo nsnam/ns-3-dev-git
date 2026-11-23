@@ -1212,14 +1212,10 @@ macro(process_options)
     ${CMAKE_HEADER_OUTPUT_DIRECTORY}/core-config.h
   )
 
-  # Force enable ns-3 logging in debug builds and if requested for other build
-  # types
-  if(${NS3_LOG} OR (${build_profile} STREQUAL "debug"))
+  if(${NS3_LOG})
     add_definitions(-DNS3_LOG_ENABLE)
   endif()
-  # Force enable ns-3 asserts in debug builds and if requested for other build
-  # types
-  if(${NS3_ASSERT} OR (${build_profile} STREQUAL "debug"))
+  if(${NS3_ASSERT})
     add_definitions(-DNS3_ASSERT_ENABLE)
   endif()
 

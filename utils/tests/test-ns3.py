@@ -11,6 +11,7 @@ Test suite for the ns3 wrapper script
 """
 
 import glob
+import json
 import os
 import platform
 import re
@@ -858,6 +859,58 @@ class NS3ConfigureBuildProfileTestCase(unittest.TestCase):
             "-DCMAKE_BUILD_TYPE=default -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_NATIVE_OPTIMIZATIONS=OFF -DNS3_ASSERT=ON -DNS3_LOG=ON -DNS3_WARNINGS_AS_ERRORS=ON",
             stdout,
         )
+
+    def test_07_DebugAssertsAndLogsDefault(self):
+        """!
+        Check debug builds enable asserts and logs by default, unless explicitly disabled
+        @return None
+        """
+        cmake_cache = os.path.join(ns3_path, "cmake-cache")
+        compile_commands = os.path.join(cmake_cache, "compile_commands.json")
+
+        def flag_enabled(flag):
+            with open(compile_commands, encoding="utf-8") as f:
+                commands = json.load(f)
+            self.assertGreater(len(commands), 0)
+            return all(flag in entry["command"] for entry in commands)
+
+        for option, ns3_switch, flag, summary in [
+            ("NS3_ASSERT", "asserts", "NS3_ASSERT_ENABLE", "Build with runtime asserts    : "),
+            ("NS3_LOG", "logs", "NS3_LOG_ENABLE", "Build with runtime logging    : "),
+        ]:
+            # Debug profile through ns3 enables the switch by default
+            run_ns3("clean")
+            return_code, stdout, stderr = run_ns3('configure -G "{generator}" -d debug')
+            self.assertEqual(return_code, 0)
+            self.assertIn(summary + "ON", stdout)
+            self.assertTrue(flag_enabled(flag))
+
+            # Explicitly disabling the switch in debug builds must be respected
+            run_ns3("clean")
+            return_code, stdout, stderr = run_ns3(
+                f'configure -G "{{generator}}" -d debug --disable-{ns3_switch}'
+            )
+            self.assertEqual(return_code, 0)
+            self.assertIn(summary + "OFF", stdout)
+            self.assertFalse(flag_enabled(flag))
+
+            # When both enable and disable are passed to CMake, the last one stands
+            for cmake_args, expected in [
+                ([f"-D{option}=ON", f"-D{option}=False"], False),
+                ([f"-D{option}=False", f"-D{option}=ON"], True),
+            ]:
+                run_ns3("clean")
+                os.makedirs(cmake_cache, exist_ok=True)
+                proc = subprocess.run(
+                    ["cmake", "-S", ns3_path, "-B", cmake_cache, "-DCMAKE_BUILD_TYPE=debug"]
+                    + cmake_args,
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                self.assertEqual(flag_enabled(flag), expected)
+
+        run_ns3("clean")
 
 
 class NS3BaseTestCase(unittest.TestCase):
