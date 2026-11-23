@@ -900,6 +900,17 @@ association, it is necessary that no beacon is received on any link for an
 interval of duration equal to the maximum number of missed beacons times the
 interval between two consecutive Beacon frames.
 
+Offline scanning lets an associated STA or non-AP MLD discover candidate APs while maintaining
+its current association. With scanning enabled, ``WifiAssocManager::StartOfflineScanning()``
+starts a scan on demand, and the ``OfflineScanningInterval`` attribute requests scans periodically
+when set to a nonzero value. A scan can start only while the station is associated and no other
+scan is in progress. ``ScanningChannels`` selects the PHYs and channels to scan, and
+``StaWifiMac::ActiveProbing`` selects active or passive scanning. With ``OfflineScanProtection``
+set to ``POWERSAVE``, the station signals power-save mode to its AP on each participating setup
+link that was in active mode and waits for those transitions before scanning. After the scan, the
+Association Manager restores the PHYs' previous operating channels and returns those links to
+active mode. The ``ScanningEnd`` trace reports the APs discovered on each scanned channel.
+
 Roaming
 #######
 
