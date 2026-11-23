@@ -39,6 +39,7 @@ This file is a best-effort approach to solving this issue; we will do our best b
 
 ### Changes to build system
 
+* (build) Debug builds no longer force asserts and logs on, so `--disable-asserts` and `--disable-logs` now work with them. When directly configuring via CMake, manually enable asserts and logs as desired.
 * (visualizer) PyViz no longer needs GTK+ 3, GooCanvas, PyGObject, pygraphviz or IPython; it only requires the Python bindings. GTK+ 3 is still used by `GtkConfigStore`.
 * (visualizer) The visualizer library now links only against the core and network modules instead of internet, wifi, lr-wpan and point-to-point.
 

@@ -197,8 +197,9 @@ In addition to setting compiler flags each build type also controls whether cert
 | minsizerel              |   OFF           |   OFF       |   OFF                      |
 +-------------------------+-----------------+-------------+----------------------------+
 
-``NS3_ASSERT`` and ``NS_LOG`` control whether the assert or logging macros
-are functional or compiled out.
+``NS3_ASSERT`` and ``NS3_LOG`` control whether the assert or logging macros
+are functional or compiled out. They can be overridden in any build profile
+with ``--enable/disable-asserts`` and ``--enable/disable-logs``.
 ``NS3_WARNINGS_AS_ERRORS`` controls whether compiler warnings are treated
 as errors and stop the build, or whether they are only warnings and
 allow the build to continue.

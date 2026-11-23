@@ -40,8 +40,8 @@ If logging has been enabled for the ``Ipv4L3Protocol`` component at a severity
 of ``INFO`` or above (see below about log severity), the statement
 will be printed out; otherwise, it will be suppressed.
 
-The logging implementation is enabled in ``debug`` and ``default``
-builds, but disabled in all other build profiles,
+The logging implementation is enabled by default in ``debug`` and ``default``
+builds (when configured via the |ns3| script), but disabled in all other build profiles,
 so that it does not impact the execution speed of more optimized profiles.
 
 You can try the example program `log-example.cc` in `src/core/example`
@@ -610,7 +610,7 @@ The |ns3| assert facility can be used to validate that invariant conditions
 are met during execution. If the condition is not met an error message is given
 and the program stops, printing the location of the failed assert.
 
-The assert implementation is enabled in ``debug`` and ``default``
+The assert implementation is enabled by default in ``debug`` and ``default``
 builds, but disabled in all other build profiles to improve execution speed.
 
 How to add asserts to your code
