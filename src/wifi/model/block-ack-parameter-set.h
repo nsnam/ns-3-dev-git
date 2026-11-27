@@ -71,7 +71,7 @@ struct WIFI_EXPORT BlockAckParameterSet
  *
  * @return std::ostream
  */
-std::ostream& operator<<(std::ostream& os, const BlockAckParameterSet& params);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const BlockAckParameterSet& params);
 
 } // namespace ns3
 

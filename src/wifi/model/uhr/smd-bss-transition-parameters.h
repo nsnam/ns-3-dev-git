@@ -54,7 +54,7 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
      * SCS List field structure
      * IEEE 802.11bn D2.0 Figure 9-aa48
      */
-    struct ScsList
+    struct WIFI_EXPORT ScsList
     {
         std::vector<uint8_t> m_scsIds{}; ///< SCS Info field (list of SCS ID fields)
 
@@ -92,13 +92,13 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
      * ST Info field structure in an ST preparation request
      * IEEE 802.11bn D2.0 Figure 9-aa46
      */
-    struct StPrepReqStInfo
+    struct WIFI_EXPORT StPrepReqStInfo
     {
         /**
          * ST Control field structure in an ST preparation request
          * IEEE 802.11bn D2.0 Figure 9-aa47
          */
-        struct StControl
+        struct WIFI_EXPORT StControl
         {
             uint8_t m_reqDlSnNotTransferred : 1 {0}; ///< Request DL SN Not Transferred field
             uint8_t m_reqUlSnNotTransferred : 1 {0}; ///< Request UL SN Not Transferred field
@@ -186,13 +186,13 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
      * ST Info field structure in an ST preparation response
      * IEEE 802.11bn D2.0 Figure 9-aa50
      */
-    struct StPrepRespStInfo
+    struct WIFI_EXPORT StPrepRespStInfo
     {
         /**
          * ST Control field structure in an ST preparation response
          * IEEE 802.11bn D2.0 Figure 9-aa51
          */
-        struct StControl
+        struct WIFI_EXPORT StControl
         {
             bool m_dlBaInfoPresent{false}; ///< DL BA Info Present (do not set, it is set by the
                                            ///< OptFieldWithPresenceInd)
@@ -227,7 +227,7 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
          * Extended BA Parameters Info field structure in DL/UL BA Info
          * IEEE 802.11bn D2.0 Figure 9-aa53
          */
-        struct ExtBaParamsInfo
+        struct WIFI_EXPORT ExtBaParamsInfo
         {
             BlockAckParameterSet m_baParameterSet{}; ///< BA Parameter Set field
             AddbaExtension::ExtParamSet
@@ -267,7 +267,7 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
          * DL/UL BA Info field structure in an ST preparation response
          * IEEE 802.11bn D2.0 Figure 9-aa52 and 9-aa54
          */
-        struct BaInfo
+        struct WIFI_EXPORT BaInfo
         {
             /**
              * Set the Extended BA Parameters Info for a given TID
@@ -392,13 +392,13 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
      * ST Info field structure in an ST execution request
      * IEEE 802.11bn D2.0 Figure 9-aa55
      */
-    struct StExecReqStInfo
+    struct WIFI_EXPORT StExecReqStInfo
     {
         /**
          * ST Control field structure in an ST execution request
          * IEEE 802.11bn D2.0 Figure 9-aa56
          */
-        struct StControl
+        struct WIFI_EXPORT StControl
         {
             bool m_dlTidBmPresent{false};  ///< DL TID Bitmap Present (do not set, it is set by the
                                            ///< OptFieldWithPresenceInd)
@@ -486,13 +486,13 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
      * ST Info field structure in an ST execution response
      * IEEE 802.11bn D2.0 Figure 9-aa57
      */
-    struct StExecRespStInfo
+    struct WIFI_EXPORT StExecRespStInfo
     {
         /**
          * ST Control field structure in an ST execution response
          * IEEE 802.11bn D2.0 Figure 9-aa58
          */
-        struct StControl
+        struct WIFI_EXPORT StControl
         {
             bool m_nomMaxDlDrainPeriodDurPresent{
                 false}; ///< Nominal Maximum DL Draining Period Duration Present
@@ -526,7 +526,7 @@ class WIFI_EXPORT SmdBssTransitionParameters : public WifiInformationElement
          * Latest UL SN List field structure in an ST execution response
          * IEEE 802.11bn D2.0 Figure 9-aa59
          */
-        struct LatestUlSnList
+        struct WIFI_EXPORT LatestUlSnList
         {
             /**
              * Set the Latest UL SN for a given TID

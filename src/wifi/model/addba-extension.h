@@ -94,7 +94,7 @@ class WIFI_EXPORT AddbaExtension : public WifiInformationElement
  *
  * @return std::ostream
  */
-std::ostream& operator<<(std::ostream& os, const AddbaExtension::ExtParamSet& params);
+WIFI_EXPORT std::ostream& operator<<(std::ostream& os, const AddbaExtension::ExtParamSet& params);
 
 } // namespace ns3
 
